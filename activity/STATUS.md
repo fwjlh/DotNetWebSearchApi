@@ -6,23 +6,38 @@ Updated: 2026-11-21
 
 - Public repository: https://github.com/fwjlh/DotNetWebSearchApi
 - Default branch: `main`
-- Latest verified documentation commit: `4b53cc341dec8f0bfad17b0c3559a8a7299be4ec`
-- README, LICENSE, upstream provenance, ignore rules, activity log and handover status are committed.
+- Latest implementation commit: `7e088b4112c0424fad411f42ddf9f4861ddff103`
+- Bootstrap, license, upstream provenance, activity log and status are committed.
 
-## First implementation increment being committed
+## Working vertical slice
 
-- Native ASP.NET Core 10 API and solution structure.
+- Native ASP.NET Core 10 Web API.
+- `GET /health` and `GET /api/search?q=...`.
 - Search query/result/provider contracts.
-- Parallel provider aggregation, per-provider timeout and failure isolation.
-- URL validation, duplicate removal and deterministic ordering.
-- First concrete provider: Wikipedia MediaWiki search API.
-- xUnit tests and GitHub Actions .NET 10 workflow.
-- Local SDK check: `dotnet` is not installed. CI run 1 exposed two application compiler errors, corrected in commit 927b0da. CI run 2 compiled the application but failed the test project because xUnit was not imported; the using directive is added in the next commit. Tests have not yet executed.
+- Parallel provider aggregation with per-provider timeout and provider-failure isolation.
+- Caller cancellation is propagated.
+- HTTP(S)-only result URL validation, duplicate removal, deterministic score/title ordering, and result limit.
+- First concrete adapter: Wikipedia MediaWiki search API.
+- xUnit test project and GitHub Actions .NET 10 CI.
+
+## Verification
+
+- CI run: https://github.com/fwjlh/DotNetWebSearchApi/actions/runs/44942530782
+- Commit tested: `7e088b4112c0424fad411f42ddf9f4861ddff103`
+- Restore: passed.
+- Build: passed.
+- Tests: 9 passed, 0 failed, 0 skipped.
+- Local .NET SDK is not installed in the orchestration environment; verification was performed by GitHub Actions.
+- The first two CI runs exposed compiler and test-import errors. Both were corrected; the third run passed. See `activity/LOG.md`.
+
+## Important limitations
+
+This is a working foundation, not a complete SearXNG replacement. Only Wikipedia is wired in. There is no SQL Server provider store, general configurable HTTP provider, API-key authentication, quotas, admin UI, or CSHTML template engine yet. Do not expose this endpoint as a public unrestricted search service before authentication, rate limiting, and outbound request policy are implemented.
 
 ## Working rules
 
-1. Every material action goes in `activity/LOG.md`, with reason, outcome, verification, commit and next step.
-2. Update this file at every handover.
+1. Record every material action in `activity/LOG.md`, including reason, outcome, verification, commit and next step.
+2. Update this file at each handover.
 3. Implementation code and its tests/log update go in the same commit.
 4. Push each completed increment to `main` and verify the ref.
 5. Source files preferably below 15–20 KB; hard maximum 25 KB.
@@ -32,8 +47,10 @@ Updated: 2026-11-21
 
 ## Next actions
 
-1. Push the explicit xUnit import correction.
-2. Inspect the next GitHub Actions build and test run.
-3. Fix any further failures in a follow-up commit with tests and activity entry.
-4. Continue expanding provider adapter tests and coverage.
-5. Continue with provider configuration, SQL Server store, API-key security, quotas, SSRF protections, and controlled templates as separate increments.
+1. Add isolated adapter tests for JSON parsing, malformed payloads, HTTP errors and URL construction.
+2. Add API integration tests for query validation and response shape.
+3. Design provider definitions and secret references before SQL Server persistence.
+4. Implement safe configurable HTTP providers with SSRF protections and redirect validation.
+5. Add SQL Server configuration store, API-key validation, quotas and rate limiting.
+6. Evaluate constrained Razor/CSHTML templates only where they offer a clear benefit over structured templates.
+7. Keep SearchBox.NET.Forge as a separate follow-on project for upstream monitoring and AI-assisted porting proposals; require tests and human review, never auto-merge.
