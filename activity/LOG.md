@@ -62,3 +62,12 @@ Every material repository action is recorded here with its reason, result, verif
 - **Additional tests:** Add timeout isolation and caller-cancellation propagation cases.
 - **Tests:** CI build failed before the test step; the new tests are authored but not yet executed.
 - **Next:** Push this correction with the updated tests and log, then inspect the next CI run.
+
+
+### 9. Diagnose second GitHub Actions build
+- **Reason:** Verify that the first compiler corrections resolved the production-project build and identify the next real blocker.
+- **Action:** Inspected run `44942458446` and job `136962438657` for commit `927b0dacd1555278d2a8dfa9fa9957f0de9bdaba`.
+- **Result:** Application project compiled past the previous errors. Test project then failed because xUnit attributes were not imported; all reported errors were unresolved `Fact` / `FactAttribute`.
+- **Correction:** Add explicit `using Xunit;` to the test source.
+- **Tests:** CI did not reach test execution; the test suite remains unexecuted.
+- **Next:** Push this test-project correction and inspect the next CI run.

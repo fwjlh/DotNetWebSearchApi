@@ -1,3 +1,4 @@
+using Xunit;
 using DotNetWebSearchApi.Search;
 using Microsoft.Extensions.Logging.Abstractions;
 

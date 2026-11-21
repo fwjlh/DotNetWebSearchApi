@@ -17,7 +17,7 @@ Updated: 2026-11-21
 - URL validation, duplicate removal and deterministic ordering.
 - First concrete provider: Wikipedia MediaWiki search API.
 - xUnit tests and GitHub Actions .NET 10 workflow.
-- Local SDK check: `dotnet` is not installed. CI run 1 restored successfully but failed compilation on two errors; both are corrected in the next commit. Tests have not yet executed.
+- Local SDK check: `dotnet` is not installed. CI run 1 exposed two application compiler errors, corrected in commit 927b0da. CI run 2 compiled the application but failed the test project because xUnit was not imported; the using directive is added in the next commit. Tests have not yet executed.
 
 ## Working rules
 
@@ -32,7 +32,7 @@ Updated: 2026-11-21
 
 ## Next actions
 
-1. Push the compiler/nullability corrections and added timeout/cancellation tests.
+1. Push the explicit xUnit import correction.
 2. Inspect the next GitHub Actions build and test run.
 3. Fix any further failures in a follow-up commit with tests and activity entry.
 4. Continue expanding provider adapter tests and coverage.
