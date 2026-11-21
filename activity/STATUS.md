@@ -17,7 +17,7 @@ Updated: 2026-11-21
 - URL validation, duplicate removal and deterministic ordering.
 - First concrete provider: Wikipedia MediaWiki search API.
 - xUnit tests and GitHub Actions .NET 10 workflow.
-- Local SDK check: `dotnet` is not installed. Tests have not been run locally.
+- Local SDK check: `dotnet` is not installed. CI run 1 restored successfully but failed compilation on two errors; both are corrected in the next commit. Tests have not yet executed.
 
 ## Working rules
 
@@ -32,8 +32,8 @@ Updated: 2026-11-21
 
 ## Next actions
 
-1. Verify all files are within the 25 KB maximum.
-2. Commit and push this increment to `main`.
-3. Inspect GitHub Actions workflow status and logs.
-4. Fix any build/test failures in a follow-up commit with tests and activity entry.
+1. Push the compiler/nullability corrections and added timeout/cancellation tests.
+2. Inspect the next GitHub Actions build and test run.
+3. Fix any further failures in a follow-up commit with tests and activity entry.
+4. Continue expanding provider adapter tests and coverage.
 5. Continue with provider configuration, SQL Server store, API-key security, quotas, SSRF protections, and controlled templates as separate increments.

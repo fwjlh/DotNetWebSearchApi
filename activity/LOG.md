@@ -52,3 +52,13 @@ Every material repository action is recorded here with its reason, result, verif
 - **Tests authored:** Provider aggregation, duplicate removal, ranking, limit, provider-failure isolation, blank-query handling, and non-HTTP URL rejection.
 - **Execution:** Tests not run locally because .NET SDK is absent.
 - **Next:** Commit the staged files with this updated log, verify `main`, then inspect GitHub Actions.
+
+
+### 8. Diagnose first GitHub Actions build
+- **Reason:** Verify the new workflow and correct actual compiler failures rather than assume the source builds.
+- **Action:** Inspected run `44942371910` and its job log for commit `3529f9b3df635f2cb1e4417cdc50f4ae2e526074`.
+- **Result:** Restore succeeded. Build failed with two compiler errors: ambiguous `Timeout.InfiniteTimeSpan` because the provider exposes a `Timeout` property, and a nullable result passed to `List.Add`.
+- **Correction:** Move User-Agent configuration into the typed HttpClient registration (also avoiding HttpClient mutation in the provider constructor); guard the nullable parsed result before adding it; guard a non-string snippet JSON value.
+- **Additional tests:** Add timeout isolation and caller-cancellation propagation cases.
+- **Tests:** CI build failed before the test step; the new tests are authored but not yet executed.
+- **Next:** Push this correction with the updated tests and log, then inspect the next CI run.

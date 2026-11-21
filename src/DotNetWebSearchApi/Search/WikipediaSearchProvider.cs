@@ -11,9 +11,6 @@ public sealed partial class WikipediaSearchProvider : ISearchProvider
     public WikipediaSearchProvider(HttpClient httpClient)
     {
         _httpClient = httpClient;
-        _httpClient.Timeout = Timeout.InfiniteTimeSpan;
-        _httpClient.DefaultRequestHeaders.UserAgent.ParseAdd(
-            "DotNetWebSearchApi/0.1 (+https://github.com/fwjlh/DotNetWebSearchApi)");
     }
 
     public string Name => "wikipedia";
@@ -56,7 +53,7 @@ public sealed partial class WikipediaSearchProvider : ISearchProvider
         int position = 0;
         foreach (JsonElement item in searchElement.EnumerateArray())
         {
-            if (!TryReadResult(item, position, out SearchResult? result))
+            if (!TryReadResult(item, position, out SearchResult? result) || result is null)
             {
                 continue;
             }
@@ -86,8 +83,9 @@ public sealed partial class WikipediaSearchProvider : ISearchProvider
         }
 
         string snippet = item.TryGetProperty("snippet", out JsonElement snippetElement)
-            ? CleanSnippet(snippetElement.GetString() ?? string.Empty)
-            : string.Empty;
+            && snippetElement.ValueKind == JsonValueKind.String
+                ? CleanSnippet(snippetElement.GetString() ?? string.Empty)
+                : string.Empty;
 
         result = new SearchResult(
             title,

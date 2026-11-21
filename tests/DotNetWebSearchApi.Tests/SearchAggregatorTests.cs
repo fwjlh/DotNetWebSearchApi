@@ -83,6 +83,44 @@ public sealed class SearchAggregatorTests
     }
 
     [Fact]
+    public async Task SearchAsync_TreatsProviderTimeoutAsAnEmptyProviderResult()
+    {
+        TestProvider slowProvider = new(
+            "slow",
+            async (_, cancellationToken) =>
+            {
+                await Task.Delay(System.Threading.Timeout.Infinite, cancellationToken);
+                return Array.Empty<SearchResult>();
+            },
+            TimeSpan.FromMilliseconds(20));
+        SearchAggregator aggregator = CreateAggregator(slowProvider);
+
+        IReadOnlyList<SearchResult> results = await aggregator.SearchAsync(
+            new SearchQuery("test", 10),
+            CancellationToken.None);
+
+        Assert.Empty(results);
+    }
+
+    [Fact]
+    public async Task SearchAsync_PropagatesCallerCancellation()
+    {
+        using CancellationTokenSource cancellation = new();
+        TestProvider waitingProvider = new(
+            "waiting",
+            async (_, cancellationToken) =>
+            {
+                await Task.Delay(System.Threading.Timeout.Infinite, cancellationToken);
+                return Array.Empty<SearchResult>();
+            });
+        SearchAggregator aggregator = CreateAggregator(waitingProvider);
+        cancellation.CancelAfter(TimeSpan.FromMilliseconds(20));
+
+        await Assert.ThrowsAnyAsync<OperationCanceledException>(() =>
+            aggregator.SearchAsync(new SearchQuery("test", 10), cancellation.Token));
+    }
+
+    [Fact]
     public async Task SearchAsync_ReturnsEmptyForBlankQuery()
     {
         SearchAggregator aggregator = CreateAggregator(Provider("one", Result("One", "https://example.com/1")));
@@ -124,11 +162,12 @@ public sealed class SearchAggregatorTests
 
     private sealed class TestProvider(
         string name,
-        Func<SearchQuery, CancellationToken, Task<IReadOnlyList<SearchResult>>> search) : ISearchProvider
+        Func<SearchQuery, CancellationToken, Task<IReadOnlyList<SearchResult>>> search,
+        TimeSpan? timeout = null) : ISearchProvider
     {
         public string Name => name;
 
-        public TimeSpan Timeout => TimeSpan.FromSeconds(2);
+        public TimeSpan Timeout => timeout ?? TimeSpan.FromSeconds(2);
 
         public Task<IReadOnlyList<SearchResult>> SearchAsync(
             SearchQuery query,
