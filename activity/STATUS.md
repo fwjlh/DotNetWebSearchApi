@@ -113,7 +113,7 @@ There is no SQL Server provider store, general configurable HTTP provider, API-k
 - Commit: `f30ba0eca15e07370e47951602ce6d9bce82bdbe`
 - Restore passed; build failed because the shared adapter referenced a missing JSON-path helper and lacked the `System.Net` import for HTML decoding. No tests executed.
 - Correction: add the JSON-path traversal helper and required import; also make the fixed-parameter dictionary copy compatible with `IReadOnlyDictionary`.
-- The corrected commit is verified by CI run 45013006368.
+- The corrected commit is verified by CI run 45013006368. The next batch is verified by run 45013295887.
 
 
 - Second CI run: https://github.com/fwjlh/DotNetWebSearchApi/actions/runs/45012899977. Build passed with 0 warnings/errors; 103 tests passed and 2 failed. One test expected the NuGet `$top` parameter before URL encoding; the assertion now decodes the query. The other exposed relative Open Library paths being interpreted as absolute file URIs; URL handling now accepts only absolute HTTP(S) URLs before applying the configured prefix.
@@ -125,7 +125,7 @@ There is no SQL Server provider store, general configurable HTTP provider, API-k
 - CI: https://github.com/fwjlh/DotNetWebSearchApi/actions/runs/45013006368
 - Build: passed, 0 warnings, 0 errors.
 - Tests: 105 passed, 0 failed, 0 skipped.
-- Provider count: 18 implemented and fixture-tested in the last verified batch. Eight further adapters are currently pending CI. Live upstream acceptance remains unverified.
+- Provider count: 26 implemented, registered and fixture-tested. Live upstream acceptance remains unverified.
 
 
 ## Provider batch 2 — verification pending
@@ -136,3 +136,12 @@ There is no SQL Server provider store, general configurable HTTP provider, API-k
 
 
 - CI run 45013175836 failed during build because a handover commit had been constructed from an older Git tree, unintentionally restoring the pre-fix JSON adapter. The second provider batch definitions and fixtures remained. The helper/import, HTTP(S)-only absolute URL handling, relative URL prefixing, dictionary copy and decoded query assertion are restored in the current correction.
+
+
+## Latest verified provider batch
+
+- Commit: `07cc22461140dc81ce7eec6958a0a5d6465b8101`
+- CI: https://github.com/fwjlh/DotNetWebSearchApi/actions/runs/45013295887
+- Build: passed, 0 warnings, 0 errors.
+- Tests: 113 passed, 0 failed, 0 skipped.
+- Provider count: 26 implemented, registered and fixture-tested. Live upstream acceptance remains unverified.

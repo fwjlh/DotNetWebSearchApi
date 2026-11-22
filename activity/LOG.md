@@ -495,3 +495,12 @@ Every material repository action is recorded here with its reason, result, verif
 - **Correction:** Restore the complete corrected JSON adapter, retain root-array support for RubyGems and Hugging Face, restore URL-prefix handling for relative provider IDs, and decode query parameters in the fixture assertion. Future commits must always use the current branch commit's tree SHA as their base tree.
 - **Verification:** Failed workflow https://github.com/fwjlh/DotNetWebSearchApi/actions/runs/45013175836. No tests executed.
 - **Next:** Commit the correction using the exact current branch tree, then verify the complete suite.
+
+
+### 59. Verify specialist provider batch 2
+- **Reason:** Confirm the eight new specialist providers and restored shared JSON adapter after the stale-tree regression.
+- **Action:** Inspected workflow run 45013295887 for commit 07cc22461140dc81ce7eec6958a0a5d6465b8101 and fetched the complete job log.
+- **Result:** **CI passed.** Restore and build succeeded; 0 warnings and 0 errors. All 113 tests passed (0 failed, 0 skipped).
+- **Correction history:** The prior run 45013175836 failed before tests because the handover commit used an older base tree and reverted adapter helper/import changes. The exact current tree was then used, the fixes restored, and root-array JSON responses retained for RubyGems and Hugging Face.
+- **Verification:** https://github.com/fwjlh/DotNetWebSearchApi/actions/runs/45013295887. Eight new provider fixtures cover Europe PMC, Semantic Scholar, GitHub repository search, Docker Hub, Google Books, Internet Archive, RubyGems and Hugging Face Models. No live upstream requests were made.
+- **Next:** Continue provider ports in batches, targeting 100 before the local pull/build/live-testing handoff.
