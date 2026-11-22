@@ -336,7 +336,7 @@ These are translation targets, not assertions that every row is already implemen
 - Python's `json_engine` is a configurable engine template: a provider is described by URL, method, optional request body, headers/cookies, query parameter mappings, response paths, URL prefix, text cleanup rules and optional suggestion/thumbnail paths.
 - C# makes that metadata explicit in immutable-ish `JsonApiSearchDefinition` records and registers each definition through one shared `JsonApiSearchProvider`. The catalog is data; the provider owns request construction, rate spacing, JSON traversal, URL validation and result mapping.
 - The C# path reader accepts dot-separated object paths and numeric array indexes. It is deliberately simpler than Python's recursive `query/do_query` traversal, which can search recursively through nested mappings and iterables when a key appears at multiple levels.
-- C# supports GET query parameters and JSON POST bodies, fixed parameters, configured headers/API-key headers, optional per-provider minimum request intervals, URL prefixes and a common title/URL/snippet result contract.
+- C# supports GET query parameters and JSON POST bodies, fixed parameters, configured headers/API-key headers, URL prefixes and a common title/URL/snippet result contract. Minimum request intervals are now delegated to the shared transport and keyed by provider name.
 - The test suite uses parameterised fixture cases across many definitions to verify endpoint/query mapping and JSON response extraction without making live API calls.
 
 **Known divergence / omissions**
@@ -506,10 +506,10 @@ These are translation targets, not assertions that every row is already implemen
 - Cookie/session ownership remains provider-specific. Mojeek and Yahoo now receive separate keyed CookieContainers; Seznam retains its own HttpClientFactory handler-managed jar. The transport does not create, persist or share a cookie jar. These are process-scoped provider sessions, not per-caller sessions.
 - No automatic retries are performed. This is deliberate until retry safety can be decided per request and challenge/access-denied conditions are excluded.
 - Provider cookie jars are isolated from one another but remain process-wide. Multi-tenant/per-user session isolation and cookie rotation/expiry policy have not been designed.
-- The current transport does not centralise proxy selection, TLS/HTTP version policy, request-header profiles, request-body limits or per-provider minimum intervals.
+- The current transport does not centralise proxy selection, TLS/HTTP version policy, request-header profiles or request-body limits. Per-provider minimum intervals are now supported through an optional transport argument and used by the generic JSON definitions.
 - Response-size overflow and unsupported charset are classified as invalid provider responses. The default size limit and host concurrency limit are configurable through `SearchHttpTransportOptions`.
 
-**Verification:** [SearchHttpTransportTests.cs](../tests/DotNetWebSearchApi.Tests/SearchHttpTransportTests.cs) covers response body/headers/Retry-After, typed HTTP status mapping, size limits and charset decoding. Bing and Qwant fixture tests cover their use of the transport and provider-specific status handling.
+**Verification:** [SearchHttpTransportTests.cs](../tests/DotNetWebSearchApi.Tests/SearchHttpTransportTests.cs) covers response body/headers/Retry-After, typed HTTP status mapping, size limits, charset decoding, per-host concurrency and per-provider minimum intervals. Bing and Qwant fixture tests cover their use of the transport and provider-specific status handling.
 
 **Interpretation:** this is the first extraction of the common Python network-layer responsibility into a reusable .NET transport. It is intentionally a small foundation; provider-specific session, redirect and challenge state remain explicit.
 
