@@ -152,24 +152,36 @@ These are translation targets, not assertions that every row is already implemen
 - [GoogleSearchProvider.cs](../src/DotNetWebSearchApi/Search/GoogleSearchProvider.cs)
 - [GoogleSearchResultParser.cs](../src/DotNetWebSearchApi/Search/GoogleSearchResultParser.cs)
 - [GoogleSearchProviderTests.cs](../tests/DotNetWebSearchApi.Tests/GoogleSearchProviderTests.cs)
+- [EngineLocaleRegistry.cs](../src/DotNetWebSearchApi/Search/EngineLocaleRegistry.cs)
 
 **Why the C# code has this shape**
 
-- The upstream engine explicitly uses Google's HTML web page, not the Custom Search API. It does not require an API key. C# therefore makes a GET request to `www.google.com/search` and parses HTML with HtmlAgilityPack.
-- Python's `google_request` composes common query parameters for several Google verticals. The web path appends the unusual `adtest` parameters and Samsung user-agent marker to obtain direct HTTPS result URLs. C# preserves those web request parameters rather than replacing the route with an unrelated API.
-- Both implementations identify result cards by the `zMzFAb` / `fuLhoc` classes, read the `CVA68e` title and `FrIlee` / `fYyStc` snippet, exclude the `YVIcad` sub-element and unwrap the `/url?q=...` destination.
+- The upstream engine explicitly uses Google's HTML web page, not the Custom Search API. It does not require an API key. C# therefore makes a GET request to www.google.com/search and parses HTML with HtmlAgilityPack.
+- Python's google_request composes common query parameters for several Google verticals. The web path appends the unusual adtest parameters and Samsung user-agent marker to obtain direct HTTPS result URLs. C# preserves those web request parameters rather than replacing the route with an unrelated API.
+- Both implementations identify result cards by the zMzFAb / fuLhoc classes, read the CVA68e title and FrIlee / fYyStc snippet, exclude the YVIcad sub-element and unwrap the /url?q= destination.
 - The provider and parser are separate because the provider owns HTTP status/challenge handling while the parser can be tested against captured HTML without network access.
-- The C# CAPTCHA check follows the same signals as Python: redirect to `sorry.google.com`, a `/sorry` path, redirect status, or a short body containing `/sorry/`.
+- The C# CAPTCHA check follows the same signals as Python: redirect to sorry.google.com, a /sorry path, redirect status, or a short body containing /sorry/. The result is now a typed InteractiveCaptcha outcome.
+
+**What has now been carried across from Python**
+
+- Google locale traits map a locale to hl (interface language), lr (document-language restriction) and, when an explicit country is present, cr=countryXX.
+- SearchQuery.Page maps to start=(page-1)*10; the provider declares the upstream maximum of 50 pages.
+- TimeRange maps to tbs=qdr:d/w/m/y.
+- Safe-search 1/2 maps to medium/high; level 0 leaves Google's default parameter absent, matching Python's conditional request construction.
+- The provider declares general/web categories, paging, time range, safe-search and locale support. Capability filtering therefore rejects unsupported verticals and out-of-range pages before making a request.
 
 **Known divergence / omissions**
 
-- Python advertises paging to page 50, time-range filtering, locale traits, safe-search levels and suggestion extraction. C# currently hardcodes `hl=en`, `lr=lang_en`, `adlt=off` and does not use `SearchQuery.Page`, `TimeRange`, `Language` or `SafeSearch`.
-- Python maps a SearXNG locale through Google's fetched language and region traits, and sends a consent cookie. C# does not implement those traits or the consent cookie.
+- The locale maps are a curated static subset, not Google's dynamically fetched complete language/country lists. Unknown languages fall back to lang_en; unknown regions do not invent a country.
+- Python sends a CONSENT=YES+ cookie. C# does not yet send that cookie.
 - Python emits suggestion result types from a separate XPath. C# only emits ordinary web links.
-- The C# CAPTCHA is currently represented by a generic `HttpRequestException`; it does not preserve Python's typed CAPTCHA/suspension signal. A broad HTTP redirect check may also classify non-CAPTCHA redirects as a block. Typed outcomes should replace this.
-- The parser's CSS class selectors are inherently subject to Google's markup changes. Passing fixture tests demonstrates parser behaviour for the fixture, not that Google currently serves this DOM or accepts the request profile.
+- Python's request helper is shared by web, image, news and video verticals. C# currently implements web only.
+- The broad HTTP redirect challenge check may classify a non-CAPTCHA redirect as a challenge; keep this under review with captured response fixtures.
 
-**Interpretation:** a close HTML extraction/request-shape port for the web vertical, but not a port of Google's locale, paging, time-range, safe-search or suggestion behaviour.
+**Verification:** Google request tests cover locale, region, paging, time range, safe-search, challenge classification and HTML extraction. GitHub Actions [run 45030058998](https://github.com/fwjlh/DotNetWebSearchApi/actions/runs/45030058998) passed: 223 tests, 0 failed, 0 skipped. No live Google requests were made.
+
+**Interpretation:** a close HTML extraction/request-shape port for Google's web vertical, now with the main query-context fields mapped. It is not a port of image/news/video verticals or suggestion result types.
+
 
 ### Qwant Web
 

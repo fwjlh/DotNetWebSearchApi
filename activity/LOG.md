@@ -941,3 +941,13 @@ Every material repository action is recorded here with its reason, result, verif
 - **Verification:** Initial CI run 45029602909 built cleanly but had one test assertion mismatch: .NET formats the Accept-Language quality value with a space ("zh; q=0.9"). The assertion was corrected. Final run [45029724644](https://github.com/fwjlh/DotNetWebSearchApi/actions/runs/45029724644) passed: build 0 warnings/errors; 215 tests passed, 0 failed, 0 skipped.
 - **No live tests:** No Wikimedia request was made; only fixtures and request assertions.
 - **Next:** Add Google locale/region mappings. Keep provider count frozen at 67.
+
+
+### 103. Port Google's locale, paging, time-range and safe-search request semantics
+- **Reason:** The Google HTML adapter already parsed results but ignored most of the request context carried by SearchQuery. Its Python source provides explicit mappings for locale, paging, time-range and safe-search.
+- **Python evidence:** Pinned google.py maps EngineTraits language/region to hl/lr/cr, page to start=(page-1)*10, time-range to tbs=qdr:d/w/m/y and safe-search 1/2 to medium/high; it supports up to 50 pages.
+- **Action:** Added curated Google language/region traits. Google now maps hl/lr/cr, start, tbs and safe into its HTML GET request and implements ISearchProviderCapabilities with max page 50.
+- **Conservative limits:** The provider declares only general/web. The locale map is a subset, and unknown values fall back without guessing a country. It does not yet send CONSENT=YES+, parse suggestions or implement image/news/video verticals.
+- **Tests:** Added request/capability assertions for French locale, country restriction, page 3, weekly filter and strict safe-search. GitHub Actions [run 45030058998](https://github.com/fwjlh/DotNetWebSearchApi/actions/runs/45030058998) passed: build 0 warnings/errors; 223 tests passed, 0 failed, 0 skipped. No live Google requests.
+- **Documentation:** Updated Google rationale, locale-traits notes, audit, README and handover.
+- **Next:** Review the remaining major engines' request context, then move to richer result models. Provider count remains frozen at 67.

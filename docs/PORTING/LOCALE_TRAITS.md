@@ -97,3 +97,16 @@ This is only a partial traits translation: host/locale behaviour is carried acro
 Next: expand Wikipedia's non-standard language codes and Google locale/region maps after their request builders consume them. Keep traits versioned and static until refresh/persistence provides clear value.
 
 Verification: fixtures cover Bing, DuckDuckGo and Wikipedia locale mappings, request construction and conservative fallbacks. Wikipedia locale/host tests are green in [run 45029724644](https://github.com/fwjlh/DotNetWebSearchApi/actions/runs/45029724644).
+
+
+## Google: language, region, paging and filter traits
+
+**Python source:** [searx/engines/google.py](https://github.com/searxng/searxng/blob/c6ee3e9fd0235004a694e63720efc869bb1e3594/searx/engines/google.py)
+
+Python's get_google_info resolves an engine language and country from EngineTraits. It maps them to hl (interface language), lr (document language) and cr=countryXX (country restriction only when a country-specific locale was requested). Google also maps page to start, time range to tbs=qdr:d/w/m/y and safe-search 1/2 to medium/high. It advertises paging through page 50.
+
+C# now uses a curated Google language/region subset in EngineLocaleRegistry. GoogleSearchProvider maps locale, paging, time range and safe-search into those query parameters, and declares only general/web plus those implemented capabilities. The map includes common English, French, German, Spanish, Japanese, Korean, Chinese, Russian, Portuguese, Italian, Dutch and Arabic values; it is not the full dynamically fetched Google preferences catalogue.
+
+The provider retains the adtest and Samsung user-agent marker used by Python's web vertical. It does not yet send the CONSENT=YES+ cookie, parse suggestions, or implement Google image/news/video verticals.
+
+Verification: Google request/capability tests passed in [run 45030058998](https://github.com/fwjlh/DotNetWebSearchApi/actions/runs/45030058998): 223 tests, 0 failures, 0 skipped. No live Google request was made.
