@@ -4,10 +4,12 @@ public sealed class SeznamSearchProvider : ISearchProvider
 {
     private const string SearchEndpoint = "https://search.seznam.cz/";
     private readonly HttpClient _httpClient;
+    private readonly SearchHttpTransport _transport;
 
-    public SeznamSearchProvider(HttpClient httpClient)
+    public SeznamSearchProvider(HttpClient httpClient, SearchHttpTransport? transport = null)
     {
         _httpClient = httpClient;
+        _transport = transport ?? new SearchHttpTransport();
     }
 
     public string Name => "seznam";
@@ -22,22 +24,25 @@ public sealed class SeznamSearchProvider : ISearchProvider
         IReadOnlyDictionary<string, string> hiddenFields = SeznamSearchResultParser.ReadHiddenFields(homeHtml);
         string requestUrl = BuildRequestUrl(query.Text, hiddenFields);
 
-        using HttpResponseMessage response = await _httpClient.GetAsync(requestUrl, cancellationToken);
-        string html = await response.Content.ReadAsStringAsync(cancellationToken);
-        if (SeznamSearchResultParser.IsVerificationPage(response.RequestMessage?.RequestUri))
+        using HttpRequestMessage request = new(HttpMethod.Get, requestUrl);
+        SearchHttpResponse response = await _transport.SendAsync(_httpClient, request, cancellationToken);
+        if (SeznamSearchResultParser.IsVerificationPage(response.RequestUri))
         {
-            throw new HttpRequestException("Seznam redirected the search to its verification page.");
+            throw new ProviderFailureException(
+                ProviderFailureKind.AccessDenied,
+                "Seznam redirected the search to its verification page.");
         }
 
-        response.EnsureSuccessStatusCode();
-        return SeznamSearchResultParser.Parse(html);
+        response.EnsureSuccessStatusCode(Name);
+        return SeznamSearchResultParser.Parse(response.Content);
     }
 
     private async Task<string> ReadHomePage(CancellationToken cancellationToken)
     {
-        using HttpResponseMessage response = await _httpClient.GetAsync(SearchEndpoint, cancellationToken);
-        response.EnsureSuccessStatusCode();
-        return await response.Content.ReadAsStringAsync(cancellationToken);
+        using HttpRequestMessage request = new(HttpMethod.Get, SearchEndpoint);
+        SearchHttpResponse response = await _transport.SendAsync(_httpClient, request, cancellationToken);
+        response.EnsureSuccessStatusCode(Name);
+        return response.Content;
     }
 
     private static string BuildRequestUrl(
