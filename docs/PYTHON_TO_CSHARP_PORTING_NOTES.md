@@ -565,6 +565,8 @@ These are translation targets, not assertions that every row is already implemen
 - [JsonApiSearchProvider.cs](../src/DotNetWebSearchApi/Search/JsonApiSearchProvider.cs)
 - [JsonApiProviderCatalog.cs](../src/DotNetWebSearchApi/Search/JsonApiProviderCatalog.cs)
 - [JsonApiSearchProviderTests.cs](../tests/DotNetWebSearchApi.Tests/JsonApiSearchProviderTests.cs)
+- [KagiSearchProvider.cs](../src/DotNetWebSearchApi/Search/KagiSearchProvider.cs)
+- [KagiSearchProviderTests.cs](../tests/DotNetWebSearchApi.Tests/KagiSearchProviderTests.cs)
 
 **Why the C# code has this shape**
 
@@ -588,7 +590,7 @@ This is a data-driven C# equivalent for straightforward APIs. It avoids one clas
 | Hacker News | Algolia page, story tags, typo/query options, time-range numeric filter; maps points, comments, author and created date | Simple `query`, `hitsPerPage`, `hits`, title/url/story text | No paging/time range or points/comments/date metadata |
 | GitHub | Sorts by stars, sets a preview Accept header and maps language, owner, topics, stars, license, homepage and timestamps | Maps `items`, `full_name`, `html_url`, description | No sort/header profile or package/repository metadata |
 | Open Library | Page and limit, requests `fields=*`, maps Paper metadata, ISBN, authors, cover and publication dates | Maps `docs`, title and key with URL prefix | No paging, field selection or bibliographic metadata |
-| Kagi | Bearer key; POST body includes page, workflow/category, safe-search, locale region and time filter; supports general/news/images/videos and page cap 10 | Dedicated `KagiSearchProvider` maps query/page/workflow/safe-search/region/after and parses `data.search`; API key header | General web only; image/news/video result types and their metadata are omitted |
+| Kagi | Bearer key; POST body includes page, workflow/category, safe-search, locale region and time filter; supports general/news/images/videos and page cap 10 | Dedicated `KagiSearchProvider` maps query/page/workflow/safe-search/region/after and parses `data.search`; API key header. Declares general-only, page 1–10, locale, safe-search and time-range capabilities | General web only; image/news/video result types and their metadata are omitted |
 | Wikidata | SPARQL POST with locale-derived query template, contact-url setup requirement, entity deduplication and rich infobox/list attributes | MediaWiki search API definition using `w/api.php` and `query.search` | Different protocol and semantics; this is not a direct port of the Python Wikidata engine |
 | npm | Uses npms.io search API, paging, flags, keywords, version, maintainer, homepage, repository and date | Uses registry.npmjs.org search endpoint and maps package name/link/description | Different upstream API and a much thinner result model |
 
