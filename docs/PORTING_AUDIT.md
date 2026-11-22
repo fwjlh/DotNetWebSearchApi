@@ -10,15 +10,15 @@ The best next move is to pause provider-count expansion and port the reusable fr
 
 The audit compares the current C# source with the upstream SearXNG Python implementation, principally:
 
-- [Engine processor](https://github.com/searxng/searxng/blob/master/searx/search/processors/abstract.py)
-- [Search query model](https://github.com/searxng/searxng/blob/master/searx/search/models.py)
-- [Result container and ranking](https://github.com/searxng/searxng/blob/master/searx/results.py)
-- [Engine traits](https://github.com/searxng/searxng/blob/master/searx/enginelib/traits.py)
-- [Network layer](https://github.com/searxng/searxng/tree/master/searx/network)
-- [Bing engine](https://github.com/searxng/searxng/blob/master/searx/engines/bing.py)
-- [Brave engine](https://github.com/searxng/searxng/blob/master/searx/engines/brave.py)
-- [DuckDuckGo engine](https://github.com/searxng/searxng/blob/master/searx/engines/duckduckgo.py)
-- [Wikipedia engine](https://github.com/searxng/searxng/blob/master/searx/engines/wikipedia.py)
+- [Engine processor](https://github.com/searxng/searxng/blob/c6ee3e9fd0235004a694e63720efc869bb1e3594/searx/search/processors/abstract.py)
+- [Search query model](https://github.com/searxng/searxng/blob/c6ee3e9fd0235004a694e63720efc869bb1e3594/searx/search/models.py)
+- [Result container and ranking](https://github.com/searxng/searxng/blob/c6ee3e9fd0235004a694e63720efc869bb1e3594/searx/results.py)
+- [Engine traits](https://github.com/searxng/searxng/blob/c6ee3e9fd0235004a694e63720efc869bb1e3594/searx/enginelib/traits.py)
+- [Network layer](https://github.com/searxng/searxng/tree/c6ee3e9fd0235004a694e63720efc869bb1e3594/searx/network)
+- [Bing engine](https://github.com/searxng/searxng/blob/c6ee3e9fd0235004a694e63720efc869bb1e3594/searx/engines/bing.py)
+- [Brave engine](https://github.com/searxng/searxng/blob/c6ee3e9fd0235004a694e63720efc869bb1e3594/searx/engines/brave.py)
+- [DuckDuckGo engine](https://github.com/searxng/searxng/blob/c6ee3e9fd0235004a694e63720efc869bb1e3594/searx/engines/duckduckgo.py)
+- [Wikipedia engine](https://github.com/searxng/searxng/blob/c6ee3e9fd0235004a694e63720efc869bb1e3594/searx/engines/wikipedia.py)
 
 This is an architectural comparison, not a line-by-line port certification. SearXNG changes over time; future port work should pin an upstream commit and record the exact source revision for each engine.
 
@@ -34,23 +34,23 @@ This is an architectural comparison, not a line-by-line port certification. Sear
 
 These are good foundations. The JSON definition approach is especially useful for providers whose request and response shapes are genuinely simple.
 
-## Main framework patterns not yet ported
+## Main framework patterns: completed foundations and remaining gaps
 
 ### 1. A complete search request context
 
 Upstream `SearchQuery` and `RequestParams` carry more than the search text. The engine receives the query, locale, safe-search level, page number, time range, category and engine-specific continuation data.
 
-Our `SearchQuery` currently carries only text, result limit and an optional provider-name filter. This means provider code cannot consistently implement locale, region, page number, safe search, date range or continuation tokens.
+Our `SearchQuery` now carries text, result limit, optional provider filter, categories, language, safe-search, page and time range. The original constructor remains compatible. Both `/api/search` and `/search` parse these values and validate their ranges. Provider-specific continuation state and region are not yet represented.
 
-**Port:** introduce an immutable `SearchRequestContext` (or extend `SearchQuery`) with query, locale, category set, safe-search, page, time range, requested providers, result limit and provider-specific state. Keep defaults compatible with today's API.
+**Remaining:** add provider-specific continuation/session state only where an upstream protocol requires it. Do not mistake parsed request context for provider support: request builders still need to consume the values before capabilities can advertise them.
 
 ### 2. Engine capabilities and pre-flight eligibility
 
 SearXNG checks engine capabilities before calling an engine. It skips unsupported page numbers, pages beyond an engine's maximum, and time ranges the engine cannot honour. It also has engine configuration for categories, paging, maximum page and weight.
 
-Our providers mostly accept the same small query object and decide ad hoc what to do. The public SearXNG-compatible endpoint currently rejects non-general categories, non-auto language, non-default safe search and time range rather than negotiating supported subsets.
+An `EngineCapabilities` record and optional `ISearchProviderCapabilities` interface now describe categories, paging/max page, time-range, safe-search, locale and weight. `SearchAggregator` performs pre-flight eligibility and returns unsupported providers separately. Legacy adapters receive a conservative general/first-page/default-locale profile. The API accepts valid request context and the aggregator decides which providers can participate.
 
-**Port:** add an `EngineDefinition`/capabilities model: categories, paging, max page, time-range support, safe-search support, locale support, weight, enabled state, API-key requirement and rate-limit policy. A shared dispatcher should decide whether each provider can participate before making a request.
+**Remaining:** add provider declarations only after each C# request builder genuinely honours the feature and fixture tests prove it. No provider should inherit SearXNG's Python capability flags automatically.
 
 ### 3. Shared transport and request construction
 
@@ -69,9 +69,9 @@ The transport should centralise timeout, cancellation, decompression, redirect p
 
 SearXNG tracks consecutive errors and can suspend an engine for a configured period. CAPTCHA, access-denied, network failures and ordinary HTTP errors are not all treated alike. An engine that is suspended is skipped rather than repeatedly contacted on every query.
 
-Our aggregator catches failures and reports an unresponsive provider, but has no persistent health state, consecutive-failure policy, suspension window or reason classification. Every new search can hit the same failing endpoint again.
+The first typed outcome layer now distinguishes timeout, rate limit, transient HTTP, invalid response, authentication, access denied, challenge, configuration and unknown failures. Provider-specific adapters can throw `ProviderFailureException` with an optional retry duration. Caller cancellation is propagated rather than classified as provider failure; empty success is distinct from failure.
 
-**Port:** add typed failure categories (timeout, rate-limited, CAPTCHA/challenge, access denied, transient HTTP, invalid response, configuration/authentication). Add a provider health state with configurable cooldown/backoff and a half-open probe. Preserve cancellation as caller cancellation, not provider failure.
+**Remaining:** no persistent health state, consecutive-failure policy, suspension window, cooldown/backoff or half-open probe exists yet. The generic classifier cannot recover `Retry-After` from a bare `HttpRequestException`; shared transport must preserve response headers and produce a typed failure.
 
 ### 5. Real result merging and ranking
 
@@ -104,16 +104,16 @@ The generic JSON definition already covers several useful dimensions, but real S
 
 ### 8. SearXNG API compatibility is currently partial
 
-The current `/search` endpoint is a useful compatibility starting point, but it is not a complete SearXNG API implementation. It returns a subset of the response shape, hardcodes the general category and result limit, and does not implement locale, safe-search levels, time range, page number, suggestions, answers, corrections or infoboxes. `number_of_results` is the number returned by this API, not an upstream total.
+The current `/search` endpoint is a useful compatibility starting point, but it is not a complete SearXNG API implementation. It now parses category, page, language, safe-search and time-range context and reports `unsupported_engines` separately from `unresponsive_engines`. Providers without matching capabilities are skipped. The result shape still omits real suggestions, answers, corrections and infoboxes; `number_of_results` is the number returned by this API, not an upstream total. Result limit is still fixed on this compatibility route.
 
-**Port:** define an explicit compatibility target and version it. Implement request fields only when the underlying engine capability model can honour them. Return honest unsupported/empty semantics rather than silently pretending a feature is supported.
+**Remaining:** define an explicit compatibility target and version it. Implement provider request fields only when the underlying adapter can honour them. Return honest unsupported/empty semantics rather than silently pretending a feature is supported.
 
 ## Recommended implementation order
 
 | Priority | Shared component | Why it comes first |
 |---|---|---|
-| P0 | Search request context + engine capabilities | Removes ad-hoc query handling and unlocks locale, safe search, paging and time range |
-| P0 | Provider execution/health state | Stops repeatedly hitting broken or blocked providers |
+| P0 | Provider capability declarations | Advertises only options the current C# request builders genuinely honour |
+| P0 | Provider execution/health state | Adds cooldown, backoff and half-open recovery on top of the new typed outcomes |
 | P1 | Shared HTTP transport and request model | Removes repeated headers/cookie/timeout/rate-limit plumbing |
 | P1 | Result container, source positions and scoring | Makes multi-provider aggregation meaningfully SearXNG-like |
 | P1 | Engine traits registry | Allows the same provider to serve different regions/languages correctly |
@@ -137,12 +137,12 @@ Each provider should then be implemented by composing existing strategies, addin
 ## Suggested next work
 
 1. Keep provider count at 67 while the shared framework is improved.
-2. Add the request-context and capability model without breaking the existing `/api/search` contract.
-3. Add tests for capability gating and provider eligibility.
-4. Add provider health/suspension and shared transport policies.
+2. Declare capabilities only where provider request builders and fixture tests substantiate them.
+3. Add provider health/suspension, cooldown/backoff and half-open recovery using the typed outcomes.
+4. Introduce shared HTTP transport and session policies while preserving provider-specific challenge flows.
 5. Implement proper result merging/scoring and compare it with SearXNG's algorithm.
 6. Add locale/traits for Bing, Brave, DuckDuckGo and Wikipedia.
-7. Revisit the existing major-engine adapters and correct them against pinned upstream source revisions.
+7. Revisit the existing major-engine adapters against the pinned upstream rationale corpus.
 8. Resume provider additions once the common patterns are in place.
 
 ## Important distinction
