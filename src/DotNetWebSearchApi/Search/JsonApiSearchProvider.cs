@@ -9,8 +9,6 @@ public sealed class JsonApiSearchProvider : ISearchProvider
     private readonly HttpClient _httpClient;
     private readonly JsonApiSearchDefinition _definition;
     private readonly SearchHttpTransport _transport;
-    private readonly SemaphoreSlim _requestGate = new(1, 1);
-    private DateTimeOffset _nextRequestUtc = DateTimeOffset.MinValue;
 
     public JsonApiSearchProvider(
         HttpClient httpClient,
@@ -30,9 +28,16 @@ public sealed class JsonApiSearchProvider : ISearchProvider
         SearchQuery query,
         CancellationToken cancellationToken)
     {
-        await WaitForRequestSlotAsync(cancellationToken);
         using HttpRequestMessage request = BuildRequest(query);
-        SearchHttpResponse response = await _transport.SendAsync(_httpClient, request, cancellationToken);
+        TimeSpan? minimumInterval = _definition.MinimumIntervalMilliseconds > 0
+            ? TimeSpan.FromMilliseconds(_definition.MinimumIntervalMilliseconds)
+            : null;
+        SearchHttpResponse response = await _transport.SendAsync(
+            _httpClient,
+            request,
+            cancellationToken,
+            Name,
+            minimumInterval);
         response.EnsureSuccessStatusCode(Name);
         using JsonDocument document = JsonDocument.Parse(response.Content);
 
@@ -60,30 +65,6 @@ public sealed class JsonApiSearchProvider : ISearchProvider
         }
 
         return new HttpRequestMessage(HttpMethod.Get, BuildRequestUri(query));
-    }
-
-    private async Task WaitForRequestSlotAsync(CancellationToken cancellationToken)
-    {
-        if (_definition.MinimumIntervalMilliseconds <= 0)
-        {
-            return;
-        }
-
-        await _requestGate.WaitAsync(cancellationToken);
-        try
-        {
-            TimeSpan delay = _nextRequestUtc - DateTimeOffset.UtcNow;
-            if (delay > TimeSpan.Zero)
-            {
-                await Task.Delay(delay, cancellationToken);
-            }
-
-            _nextRequestUtc = DateTimeOffset.UtcNow.AddMilliseconds(_definition.MinimumIntervalMilliseconds);
-        }
-        finally
-        {
-            _requestGate.Release();
-        }
     }
 
     private Uri BuildRequestUri(SearchQuery query)
