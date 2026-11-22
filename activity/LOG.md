@@ -665,3 +665,10 @@ Every material repository action is recorded here with its reason, result, verif
 - **Result:** One URL-construction edge case corrected; other 155 tests passed in the first batch-7 run.
 - **Verification:** Pending CI on the correction commit.
 - **Next:** Verify all 156 tests and update the provider status.
+
+
+### 77. Use the supported string Contains overload
+- **Reason:** Check the query-prefix correction against the .NET 10 API surface before relying on CI.
+- **Action:** Changed the query marker check to the string overload of Contains with StringComparison.
+- **Result:** Keeps the intended URL mapping while avoiding a char/StringComparison overload mismatch.
+- **Verification:** Pending CI.
