@@ -46,11 +46,15 @@ public sealed class SearchAggregator
             eligibleProviders.Select(provider => ExecuteProviderAsync(provider, query, cancellationToken)));
 
         IReadOnlyList<SearchResult> results = MergeResults(providerResults.Select(item => item.Results), query.Limit);
-        string[] unresponsiveProviders = providerResults
-            .Where(item => item.Failed)
+        ProviderOutcome[] outcomes = providerResults.Select(item => item.Outcome).ToArray();
+        string[] unresponsiveProviders = outcomes
+            .Where(item => item.Status == ProviderOutcomeStatus.Failed)
             .Select(item => item.ProviderName)
             .ToArray();
-        return new SearchExecutionResult(results, unresponsiveProviders, unsupportedProviders);
+        return new SearchExecutionResult(results, unresponsiveProviders, unsupportedProviders)
+        {
+            ProviderOutcomes = outcomes
+        };
     }
 
     private static EngineCapabilities GetCapabilities(ISearchProvider provider)
@@ -72,7 +76,8 @@ public sealed class SearchAggregator
         {
             IReadOnlyList<SearchResult> results = await provider.SearchAsync(query, timeoutSource.Token);
             _diagnostics.RecordSuccess(provider.Name, stopwatch.Elapsed, results.Count);
-            return new ProviderExecutionResult(provider.Name, results, false);
+            ProviderOutcome outcome = new(provider.Name, ProviderOutcomeStatus.Succeeded);
+            return new ProviderExecutionResult(results, outcome);
         }
         catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
         {
@@ -80,9 +85,17 @@ public sealed class SearchAggregator
         }
         catch (Exception exception)
         {
-            _logger.LogWarning(exception, "Search provider {Provider} failed.", provider.Name);
+            ProviderOutcome outcome = ProviderFailureClassifier.CreateFailure(
+                provider.Name,
+                exception,
+                timeoutSource.IsCancellationRequested);
+            _logger.LogWarning(
+                exception,
+                "Search provider {Provider} failed with {FailureKind}.",
+                provider.Name,
+                outcome.FailureKind);
             _diagnostics.RecordFailure(provider.Name, stopwatch.Elapsed, exception.GetType().Name);
-            return new ProviderExecutionResult(provider.Name, Array.Empty<SearchResult>(), true);
+            return new ProviderExecutionResult(Array.Empty<SearchResult>(), outcome);
         }
     }
 
@@ -116,5 +129,5 @@ public sealed class SearchAggregator
         return true;
     }
 
-    private sealed record ProviderExecutionResult(string ProviderName, IReadOnlyList<SearchResult> Results, bool Failed);
+    private sealed record ProviderExecutionResult(IReadOnlyList<SearchResult> Results, ProviderOutcome Outcome);
 }
