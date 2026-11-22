@@ -48,8 +48,8 @@ DotNetWebSearchApi puts that work behind one service:
 | Google Web adapter | Working (HTML) | CAPTCHA/blocking remains an upstream risk |
 | DuckDuckGo Web adapter | Working (first page) | HTML POST; CAPTCHA detection; no pagination/VQD |
 | Qwant Web adapter | Working (experimental) | Undocumented JSON API; DataDome may deny requests |
-| Yahoo Web adapter | Working (experimental) | HTML parser, sB preferences and bounded YBV redirect handling; live availability not tested |
-| Yandex Search API adapter | Working (optional, paid) | Requires YANDEX_SEARCH_API_KEY and YANDEX_FOLDER_ID |
+| Yahoo Web adapter | Working (experimental) | HTML parser, sB preferences and bounded redirect handling; YBV cache is not implemented |
+| Yandex Cloud Search API adapter | Working (optional, account-based) | Requires YANDEX_SEARCH_API_KEY and YANDEX_FOLDER_ID; not the same route as SearXNG's public HTML scraper |
 | Naver Web adapter | Working (regional) | Korean general-web HTML results; first page only |
 | Seznam Web adapter | Working (regional) | Homepage bootstrap, hidden fields and cookie reuse; live availability not tested |
 | Crossref | Working (JSON API) | Scholarly works; fixture-tested, live acceptance not tested |
@@ -177,11 +177,11 @@ The initial compatibility surface is available at:
 - `GET /?q=dotnet&format=json`
 - `POST /search` with `application/x-www-form-urlencoded` fields
 
-The `format` parameter defaults to JSON; `format=html` is not supported. The `engines` parameter accepts a comma-separated list of configured provider names, for example `engines=bing,google`. Unknown engines return HTTP 400. The initial implementation supports the `general` category and first page only. `pageno` values other than 1, non-default language/safesearch and `time_range` currently return HTTP 501 rather than being silently ignored.
+The `format` parameter defaults to JSON; `format=html` is not supported. The `engines` parameter accepts a comma-separated list of configured provider names, for example `engines=bing,google`. Unknown engines return HTTP 400. Both `/search` and `/api/search` accept request context: `categories`, `pageno` (1–50), `language`, `safesearch` (0–2) and `time_range` (`day`, `week`, `month`, `year`). Invalid values return HTTP 400. Providers are pre-filtered against declared capabilities; unsupported providers are skipped rather than silently ignoring requested options. The SearXNG-shaped response reports these separately in `unsupported_engines`; `/api/search` reports `unsupportedProviders`. At this stage, providers without explicit capability declarations receive a conservative general-category, first-page, default-locale profile, so non-default request options may legitimately produce no eligible providers. The query model and API now carry these values; provider-specific request builders still need to implement them before those capabilities can be advertised.
 
 Provider discovery and read-only diagnostics are also available at GET /api/providers and GET /api/diagnostics. The /admin page displays provider status, success/failure counts, last duration and last error type. These are process-local counters and reset when the service restarts.
 
-The response uses the familiar SearXNG field names: `query`, `number_of_results`, `results`, `answers`, `corrections`, `infoboxes`, `suggestions` and `unresponsive_engines`. Result entries include `url`, `title`, `content`, `engine`, `engines`, `positions`, `score`, `category`, `template`, `parsed_url` and `publishedDate`. Empty answer/infobox/suggestion arrays are returned until those result types are implemented. `positions` is currently inferred from the adapter score, and duplicate URLs retain the highest-scoring provider rather than combining every engine position. This is response-shape compatibility, not full SearXNG feature parity.
+The response uses the familiar SearXNG field names: `query`, `number_of_results`, `results`, `answers`, `corrections`, `infoboxes`, `suggestions` and `unresponsive_engines` and the additive `unsupported_engines` list. Result entries include `url`, `title`, `content`, `engine`, `engines`, `positions`, `score`, `category`, `template`, `parsed_url` and `publishedDate`. Empty answer/infobox/suggestion arrays are returned until those result types are implemented. `positions` is currently inferred from the adapter score, and duplicate URLs retain the highest-scoring provider rather than combining every engine position. This is response-shape compatibility, not full SearXNG feature parity.
 
 Example:
 
