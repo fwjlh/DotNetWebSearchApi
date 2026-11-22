@@ -19,9 +19,12 @@ public sealed record EngineCapabilities(
 
     public bool Supports(SearchQuery query)
     {
-        if (query.Page < 1 || query.Page > MaximumPage) return false;
+        if (MaximumPage < 1 || query.Page < 1 || query.Page > MaximumPage) return false;
+        if (query.SafeSearch is < 0 or > 2) return false;
         if (query.Page > 1 && !SupportsPagination) return false;
-        if (query.Categories is not null && query.Categories.Any(category => !Categories.Contains(category))) return false;
+        IReadOnlySet<string> requestedCategories = query.Categories
+            ?? new HashSet<string>(StringComparer.OrdinalIgnoreCase) { "general" };
+        if (requestedCategories.Any(category => !Categories.Contains(category))) return false;
         if (query.TimeRange is not null && !SupportsTimeRange) return false;
         if (query.SafeSearch > 0 && !SupportsSafeSearch) return false;
         if (!string.IsNullOrWhiteSpace(query.Language)
