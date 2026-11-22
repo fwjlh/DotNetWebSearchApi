@@ -5,8 +5,8 @@ Updated: 2026-11-22
 ## Repository
 - Public repository: https://github.com/fwjlh/DotNetWebSearchApi
 - Default branch: main
-- Latest code commit before current increment: 92a34b06ec137dfea1625af2d881803c90bc3045
-- Current implementation increment: 50 providers; catalogue separator correction pushed; CI verification pending.
+- Latest verified code commit: 64c664c91a243bdd9561d18fd5ae4ee7ddd3d5cb
+- Current verified milestone: 50 providers; batch 5 passed CI.
 - Project overview and roadmap: [README.md](../README.md)
 
 ## Working application
@@ -24,8 +24,8 @@ Updated: 2026-11-22
 ## Provider count and current batch
 - **50 registered providers** after the current batch.
 - The first 42 providers passed CI fixture tests in run [45013727838](https://github.com/fwjlh/DotNetWebSearchApi/actions/runs/45013727838): build passed with 0 warnings/errors; 130 tests passed.
-- Batch 5 adds Wiby, TVmaze, Radio Browser, PeerTube, Wikimedia Commons, Wikinews, Spanish Wikipedia and Openverse.
-- Batch 5 includes eight provider fixture cases. Its CI result is pending.
+- Batch 5 and the full 50-provider catalogue passed CI in run [45019256660](https://github.com/fwjlh/DotNetWebSearchApi/actions/runs/45019256660): build passed with 0 warnings/errors; 138 tests passed.
+- Batch 5 adds Wiby, TVmaze, Radio Browser, PeerTube, Wikimedia Commons, Wikinews, Spanish Wikipedia and Openverse. All eight fixture cases passed in CI.
 - No new live upstream API requests have been run. Fixture tests verify request construction and response mapping only.
 
 ## Provider inventory

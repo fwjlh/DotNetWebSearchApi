@@ -121,12 +121,12 @@ The implementation strategy is to work from the major general-purpose search eng
 | 10 | Seznam Web | Working (regional) | HTML with homepage bootstrap and cookie reuse; disabled by default in SearXNG |
 | 11 | Mojeek | Deferred | Current SearXNG settings mark it inactive due to proof-of-work CAPTCHA |
 | 12 | Startpage | Deferred | Current SearXNG settings mark it inactive due to Anubis proof-of-work |
-| 13–20 | Specialist JSON APIs | Initial wave implemented | Crossref, OpenAlex, Hacker News, Stack Overflow, npm, crates.io, NuGet and Open Library |
-| 21–28 | Specialist API wave 2 | Implemented in code; CI pending | Europe PMC, Semantic Scholar, GitHub, Docker Hub, Google Books, Internet Archive, RubyGems and Hugging Face |
-| 29–36 | Developer and package API wave 3 | Implemented in code; CI pending | Super User, Server Fault, Ask Ubuntu, GitLab, Gitea, Maven Central, Packagist and pub.dev |
-| 37–44 | Media, knowledge and academic wave 4 | CI-verified | arXiv, Bilibili, Dailymotion, Deezer, Steam, MusicBrainz, Wikidata and German Wikipedia |
-| 45–52 | Search, media and regional wave 5 | Implemented in code; CI pending | Wiby, TVmaze, Radio Browser, PeerTube, Wikimedia Commons, Wikinews, Spanish Wikipedia and Openverse |
-| 45–100 | Further SearXNG providers | Planned | Prioritise by usefulness, reliability, accessibility, terms and maintenance cost; count only tested request/parser/registration adapters |
+| 11–18 | Specialist JSON APIs | CI-verified | Crossref, OpenAlex, Hacker News, Stack Overflow, npm, crates.io, NuGet and Open Library |
+| 19–26 | Specialist API wave 2 | CI-verified | Europe PMC, Semantic Scholar, GitHub, Docker Hub, Google Books, Internet Archive, RubyGems and Hugging Face |
+| 27–34 | Developer and package API wave 3 | CI-verified | Super User, Server Fault, Ask Ubuntu, GitLab, Gitea, Maven Central, Packagist and pub.dev |
+| 35–42 | Media, knowledge and academic wave 4 | CI-verified | arXiv, Bilibili, Dailymotion, Deezer, Steam, MusicBrainz, Wikidata and German Wikipedia |
+| 43–50 | Search, media and regional wave 5 | CI-verified | Wiby, TVmaze, Radio Browser, PeerTube, Wikimedia Commons, Wikinews, Spanish Wikipedia and Openverse |
+| 51–100 | Further SearXNG providers | Planned | Prioritise by usefulness, reliability, accessibility, terms and maintenance cost; count only tested request/parser/registration adapters |
 
 Provider ordering is a development priority, not a claim that every upstream service offers a free or unrestricted API. Current SearXNG settings mark Mojeek inactive because of its proof-of-work CAPTCHA and Startpage inactive because of its Anubis proof-of-work challenge; those are deferred until their CPU and access implications are understood. Brave's current Search plan is listed at $5 per 1,000 requests with $5 in monthly credits; activating a plan requires payment-card details. Check the [current Brave plans](https://brave.com/search/api/) before use. Each adapter must respect the provider's current access rules, terms, rate limits and attribution requirements. Where a provider requires credentials, keys will be configured as secrets and never committed to source control.
 
@@ -312,7 +312,7 @@ Run from the repository root:
 
 GitHub Actions runs restore, build and tests for pushes and pull requests. The badge at the top links to the workflow.
 
-The current verified implementation passes CI with **130 tests passing** across the aggregation layer, ten provider adapters, JSON API integration tests and provider diagnostics. Check the Actions history for the latest result; this README does not assume that a previous successful run proves every future commit is green.
+The current verified implementation passes CI with **138 tests passing** across the aggregation layer, ten provider adapters, JSON API integration tests and provider diagnostics. Check the Actions history for the latest result; this README does not assume that a previous successful run proves every future commit is green.
 
 ## Planned delivery sequence
 

@@ -568,3 +568,12 @@ Every material repository action is recorded here with its reason, result, verif
 - **Result:** Source correction prepared; no provider behaviour or count changed.
 - **Verification:** Pending CI on the correction commit.
 - **Next:** Verify the build and all fixture tests before continuing.
+
+
+### 67. Verify provider batch 5 and close the 50-provider milestone
+- **Reason:** Confirm the separator correction and all eight new adapters with the actual .NET 10 build and test workflow.
+- **Action:** Inspected GitHub Actions run 45019256660 for correction commit 64c664c91a243bdd9561d18fd5ae4ee7ddd3d5cb and fetched the completed job log.
+- **Result:** **CI passed.** Restore succeeded; build succeeded; 0 warnings and 0 errors; all 138 tests passed (0 failed, 0 skipped).
+- **Correction history:** Initial batch commit 41ee52ac3334ea20984a21d49f57dc8de6eb1d70 failed compilation because a comma was missing between provider definitions. The error was identified from the compiler log and corrected in commit 64c664c91a243bdd9561d18fd5ae4ee7ddd3d5cb.
+- **Verification:** https://github.com/fwjlh/DotNetWebSearchApi/actions/runs/45019256660. Eight new fixture cases passed. The 50 providers are implemented, registered and CI fixture-tested; live upstream acceptance remains unverified.
+- **Next:** Continue from 50 to 100, keeping the original priority of general web search providers before the remaining specialist catalogue.
