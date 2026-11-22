@@ -11,12 +11,17 @@ public sealed class MojeekSearchProvider : ISearchProvider
     private static readonly Uri BaseUri = new("https://www.mojeek.com/");
     private readonly HttpClient _httpClient;
     private readonly CookieContainer _cookies;
+    private readonly SearchHttpTransport _transport;
     private readonly SemaphoreSlim _challengeGate = new(1, 1);
 
-    public MojeekSearchProvider(HttpClient httpClient, CookieContainer cookies)
+    public MojeekSearchProvider(
+        HttpClient httpClient,
+        CookieContainer cookies,
+        SearchHttpTransport? transport = null)
     {
         _httpClient = httpClient;
         _cookies = cookies;
+        _transport = transport ?? new SearchHttpTransport();
     }
 
     public string Name => "mojeek";
@@ -35,9 +40,9 @@ public sealed class MojeekSearchProvider : ISearchProvider
             request.Headers.TryAddWithoutValidation("Cookie", cookieHeader);
         }
 
-        using HttpResponseMessage response = await _httpClient.SendAsync(request, cancellationToken);
-        response.EnsureSuccessStatusCode();
-        string html = await response.Content.ReadAsStringAsync(cancellationToken);
+        SearchHttpResponse response = await _transport.SendAsync(_httpClient, request, cancellationToken);
+        response.EnsureSuccessStatusCode(Name);
+        string html = response.Content;
         if (html.Contains("/captcha/", StringComparison.OrdinalIgnoreCase))
         {
             throw new HttpRequestException("Mojeek returned a CAPTCHA page after challenge verification.");
@@ -71,14 +76,13 @@ public sealed class MojeekSearchProvider : ISearchProvider
 
     private async Task SolveChallengeAsync(CancellationToken cancellationToken)
     {
-        using HttpResponseMessage challengeResponse = await _httpClient.GetAsync(
-            new Uri(BaseUri, "captcha/challenge"),
+        using HttpRequestMessage challengeRequest = new(HttpMethod.Get, new Uri(BaseUri, "captcha/challenge"));
+        SearchHttpResponse challengeResponse = await _transport.SendAsync(
+            _httpClient,
+            challengeRequest,
             cancellationToken);
-        challengeResponse.EnsureSuccessStatusCode();
-        await using Stream stream = await challengeResponse.Content.ReadAsStreamAsync(cancellationToken);
-        using JsonDocument challengeDocument = await JsonDocument.ParseAsync(
-            stream,
-            cancellationToken: cancellationToken);
+        challengeResponse.EnsureSuccessStatusCode(Name);
+        using JsonDocument challengeDocument = JsonDocument.Parse(challengeResponse.Content);
 
         JsonElement challenge = challengeDocument.RootElement.Clone();
         JsonElement parameters = challenge.GetProperty("parameters");
@@ -100,11 +104,15 @@ public sealed class MojeekSearchProvider : ISearchProvider
         });
         using MultipartFormDataContent content = new();
         content.Add(new StringContent(Convert.ToBase64String(payload)), "altcha");
-        using HttpResponseMessage verifyResponse = await _httpClient.PostAsync(
-            new Uri(BaseUri, "captcha/verify"),
-            content,
+        using HttpRequestMessage verifyRequest = new(HttpMethod.Post, new Uri(BaseUri, "captcha/verify"))
+        {
+            Content = content
+        };
+        SearchHttpResponse verifyResponse = await _transport.SendAsync(
+            _httpClient,
+            verifyRequest,
             cancellationToken);
-        verifyResponse.EnsureSuccessStatusCode();
+        verifyResponse.EnsureSuccessStatusCode(Name);
         StoreResponseCookies(verifyResponse);
         if (!HasChallengeCookie())
         {
@@ -118,9 +126,9 @@ public sealed class MojeekSearchProvider : ISearchProvider
             .Any(cookie => cookie.Name == "chllg" && !cookie.Expired);
     }
 
-    private void StoreResponseCookies(HttpResponseMessage response)
+    private void StoreResponseCookies(SearchHttpResponse response)
     {
-        if (!response.Headers.TryGetValues("Set-Cookie", out IEnumerable<string>? values))
+        if (!response.TryGetHeader("Set-Cookie", out IReadOnlyList<string>? values))
         {
             return;
         }
