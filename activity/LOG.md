@@ -177,3 +177,20 @@ Every material repository action is recorded here with its reason, result, verif
 - **Result:** **CI passed.** Restore succeeded, build succeeded, and all 30 tests passed (0 failed, 0 skipped). This includes seven Google adapter tests.
 - **Verification:** Workflow run https://github.com/fwjlh/DotNetWebSearchApi/actions/runs/45008244135. Tests use fixture HTML and a fake HTTP handler; they do not contact Google or prove live search availability.
 - **Next:** Record Google Web as implemented with CAPTCHA/blocking risk. Proceed to DuckDuckGo HTML, with explicit first-page-only behaviour and CAPTCHA detection.
+
+
+## 2026-11-22 — DuckDuckGo HTML adapter
+
+### 22. Validate DuckDuckGo request flow
+- **Reason:** Determine whether DuckDuckGo can be added without an official general web-search API and understand its bot-detection constraints.
+- **Action:** Reviewed the current SearXNG DuckDuckGo engine source and documentation.
+- **Result:** SearXNG uses an HTTP POST to html.duckduckgo.com/html with form fields q, b and kl for the first page. Later pages require a query-specific vqd token; this first implementation intentionally supports page one only. Current upstream documentation describes bot-blocker changes and CAPTCHA risk.
+- **Verification:** Current SearXNG source and engine documentation reviewed. The adapter will detect the challenge form and will not attempt to bypass CAPTCHAs or emulate browser TLS fingerprints.
+- **Next:** Implement first-page form submission and HTML parsing with deterministic tests.
+
+### 23. Implement DuckDuckGo first-page adapter
+- **Reason:** Add a fourth major general-purpose provider while keeping pagination and bot-protection behaviour explicit.
+- **Action:** Added DuckDuckGoSearchProvider and DuckDuckGoSearchResultParser, request headers, first-page form POST, 499-character query guard, redirect URL extraction, CAPTCHA detection and ten tests.
+- **Result:** Implementation and tests prepared for commit. No attempt is made to solve CAPTCHAs or fetch later pages without a vqd token. Tests use fixture HTML and a fake handler; no live DuckDuckGo requests are made.
+- **Verification:** Pending GitHub Actions.
+- **Next:** Inspect CI. If green, update provider roadmap and evaluate next providers (Mojeek, Qwant, Startpage and other useful SearXNG engines).

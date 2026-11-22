@@ -6,6 +6,18 @@ builder.Services.AddHttpClient<BingSearchProvider>(client =>
     client.DefaultRequestHeaders.UserAgent.ParseAdd(
         "DotNetWebSearchApi/0.1 (+https://github.com/fwjlh/DotNetWebSearchApi)");
 });
+builder.Services.AddHttpClient<DuckDuckGoSearchProvider>(client =>
+{
+    client.DefaultRequestHeaders.UserAgent.ParseAdd(
+        "DotNetWebSearchApi/0.1 (+https://github.com/fwjlh/DotNetWebSearchApi)");
+    client.DefaultRequestHeaders.Accept.ParseAdd("text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8");
+    client.DefaultRequestHeaders.AcceptLanguage.ParseAdd("en-GB,en;q=0.9");
+    client.DefaultRequestHeaders.Add("Sec-Fetch-Dest", "document");
+    client.DefaultRequestHeaders.Add("Sec-Fetch-Mode", "navigate");
+    client.DefaultRequestHeaders.Add("Sec-Fetch-Site", "same-origin");
+    client.DefaultRequestHeaders.Add("Sec-Fetch-User", "?1");
+    client.DefaultRequestHeaders.Referrer = new Uri("https://html.duckduckgo.com/");
+});
 builder.Services.AddHttpClient<GoogleSearchProvider>(client =>
 {
     client.DefaultRequestHeaders.UserAgent.ParseAdd(
@@ -20,6 +32,7 @@ builder.Services.AddHttpClient<WikipediaSearchProvider>(client =>
         "DotNetWebSearchApi/0.1 (+https://github.com/fwjlh/DotNetWebSearchApi)");
 });
 builder.Services.AddSingleton<ISearchProvider>(serviceProvider => serviceProvider.GetRequiredService<BingSearchProvider>());
+builder.Services.AddSingleton<ISearchProvider>(serviceProvider => serviceProvider.GetRequiredService<DuckDuckGoSearchProvider>());
 builder.Services.AddSingleton<ISearchProvider>(serviceProvider => serviceProvider.GetRequiredService<GoogleSearchProvider>());
 builder.Services.AddSingleton<ISearchProvider>(serviceProvider => serviceProvider.GetRequiredService<WikipediaSearchProvider>());
 

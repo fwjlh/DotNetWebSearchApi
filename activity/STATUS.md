@@ -6,7 +6,7 @@ Updated: 2026-11-22
 
 - Public repository: https://github.com/fwjlh/DotNetWebSearchApi
 - Default branch: main
-- Latest verified code commit: 5386354d644eeca5d89941ab01e1752b4c4c09eb
+- Latest verified code commit: 5386354d644eeca5d89941ab01e1752b4c4c09eb (DuckDuckGo adapter pending CI)
 - Documentation refresh is being committed separately.
 - Full project overview and roadmap: [README.md](../README.md)
 
