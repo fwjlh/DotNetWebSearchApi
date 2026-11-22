@@ -9,6 +9,7 @@ Updated: 2026-11-22
 - Current provider catalogue: **67 adapters, frozen** pending shared-framework refactoring.
 - Last fully verified CI baseline before the new code changes: build 0 warnings/errors; 156 tests passed (0 failed, 0 skipped), run [45020266512](https://github.com/fwjlh/DotNetWebSearchApi/actions/runs/45020266512). Do not treat this as verification of the newer commits.
 - Current direction and consumer boundary: [docs/ARCHITECTURE_DECISIONS.md](../docs/ARCHITECTURE_DECISIONS.md).
+- Python-to-C# rationale corpus started: [docs/PYTHON_TO_CSHARP_PORTING_NOTES.md](../docs/PYTHON_TO_CSHARP_PORTING_NOTES.md). Four initial entries cover Bing, DuckDuckGo, Brave and Mojeek against pinned SearXNG source revision `c6ee3e9fd0235004a694e63720efc869bb1e3594`.
 - First P0 code slice added `SearchQuery` request fields, `EngineCapabilities` and optional `ISearchProviderCapabilities`; `SearchAggregator` now skips unsupported providers and reports them separately. Focused test added; CI pending.
 - Project overview and roadmap: [README.md](../README.md)
 
@@ -32,6 +33,7 @@ Updated: 2026-11-22
 - Mojeek and the 59-provider catalogue passed CI in run [45019896375](https://github.com/fwjlh/DotNetWebSearchApi/actions/runs/45019896375): build passed with 0 warnings/errors; 148 tests passed.
 - Batch 7 and the 67-provider catalogue passed CI in run [45020266512](https://github.com/fwjlh/DotNetWebSearchApi/actions/runs/45020266512): build passed with 0 warnings/errors; 156 tests passed.
 - Architecture audit added at [docs/PORTING_AUDIT.md](../docs/PORTING_AUDIT.md). No code changed in the audit.
+- Rationale corpus records preserved behaviour, deliberate alternatives, omissions and known divergences; it explicitly avoids claiming full Python feature parity.
 - Batch 7 adds eight scholarly and open-knowledge providers with eight fixtures. CI passed: build 0 warnings/errors; 156 tests passed (0 failed, 0 skipped).
 - Mojeek is implemented with bounded Altcha proof-of-work and two fixture tests; CI pending.
 - Batch 6 adds eight adapters and eight fixture tests. CI passed: build 0 warnings/errors; 146 tests passed (0 failed, 0 skipped).
@@ -85,6 +87,7 @@ Search/media/regional providers (batch 5): Wiby, TVmaze, Radio Browser, PeerTube
 
 ## Next actions
 1. Keep provider expansion frozen at 67; do not add adapters during the shared-framework milestone.
+2. Expand the Python-to-C# rationale corpus across the remaining priority web engines and shared framework concepts; attach concrete C# source and fixture-test references.
 2. Add immutable search request context and explicit engine capabilities with backwards-compatible defaults.
 3. Add typed provider outcomes, health/cooldown and half-open recovery tests.
 4. Introduce shared HTTP request/transport/session policies, retaining provider-specific strategies where necessary.
