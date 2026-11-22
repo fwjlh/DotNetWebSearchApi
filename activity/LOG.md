@@ -220,3 +220,12 @@ Every material repository action is recorded here with its reason, result, verif
 - **Result:** Implementation and tests prepared for commit. The adapter uses the undocumented Qwant JSON API and relies on HttpClient's cookie container for any DataDome cookie returned by the server. It does not solve or bypass challenges.
 - **Verification:** Pending GitHub Actions. Tests do not make live Qwant requests.
 - **Next:** Inspect CI. If green, document Qwant as implemented but live availability still unverified; continue evaluating the next SearXNG engines.
+
+
+### 27. Verify Qwant adapter in GitHub Actions
+- **Reason:** Confirm Qwant's JSON response parser and HTTP request/error behaviour compile and pass deterministic tests.
+- **Action:** Inspected workflow run 45008612843 for commit 1374fd11e331a7b32b9e0a73a560b7fab2f58551 and fetched the job log.
+- **Result:** **CI passed.** Restore and build succeeded; all 49 tests passed (0 failed, 0 skipped). Eight tests cover Qwant parsing, ad-row filtering, invalid URLs, missing data, API failure, query encoding, HTTP errors and malformed JSON.
+- **Verification:** Workflow run https://github.com/fwjlh/DotNetWebSearchApi/actions/runs/45008612843. Tests use fixture JSON and a fake HTTP handler; no live Qwant request was made.
+- **Limitation:** Qwant's API is undocumented and DataDome may deny requests. HttpClient cookie handling is enabled through the typed client handler; this has not been verified against live Qwant.
+- **Next:** Mark Qwant experimental/implemented, then evaluate the next general-web providers. Mojeek and Startpage are currently inactive upstream due to proof-of-work challenges; avoid bypassing CAPTCHA/proof-of-work protections without an explicit, sustainable access path.
