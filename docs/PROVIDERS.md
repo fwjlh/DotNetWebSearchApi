@@ -18,7 +18,7 @@ The implementation strategy is to work from the major general-purpose search eng
 | 8 | Yandex Search API | Working (optional, paid) | Requires API key, folder ID and billing account; current synchronous price about $4/1,000 daytime and $3/1,000 night-time requests |
 | 9 | Naver Web | Working (regional) | Korean first-page HTML results; disabled by default in SearXNG |
 | 10 | Seznam Web | Working (regional) | HTML with homepage bootstrap and cookie reuse; disabled by default in SearXNG |
-| 11 | Mojeek | Deferred | Current SearXNG settings mark it inactive due to proof-of-work CAPTCHA |
+| 11 | Mojeek | Implemented; CI-verified | Altcha PBKDF2 proof-of-work port; live acceptance not yet tested |
 | 12 | Startpage | Deferred | Current SearXNG settings mark it inactive due to Anubis proof-of-work |
 | 11–18 | Specialist JSON APIs | CI-verified | Crossref, OpenAlex, Hacker News, Stack Overflow, npm, crates.io, NuGet and Open Library |
 | 19–26 | Specialist API wave 2 | CI-verified | Europe PMC, Semantic Scholar, GitHub, Docker Hub, Google Books, Internet Archive, RubyGems and Hugging Face |

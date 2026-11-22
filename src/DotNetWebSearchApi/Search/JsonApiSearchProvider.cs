@@ -147,7 +147,9 @@ public sealed class JsonApiSearchProvider : ISearchProvider
         {
             string relativePath = Uri.EscapeDataString(url.TrimStart('/'))
                 .Replace("%2F", "/", StringComparison.OrdinalIgnoreCase);
-            resultUri = new Uri(new Uri(_definition.UrlPrefix), relativePath);
+            resultUri = _definition.UrlPrefix.Contains('?', StringComparison.Ordinal)
+                ? new Uri(_definition.UrlPrefix + relativePath)
+                : new Uri(new Uri(_definition.UrlPrefix), relativePath);
         }
 
         if (resultUri is null || (resultUri.Scheme != Uri.UriSchemeHttp && resultUri.Scheme != Uri.UriSchemeHttps))

@@ -657,3 +657,11 @@ Every material repository action is recorded here with its reason, result, verif
 - **Result:** 67 provider adapters are implemented in source.
 - **Verification:** Pending GitHub Actions. No live upstream requests were made.
 - **Next:** Verify all 156 tests; continue toward 100 with the remaining specialist sources and search engines.
+
+
+### 76. Correct OpenAIRE result links with query-string URL prefixes
+- **Reason:** Review batch-7 fixture results.
+- **Action:** The build passed, but one of 156 tests failed because OpenAIRE result links use a query-string URL prefix. The shared URL mapper treated that prefix as a directory path, replacing the publication?pid= portion. Added explicit query-prefix concatenation while retaining the existing path-prefix handling.
+- **Result:** One URL-construction edge case corrected; other 155 tests passed in the first batch-7 run.
+- **Verification:** Pending CI on the correction commit.
+- **Next:** Verify all 156 tests and update the provider status.

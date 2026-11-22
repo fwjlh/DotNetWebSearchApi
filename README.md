@@ -102,7 +102,7 @@ DotNetWebSearchApi puts that work behind one service:
 | Wiktionary | Implemented (JSON API) | English dictionary and etymology search |
 | Automated build and tests | Working | GitHub Actions / .NET 10 |
 | Major web-search adapters | Initial wave complete | Bing, Brave, Google, DuckDuckGo and other priority providers are implemented |
-| First 5–10 provider adapters | Initial target met | Forty-two provider adapters are implemented and CI-tested |
+| First 5–10 provider adapters | Initial target met | Fifty-nine provider adapters are implemented and CI-tested; batch 7 is pending CI |
 | SearXNG-compatible JSON API | Initial surface working | JSON response and engine selection; unsupported features return explicit status codes |
 | Browser search interface | Working (initial) | Search page at / with selectable providers and result cards |
 | Read-only administration and diagnostics | Working (initial) | /admin, provider health counters, last outcome and active provider list |
