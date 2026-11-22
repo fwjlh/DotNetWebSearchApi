@@ -38,6 +38,8 @@ DotNetWebSearchApi puts that work behind one service:
 | Unified search endpoint | Working | GET /api/search?q=... |
 | SearXNG-shaped JSON endpoint | Working (initial compatibility) | GET /search, POST /search and GET /; JSON response with provider status |
 | Provider contract | Working | Common query and result types |
+| Request capabilities | Initial | Pre-flight support checks; Kagi is the first provider with explicit page/locale/safe-search/time-range support |
+| Result ranking | Initial | Provider positions and weighted score; current engine weights default to 1.0 |
 | Parallel provider execution | Working | Providers run concurrently |
 | Timeout and failure isolation | Working | Partial results can survive provider failures; typed outcomes distinguish failure classes |
 | Provider health | Initial implementation | Cooldown/backoff and one half-open recovery probe; process-local state |
@@ -97,7 +99,7 @@ DotNetWebSearchApi puts that work behind one service:
 | Mwmbl | Implemented (JSON API) | Independent web index; throttled to its documented anonymous request rate |
 | Marginalia Search | Implemented (JSON API) | Independent small-web index; public API key may be rate limited |
 | Yep | Implemented (JSON API) | Yep search API; requires YEP_API_KEY |
-| Kagi | Implemented (JSON API) | Premium search API; requires KAGI_API_KEY and paid API balance |
+| Kagi | Implemented (dedicated API provider) | General search with page, locale, safe-search and time-range support; requires KAGI_API_KEY and paid API balance |
 | Exa | Implemented (JSON API) | Search API; requires EXA_API_KEY and account credits |
 | Google News | Implemented (RSS) | UK-edition news search feed; undocumented feed contract |
 | Bing News | Implemented (RSS) | UK-edition news search feed; publisher links are unwrapped |
