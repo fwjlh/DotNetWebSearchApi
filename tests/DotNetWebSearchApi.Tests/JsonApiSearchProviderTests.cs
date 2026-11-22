@@ -85,8 +85,9 @@ public sealed class JsonApiSearchProviderTests
             new HttpResponseMessage(HttpStatusCode.TooManyRequests)));
         JsonApiSearchProvider provider = new(client, JsonApiProviderCatalog.Definitions[0]);
 
-        await Assert.ThrowsAsync<HttpRequestException>(() =>
+        ProviderFailureException exception = await Assert.ThrowsAsync<ProviderFailureException>(() =>
             provider.SearchAsync(new SearchQuery("rate limited", 5), CancellationToken.None));
+        Assert.Equal(ProviderFailureKind.RateLimited, exception.FailureKind);
     }
 
     public static IEnumerable<object[]> ProviderCases()
