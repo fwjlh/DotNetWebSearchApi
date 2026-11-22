@@ -1,3 +1,5 @@
+using System.Text.Json.Serialization;
+
 namespace DotNetWebSearchApi.Search;
 
 public sealed record SearchResult(
@@ -8,6 +10,9 @@ public sealed record SearchResult(
     double Score)
 {
     public int? Position { get; init; }
+
+    [JsonIgnore]
+    public double? ProviderScore { get; init; }
 
     public IReadOnlyList<string> Engines { get; init; } = Array.Empty<string>();
 
