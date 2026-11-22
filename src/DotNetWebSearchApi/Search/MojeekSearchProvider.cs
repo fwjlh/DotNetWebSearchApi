@@ -41,13 +41,15 @@ public sealed class MojeekSearchProvider : ISearchProvider
         }
 
         SearchHttpResponse response = await _transport.SendAsync(_httpClient, request, cancellationToken);
-        response.EnsureSuccessStatusCode(Name);
         string html = response.Content;
         if (html.Contains("/captcha/", StringComparison.OrdinalIgnoreCase))
         {
-            throw new HttpRequestException("Mojeek returned a CAPTCHA page after challenge verification.");
+            throw new ProviderFailureException(
+                ProviderFailureKind.Challenge,
+                "Mojeek returned a CAPTCHA page after challenge verification.");
         }
 
+        response.EnsureSuccessStatusCode(Name);
         return ParseResults(html, query.Limit);
     }
 
@@ -89,7 +91,9 @@ public sealed class MojeekSearchProvider : ISearchProvider
         AltchaSolution? solution = SolveAltcha(parameters);
         if (solution is null)
         {
-            throw new HttpRequestException("Mojeek CAPTCHA proof-of-work exceeded the permitted search limit.");
+            throw new ProviderFailureException(
+                ProviderFailureKind.Challenge,
+                "Mojeek Altcha proof-of-work exceeded the permitted search limit.");
         }
 
         byte[] payload = JsonSerializer.SerializeToUtf8Bytes(new
@@ -116,7 +120,9 @@ public sealed class MojeekSearchProvider : ISearchProvider
         StoreResponseCookies(verifyResponse);
         if (!HasChallengeCookie())
         {
-            throw new HttpRequestException("Mojeek did not issue a challenge cookie.");
+            throw new ProviderFailureException(
+                ProviderFailureKind.Challenge,
+                "Mojeek did not issue a challenge cookie after proof verification.");
         }
     }
 
