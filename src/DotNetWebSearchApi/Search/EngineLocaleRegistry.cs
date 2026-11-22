@@ -3,7 +3,8 @@ namespace DotNetWebSearchApi.Search;
 public sealed record EngineLocaleTraits(
     IReadOnlyDictionary<string, string> Languages,
     IReadOnlyDictionary<string, string> Regions,
-    string? AllLocale);
+    string? AllLocale,
+    IReadOnlyDictionary<string, IReadOnlyDictionary<string, string>>? Custom = null);
 
 public static class EngineLocaleRegistry
 {
@@ -17,6 +18,18 @@ public static class EngineLocaleRegistry
         }
 
         return Resolve(locale, traits.Languages, null, defaultValue, true);
+    }
+
+    public static string? GetCustom(string providerName, string traitName, string key, string? defaultValue = null)
+    {
+        if (!Traits.TryGetValue(providerName, out EngineLocaleTraits? traits)
+            || traits.Custom is null
+            || !traits.Custom.TryGetValue(traitName, out IReadOnlyDictionary<string, string>? values))
+        {
+            return defaultValue;
+        }
+
+        return values.TryGetValue(key, out string? value) ? value : defaultValue;
     }
 
     public static string? GetRegion(string providerName, string locale, string? defaultValue = null)
@@ -81,6 +94,33 @@ public static class EngineLocaleRegistry
             ["vi-VN"] = "vn-en"
         };
 
+        Dictionary<string, string> wikipediaLanguages = new(StringComparer.OrdinalIgnoreCase)
+        {
+            ["en"] = "en", ["fr"] = "fr", ["de"] = "de", ["es"] = "es",
+            ["ja"] = "ja", ["ko"] = "ko", ["zh"] = "zh", ["ar"] = "ar",
+            ["ru"] = "ru", ["pt"] = "pt", ["it"] = "it", ["nl"] = "nl",
+            ["sv"] = "sv", ["pl"] = "pl", ["cs"] = "cs", ["da"] = "da",
+            ["fi"] = "fi", ["vi"] = "vi", ["id"] = "id", ["he"] = "he"
+        };
+        Dictionary<string, string> wikipediaRegions = new(StringComparer.OrdinalIgnoreCase)
+        {
+            ["zh-CN"] = "zh", ["zh-TW"] = "zh", ["zh-HK"] = "zh",
+            ["zh-MO"] = "zh", ["zh-MY"] = "zh", ["zh-SG"] = "zh"
+        };
+        Dictionary<string, string> wikipediaHosts = new(StringComparer.OrdinalIgnoreCase)
+        {
+            ["en"] = "en.wikipedia.org", ["fr"] = "fr.wikipedia.org",
+            ["de"] = "de.wikipedia.org", ["es"] = "es.wikipedia.org",
+            ["ja"] = "ja.wikipedia.org", ["ko"] = "ko.wikipedia.org",
+            ["zh"] = "zh.wikipedia.org", ["ar"] = "ar.wikipedia.org",
+            ["ru"] = "ru.wikipedia.org", ["pt"] = "pt.wikipedia.org",
+            ["it"] = "it.wikipedia.org", ["nl"] = "nl.wikipedia.org",
+            ["sv"] = "sv.wikipedia.org", ["pl"] = "pl.wikipedia.org",
+            ["cs"] = "cs.wikipedia.org", ["da"] = "da.wikipedia.org",
+            ["fi"] = "fi.wikipedia.org", ["vi"] = "vi.wikipedia.org",
+            ["id"] = "id.wikipedia.org", ["he"] = "he.wikipedia.org"
+        };
+
         return new Dictionary<string, EngineLocaleTraits>(StringComparer.OrdinalIgnoreCase)
         {
             ["bing"] = new EngineLocaleTraits(
@@ -90,7 +130,15 @@ public static class EngineLocaleRegistry
             ["duckduckgo"] = new EngineLocaleTraits(
                 new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase),
                 duckDuckGoRegions,
-                "wt-wt")
+                "wt-wt"),
+            ["wikipedia"] = new EngineLocaleTraits(
+                wikipediaLanguages,
+                wikipediaRegions,
+                "en",
+                new Dictionary<string, IReadOnlyDictionary<string, string>>(StringComparer.OrdinalIgnoreCase)
+                {
+                    ["wiki_netloc"] = wikipediaHosts
+                })
         };
     }
 
