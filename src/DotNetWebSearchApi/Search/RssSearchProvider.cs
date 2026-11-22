@@ -31,6 +31,7 @@ public sealed class RssSearchProvider : ISearchProvider
         await using Stream stream = await response.Content.ReadAsStreamAsync(cancellationToken);
         using XmlReader reader = XmlReader.Create(stream, new XmlReaderSettings
         {
+            Async = true,
             DtdProcessing = DtdProcessing.Prohibit,
             XmlResolver = null,
             IgnoreComments = true

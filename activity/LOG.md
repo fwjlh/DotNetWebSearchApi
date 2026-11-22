@@ -589,3 +589,12 @@ Every material repository action is recorded here with its reason, result, verif
 - **Result:** 58 provider adapters are implemented in source; Kagi, Exa and Yep remain optional until their credentials are configured.
 - **Verification:** Pending GitHub Actions. No live upstream requests were made.
 - **Next:** Verify build and fixtures; then continue toward 100, prioritising general web search providers and avoiding unlicensed or undocumented assumptions.
+
+
+### 69. Correct batch 6 fixture failures
+- **Reason:** Review the first CI run for the eight-provider increment.
+- **Action:** Build passed, but four tests failed. Two RSS tests showed that the XML reader was not configured for asynchronous reads; two POST API tests assumed raw JSON preserved ampersands instead of escaping them.
+- **Correction:** Enabled asynchronous XML reading while retaining DTD prohibition and null XML resolver. Updated POST tests to parse the JSON body and assert the decoded query value and result-limit field.
+- **Result:** Code and test corrections committed; no provider count change.
+- **Verification:** Pending CI on the correction commit.
+- **Next:** Verify all 146 tests before adding the next providers.

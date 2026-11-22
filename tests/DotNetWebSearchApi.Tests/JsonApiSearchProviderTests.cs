@@ -41,8 +41,9 @@ public sealed class JsonApiSearchProviderTests
         if (string.Equals(definition.RequestMethod, "POST", StringComparison.OrdinalIgnoreCase))
         {
             Assert.Equal(HttpMethod.Post, requestMethod);
-            Assert.Contains("\"query\":\"C# & search\"", requestBody);
-            Assert.Contains(definition.BodyLimitParameter, requestBody);
+            using JsonDocument body = JsonDocument.Parse(requestBody ?? "{}");
+            Assert.Equal("C# & search", body.RootElement.GetProperty("query").GetString());
+            Assert.True(body.RootElement.TryGetProperty(definition.BodyLimitParameter, out _));
         }
         else
         {
