@@ -6,7 +6,7 @@ Updated: 2026-11-22
 
 - Public repository: https://github.com/fwjlh/DotNetWebSearchApi
 - Default branch: main
-- Latest verified code commit: 1f764bf864953c76ef28b0d802568e6db70dc5fa (browser/admin increment pending CI)
+- Latest verified code commit: 39c8987e4ffb0e7e0177ee33b991d145b2c0d1f4 (static asset path correction pending CI)
 - Full project overview and roadmap: [README.md](../README.md)
 
 ## Working vertical slice

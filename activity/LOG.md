@@ -406,3 +406,12 @@ Every material repository action is recorded here with its reason, result, verif
 - **Security:** UI renders upstream text with textContent and only links HTTP(S) URLs. Diagnostics exposes provider names and exception type only, not messages, keys or folder IDs. Public exposure still requires authentication/rate limiting.
 - **Verification:** Pending GitHub Actions.
 - **Next:** Inspect build/tests; if green, document the initial UI and plan provider configuration management separately.
+
+
+### 49. Diagnose static page 404s in browser/admin CI
+- **Reason:** Inspect the first browser/admin workflow run after build succeeded but two route tests failed.
+- **Action:** Read workflow run 45010196457 for commit 39c8987e4ffb0e7e0177ee33b991d145b2c0d1f4.
+- **Result:** Restore and build succeeded; 93/95 tests passed. Search and admin page integration tests returned 404 because static files were committed at repository-root wwwroot, while ASP.NET Core's content root is the application project directory.
+- **Correction:** Move the five static assets into src/DotNetWebSearchApi/wwwroot, preserving their contents.
+- **Verification:** Failure log https://github.com/fwjlh/DotNetWebSearchApi/actions/runs/45010196457.
+- **Next:** Commit the corrected paths and rerun all tests.
