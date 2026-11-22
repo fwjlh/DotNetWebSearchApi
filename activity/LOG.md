@@ -467,3 +467,12 @@ Every material repository action is recorded here with its reason, result, verif
 - **Correction:** Accept an absolute result URL only when its scheme is HTTP or HTTPS; otherwise apply the provider's configured URL prefix. Decode the query string in the assertion before checking parameter names.
 - **Verification:** Run https://github.com/fwjlh/DotNetWebSearchApi/actions/runs/45012899977. Build succeeded; test result 103 passed, 2 failed before this correction. Corrected commit remains unverified.
 - **Next:** Push correction and inspect a fresh full CI run.
+
+
+### 56. Verify eight specialist JSON API providers in GitHub Actions
+- **Reason:** Confirm the shared JSON API adapter, all eight provider definitions and the corrected test assertions/URL handling.
+- **Action:** Inspected workflow run 45013006368 for commit fcc88fe26dd15e5d1e46e9deacb1fe797b55be21 and fetched the job log.
+- **Result:** **CI passed.** Restore and build succeeded; build reported 0 warnings and 0 errors. All 105 tests passed (0 failed, 0 skipped).
+- **Correction history:** First attempt 45012798957 failed during build due to missing helper/import. Second attempt 45012899977 built successfully but had 2 failing tests (103 passed). The helper/import, relative URL handling and URL-encoded query assertion were corrected.
+- **Verification:** https://github.com/fwjlh/DotNetWebSearchApi/actions/runs/45013006368. New fixture tests cover Crossref, OpenAlex, Hacker News, Stack Overflow, npm, crates.io, NuGet and Open Library. They do not make live upstream requests.
+- **Next:** Continue the provider catalogue in batches, with a target of 100 implemented, registered and fixture-tested adapters before the user's local pull/build/live-testing phase.

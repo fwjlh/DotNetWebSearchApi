@@ -1,4 +1,3 @@
-using System.Net;
 using System.Text.Json;
 using System.Text.RegularExpressions;
 
@@ -37,10 +36,7 @@ public sealed class JsonApiSearchProvider : ISearchProvider
 
     private Uri BuildRequestUri(SearchQuery query)
     {
-        Dictionary<string, string> parameters = _definition.FixedParameters.ToDictionary(
-            parameter => parameter.Key,
-            parameter => parameter.Value,
-            StringComparer.Ordinal);
+        Dictionary<string, string> parameters = new(_definition.FixedParameters, StringComparer.Ordinal);
         parameters[_definition.QueryParameter] = query.Text;
         parameters[_definition.LimitParameter] = Math.Clamp(query.Limit, 1, 50).ToString();
 
@@ -81,13 +77,7 @@ public sealed class JsonApiSearchProvider : ISearchProvider
             return false;
         }
 
-        Uri? resultUri = null;
-        if (Uri.TryCreate(url, UriKind.Absolute, out Uri? absoluteUri)
-            && (absoluteUri.Scheme == Uri.UriSchemeHttp || absoluteUri.Scheme == Uri.UriSchemeHttps))
-        {
-            resultUri = absoluteUri;
-        }
-        else if (!string.IsNullOrWhiteSpace(_definition.UrlPrefix))
+        if (!Uri.TryCreate(url, UriKind.Absolute, out Uri? resultUri) && !string.IsNullOrWhiteSpace(_definition.UrlPrefix))
         {
             resultUri = new Uri(new Uri(_definition.UrlPrefix), url.TrimStart('/'));
         }
@@ -107,52 +97,44 @@ public sealed class JsonApiSearchProvider : ISearchProvider
         return true;
     }
 
-    private static bool TryReadPath(JsonElement root, string path, out JsonElement value)
-    {
-        value = root;
-        foreach (string segment in path.Replace("[", ".").Replace("]", string.Empty).Split('.'))
-        {
-            if (int.TryParse(segment, out int index))
-            {
-                if (value.ValueKind != JsonValueKind.Array || index < 0 || index >= value.GetArrayLength())
-                {
-                    return false;
-                }
-
-                value = value[index];
-                continue;
-            }
-
-            if (value.ValueKind != JsonValueKind.Object
-                || !value.TryGetProperty(segment, out JsonElement child))
-            {
-                return false;
-            }
-
-            value = child;
-        }
-
-        return true;
-    }
-
     private static bool TryReadText(JsonElement root, string path, out string value)
     {
         value = string.Empty;
-        if (string.IsNullOrWhiteSpace(path) || !TryReadPath(root, path, out JsonElement element))
+        if (string.IsNullOrWhiteSpace(path))
         {
             return false;
         }
 
-        if (element.ValueKind == JsonValueKind.String)
+        JsonElement current = root;
+        foreach (string segment in path.Replace("[", ".").Replace("]", string.Empty).Split('.'))
         {
-            value = element.GetString() ?? string.Empty;
+            if (int.TryParse(segment, out int index))
+            {
+                if (current.ValueKind != JsonValueKind.Array || index < 0 || index >= current.GetArrayLength())
+                {
+                    return false;
+                }
+
+                current = current[index];
+                continue;
+            }
+
+            if (current.ValueKind != JsonValueKind.Object || !current.TryGetProperty(segment, out current))
+            {
+                return false;
+            }
+        }
+
+        if (current.ValueKind == JsonValueKind.String)
+        {
+            value = current.GetString() ?? string.Empty;
             return !string.IsNullOrWhiteSpace(value);
         }
 
-        if (element.ValueKind == JsonValueKind.Number || element.ValueKind == JsonValueKind.True
-            || element.ValueKind == JsonValueKind.False)
+        if (current.ValueKind == JsonValueKind.Number || current.ValueKind == JsonValueKind.True
+            || current.ValueKind == JsonValueKind.False)
         {
-            value = element.ToString();
+            value = current.ToString();
             return !string.IsNullOrWhiteSpace(value);
         }
 
