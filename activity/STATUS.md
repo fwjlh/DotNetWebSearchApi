@@ -5,7 +5,7 @@ Updated: 2026-11-22
 ## Repository
 - Public repository: https://github.com/fwjlh/DotNetWebSearchApi
 - Default branch: main
-- Latest code commit: `c1356c732402ac27381885175811e6e7c435bcd1` (default request headers and privacy-safe transport diagnostics; build-and-test passed with 187 tests, 0 skipped in [run 45026662957](https://github.com/fwjlh/DotNetWebSearchApi/actions/runs/45026662957)). Latest repository changes are documentation commits recording transport header and logging rationale.
+- Latest code commit: `c1356c732402ac27381885175811e6e7c435bcd1` (default request headers and privacy-safe transport diagnostics; build-and-test passed with 187 tests, 0 skipped in [run 45026662957](https://github.com/fwjlh/DotNetWebSearchApi/actions/runs/45026662957)). Latest repository changes are documentation commits recording transport header/logging and result-ranking rationale.
 - Current provider catalogue: **67 adapters, frozen** pending shared-framework refactoring.
 - Previous provider-catalogue baseline: build 0 warnings/errors; 156 tests passed (0 failed, 0 skipped), run [45020266512](https://github.com/fwjlh/DotNetWebSearchApi/actions/runs/45020266512). The subsequent request-context/capability code has now passed its GitHub Actions build-and-test job in [run 45022944719](https://github.com/fwjlh/DotNetWebSearchApi/actions/runs/45022944719); the workflow job reports success.
 - Current direction and consumer boundary: [docs/ARCHITECTURE_DECISIONS.md](../docs/ARCHITECTURE_DECISIONS.md).
