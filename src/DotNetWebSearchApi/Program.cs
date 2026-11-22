@@ -101,6 +101,7 @@ if (!string.IsNullOrWhiteSpace(braveApiKey))
 }
 
 builder.Services.AddSingleton<SearchDiagnostics>();
+builder.Services.AddSingleton<ProviderHealthRegistry>();
 builder.Services.AddSingleton<SearchAggregator>();
 WebApplication app = builder.Build();
 app.UseStaticFiles();
@@ -122,15 +123,20 @@ static IResult ProvidersEndpoint(SearchAggregator aggregator)
     return Results.Ok(new { provider_count = providers.Length, providers });
 }
 
-static IResult DiagnosticsEndpoint(SearchAggregator aggregator, SearchDiagnostics diagnostics)
+static IResult DiagnosticsEndpoint(
+    SearchAggregator aggregator,
+    SearchDiagnostics diagnostics,
+    ProviderHealthRegistry health)
 {
     IReadOnlyList<ProviderDiagnosticsSnapshot> providers = diagnostics.GetSnapshot(aggregator.ProviderNames);
+    IReadOnlyList<ProviderHealthSnapshot> providerHealth = health.GetSnapshot(aggregator.ProviderNames);
     string status = providers.Any(provider => provider.Status == "unresponsive") ? "degraded" : "ok";
     return Results.Ok(new
     {
         status,
         active_provider_count = providers.Count,
         providers,
+        provider_health = providerHealth,
         features = new
         {
             search_ui = true,
@@ -160,7 +166,11 @@ static async Task<IResult> SearchEndpoint(HttpRequest request, SearchAggregator 
     if (!TryBuildSearchQuery(request, null, queryText.Trim(), resultLimit, null, out SearchQuery query, out string? error))
         return Results.BadRequest(new { error });
     SearchExecutionResult execution = await aggregator.SearchDetailedAsync(query, cancellationToken);
-    return Results.Ok(new SearchResponse(query.Text, execution.Results, execution.UnsupportedProviders));
+    return Results.Ok(new SearchResponse(
+        query.Text,
+        execution.Results,
+        execution.UnsupportedProviders,
+        execution.CoolingDownProviders));
 }
 
 static async Task<IResult> SearxngSearchEndpoint(HttpRequest request, SearchAggregator aggregator, CancellationToken cancellationToken)
@@ -292,5 +302,9 @@ static IReadOnlySet<string>? ReadSelectedProviders(
     return requested;
 }
 
-public sealed record SearchResponse(string Query, IReadOnlyList<SearchResult> Results, IReadOnlyList<string> UnsupportedProviders);
+public sealed record SearchResponse(
+    string Query,
+    IReadOnlyList<SearchResult> Results,
+    IReadOnlyList<string> UnsupportedProviders,
+    IReadOnlyList<string> CoolingDownProviders);
 public partial class Program;
