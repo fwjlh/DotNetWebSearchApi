@@ -449,3 +449,12 @@ Every material repository action is recorded here with its reason, result, verif
 - **Result:** Provider count increases from 10 to 18. No credentials are required for these initial public endpoints. Stack Exchange API quotas apply. No live upstream requests were made.
 - **Verification:** Pending GitHub Actions; the tests are authored but not yet confirmed executed.
 - **Next:** Inspect CI, fix any real failures, then continue with the next provider batch. Do not count this batch as verified until CI is green.
+
+
+### 54. Diagnose first specialist-provider CI failure
+- **Reason:** Verify the new provider batch with the real .NET 10 build and correct compiler failures before counting the providers.
+- **Action:** Inspected workflow run 45012798957 and job 137178596994 for commit f30ba0eca15e07370e47951602ce6d9bce82bdbe.
+- **Result:** Restore succeeded; build failed with two compile errors: the adapter called a missing TryReadPath helper and lacked System.Net for WebUtility. The build also exposed a potential IReadOnlyDictionary copy compatibility issue during source review. Tests did not execute.
+- **Correction:** Add the missing nested JSON path traversal helper, import System.Net, and copy fixed query parameters through ToDictionary.
+- **Verification:** Failure log https://github.com/fwjlh/DotNetWebSearchApi/actions/runs/45012798957. No tests are claimed as run for this commit.
+- **Next:** Commit correction, inspect CI again, and only then mark the eight providers verified.

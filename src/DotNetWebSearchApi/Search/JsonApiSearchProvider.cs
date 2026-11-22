@@ -1,3 +1,4 @@
+using System.Net;
 using System.Text.Json;
 using System.Text.RegularExpressions;
 
@@ -36,7 +37,10 @@ public sealed class JsonApiSearchProvider : ISearchProvider
 
     private Uri BuildRequestUri(SearchQuery query)
     {
-        Dictionary<string, string> parameters = new(_definition.FixedParameters, StringComparer.Ordinal);
+        Dictionary<string, string> parameters = _definition.FixedParameters.ToDictionary(
+            parameter => parameter.Key,
+            parameter => parameter.Value,
+            StringComparer.Ordinal);
         parameters[_definition.QueryParameter] = query.Text;
         parameters[_definition.LimitParameter] = Math.Clamp(query.Limit, 1, 50).ToString();
 
@@ -97,44 +101,52 @@ public sealed class JsonApiSearchProvider : ISearchProvider
         return true;
     }
 
-    private static bool TryReadText(JsonElement root, string path, out string value)
+    private static bool TryReadPath(JsonElement root, string path, out JsonElement value)
     {
-        value = string.Empty;
-        if (string.IsNullOrWhiteSpace(path))
-        {
-            return false;
-        }
-
-        JsonElement current = root;
+        value = root;
         foreach (string segment in path.Replace("[", ".").Replace("]", string.Empty).Split('.'))
         {
             if (int.TryParse(segment, out int index))
             {
-                if (current.ValueKind != JsonValueKind.Array || index < 0 || index >= current.GetArrayLength())
+                if (value.ValueKind != JsonValueKind.Array || index < 0 || index >= value.GetArrayLength())
                 {
                     return false;
                 }
 
-                current = current[index];
+                value = value[index];
                 continue;
             }
 
-            if (current.ValueKind != JsonValueKind.Object || !current.TryGetProperty(segment, out current))
+            if (value.ValueKind != JsonValueKind.Object
+                || !value.TryGetProperty(segment, out JsonElement child))
             {
                 return false;
             }
+
+            value = child;
         }
 
-        if (current.ValueKind == JsonValueKind.String)
+        return true;
+    }
+
+    private static bool TryReadText(JsonElement root, string path, out string value)
+    {
+        value = string.Empty;
+        if (string.IsNullOrWhiteSpace(path) || !TryReadPath(root, path, out JsonElement element))
         {
-            value = current.GetString() ?? string.Empty;
+            return false;
+        }
+
+        if (element.ValueKind == JsonValueKind.String)
+        {
+            value = element.GetString() ?? string.Empty;
             return !string.IsNullOrWhiteSpace(value);
         }
 
-        if (current.ValueKind == JsonValueKind.Number || current.ValueKind == JsonValueKind.True
-            || current.ValueKind == JsonValueKind.False)
+        if (element.ValueKind == JsonValueKind.Number || element.ValueKind == JsonValueKind.True
+            || element.ValueKind == JsonValueKind.False)
         {
-            value = current.ToString();
+            value = element.ToString();
             return !string.IsNullOrWhiteSpace(value);
         }
 

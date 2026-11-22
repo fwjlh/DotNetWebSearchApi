@@ -6,7 +6,7 @@ Updated: 2026-11-22
 
 - Public repository: https://github.com/fwjlh/DotNetWebSearchApi
 - Default branch: main
-- Latest verified code commit: c5b0cfd94ab716ffb68f6533a3b5c9f2a369e758
+- Latest commit: f30ba0eca15e07370e47951602ce6d9bce82bdbe (provider batch; CI failed at compile, correction in progress)
 - Full project overview and roadmap: [README.md](../README.md)
 
 ## Working vertical slice
@@ -32,7 +32,7 @@ Updated: 2026-11-22
 - Commit tested: 3a4970a3d58a5e0ddac89676539bd605d662bbd7
 - Restore: passed.
 - Build: passed.
-- Tests: 95 passed, 0 failed, 0 skipped (latest verified CI before this increment).
+- Tests: 95 passed, 0 failed, 0 skipped (latest verified baseline before this increment). The first specialist-provider build failed before test execution; see activity log.
 - Previous failed run: https://github.com/fwjlh/DotNetWebSearchApi/actions/runs/45010196457 (93 passed, two static file path failures); corrected in the verified commit.
 - Local .NET SDK is not installed in the orchestration environment; verification is performed by GitHub Actions.
 - Provider tests use deterministic fixtures and fake HTTP handlers. They verify parsing/request behaviour, not live acceptance by upstream providers.
@@ -82,7 +82,7 @@ Known compatibility limits: JSON only; general category; first page only; no tim
 
 ## Important limitations
 
-Eighteen providers are wired in after this increment; the eight new JSON API adapters have fixture tests. CI verification for this increment is pending. Live upstream acceptance is not verified. Brave requires a key and is not registered when BRAVE_SEARCH_API_KEY is absent. Yandex is paid and is not registered without both YANDEX_SEARCH_API_KEY and YANDEX_FOLDER_ID. DuckDuckGo pagination is not implemented. Qwant's API is undocumented and may return DataDome challenges. Yahoo's cookie and redirect flow is only fixture-tested. Naver and Seznam are regional and disabled by default in current SearXNG settings. Mojeek and Startpage remain deferred due to upstream proof-of-work challenges.
+Eighteen providers are wired in after this increment; the eight new JSON API adapters have fixture tests. CI verification for this increment initially failed at compile; correction is in progress. Live upstream acceptance is not verified. Brave requires a key and is not registered when BRAVE_SEARCH_API_KEY is absent. Yandex is paid and is not registered without both YANDEX_SEARCH_API_KEY and YANDEX_FOLDER_ID. DuckDuckGo pagination is not implemented. Qwant's API is undocumented and may return DataDome challenges. Yahoo's cookie and redirect flow is only fixture-tested. Naver and Seznam are regional and disabled by default in current SearXNG settings. Mojeek and Startpage remain deferred due to upstream proof-of-work challenges.
 
 There is no SQL Server provider store, general configurable HTTP provider, API-key authentication, quotas or editable admin configuration yet. Do not expose this endpoint as a public unrestricted search service before authentication, rate limiting and outbound request policy are implemented.
 
@@ -105,3 +105,12 @@ There is no SQL Server provider store, general configurable HTTP provider, API-k
 4. Then add SQL Server configuration, API-key authentication, quotas and safe admin editing.
 5. Continue UI refinement and deployment guidance for Kestrel/IIS.
 6. Keep SearchBox.NET.Forge as a separate follow-on project for upstream monitoring and AI-assisted porting proposals; require tests and human review, never auto-merge.
+
+
+## Latest CI failure and correction
+
+- Run: https://github.com/fwjlh/DotNetWebSearchApi/actions/runs/45012798957
+- Commit: `f30ba0eca15e07370e47951602ce6d9bce82bdbe`
+- Restore passed; build failed because the shared adapter referenced a missing JSON-path helper and lacked the `System.Net` import for HTML decoding. No tests executed.
+- Correction: add the JSON-path traversal helper and required import; also make the fixed-parameter dictionary copy compatible with `IReadOnlyDictionary`.
+- The corrected build is not yet verified.
