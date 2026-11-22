@@ -43,19 +43,47 @@ public sealed class SearchAggregatorTests
     }
 
     [Fact]
-    public async Task SearchAsync_SortsByScoreAndUsesTitleAsTieBreaker()
+    public async Task SearchAsync_SortsByProviderPositionAndUsesTitleAsTieBreaker()
     {
         SearchAggregator aggregator = CreateAggregator(
             Provider("one",
-                Result("Zulu", "https://example.com/z", 0.5),
-                Result("Alpha", "https://example.com/a", 0.5),
-                Result("Top", "https://example.com/top", 0.8)));
+                Result("Zulu", "https://example.com/z"),
+                Result("Alpha", "https://example.com/a")),
+            Provider("two", Result("Beta", "https://example.com/b")));
 
         IReadOnlyList<SearchResult> results = await aggregator.SearchAsync(
             new SearchQuery("test", 10),
             CancellationToken.None);
 
-        Assert.Equal(new[] { "Top", "Alpha", "Zulu" }, results.Select(result => result.Title));
+        Assert.Equal(new[] { "Beta", "Zulu", "Alpha" }, results.Select(result => result.Title));
+        Assert.Equal(new[] { 1.0, 1.0, 0.5 }, results.Select(result => result.Score));
+    }
+
+    [Fact]
+    public async Task SearchAsync_AppliesConfiguredEngineWeightsToMergedPositions()
+    {
+        SearchAggregator aggregator = CreateAggregator(
+            new CapabilityProvider(
+                "heavy",
+                new EngineCapabilities(
+                    new HashSet<string>(StringComparer.OrdinalIgnoreCase) { "general" },
+                    false, 1, false, false, false, 2.0),
+                (_, _) => Task.FromResult<IReadOnlyList<SearchResult>>(
+                    new[] { Result("Shared", "https://example.com/shared") })),
+            new CapabilityProvider(
+                "light",
+                new EngineCapabilities(
+                    new HashSet<string>(StringComparer.OrdinalIgnoreCase) { "general" },
+                    false, 1, false, false, false, 1.0),
+                (_, _) => Task.FromResult<IReadOnlyList<SearchResult>>(
+                    new[] { Result("Shared", "https://example.com/shared") })));
+
+        SearchResult result = Assert.Single(await aggregator.SearchAsync(
+            new SearchQuery("test", 10),
+            CancellationToken.None));
+
+        Assert.Equal(8.0, result.Score);
+        Assert.Equal(new[] { "heavy", "light" }, result.Engines.OrderBy(name => name));
     }
 
     [Fact]
