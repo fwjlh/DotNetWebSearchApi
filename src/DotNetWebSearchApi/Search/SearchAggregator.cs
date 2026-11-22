@@ -149,9 +149,7 @@ public sealed class SearchAggregator
                     continue;
                 }
 
-                string providerName = string.IsNullOrWhiteSpace(result.Provider)
-                    ? providerResult.Outcome.ProviderName
-                    : result.Provider;
+                string providerName = providerResult.Outcome.ProviderName;
                 Dictionary<string, int> positions = result.Positions.ToDictionary(
                     item => item.Key,
                     item => item.Value,
