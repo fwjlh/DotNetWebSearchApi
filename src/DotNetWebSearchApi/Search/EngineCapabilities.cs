@@ -24,7 +24,8 @@ public sealed record EngineCapabilities(
         if (query.Page > 1 && !SupportsPagination) return false;
         IReadOnlySet<string> requestedCategories = query.Categories
             ?? new HashSet<string>(StringComparer.OrdinalIgnoreCase) { "general" };
-        if (requestedCategories.Any(category => !Categories.Contains(category))) return false;
+        if (requestedCategories.Any(category => !Categories.Any(
+            supported => supported.Equals(category, StringComparison.OrdinalIgnoreCase)))) return false;
         if (query.TimeRange is not null && !SupportsTimeRange) return false;
         if (query.SafeSearch > 0 && !SupportsSafeSearch) return false;
         if (!string.IsNullOrWhiteSpace(query.Language)
