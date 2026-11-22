@@ -6,7 +6,7 @@ Updated: 2026-11-22
 - Public repository: https://github.com/fwjlh/DotNetWebSearchApi
 - Default branch: main
 - Latest code commit before current increment: 92a34b06ec137dfea1625af2d881803c90bc3045
-- Current implementation increment: 50 providers; CI verification pending.
+- Current implementation increment: 50 providers; catalogue separator correction pushed; CI verification pending.
 - Project overview and roadmap: [README.md](../README.md)
 
 ## Working application

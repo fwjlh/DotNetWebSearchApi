@@ -560,3 +560,11 @@ Every material repository action is recorded here with its reason, result, verif
 - **Tests:** Added eight deterministic fixture cases, including Wiby attribution and API shapes for nested and root-array responses.
 - **Verification:** Pending GitHub Actions. No live provider calls were made.
 - **Next:** Verify this batch, then continue toward 100. Keep live acceptance, quotas and access restrictions separate from fixture-level CI status.
+
+
+### 66. Correct provider catalogue separator before CI
+- **Reason:** Review the pushed batch source before treating the pending workflow as authoritative.
+- **Action:** Read back the provider catalogue and found a missing comma between the German Wikipedia definition and the first batch-5 definition. Added the missing separator in a focused correction.
+- **Result:** Source correction prepared; no provider behaviour or count changed.
+- **Verification:** Pending CI on the correction commit.
+- **Next:** Verify the build and all fixture tests before continuing.

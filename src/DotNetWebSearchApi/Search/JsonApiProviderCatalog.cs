@@ -379,8 +379,7 @@ public static class JsonApiProviderCatalog
                 ["list"] = "search",
                 ["format"] = "json"
             }
-        }
-
+        },
         new JsonApiSearchDefinition
         {
             Name = "wiby",
