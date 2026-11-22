@@ -1,7 +1,9 @@
 using System.Collections.Concurrent;
+using System.Text.Json.Serialization;
 
 namespace DotNetWebSearchApi.Search;
 
+[JsonConverter(typeof(JsonStringEnumConverter))]
 public enum ProviderHealthStatus
 {
     Closed,
