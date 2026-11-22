@@ -1,3 +1,4 @@
+using System.Net;
 using DotNetWebSearchApi.Search;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
@@ -30,11 +31,23 @@ builder.Services.AddHttpClient<QwantSearchProvider>(client =>
     client.DefaultRequestHeaders.Add("Sec-Fetch-Mode", "cors");
     client.DefaultRequestHeaders.Add("Sec-Fetch-Dest", "empty");
 });
+builder.Services.AddSingleton<CookieContainer>();
+builder.Services.AddHttpClient<YahooSearchProvider>(client =>
+{
+    client.DefaultRequestHeaders.UserAgent.ParseAdd("DotNetWebSearchApi/0.1 (+https://github.com/fwjlh/DotNetWebSearchApi)");
+    client.DefaultRequestHeaders.Accept.ParseAdd("text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8");
+}).ConfigurePrimaryHttpMessageHandler(serviceProvider => new HttpClientHandler
+{
+    AllowAutoRedirect = false,
+    UseCookies = true,
+    CookieContainer = serviceProvider.GetRequiredService<CookieContainer>()
+});
 builder.Services.AddHttpClient<WikipediaSearchProvider>(client => client.DefaultRequestHeaders.UserAgent.ParseAdd("DotNetWebSearchApi/0.1 (+https://github.com/fwjlh/DotNetWebSearchApi)"));
 builder.Services.AddSingleton<ISearchProvider>(sp => sp.GetRequiredService<BingSearchProvider>());
 builder.Services.AddSingleton<ISearchProvider>(sp => sp.GetRequiredService<DuckDuckGoSearchProvider>());
 builder.Services.AddSingleton<ISearchProvider>(sp => sp.GetRequiredService<GoogleSearchProvider>());
 builder.Services.AddSingleton<ISearchProvider>(sp => sp.GetRequiredService<QwantSearchProvider>());
+builder.Services.AddSingleton<ISearchProvider>(sp => sp.GetRequiredService<YahooSearchProvider>());
 builder.Services.AddSingleton<ISearchProvider>(sp => sp.GetRequiredService<WikipediaSearchProvider>());
 
 string? braveApiKey = builder.Configuration["BRAVE_SEARCH_API_KEY"];

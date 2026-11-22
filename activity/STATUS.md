@@ -6,7 +6,7 @@ Updated: 2026-11-22
 
 - Public repository: https://github.com/fwjlh/DotNetWebSearchApi
 - Default branch: main
-- Latest verified code commit: 1374fd11e331a7b32b9e0a73a560b7fab2f58551
+- Latest verified code commit: 1374fd11e331a7b32b9e0a73a560b7fab2f58551 (Yahoo adapter pending CI)
 - Full project overview and roadmap: [README.md](../README.md)
 
 ## Working vertical slice

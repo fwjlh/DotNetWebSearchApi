@@ -237,3 +237,20 @@ Every material repository action is recorded here with its reason, result, verif
 - **Result:** README provider tables render as separate rows; no application source changed.
 - **Verification:** Fetched the updated README from GitHub and checked the provider table rows.
 - **Next:** Continue with the next general-web provider evaluation.
+
+
+## 2026-11-22 — Yahoo Web adapter
+
+### 29. Evaluate Yahoo's current SearXNG route
+- **Reason:** Add another general-purpose engine after the first six adapters, while understanding Yahoo's bot-detection redirects.
+- **Action:** Reviewed current SearXNG Yahoo engine source.
+- **Result:** Yahoo uses HTML result cards, an sB preference cookie and a YBV anti-bot cookie. Its current adapter handles up to four redirects through tracking/geo endpoints and caches YBV. The .NET implementation will use a shared CookieContainer and explicit bounded redirect handling.
+- **Verification:** Current SearXNG source reviewed: https://docs.searxng.org/_modules/searx/engines/yahoo.html. Yahoo is marked disabled in the current default SearXNG engine settings; this adapter is experimental.
+- **Next:** Implement parser and request behaviour with fake-handler tests; do not claim live availability.
+
+### 30. Implement Yahoo Web adapter
+- **Reason:** Extend general-web coverage without requiring an API key.
+- **Action:** Added YahooSearchProvider, YahooSearchResultParser, shared cookie-container registration, bounded 302/307 redirect handling and seven fixture/fake-handler tests.
+- **Result:** Implementation and tests prepared for commit. The provider uses Yahoo HTML search, sB preferences and automatic YBV cookie storage through HttpClientHandler. Tests do not contact Yahoo.
+- **Verification:** Pending GitHub Actions.
+- **Next:** Inspect CI. If green, document Yahoo as experimental and assess Yandex Search API credential/cost requirements.
