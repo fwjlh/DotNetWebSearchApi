@@ -707,3 +707,12 @@ Every material repository action is recorded here with its reason, result, verif
 - **Action:** Added [docs/ARCHITECTURE_DECISIONS.md](../docs/ARCHITECTURE_DECISIONS.md), updated README project status/roadmap, and corrected the current handover summary and next actions in activity/STATUS.md.
 - **Verification:** Documentation-only changes. No provider implementation or runtime behaviour changed. Last verified baseline remains CI run 45020266512: build 0 warnings/errors; 156 tests passed. No live upstream tests were run.
 - **Next:** Implement request context and engine capabilities first, with backwards-compatible API defaults and focused tests. Keep the API host thin and core contracts independent of ASP.NET Core; do not split projects prematurely.
+
+
+### 81. Add the first request-context and capability foundation
+- **Reason:** Begin the P0 shared-framework work without changing existing provider implementations or breaking the current three-argument SearchQuery construction.
+- **Action:** Extended SearchQuery with optional categories, language, safe-search level, page and time-range fields while retaining the existing constructor. Added EngineCapabilities and optional ISearchProviderCapabilities. Legacy providers receive a conservative general-web/first-page/default-locale capability profile.
+- **Execution:** SearchAggregator now performs capability pre-flight and skips unsupported providers rather than calling them. SearchExecutionResult exposes UnsupportedProviders separately from provider failures. Added a focused test proving a paged-capable provider runs while a legacy first-page-only provider is skipped.
+- **Result:** First P0 architecture slice committed. Provider catalogue remains frozen at 67.
+- **Verification:** CI has not yet been retrieved for this code change. The last verified baseline remains 156 tests passed on run 45020266512; that result does not verify these commits. No live upstream requests were made.
+- **Next:** Verify CI. Then expose supported request-context fields through API parsing and compatibility responses, add capability declarations to representative providers, and implement typed provider outcomes/health state.
