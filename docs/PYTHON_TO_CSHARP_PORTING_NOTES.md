@@ -407,6 +407,39 @@ These are translation targets, not assertions that every row is already implemen
 
 **Interpretation:** this is a deliberate translation of SearXNG's declarative engine metadata into explicit C# contracts and pre-flight checks. It is the foundation for accurate support declarations, not a claim that the providers have already gained all upstream features.
 
+
+
+### Provider exceptions, typed outcomes and cancellation
+
+**Python source:** SearXNG provider modules raise distinct exception classes such as `SearxEngineCaptchaException`, `SearxEngineTooManyRequestsException`, `SearxEngineAccessDeniedException`, `SearxEngineAPIException` and `SearxEngineResponseException`. Some challenge exceptions carry a suspension duration. Network and processor layers interpret these to decide whether to retry, suspend or report an engine as unavailable.
+
+**C# source:**
+- [ProviderOutcome.cs](../src/DotNetWebSearchApi/Search/ProviderOutcome.cs)
+- [SearchExecutionResult.cs](../src/DotNetWebSearchApi/Search/SearchExecutionResult.cs)
+- [SearchAggregator.cs](../src/DotNetWebSearchApi/Search/SearchAggregator.cs)
+- [SearchAggregatorTests.cs](../tests/DotNetWebSearchApi.Tests/SearchAggregatorTests.cs)
+
+**Why the C# code has this shape**
+
+- A generic exception string is insufficient to drive health policy. C# defines `ProviderFailureKind` values for timeout, rate limit, transient HTTP, invalid response, authentication, access denied, challenge, configuration and unknown failure.
+- `ProviderFailureException` lets an adapter report a provider-specific condition and optional `RetryAfter` without coupling the aggregator to Mojeek, Qwant or another engine's exception type.
+- `ProviderOutcome` records success or failure independently of result count. An empty successful response is not the same as a failed request.
+- `SearchExecutionResult.ProviderOutcomes` exposes the typed outcome for each provider that was actually executed. Unsupported providers are still reported separately and do not get an execution outcome.
+- Caller cancellation is rethrown and does not become an engine failure. Cancellation from the provider timeout token is classified as a provider timeout.
+- The initial classifier maps HTTP 401/403/429/408/425/5xx to authentication/access-denied/rate-limit/transient categories, and JSON/XML/format/invalid-operation parsing failures to invalid response.
+
+**Current limits**
+
+- This is the first classification layer, not a complete retry/cooldown policy. Provider health, open/half-open state and backoff remain separate work.
+- A plain `HttpRequestException` carries a status code but not response headers. A generic 429 therefore has no `Retry-After` value at this layer. Shared transport should translate the actual response into a typed failure while it still has access to response headers.
+- Provider-specific challenge detection must throw `ProviderFailureException(Challenge, ...)`; generic 403 is classified as access denied, not automatically assumed to be CAPTCHA.
+- The current diagnostics panel still stores the exception type string. The typed outcome is available to the execution result, but diagnostic persistence/UI should move to failure-kind and retry-after fields in a later slice.
+- Fixture tests cover the classification mapping; no provider is newly claimed to emit all these typed outcomes until its adapter is wired to do so.
+
+**Verification:** [SearchAggregatorTests.cs](../tests/DotNetWebSearchApi.Tests/SearchAggregatorTests.cs) covers HTTP 401/403/429/503, malformed JSON, explicit challenge with retry duration, successful empty responses and provider timeouts. Caller cancellation remains separately tested.
+
+**Interpretation:** this is the C# equivalent of SearXNG's typed engine exceptions and suspension hints, expressed as stable provider-neutral outcomes so the aggregator can implement health policy without knowing individual engines.
+
 ## How to add the next corpus entry
 
 Copy this outline for every provider or shared framework concept:
