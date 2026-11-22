@@ -1,3 +1,5 @@
+using System.Collections.Concurrent;
+using System.Diagnostics;
 using System.Net;
 using System.Net.Http.Headers;
 using DotNetWebSearchApi.Search;
@@ -95,10 +97,35 @@ public sealed class SearchHttpTransportTests
         Assert.Equal(1, maximumActive);
     }
 
-    private static async Task<SearchHttpResponse> SendAsync(SearchHttpTransport transport, HttpClient client)
+    private static async Task<SearchHttpResponse> SendAsync(
+        SearchHttpTransport transport,
+        HttpClient client,
+        string? providerName = null,
+        TimeSpan? minimumInterval = null)
     {
         using HttpRequestMessage request = new(HttpMethod.Get, "https://example.com/search");
-        return await transport.SendAsync(client, request, CancellationToken.None);
+        return await transport.SendAsync(client, request, CancellationToken.None, providerName, minimumInterval);
+    }
+
+    [Fact]
+    public async Task SendAsync_AppliesMinimumIntervalPerProvider()
+    {
+        ConcurrentQueue<long> requestTimes = new();
+        Stopwatch clock = Stopwatch.StartNew();
+        using HttpClient client = new(new AsyncStubHttpMessageHandler((_, _) =>
+        {
+            requestTimes.Enqueue(clock.ElapsedMilliseconds);
+            return Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK));
+        }));
+        SearchHttpTransport transport = new();
+
+        await Task.WhenAll(
+            SendAsync(transport, client, "slow-provider", TimeSpan.FromMilliseconds(60)),
+            SendAsync(transport, client, "slow-provider", TimeSpan.FromMilliseconds(60)));
+
+        long[] times = requestTimes.OrderBy(value => value).ToArray();
+        Assert.Equal(2, times.Length);
+        Assert.True(times[1] - times[0] >= 45);
     }
 
     [Fact]
