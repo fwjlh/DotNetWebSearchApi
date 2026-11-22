@@ -7,10 +7,12 @@ public sealed class DuckDuckGoSearchProvider : ISearchProvider
     private const string SearchEndpoint = "https://html.duckduckgo.com/html/";
     private const int MaximumQueryLength = 499;
     private readonly HttpClient _httpClient;
+    private readonly SearchHttpTransport _transport;
 
-    public DuckDuckGoSearchProvider(HttpClient httpClient)
+    public DuckDuckGoSearchProvider(HttpClient httpClient, SearchHttpTransport? transport = null)
     {
         _httpClient = httpClient;
+        _transport = transport ?? new SearchHttpTransport();
     }
 
     public string Name => "duckduckgo";
@@ -27,24 +29,21 @@ public sealed class DuckDuckGoSearchProvider : ISearchProvider
         }
 
         using FormUrlEncodedContent content = BuildFormContent(query.Text);
-        using HttpResponseMessage response = await _httpClient.PostAsync(
-            SearchEndpoint,
-            content,
-            cancellationToken);
+        using HttpRequestMessage request = new(HttpMethod.Post, SearchEndpoint) { Content = content };
+        SearchHttpResponse response = await _transport.SendAsync(_httpClient, request, cancellationToken);
+
+        if (DuckDuckGoSearchResultParser.IsCaptchaPage(response.Content))
+        {
+            throw new ProviderFailureException(ProviderFailureKind.Challenge, "DuckDuckGo returned a CAPTCHA page.");
+        }
 
         if (response.StatusCode == HttpStatusCode.SeeOther)
         {
             return Array.Empty<SearchResult>();
         }
 
-        string html = await response.Content.ReadAsStringAsync(cancellationToken);
-        if (DuckDuckGoSearchResultParser.IsCaptchaPage(html))
-        {
-            throw new HttpRequestException("DuckDuckGo returned a CAPTCHA page.");
-        }
-
-        response.EnsureSuccessStatusCode();
-        return DuckDuckGoSearchResultParser.Parse(html);
+        response.EnsureSuccessStatusCode(Name);
+        return DuckDuckGoSearchResultParser.Parse(response.Content);
     }
 
     private static FormUrlEncodedContent BuildFormContent(string query)
