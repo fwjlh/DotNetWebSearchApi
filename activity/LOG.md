@@ -319,3 +319,20 @@ Every material repository action is recorded here with its reason, result, verif
 - **Result:** Implementation and tests prepared for commit. First-page general web results only; no paging, images, news or video modes.
 - **Verification:** Pending GitHub Actions. Tests use fixture HTML and a fake handler.
 - **Next:** Inspect CI. If green, assess Seznam as the tenth provider; it requires a homepage bootstrap request, hidden form values and cookie reuse.
+
+
+## 2026-11-22 — Seznam Web adapter
+
+### 39. Evaluate Seznam's bootstrap and verification flow
+- **Reason:** Add a tenth provider from the SearXNG general-web set after Naver.
+- **Action:** Reviewed current SearXNG Seznam engine source.
+- **Result:** Seznam first fetches its homepage to acquire hidden form values and cookies, then sends q, oq, noredirect and those hidden fields to search.seznam.cz. Search results use a dedicated result-card layout; a /verify redirect is treated as access denied.
+- **Verification:** Current SearXNG source reviewed: https://docs.searxng.org/_modules/searx/engines/seznam.html. Seznam is disabled by default upstream; this adapter is experimental and region-specific.
+- **Next:** Implement homepage bootstrap, cookie reuse through HttpClientHandler, result parsing and verification redirect handling.
+
+### 40. Implement Seznam Web adapter
+- **Reason:** Reach the initial ten-provider target with a no-key regional search provider.
+- **Action:** Added SeznamSearchProvider and SeznamSearchResultParser, homepage hidden-field bootstrap, query construction, /verify detection, and seven fixture/fake-handler tests.
+- **Result:** Implementation and tests prepared for commit. HttpClient's default cookie handler is relied on to retain cookies between the homepage and search requests. No live Seznam request is made in tests.
+- **Verification:** Pending GitHub Actions.
+- **Next:** Inspect CI. If green, update README/status to ten providers and decide whether to proceed to further specialist SearXNG engines or begin the compatibility JSON API.

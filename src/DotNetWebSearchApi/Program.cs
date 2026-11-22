@@ -38,6 +38,12 @@ builder.Services.AddHttpClient<QwantSearchProvider>(client =>
     client.DefaultRequestHeaders.Add("Sec-Fetch-Dest", "empty");
 });
 builder.Services.AddSingleton<CookieContainer>();
+builder.Services.AddHttpClient<SeznamSearchProvider>(client =>
+{
+    client.DefaultRequestHeaders.UserAgent.ParseAdd("DotNetWebSearchApi/0.1 (+https://github.com/fwjlh/DotNetWebSearchApi)");
+    client.DefaultRequestHeaders.Accept.ParseAdd("text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8");
+    client.DefaultRequestHeaders.AcceptLanguage.ParseAdd("cs-CZ,cs;q=0.9,en;q=0.8");
+});
 builder.Services.AddHttpClient<YahooSearchProvider>(client =>
 {
     client.DefaultRequestHeaders.UserAgent.ParseAdd("DotNetWebSearchApi/0.1 (+https://github.com/fwjlh/DotNetWebSearchApi)");
@@ -55,6 +61,7 @@ builder.Services.AddSingleton<ISearchProvider>(sp => sp.GetRequiredService<Googl
 builder.Services.AddSingleton<ISearchProvider>(sp => sp.GetRequiredService<QwantSearchProvider>());
 builder.Services.AddSingleton<ISearchProvider>(sp => sp.GetRequiredService<NaverSearchProvider>());
 builder.Services.AddSingleton<ISearchProvider>(sp => sp.GetRequiredService<YahooSearchProvider>());
+builder.Services.AddSingleton<ISearchProvider>(sp => sp.GetRequiredService<SeznamSearchProvider>());
 
 string? yandexApiKey = builder.Configuration["YANDEX_SEARCH_API_KEY"];
 string? yandexFolderId = builder.Configuration["YANDEX_FOLDER_ID"];

@@ -6,7 +6,7 @@ Updated: 2026-11-22
 
 - Public repository: https://github.com/fwjlh/DotNetWebSearchApi
 - Default branch: main
-- Latest verified code commit: 48413e42f3f37efd24417d14e19b07d5ec083c2d (Naver adapter pending CI)
+- Latest verified code commit: 48413e42f3f37efd24417d14e19b07d5ec083c2d (Seznam adapter pending CI) (Naver adapter pending CI)
 - Full project overview and roadmap: [README.md](../README.md)
 
 ## Working vertical slice
@@ -17,7 +17,7 @@ Updated: 2026-11-22
 - Parallel provider aggregation with per-provider timeout and provider-failure isolation.
 - Caller cancellation is propagated.
 - HTTP(S)-only result URL validation, duplicate removal, deterministic score/title ordering, and result limit.
-- Nine adapters in the current branch: Bing Web HTML, Brave Search API (optional key), Google Web HTML, DuckDuckGo Web HTML (first page), Qwant JSON API, Yahoo Web HTML, Yandex Search API (optional paid key), Naver Web HTML, and Wikipedia MediaWiki search API.
+- Ten adapters in the current branch: Bing Web HTML, Brave Search API (optional key), Google Web HTML, DuckDuckGo Web HTML (first page), Qwant JSON API, Yahoo Web HTML, Yandex Search API (optional paid key), Naver Web HTML, Seznam Web HTML, and Wikipedia MediaWiki search API.
 - Brave is registered only when BRAVE_SEARCH_API_KEY is configured.
 - Yandex is registered only when both YANDEX_SEARCH_API_KEY and YANDEX_FOLDER_ID are configured.
 - xUnit test project and GitHub Actions .NET 10 CI.
