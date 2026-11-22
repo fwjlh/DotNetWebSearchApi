@@ -181,7 +181,7 @@ The `format` parameter defaults to JSON; `format=html` is not supported. The `en
 
 Provider discovery and read-only diagnostics are also available at GET /api/providers and GET /api/diagnostics. The /admin page displays provider status, success/failure counts, last duration and last error type. These are process-local counters and reset when the service restarts.
 
-The response uses the familiar SearXNG field names: `query`, `number_of_results`, `results`, `answers`, `corrections`, `infoboxes`, `suggestions` and `unresponsive_engines` and the additive `unsupported_engines` list. Result entries include `url`, `title`, `content`, `engine`, `engines`, `positions`, `score`, `category`, `template`, `parsed_url` and `publishedDate`. Empty answer/infobox/suggestion arrays are returned until those result types are implemented. `positions` is currently inferred from the adapter score, and duplicate URLs retain the highest-scoring provider rather than combining every engine position. This is response-shape compatibility, not full SearXNG feature parity.
+The response uses the familiar SearXNG field names: `query`, `number_of_results`, `results`, `answers`, `corrections`, `infoboxes`, `suggestions` and `unresponsive_engines` plus the additive `unsupported_engines` list. Result entries include `url`, `title`, `content`, `engine`, `engines`, `positions`, `score`, `category`, `template`, `parsed_url` and `publishedDate`. Empty answer/infobox/suggestion arrays are returned until those result types are implemented. `positions` is currently inferred from the adapter score, and duplicate URLs retain the highest-scoring provider rather than combining every engine position. This is response-shape compatibility, not full SearXNG feature parity.
 
 Example:
 
@@ -309,7 +309,7 @@ The last fully verified provider-catalogue baseline passed CI with **156 tests**
 
 Provider-count expansion is frozen. The active sequence is:
 
-1. **Request context and engine capabilities.** Add locale, categories, safe-search, paging and time-range context with pre-flight provider eligibility.
+1. **Provider capability declarations.** API request context and pre-flight filtering are now implemented; declare only the features each C# request builder genuinely supports, with fixture coverage.
 2. **Typed outcomes and provider health.** Classify failures and add cooldown/backoff and half-open recovery.
 3. **Shared transport and sessions.** Consolidate request construction, cookies, redirect rules, timeout, retry, rate policy and diagnostics.
 4. **Challenge handling.** Distinguish blocks, rate limits, browser verification, permitted proof-of-work and human CAPTCHA; AI may classify challenges but must not bypass them.
