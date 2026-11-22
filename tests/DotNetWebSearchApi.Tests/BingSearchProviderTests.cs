@@ -78,6 +78,54 @@ public sealed class BingSearchProviderTests
     }
 
     [Fact]
+    public async Task SearchAsync_MapsSafeSearchAndLocale()
+    {
+        Uri? requestedUri = null;
+        using HttpClient client = new(new StubHttpMessageHandler(request =>
+        {
+            requestedUri = request.RequestUri;
+            return new HttpResponseMessage(HttpStatusCode.OK) { Content = new StringContent(ResultPage) };
+        }));
+        BingSearchProvider provider = new(client);
+
+        await provider.SearchAsync(new SearchQuery("bonjour", 10)
+        {
+            Language = "fr-FR",
+            SafeSearch = 2
+        }, CancellationToken.None);
+
+        Assert.Equal(
+            "https://www.bing.com/search?q=bonjour&adlt=strict&setlang=fr&cc=fr",
+            requestedUri?.AbsoluteUri);
+    }
+
+    [Fact]
+    public async Task SearchAsync_MapsHongKongToBingEnglishMarket()
+    {
+        Uri? requestedUri = null;
+        using HttpClient client = new(new StubHttpMessageHandler(request =>
+        {
+            requestedUri = request.RequestUri;
+            return new HttpResponseMessage(HttpStatusCode.OK) { Content = new StringContent(ResultPage) };
+        }));
+        BingSearchProvider provider = new(client);
+
+        await provider.SearchAsync(new SearchQuery("taxi", 10) { Language = "zh-HK" }, CancellationToken.None);
+
+        Assert.Contains("setlang=en&cc=hk", requestedUri?.Query);
+    }
+
+    [Fact]
+    public void Capabilities_DeclareOnlyImplementedRequestFeatures()
+    {
+        BingSearchProvider provider = new(new HttpClient());
+        Assert.True(provider.Capabilities.SupportsSafeSearch);
+        Assert.True(provider.Capabilities.SupportsLocale);
+        Assert.False(provider.Capabilities.SupportsPagination);
+        Assert.False(provider.Capabilities.SupportsTimeRange);
+    }
+
+    [Fact]
     public async Task SearchAsync_ThrowsWhenBingReturnsAnHttpError()
     {
         using HttpClient client = new(new StubHttpMessageHandler(_ =>
