@@ -4,7 +4,7 @@ using System.Text.RegularExpressions;
 
 namespace DotNetWebSearchApi.Search;
 
-public sealed partial class WikipediaSearchProvider : ISearchProvider
+public sealed partial class WikipediaSearchProvider : ISearchProvider, ISearchProviderCapabilities
 {
     private readonly HttpClient _httpClient;
     private readonly SearchHttpTransport _transport;
@@ -19,26 +19,63 @@ public sealed partial class WikipediaSearchProvider : ISearchProvider
 
     public TimeSpan Timeout => TimeSpan.FromSeconds(5);
 
+    public EngineCapabilities Capabilities { get; } = new(
+        new HashSet<string>(StringComparer.OrdinalIgnoreCase) { "general" },
+        false,
+        1,
+        false,
+        false,
+        true);
+
     public async Task<IReadOnlyList<SearchResult>> SearchAsync(
         SearchQuery query,
         CancellationToken cancellationToken)
     {
-        using HttpRequestMessage request = new(HttpMethod.Get, BuildRequestUrl(query.Text));
+        string wikiHost = GetWikiHost(query.Language);
+        using HttpRequestMessage request = new(HttpMethod.Get, BuildRequestUrl(query.Text, wikiHost));
+        AddLanguagePreferences(request, query.Language);
         SearchHttpResponse response = await _transport.SendAsync(_httpClient, request, cancellationToken);
         response.EnsureSuccessStatusCode(Name);
         using JsonDocument document = JsonDocument.Parse(response.Content);
 
-        return ReadResults(document.RootElement);
+        return ReadResults(document.RootElement, wikiHost);
     }
 
-    private static string BuildRequestUrl(string query)
+    private static string GetWikiHost(string language)
+    {
+        string engineLanguage = EngineLocaleRegistry.GetRegion("wikipedia", language)
+            ?? EngineLocaleRegistry.GetLanguage("wikipedia", language, "en")
+            ?? "en";
+        return EngineLocaleRegistry.GetCustom(
+            "wikipedia",
+            "wiki_netloc",
+            engineLanguage,
+            "en.wikipedia.org")!;
+    }
+
+    private static string BuildRequestUrl(string query, string wikiHost)
     {
         string encodedQuery = Uri.EscapeDataString(query);
-        return "https://en.wikipedia.org/w/api.php?action=query&list=search&format=json&utf8=1&srsearch="
-            + encodedQuery;
+        return $"https://{wikiHost}/w/api.php?action=query&list=search&format=json&utf8=1&srsearch={encodedQuery}";
     }
 
-    private static IReadOnlyList<SearchResult> ReadResults(JsonElement root)
+    private static void AddLanguagePreferences(HttpRequestMessage request, string language)
+    {
+        if (string.IsNullOrWhiteSpace(language)
+            || language.Equals("auto", StringComparison.OrdinalIgnoreCase))
+        {
+            return;
+        }
+
+        string languageOnly = language.Split('-', 2)[0];
+        request.Headers.AcceptLanguage.ParseAdd(language);
+        if (!languageOnly.Equals(language, StringComparison.OrdinalIgnoreCase))
+        {
+            request.Headers.AcceptLanguage.ParseAdd($"{languageOnly};q=0.9");
+        }
+    }
+
+    private static IReadOnlyList<SearchResult> ReadResults(JsonElement root, string wikiHost)
     {
         if (!root.TryGetProperty("query", out JsonElement queryElement)
             || !queryElement.TryGetProperty("search", out JsonElement searchElement)
@@ -51,7 +88,7 @@ public sealed partial class WikipediaSearchProvider : ISearchProvider
         int position = 0;
         foreach (JsonElement item in searchElement.EnumerateArray())
         {
-            if (!TryReadResult(item, position, out SearchResult? result) || result is null)
+            if (!TryReadResult(item, position, wikiHost, out SearchResult? result) || result is null)
             {
                 continue;
             }
@@ -63,7 +100,11 @@ public sealed partial class WikipediaSearchProvider : ISearchProvider
         return results;
     }
 
-    private static bool TryReadResult(JsonElement item, int position, out SearchResult? result)
+    private static bool TryReadResult(
+        JsonElement item,
+        int position,
+        string wikiHost,
+        out SearchResult? result)
     {
         result = null;
         if (!item.TryGetProperty("title", out JsonElement titleElement)
@@ -87,7 +128,7 @@ public sealed partial class WikipediaSearchProvider : ISearchProvider
 
         result = new SearchResult(
             title,
-            $"https://en.wikipedia.org/?curid={pageId}",
+            $"https://{wikiHost}/?curid={pageId}",
             snippet,
             "wikipedia",
             1.0 / (position + 1));
