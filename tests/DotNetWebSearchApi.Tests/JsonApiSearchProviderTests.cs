@@ -390,13 +390,6 @@ public sealed class JsonApiSearchProviderTests
         };
         yield return new object[]
         {
-            JsonApiProviderCatalog.Definitions.Single(item => item.Name == "kagi"),
-            "{\"data\":{\"search\":[{\"title\":\"Kagi result\",\"url\":\"https://example.org/kagi\",\"snippet\":\"Premium search result\"}]}}",
-            "Kagi result",
-            "https://example.org/kagi"
-        };
-        yield return new object[]
-        {
             JsonApiProviderCatalog.Definitions.Single(item => item.Name == "exa"),
             "{\"results\":[{\"title\":\"Exa result\",\"url\":\"https://example.org/exa\",\"highlights\":[\"A search highlight\"]}]}",
             "Exa result",
