@@ -88,8 +88,9 @@ public sealed class SeznamSearchProviderTests
             new HttpResponseMessage(HttpStatusCode.ServiceUnavailable)));
         SeznamSearchProvider provider = new(client);
 
-        await Assert.ThrowsAsync<HttpRequestException>(() =>
+        ProviderFailureException exception = await Assert.ThrowsAsync<ProviderFailureException>(() =>
             provider.SearchAsync(new SearchQuery("test", 10), CancellationToken.None));
+        Assert.Equal(ProviderFailureKind.TransientHttp, exception.FailureKind);
     }
 
     private static HttpResponseMessage HtmlResponse(string html)
