@@ -77,7 +77,12 @@ internal static class ProviderFailureClassifier
             return ClassifyHttpFailure(httpException.StatusCode);
         }
 
-        if (exception is JsonException or XmlException or FormatException or InvalidDataException or InvalidOperationException)
+        if (exception is IOException)
+        {
+            return ProviderFailureKind.TransientHttp;
+        }
+
+        if (exception is JsonException or XmlException or FormatException or InvalidDataException or InvalidOperationException or NotSupportedException)
         {
             return ProviderFailureKind.InvalidResponse;
         }
