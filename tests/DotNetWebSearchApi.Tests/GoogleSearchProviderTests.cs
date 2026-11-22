@@ -78,8 +78,9 @@ public sealed class GoogleSearchProviderTests
             HtmlResponse("<html><body>/sorry/ automated traffic detected</body></html>")));
         GoogleSearchProvider provider = new(client);
 
-        await Assert.ThrowsAsync<HttpRequestException>(() =>
+        ProviderFailureException exception = await Assert.ThrowsAsync<ProviderFailureException>(() =>
             provider.SearchAsync(new SearchQuery("test", 10), CancellationToken.None));
+        Assert.Equal(ProviderFailureKind.Challenge, exception.FailureKind);
     }
 
     [Fact]
@@ -89,8 +90,9 @@ public sealed class GoogleSearchProviderTests
             new HttpResponseMessage(HttpStatusCode.ServiceUnavailable)));
         GoogleSearchProvider provider = new(client);
 
-        await Assert.ThrowsAsync<HttpRequestException>(() =>
+        ProviderFailureException exception = await Assert.ThrowsAsync<ProviderFailureException>(() =>
             provider.SearchAsync(new SearchQuery("test", 10), CancellationToken.None));
+        Assert.Equal(ProviderFailureKind.TransientHttp, exception.FailureKind);
     }
 
     private static HttpResponseMessage HtmlResponse(string html)
