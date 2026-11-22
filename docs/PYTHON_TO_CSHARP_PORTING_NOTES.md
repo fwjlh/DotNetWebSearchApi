@@ -503,8 +503,9 @@ These are translation targets, not assertions that every row is already implemen
 
 - The main provider implementations now use the shared transport. Future adapters must use it rather than calling HttpClient directly; verify any new provider source before assuming it follows this path.
 - Redirect behaviour remains configured per HttpClient handler or implemented in the provider (Yahoo's bounded manual redirect loop); the transport does not yet own a redirect policy.
-- Cookie/session ownership remains provider-specific. The transport does not create, persist or share a cookie jar.
+- Cookie/session ownership remains provider-specific. Mojeek and Yahoo now receive separate keyed CookieContainers; Seznam retains its own HttpClientFactory handler-managed jar. The transport does not create, persist or share a cookie jar. These are process-scoped provider sessions, not per-caller sessions.
 - No automatic retries are performed. This is deliberate until retry safety can be decided per request and challenge/access-denied conditions are excluded.
+- Provider cookie jars are isolated from one another but remain process-wide. Multi-tenant/per-user session isolation and cookie rotation/expiry policy have not been designed.
 - The current transport does not centralise proxy selection, TLS/HTTP version policy, request-header profiles, request-body limits or per-provider minimum intervals.
 - Response-size overflow and unsupported charset are classified as invalid provider responses. The default size limit and host concurrency limit are configurable through `SearchHttpTransportOptions`.
 
