@@ -84,8 +84,9 @@ public sealed class BingSearchProviderTests
             new HttpResponseMessage(HttpStatusCode.TooManyRequests)));
         BingSearchProvider provider = new(client);
 
-        await Assert.ThrowsAsync<HttpRequestException>(() =>
+        ProviderFailureException exception = await Assert.ThrowsAsync<ProviderFailureException>(() =>
             provider.SearchAsync(new SearchQuery("test", 10), CancellationToken.None));
+        Assert.Equal(ProviderFailureKind.RateLimited, exception.FailureKind);
     }
 
     private const string ResultPage = """
