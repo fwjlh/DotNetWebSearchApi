@@ -40,8 +40,9 @@ public sealed class ArxivSearchProviderTests
             new HttpResponseMessage(HttpStatusCode.ServiceUnavailable)));
         ArxivSearchProvider provider = new(client);
 
-        await Assert.ThrowsAsync<HttpRequestException>(() =>
+        ProviderFailureException exception = await Assert.ThrowsAsync<ProviderFailureException>(() =>
             provider.SearchAsync(new SearchQuery("test", 5), CancellationToken.None));
+        Assert.Equal(ProviderFailureKind.TransientHttp, exception.FailureKind);
     }
 
     private const string AtomFixture = """
