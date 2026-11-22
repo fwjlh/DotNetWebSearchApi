@@ -6,7 +6,7 @@ Updated: 2026-11-22
 - Public repository: https://github.com/fwjlh/DotNetWebSearchApi
 - Default branch: main
 - Latest verified code commit: 64c664c91a243bdd9561d18fd5ae4ee7ddd3d5cb
-- Current verified milestone: 50 providers; batch 6 adds eight adapters (58 total) but its first CI run had four fixture failures. Corrections are pushed; re-verification pending.
+- Current verified milestone: 50 providers; batch 6 adds eight adapters (58 total) but its first CI run had four fixture failures. RSS async parsing and JSON body assertions were corrected; a missing test namespace was then caught at build time and fixed. Re-verification pending.
 - Project overview and roadmap: [README.md](../README.md)
 
 ## Working application

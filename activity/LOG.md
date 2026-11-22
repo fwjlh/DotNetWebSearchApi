@@ -598,3 +598,11 @@ Every material repository action is recorded here with its reason, result, verif
 - **Result:** Code and test corrections committed; no provider count change.
 - **Verification:** Pending CI on the correction commit.
 - **Next:** Verify all 146 tests before adding the next providers.
+
+
+### 70. Add the missing JSON test namespace
+- **Reason:** Re-run after the RSS async-reader and POST-body assertions were corrected.
+- **Action:** The next build caught a missing System.Text.Json using in the test project (production source compiled). Added the explicit namespace import.
+- **Result:** One compile-only test project issue corrected; provider code unchanged.
+- **Verification:** Pending CI.
+- **Next:** Verify all tests; then close batch 6.
