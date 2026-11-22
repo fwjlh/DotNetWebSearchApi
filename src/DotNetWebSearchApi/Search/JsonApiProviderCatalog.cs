@@ -633,6 +633,7 @@ public static partial class JsonApiProviderCatalog
         services.AddSingleton<ISearchProvider>(serviceProvider =>
             new JsonApiSearchProvider(
                 serviceProvider.GetRequiredService<IHttpClientFactory>().CreateClient(definition.Name),
-                definition));
+                definition,
+                serviceProvider.GetRequiredService<SearchHttpTransport>()));
     }
 }
