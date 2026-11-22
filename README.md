@@ -10,7 +10,7 @@ DotNetWebSearchApi brings the useful metasearch ideas behind [SearXNG](https://g
 
 The goal is not to build another search index. It is to provide a practical, extensible aggregation layer that can run on infrastructure you already operate: particularly Windows Server, IIS and SQL Server environments.
 
-> **Project status: initial search stack implemented.** Fifty provider adapters, the SearXNG-shaped JSON API, a browser search page and read-only provider diagnostics are in place. The next implementation priority is expanding the SearXNG provider catalogue towards 100 tested adapters, then operational hardening.
+> **Project status: shared-framework refactoring.** Sixty-seven provider adapters are implemented and fixture/CI-tested. Provider expansion is frozen while the request context, engine capabilities, provider health, shared transport, challenge classification and result aggregation are generalised. The service remains independent; CoderInBox is its first major consumer, not a dependency. See [the architecture decisions](docs/ARCHITECTURE_DECISIONS.md) and [the porting audit](docs/PORTING_AUDIT.md).
 
 This is an independent implementation inspired by SearXNG. It is not affiliated with, endorsed by, or a drop-in replacement for the SearXNG project. See [UPSTREAM.md](UPSTREAM.md) for provenance and [LICENSE](LICENSE) for licensing.
 
@@ -113,11 +113,13 @@ The status above is deliberately conservative: a provider is only marked **Worki
 
 ## Search provider roadmap
 
-The project is working from major general-purpose search engines down through specialist and topic-specific sources. The first target is **100 tested provider adapters**, not a long list of untested names.
+The provider catalogue is currently frozen at **67 adapters**. No additional provider ports are planned until the shared search framework has been generalised and the existing catalogue has been reviewed against the common contracts.
 
 The first 12 priorities are Bing, Brave, Google, DuckDuckGo, Wikipedia, Mojeek, Startpage, Qwant, Yahoo, Yandex, Naver and Seznam. Mojeek is implemented and CI-verified; Startpage remains deferred because its current Anubis challenge is CPU-intensive and the upstream SearXNG implementation disables it by default.
 
 The full provider inventory, implementation status, API-key requirements, rate limits and wave-by-wave progress are maintained in [docs/PROVIDERS.md](docs/PROVIDERS.md).
+
+Provider expansion is paused. The existing inventory remains documented in [docs/PROVIDERS.md](docs/PROVIDERS.md); provider count is not the current progress metric.
 
 ### What makes an adapter complete?
 
