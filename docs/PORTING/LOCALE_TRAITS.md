@@ -94,7 +94,7 @@ This is only a partial traits translation: host/locale behaviour is carried acro
 - DuckDuckGo language-region maps remain partial.
 - Google locale/region mapping remains future work.
 
-Next: expand Wikipedia's non-standard language codes and Google locale/region maps after their request builders consume them. Keep traits versioned and static until refresh/persistence provides clear value.
+Next: expand Wikipedia's non-standard language codes, Google language/region maps and Qwant region coverage from pinned source evidence. Keep traits versioned and static until refresh/persistence provides clear value.
 
 Verification: fixtures cover Bing, DuckDuckGo and Wikipedia locale mappings, request construction and conservative fallbacks. Wikipedia locale/host tests are green in [run 45029724644](https://github.com/fwjlh/DotNetWebSearchApi/actions/runs/45029724644).
 

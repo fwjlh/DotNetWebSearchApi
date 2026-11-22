@@ -191,22 +191,32 @@ These are translation targets, not assertions that every row is already implemen
 - [QwantSearchProvider.cs](../src/DotNetWebSearchApi/Search/QwantSearchProvider.cs)
 - [QwantSearchResultParser.cs](../src/DotNetWebSearchApi/Search/QwantSearchResultParser.cs)
 - [QwantSearchProviderTests.cs](../tests/DotNetWebSearchApi.Tests/QwantSearchProviderTests.cs)
+- [EngineLocaleRegistry.cs](../src/DotNetWebSearchApi/Search/EngineLocaleRegistry.cs)
 
 **Why the C# code has this shape**
 
-- SearXNG uses Qwant's undocumented v3 JSON API, reverse-engineered from the browser's network requests. C# uses the same `/v3/search/web` endpoint and JSON response family rather than scraping the visible page.
-- The web response is not a flat list. Results live below `data.result.items.mainline`; each row has a `type` and nested `items`. C# deliberately traverses those layers and accepts only rows typed `web`, so advertisements and other result types do not leak into ordinary web results.
-- `System.Text.Json` is used because the response is JSON and the C# parser can validate object/array/string shapes explicitly without a third-party dynamic object model.
+- SearXNG uses Qwant's undocumented v3 JSON API, reverse-engineered from the browser's network requests. C# uses the same /v3/search/web endpoint and JSON response family rather than scraping the visible page.
+- The web response is not a flat list. Results live below data.result.items.mainline; each row has a type and nested items. C# traverses those layers and accepts only rows typed web, so advertisements and other result types do not leak into ordinary web results.
+- System.Text.Json is used because the response is JSON and the C# parser can validate object/array/string shapes explicitly.
+- Python maps locale to a Qwant region tag, page to offset, and safe-search directly to the safesearch parameter. C# now maps a curated region subset, page 1–5 to offsets 0–40, and safe-search 0/1/2 directly. It declares general/web, locale, safe-search and pagination through page 5; time-range is not supported.
+
+**Failure and session semantics**
+
+- Python distinguishes error code 24 as rate limiting, a challenge URL as CAPTCHA (15-second suspension), HTTP 403 as access denied, and other API errors separately. C# now maps error code 24 to RateLimited, a challenge URL or DataDome/captcha marker to BrowserVerification, plain 403 to AccessDenied, and other API error objects to InvalidResponse.
+- Python caches the rotating DataDome cookie. The registered C# typed HttpClient uses the handler's automatic cookie container; this is handler-scoped session state, not a separately managed 24-hour DataDome cache. Its lifetime and isolation follow HttpClientFactory handler lifetime.
+- Python sends browser-like CORS/fetch headers in a defined order. C# sets Origin, Referer, Accept and Sec-Fetch headers in the typed client, but does not reproduce the exact Chrome header order or TLS fingerprint.
 
 **Known divergence / omissions**
 
-- Python supports up to five pages, uses 10 results per web page, derives locale from region traits, forwards the requested safe-search level and uses a variable test-group value. C# hardcodes count 10, locale `en_GB`, offset 0, `tgp=1` and `safesearch=1`; the current query model fields are ignored.
-- Python caches the rotating DataDome cookie and sends browser-like CORS/fetch headers in a defined order. C# does not acquire/cache DataDome state or reproduce that header profile.
-- Python distinguishes error code 24 as rate limiting, a challenge URL as CAPTCHA (15-second suspension), HTTP 403 as access denied, and other API errors separately. C# maps 403 to a generic `HttpRequestException` and treats other non-success HTTP statuses generically; it does not preserve those distinctions.
+- The locale map is a curated static subset, not the dynamic locale list fetched from Qwant's INITIAL_PROPS.
 - Python also supports news, images and videos through different response shapes and result types. C# implements web only.
+- Qwant's test-group value is randomly chosen by Python; C# keeps tgp=1 for deterministic request construction.
 - The C# parser returns empty results when the expected mainline structure is absent. That can hide a changed upstream response shape as an empty search rather than a parser/schema failure.
 
-**Interpretation:** same undocumented JSON endpoint and broad web-result mapping, but the C# adapter is a fixed first-page, fixed-locale implementation without the upstream DataDome/session and typed failure workflow.
+**Verification:** Qwant request tests cover locale, paging, safe-search, DataDome classification and API error code 24. GitHub Actions [run 45030233313](https://github.com/fwjlh/DotNetWebSearchApi/actions/runs/45030233313) passed: 230 tests, 0 failed, 0 skipped. No live Qwant requests were made.
+
+**Interpretation:** same undocumented JSON web endpoint, now with the main query-context fields and more faithful failure classification. It is still a web-only adapter, not a full port of Qwant's news/image/video engines or dynamic locale discovery.
+
 
 ### Yahoo Web
 

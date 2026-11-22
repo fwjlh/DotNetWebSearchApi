@@ -951,3 +951,14 @@ Every material repository action is recorded here with its reason, result, verif
 - **Tests:** Added request/capability assertions for French locale, country restriction, page 3, weekly filter and strict safe-search. GitHub Actions [run 45030058998](https://github.com/fwjlh/DotNetWebSearchApi/actions/runs/45030058998) passed: build 0 warnings/errors; 223 tests passed, 0 failed, 0 skipped. No live Google requests.
 - **Documentation:** Updated Google rationale, locale-traits notes, audit, README and handover.
 - **Next:** Review the remaining major engines' request context, then move to richer result models. Provider count remains frozen at 67.
+
+
+### 104. Port Qwant locale, paging, safe-search and API failure semantics
+- **Reason:** Qwant already used the same undocumented v3 JSON endpoint as Python, but its C# request ignored locale, page and safe-search fields and flattened several API failures.
+- **Python evidence:** Pinned qwant.py resolves region through EngineTraits, sends count=10, offset=(page-1)*10, tgp, device and safe-search, and supports at most five web pages. Its response maps error code 24 to rate limit, challenge URL to CAPTCHA/short suspension, 403 to access denied and other API errors separately.
+- **Action:** Added a curated Qwant region subset to EngineLocaleRegistry. Qwant now maps locale, page 1–5, safe-search 0/1/2 and declares general/web, locale, safe-search and paging capabilities; time-range remains unsupported.
+- **Action:** Added API error handling for error code 24 (RateLimited), challenge URL (BrowserVerification), DataDome/captcha 403 (BrowserVerification), plain 403 (AccessDenied) and other error objects (InvalidResponse).
+- **Session/header note:** The registered typed HttpClient uses its default handler cookie container for Set-Cookie state; this is handler-scoped, not Python's explicit 24-hour cache. C# sets the key CORS/fetch headers but does not reproduce exact header ordering/TLS fingerprint. tgp remains fixed at 1 for deterministic tests.
+- **Tests:** Added locale/page/safe-search request assertions, capability checks and API rate-limit mapping. GitHub Actions [run 45030233313](https://github.com/fwjlh/DotNetWebSearchApi/actions/runs/45030233313) passed: build 0 warnings/errors; 230 tests passed, 0 failed, 0 skipped. No live Qwant requests.
+- **Documentation:** Updated Qwant rationale, locale-traits notes, porting audit and handover.
+- **Next:** Yahoo request traits and YBV cookie lifecycle. Provider count remains frozen at 67.
