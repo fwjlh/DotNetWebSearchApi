@@ -86,6 +86,39 @@ public sealed class DuckDuckGoSearchProviderTests
     }
 
     [Fact]
+    public async Task SearchAsync_MapsLocaleAndTimeRangeToFormAndCookies()
+    {
+        string? formData = null;
+        string? cookie = null;
+        using HttpClient client = new(new StubHttpMessageHandler(request =>
+        {
+            formData = request.Content?.ReadAsStringAsync().GetAwaiter().GetResult();
+            cookie = request.Headers.GetValues("Cookie").Single();
+            return HtmlResponse(ResultPage);
+        }));
+        DuckDuckGoSearchProvider provider = new(client);
+
+        await provider.SearchAsync(new SearchQuery("weather", 10)
+        {
+            Language = "en-GB",
+            TimeRange = SearchTimeRange.Month
+        }, CancellationToken.None);
+
+        Assert.Equal("q=weather&b=&kl=uk-en&df=m", formData);
+        Assert.Equal("kl=uk-en; df=m", cookie);
+    }
+
+    [Fact]
+    public void Capabilities_DeclareOnlyImplementedRequestFeatures()
+    {
+        DuckDuckGoSearchProvider provider = new(new HttpClient());
+        Assert.True(provider.Capabilities.SupportsLocale);
+        Assert.True(provider.Capabilities.SupportsTimeRange);
+        Assert.False(provider.Capabilities.SupportsPagination);
+        Assert.False(provider.Capabilities.SupportsSafeSearch);
+    }
+
+    [Fact]
     public async Task SearchAsync_ReturnsEmptyWhenQueryIsTooLong()
     {
         int requestCount = 0;

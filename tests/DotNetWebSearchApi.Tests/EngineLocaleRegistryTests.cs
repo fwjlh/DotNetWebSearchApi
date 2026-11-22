@@ -24,6 +24,22 @@ public sealed class EngineLocaleRegistryTests
         Assert.Equal(expected, EngineLocaleRegistry.GetRegion("bing", locale));
     }
 
+    [Theory]
+    [InlineData("en-GB", "uk-en")]
+    [InlineData("zh-HK", "hk-tzh")]
+    [InlineData("zh-TW", "tw-tzh")]
+    [InlineData("ja-JP", "jp-jp")]
+    public void GetRegion_ResolvesKnownDuckDuckGoRegion(string locale, string expected)
+    {
+        Assert.Equal(expected, EngineLocaleRegistry.GetRegion("duckduckgo", locale));
+    }
+
+    [Fact]
+    public void GetRegion_UsesDuckDuckGoAllRegionForUnknownLocale()
+    {
+        Assert.Equal("wt-wt", EngineLocaleRegistry.GetRegion("duckduckgo", "xx-ZZ"));
+    }
+
     [Fact]
     public void GetRegion_ReturnsCallerFallbackForUnknownProvider()
     {

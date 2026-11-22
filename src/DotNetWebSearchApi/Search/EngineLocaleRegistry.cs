@@ -60,12 +60,37 @@ public static class EngineLocaleRegistry
             ["tr-TR"] = "tr-TR"
         };
 
+        Dictionary<string, string> duckDuckGoRegions = new(StringComparer.OrdinalIgnoreCase)
+        {
+            ["en-US"] = "us-en",
+            ["en-GB"] = "uk-en",
+            ["en-AU"] = "au-en",
+            ["en-CA"] = "ca-en",
+            ["fr-FR"] = "fr-fr",
+            ["de-DE"] = "de-de",
+            ["es-ES"] = "es-es",
+            ["ja-JP"] = "jp-jp",
+            ["ko-KR"] = "kr-kr",
+            ["zh-TW"] = "tw-tzh",
+            ["zh-HK"] = "hk-tzh",
+            ["id-ID"] = "id-en",
+            ["nb-NO"] = "no-no",
+            ["ar-SA"] = "xa-ar",
+            ["sl-SI"] = "sl-sl",
+            ["th-TH"] = "th-en",
+            ["vi-VN"] = "vn-en"
+        };
+
         return new Dictionary<string, EngineLocaleTraits>(StringComparer.OrdinalIgnoreCase)
         {
             ["bing"] = new EngineLocaleTraits(
                 new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase),
                 bingRegions,
-                "clear")
+                "clear"),
+            ["duckduckgo"] = new EngineLocaleTraits(
+                new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase),
+                duckDuckGoRegions,
+                "wt-wt")
         };
     }
 
