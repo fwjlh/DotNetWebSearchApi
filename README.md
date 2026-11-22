@@ -42,7 +42,7 @@ DotNetWebSearchApi puts that work behind one service:
 | Timeout and failure isolation | Working | Partial results can survive provider failures; typed outcomes distinguish failure classes |
 | Provider health | Initial implementation | Cooldown/backoff and one half-open recovery probe; process-local state |
 | Shared HTTP transport | Initial implementation | Main provider paths use bounded responses, per-host concurrency and Retry-After capture; cookies/redirects remain provider-specific |
-| Result normalisation | Working | HTTP(S) URLs, deduplication and deterministic ordering |
+| Result normalisation | Working | HTTP(S) URLs, deduplication, contributing engines, per-engine positions and deterministic ordering |
 | Result limit | Working | Default 10; maximum 50 |
 | Wikipedia adapter | Working | MediaWiki search API |
 | Bing Web adapter | Working | HTML result parsing; live availability not tested in CI |
@@ -183,7 +183,7 @@ The `format` parameter defaults to JSON; `format=html` is not supported. The `en
 
 Provider discovery and read-only diagnostics are also available at GET /api/providers and GET /api/diagnostics. Diagnostics include provider health state (`Closed`, `Open`, `HalfOpen`), consecutive failures and cooldown expiry alongside success/failure counters. The /admin page displays provider status, success/failure counts, last duration and last error type. These are process-local counters/state and reset when the service restarts.
 
-The response uses the familiar SearXNG field names: `query`, `number_of_results`, `results`, `answers`, `corrections`, `infoboxes`, `suggestions` and `unresponsive_engines`, plus additive `unsupported_engines` and `cooling_down_engines` lists. Result entries include `url`, `title`, `content`, `engine`, `engines`, `positions`, `score`, `category`, `template`, `parsed_url` and `publishedDate`. Empty answer/infobox/suggestion arrays are returned until those result types are implemented. `positions` is currently inferred from the adapter score, and duplicate URLs retain the highest-scoring provider rather than combining every engine position. This is response-shape compatibility, not full SearXNG feature parity.
+The response uses the familiar SearXNG field names: `query`, `number_of_results`, `results`, `answers`, `corrections`, `infoboxes`, `suggestions` and `unresponsive_engines`, plus additive `unsupported_engines` and `cooling_down_engines` lists. Result entries include `url`, `title`, `content`, `engine`, `engines`, `positions`, `score`, `category`, `template`, `parsed_url` and `publishedDate`. Empty answer/infobox/suggestion arrays are returned until those result types are implemented. `positions` is taken from each provider's returned order (one-based) and duplicate URLs preserve all contributing engines and their first positions. The highest adapter-supplied score still selects the primary display record; engine-weighted SearXNG scoring is not implemented. This is response-shape compatibility, not full SearXNG feature parity.
 
 Example:
 
