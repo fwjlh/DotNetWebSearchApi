@@ -66,7 +66,7 @@ The main provider paths now use `SearchHttpTransport`: HTML adapters (Bing, Duck
 2. shared `SearchHttpTransport` executes it and returns bounded content plus status/header metadata;
 3. provider-specific challenge/status logic and parser convert the response into typed outcomes/results.
 
-The transport still needs a deliberate policy for timeout ownership, decompression, redirects, cookie/session isolation, proxy support, request diagnostics, provider-specific rate spacing and safe retries. Do not retry CAPTCHA, access-denied or other permanent failures. Do not move all cookie and redirect behaviour into a single handler where it would break provider-specific flows.
+Provider-specific cookie stores are now isolated for Mojeek and Yahoo; Seznam retains its own typed-client handler-managed cookie jar. These sessions are still process-scoped, not per-caller or per-tenant. The transport still needs a deliberate policy for timeout ownership, decompression, redirects, per-caller cookie/session isolation, proxy support, request diagnostics, provider-specific rate spacing and safe retries. Do not retry CAPTCHA, access-denied or other permanent failures. Do not move all cookie and redirect behaviour into a single handler where it would break provider-specific flows.
 
 ### 4. Failure classification and provider suspension
 
