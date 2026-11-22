@@ -746,3 +746,22 @@ Every material repository action is recorded here with its reason, result, verif
 - **Result:** The new capability slice is no longer awaiting CI. Detailed test totals for run 45022944719 were not independently captured, so no new test count or warning count is claimed. The historical 156-test baseline remains separately identified.
 - **Action:** Updated activity/STATUS.md to distinguish the historical catalogue baseline from the verified capability slice and documentation commits.
 - **Next:** Continue the API request-context integration and typed provider outcomes/health. Expand the rationale corpus for the remaining major engines while keeping the provider catalogue frozen at 67.
+
+
+### 85. Expand the porting rationale corpus across the remaining priority engines and shared adapters
+- **Reason:** The first four entries were only a starting point. The highest-value next pass was to compare every remaining major general-web adapter and explain cases where the C# code is not actually doing the same job as its Python counterpart.
+- **Action:** Expanded [docs/PYTHON_TO_CSHARP_PORTING_NOTES.md](../docs/PYTHON_TO_CSHARP_PORTING_NOTES.md) with Google, Qwant, Yahoo, Yandex, Naver, Seznam, Wikipedia, the generic JSON API adapter and the C# RSS/Atom adapter.
+- **Important findings recorded:**
+  - Google: HTML result extraction is similar, but C# currently hardcodes locale/safe-search and omits paging, time filters and suggestions.
+  - Qwant: C# uses the same undocumented JSON endpoint but omits DataDome cookie caching, typed rate-limit/CAPTCHA/access-denied outcomes, paging and other verticals.
+  - Yahoo: result DOM and redirect URL handling are similar; C# omits YBV cookie caching and locale/paging/time/safe-search mapping.
+  - Yandex: the C# provider is a materially different authenticated Yandex Cloud Search API integration, not a port of SearXNG's public HTML scraper.
+  - Naver: C# only covers first-page general web; upstream has category-specific paging, time filters, thumbnails and image/news/video parsers.
+  - Seznam: two-step hidden-field bootstrap is retained, but explicit cookie transfer and typed verification handling differ.
+  - Wikipedia: C# Action API text search is semantically different from SearXNG's language-aware REST summary/infobox engine.
+  - Generic JSON: C# typed definition/catalogue model is a useful simplified counterpart, but Python's recursive query paths, page/time/safe maps, cookies, suggestions and thumbnail support are not all present.
+  - RSS/Atom: explicitly labelled a C#-native feed foundation; no one-to-one Python engine provenance is claimed.
+- **Evidence:** Each entry links the pinned SearXNG source and the actual C# provider/parser/test files. The Wikipedia entry explicitly records that no dedicated Wikipedia provider test file exists in the current tree.
+- **Action:** Updated the handover to reflect the expanded corpus and removed completed engine comparisons from the immediate work queue. Provider catalogue remains frozen at 67; no adapters were added or changed.
+- **Verification:** Documentation-only update. No live upstream requests. CI for the corpus expansion commit is pending at the time of this log entry.
+- **Next:** Continue P0 shared architecture by wiring request context into API parsing and only declaring capabilities that the current C# request builders really honour. Then implement typed provider outcomes/health. Keep the provider catalogue frozen.
