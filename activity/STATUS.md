@@ -5,12 +5,13 @@ Updated: 2026-11-22
 ## Repository
 - Public repository: https://github.com/fwjlh/DotNetWebSearchApi
 - Default branch: main
-- Latest code commit: `d2a31c49282bcca7c50d4e96d95afe46c66bd535` (API request-context parsing, unsupported-provider reporting and integration tests; build-and-test passed with 160 tests in [run 45024120851](https://github.com/fwjlh/DotNetWebSearchApi/actions/runs/45024120851)). Latest repository changes are documentation commits expanding the porting rationale corpus and handover.
+- Latest code commit: `2e186f7ff23720999d7688c3801d5042784dc08a` (typed provider failure outcomes and classification tests; build-and-test passed with 167 tests, 0 skipped in [run 45024534370](https://github.com/fwjlh/DotNetWebSearchApi/actions/runs/45024534370)). Latest repository changes are documentation commits reconciling the porting audit and rationale corpus.
 - Current provider catalogue: **67 adapters, frozen** pending shared-framework refactoring.
 - Previous provider-catalogue baseline: build 0 warnings/errors; 156 tests passed (0 failed, 0 skipped), run [45020266512](https://github.com/fwjlh/DotNetWebSearchApi/actions/runs/45020266512). The subsequent request-context/capability code has now passed its GitHub Actions build-and-test job in [run 45022944719](https://github.com/fwjlh/DotNetWebSearchApi/actions/runs/45022944719); the workflow job reports success.
 - Current direction and consumer boundary: [docs/ARCHITECTURE_DECISIONS.md](../docs/ARCHITECTURE_DECISIONS.md).
-- Python-to-C# rationale corpus: [docs/PYTHON_TO_CSHARP_PORTING_NOTES.md](../docs/PYTHON_TO_CSHARP_PORTING_NOTES.md). It covers Bing, DuckDuckGo, Brave, Mojeek, Google, Qwant, Yahoo, Yandex, Naver, Seznam, Wikipedia, generic JSON APIs, RSS/Atom and the shared request-context/capability translation against pinned SearXNG source revision `c6ee3e9fd0235004a694e63720efc869bb1e3594` where a direct upstream engine exists. It explicitly marks protocol substitutions, divergences and missing test coverage.
-- P0 request context now flows from `/api/search` and SearXNG-shaped `/search` into `SearchQuery`: categories, page, language, safe-search and time range. Invalid values are rejected; unsupported providers are skipped and reported separately (`unsupportedProviders` / `unsupported_engines`), not marked unresponsive. Conservative legacy-provider capabilities remain general/first-page/default-locale. Integration tests added; CI passed.
+- Python-to-C# rationale corpus: [docs/PYTHON_TO_CSHARP_PORTING_NOTES.md](../docs/PYTHON_TO_CSHARP_PORTING_NOTES.md). It covers Bing, DuckDuckGo, Brave, Mojeek, Google, Qwant, Yahoo, Yandex, Naver, Seznam, Wikipedia, generic JSON APIs, RSS/Atom, shared request-context/capability translation and typed exception/outcome mapping against pinned SearXNG source revision `c6ee3e9fd0235004a694e63720efc869bb1e3594` where a direct upstream engine exists.
+- P0 request context now flows from `/api/search` and SearXNG-shaped `/search` into `SearchQuery`: categories, page, language, safe-search and time range. Invalid values are rejected; unsupported providers are skipped and reported separately (`unsupportedProviders` / `unsupported_engines`), not marked unresponsive. Conservative legacy-provider capabilities remain general/first-page/default-locale. Integration tests added; CI passed with 160 tests in run 45024120851.
+- Typed provider outcomes now distinguish success, timeout, rate limit, transient HTTP, invalid response, authentication, access denied, challenge, configuration and unknown failures. Explicit provider failures can carry RetryAfter. Caller cancellation still propagates. CI passed with 167 tests in run 45024534370; cooldown/half-open health is not yet implemented.
 - Project overview and roadmap: [README.md](../README.md)
 
 ## Working application
@@ -33,7 +34,7 @@ Updated: 2026-11-22
 - Mojeek and the 59-provider catalogue passed CI in run [45019896375](https://github.com/fwjlh/DotNetWebSearchApi/actions/runs/45019896375): build passed with 0 warnings/errors; 148 tests passed.
 - Batch 7 and the 67-provider catalogue passed CI in run [45020266512](https://github.com/fwjlh/DotNetWebSearchApi/actions/runs/45020266512): build passed with 0 warnings/errors; 156 tests passed.
 - Architecture audit added at [docs/PORTING_AUDIT.md](../docs/PORTING_AUDIT.md). No code changed in the audit.
-- Rationale corpus records preserved behaviour, deliberate alternatives, omissions and known divergences; it explicitly avoids claiming full Python feature parity. Latest corpus expansion and capability-rationale docs passed CI in [run 45024292510](https://github.com/fwjlh/DotNetWebSearchApi/actions/runs/45024292510); earlier corpus docs passed runs [45023354409](https://github.com/fwjlh/DotNetWebSearchApi/actions/runs/45023354409) and [45023360277](https://github.com/fwjlh/DotNetWebSearchApi/actions/runs/45023360277).
+- Rationale corpus records preserved behaviour, deliberate alternatives, omissions and known divergences; it explicitly avoids claiming full Python feature parity. The typed-outcome rationale passed CI in [run 45024568368](https://github.com/fwjlh/DotNetWebSearchApi/actions/runs/45024568368); the latest porting-audit reconciliation is running in [run 45024625117](https://github.com/fwjlh/DotNetWebSearchApi/actions/runs/45024625117).
 - Batch 7 adds eight scholarly and open-knowledge providers with eight fixtures. CI passed: build 0 warnings/errors; 156 tests passed (0 failed, 0 skipped).
 - Mojeek is implemented with bounded Altcha proof-of-work; fixture tests do not establish live challenge acceptance.
 - Batch 6 adds eight adapters and eight fixture tests. CI passed: build 0 warnings/errors; 146 tests passed (0 failed, 0 skipped).
@@ -73,7 +74,7 @@ Search/media/regional providers (batch 5): Wiby, TVmaze, Radio Browser, PeerTube
 
 ## Verification history
 - Latest fully verified batch before batch 5: commit 92a34b06ec137dfea1625af2d881803c90bc3045, CI run 45013727838, build 0 warnings/errors, 130 tests passed.
-- Local .NET SDK is unavailable in the orchestration environment; GitHub Actions is the build/test verification source. The latest code run 45024120851 reports build success and 160 passed, 0 failed, 0 skipped. Documentation runs for the newest README and corpus queue updates are still in progress.
+- Local .NET SDK is unavailable in the orchestration environment; GitHub Actions is the build/test verification source. Latest code run 45024534370 reports build success and 167 passed, 0 failed, 0 skipped. The latest porting-audit documentation run is in progress.
 - Batch 5 verification is pending; do not count its eight providers as CI-verified until the workflow succeeds.
 
 ## Working rules
