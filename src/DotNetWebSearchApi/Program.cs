@@ -21,6 +21,12 @@ builder.Services.AddHttpClient<GoogleSearchProvider>(client =>
     client.DefaultRequestHeaders.AcceptLanguage.ParseAdd("en-GB,en;q=0.9");
     client.DefaultRequestHeaders.Add("Cookie", "CONSENT=YES+");
 });
+builder.Services.AddHttpClient<NaverSearchProvider>(client =>
+{
+    client.DefaultRequestHeaders.UserAgent.ParseAdd("DotNetWebSearchApi/0.1 (+https://github.com/fwjlh/DotNetWebSearchApi)");
+    client.DefaultRequestHeaders.Accept.ParseAdd("text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8");
+    client.DefaultRequestHeaders.AcceptLanguage.ParseAdd("ko-KR,ko;q=0.9,en;q=0.8");
+});
 builder.Services.AddHttpClient<QwantSearchProvider>(client =>
 {
     client.DefaultRequestHeaders.UserAgent.ParseAdd("DotNetWebSearchApi/0.1 (+https://github.com/fwjlh/DotNetWebSearchApi)");
@@ -47,6 +53,7 @@ builder.Services.AddSingleton<ISearchProvider>(sp => sp.GetRequiredService<BingS
 builder.Services.AddSingleton<ISearchProvider>(sp => sp.GetRequiredService<DuckDuckGoSearchProvider>());
 builder.Services.AddSingleton<ISearchProvider>(sp => sp.GetRequiredService<GoogleSearchProvider>());
 builder.Services.AddSingleton<ISearchProvider>(sp => sp.GetRequiredService<QwantSearchProvider>());
+builder.Services.AddSingleton<ISearchProvider>(sp => sp.GetRequiredService<NaverSearchProvider>());
 builder.Services.AddSingleton<ISearchProvider>(sp => sp.GetRequiredService<YahooSearchProvider>());
 
 string? yandexApiKey = builder.Configuration["YANDEX_SEARCH_API_KEY"];

@@ -302,3 +302,20 @@ Every material repository action is recorded here with its reason, result, verif
 - **Result:** **CI passed.** Restore succeeded, build succeeded, and all 64 tests passed (0 failed, 0 skipped).
 - **Verification:** Workflow run https://github.com/fwjlh/DotNetWebSearchApi/actions/runs/45008975175. Eight Yandex tests cover Base64 XML parsing, passages, API error handling, invalid URLs, credentials/body construction and query length. Tests use fixtures and do not make paid requests.
 - **Next:** Record Yandex as optional/paid, update README and status, then assess the next useful providers to reach ten.
+
+
+## 2026-11-22 — Naver Web adapter
+
+### 37. Evaluate Naver as a regional search provider
+- **Reason:** Continue toward ten useful adapters after the major general-purpose engines; Naver is a major Korean search provider.
+- **Action:** Reviewed current SearXNG Naver engine source and the configured-engine list.
+- **Result:** Naver general web search uses search.naver.com/search.naver with query, start and where=web parameters. Results are HTML cards identified by fds-web-normal-doc-root; title and description use sds-comps text classes. The provider is regional/Korean and currently disabled by default in SearXNG.
+- **Verification:** Current SearXNG source and configured engine list reviewed. No live request is claimed.
+- **Next:** Add a small first-page HTML adapter with fixture tests.
+
+### 38. Implement Naver first-page adapter
+- **Reason:** Add a regional search provider without requiring an API key.
+- **Action:** Added NaverSearchProvider, NaverSearchResultParser, Korean/English request language headers and five tests for parsing, invalid links, query construction and HTTP errors.
+- **Result:** Implementation and tests prepared for commit. First-page general web results only; no paging, images, news or video modes.
+- **Verification:** Pending GitHub Actions. Tests use fixture HTML and a fake handler.
+- **Next:** Inspect CI. If green, assess Seznam as the tenth provider; it requires a homepage bootstrap request, hidden form values and cookie reuse.
