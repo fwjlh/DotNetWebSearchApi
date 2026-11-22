@@ -7,7 +7,8 @@ public static class SearxngSearchResponseMapper
         SearxngSearchResult[] results = execution.Results.Select(MapResult).ToArray();
         return new SearxngSearchResponse(
             query, results.Length, results, Array.Empty<string>(), Array.Empty<string>(),
-            Array.Empty<object>(), Array.Empty<string>(), execution.UnresponsiveProviders, execution.UnsupportedProviders);
+            Array.Empty<object>(), Array.Empty<string>(), execution.UnresponsiveProviders,
+            execution.UnsupportedProviders, execution.CoolingDownProviders);
     }
 
     private static SearxngSearchResult MapResult(SearchResult result)
