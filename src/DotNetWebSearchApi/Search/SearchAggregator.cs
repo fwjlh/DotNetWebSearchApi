@@ -152,7 +152,10 @@ public sealed class SearchAggregator
                 string providerName = string.IsNullOrWhiteSpace(result.Provider)
                     ? providerResult.Outcome.ProviderName
                     : result.Provider;
-                Dictionary<string, int> positions = new(result.Positions, StringComparer.OrdinalIgnoreCase);
+                Dictionary<string, int> positions = result.Positions.ToDictionary(
+                    item => item.Key,
+                    item => item.Value,
+                    StringComparer.OrdinalIgnoreCase);
                 if (!positions.TryGetValue(providerName, out int position))
                 {
                     position = result.Position is > 0 ? result.Position.Value : resultIndex;
@@ -178,7 +181,10 @@ public sealed class SearchAggregator
                     continue;
                 }
 
-                Dictionary<string, int> mergedPositions = new(existing.Positions, StringComparer.OrdinalIgnoreCase);
+                Dictionary<string, int> mergedPositions = existing.Positions.ToDictionary(
+                    item => item.Key,
+                    item => item.Value,
+                    StringComparer.OrdinalIgnoreCase);
                 foreach (KeyValuePair<string, int> contribution in normalized.Positions)
                 {
                     if (!mergedPositions.TryGetValue(contribution.Key, out int currentPosition)
