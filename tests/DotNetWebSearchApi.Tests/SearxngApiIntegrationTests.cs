@@ -203,6 +203,7 @@ public sealed class SearxngApiIntegrationTests
         Assert.Equal("ok", document.RootElement.GetProperty("status").GetString());
         Assert.Equal("healthy", provider.GetProperty("status").GetString());
         Assert.Equal(1, provider.GetProperty("successfulSearches").GetInt64());
+        Assert.Equal("Closed", document.RootElement.GetProperty("provider_health")[0].GetProperty("status").GetString());
     }
 
     [Fact]
