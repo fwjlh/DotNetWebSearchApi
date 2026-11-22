@@ -64,6 +64,38 @@ public sealed class SearchHttpTransportTests
     }
 
     [Fact]
+    public async Task SendAsync_EnforcesPerHostConcurrencyLimit()
+    {
+        int active = 0;
+        int maximumActive = 0;
+        using HttpClient client = new(new AsyncStubHttpMessageHandler(async (_, cancellationToken) =>
+        {
+            int current = Interlocked.Increment(ref active);
+            Interlocked.Exchange(ref maximumActive, Math.Max(maximumActive, current));
+            await Task.Delay(20, cancellationToken);
+            Interlocked.Decrement(ref active);
+            return new HttpResponseMessage(HttpStatusCode.OK);
+        }));
+        SearchHttpTransport transport = new(new SearchHttpTransportOptions
+        {
+            MaximumConcurrentRequestsPerHost = 1
+        });
+
+        Task<SearchHttpResponse>[] requests = Enumerable.Range(0, 5)
+            .Select(_ => SendAsync(transport, client))
+            .ToArray();
+        await Task.WhenAll(requests);
+
+        Assert.Equal(1, maximumActive);
+    }
+
+    private static Task<SearchHttpResponse> SendAsync(SearchHttpTransport transport, HttpClient client)
+    {
+        using HttpRequestMessage request = new(HttpMethod.Get, "https://example.com/search");
+        return transport.SendAsync(client, request, CancellationToken.None);
+    }
+
+    [Fact]
     public async Task SendAsync_DecodesDeclaredResponseCharset()
     {
         byte[] content = System.Text.Encoding.Latin1.GetBytes("café");
@@ -79,6 +111,17 @@ public sealed class SearchHttpTransportTests
         SearchHttpResponse response = await transport.SendAsync(client, request, CancellationToken.None);
 
         Assert.Equal("café", response.Content);
+    }
+
+    private sealed class AsyncStubHttpMessageHandler(
+        Func<HttpRequestMessage, CancellationToken, Task<HttpResponseMessage>> responseFactory) : HttpMessageHandler
+    {
+        protected override Task<HttpResponseMessage> SendAsync(
+            HttpRequestMessage request,
+            CancellationToken cancellationToken)
+        {
+            return responseFactory(request, cancellationToken);
+        }
     }
 
     private sealed class StubHttpMessageHandler(
