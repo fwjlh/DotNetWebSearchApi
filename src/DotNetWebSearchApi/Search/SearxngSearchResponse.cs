@@ -10,7 +10,8 @@ public sealed record SearxngSearchResponse(
     IReadOnlyList<string> Corrections,
     IReadOnlyList<object> Infoboxes,
     IReadOnlyList<string> Suggestions,
-    [property: JsonPropertyName("unresponsive_engines")] IReadOnlyList<string> UnresponsiveEngines);
+    [property: JsonPropertyName("unresponsive_engines")] IReadOnlyList<string> UnresponsiveEngines,
+    [property: JsonPropertyName("unsupported_engines")] IReadOnlyList<string> UnsupportedEngines);
 
 public sealed record SearxngSearchResult(
     string Url,
