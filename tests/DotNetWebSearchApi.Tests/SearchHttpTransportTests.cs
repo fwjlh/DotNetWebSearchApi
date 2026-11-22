@@ -1,0 +1,94 @@
+using System.Net;
+using System.Net.Http.Headers;
+using DotNetWebSearchApi.Search;
+using Xunit;
+
+namespace DotNetWebSearchApi.Tests;
+
+public sealed class SearchHttpTransportTests
+{
+    [Fact]
+    public async Task SendAsync_ReturnsBodyHeadersAndRetryAfter()
+    {
+        using HttpClient client = new(new StubHttpMessageHandler(_ =>
+        {
+            HttpResponseMessage response = new(HttpStatusCode.TooManyRequests)
+            {
+                Content = new StringContent("rate limited")
+            };
+            response.Headers.RetryAfter = new RetryConditionHeaderValue(TimeSpan.FromSeconds(20));
+            response.Headers.TryAddWithoutValidation("X-Provider-State", "limited");
+            return response;
+        }));
+        SearchHttpTransport transport = new();
+        using HttpRequestMessage request = new(HttpMethod.Get, "https://example.com/search");
+
+        SearchHttpResponse response = await transport.SendAsync(client, request, CancellationToken.None);
+
+        Assert.Equal(HttpStatusCode.TooManyRequests, response.StatusCode);
+        Assert.Equal("rate limited", response.Content);
+        Assert.Equal(TimeSpan.FromSeconds(20), response.RetryAfter);
+        Assert.True(response.TryGetHeader("X-Provider-State", out IReadOnlyList<string>? values));
+        Assert.Equal("limited", Assert.Single(values!));
+    }
+
+    [Theory]
+    [InlineData(401, ProviderFailureKind.Authentication)]
+    [InlineData(403, ProviderFailureKind.AccessDenied)]
+    [InlineData(429, ProviderFailureKind.RateLimited)]
+    [InlineData(503, ProviderFailureKind.TransientHttp)]
+    public async Task EnsureSuccessStatusCode_MapsHttpFailure(int statusCode, ProviderFailureKind expectedKind)
+    {
+        using HttpClient client = new(new StubHttpMessageHandler(_ => new HttpResponseMessage((HttpStatusCode)statusCode)));
+        SearchHttpTransport transport = new();
+        using HttpRequestMessage request = new(HttpMethod.Get, "https://example.com/search");
+        SearchHttpResponse response = await transport.SendAsync(client, request, CancellationToken.None);
+
+        ProviderFailureException exception = Assert.Throws<ProviderFailureException>(
+            () => response.EnsureSuccessStatusCode("fixture"));
+        Assert.Equal(expectedKind, exception.FailureKind);
+    }
+
+    [Fact]
+    public async Task SendAsync_RejectsResponseLargerThanConfiguredLimit()
+    {
+        using HttpClient client = new(new StubHttpMessageHandler(_ =>
+            new HttpResponseMessage(HttpStatusCode.OK) { Content = new StringContent("01234567890") }));
+        SearchHttpTransport transport = new(new SearchHttpTransportOptions { MaximumResponseBytes = 10 });
+        using HttpRequestMessage request = new(HttpMethod.Get, "https://example.com/search");
+
+        ProviderFailureException exception = await Assert.ThrowsAsync<ProviderFailureException>(
+            () => transport.SendAsync(client, request, CancellationToken.None));
+
+        Assert.Equal(ProviderFailureKind.InvalidResponse, exception.FailureKind);
+    }
+
+    [Fact]
+    public async Task SendAsync_DecodesDeclaredResponseCharset()
+    {
+        byte[] content = System.Text.Encoding.Latin1.GetBytes("café");
+        using HttpClient client = new(new StubHttpMessageHandler(_ =>
+        {
+            ByteArrayContent body = new(content);
+            body.Headers.ContentType = new MediaTypeHeaderValue("text/plain") { CharSet = "iso-8859-1" };
+            return new HttpResponseMessage(HttpStatusCode.OK) { Content = body };
+        }));
+        SearchHttpTransport transport = new();
+        using HttpRequestMessage request = new(HttpMethod.Get, "https://example.com/search");
+
+        SearchHttpResponse response = await transport.SendAsync(client, request, CancellationToken.None);
+
+        Assert.Equal("café", response.Content);
+    }
+
+    private sealed class StubHttpMessageHandler(
+        Func<HttpRequestMessage, HttpResponseMessage> responseFactory) : HttpMessageHandler
+    {
+        protected override Task<HttpResponseMessage> SendAsync(
+            HttpRequestMessage request,
+            CancellationToken cancellationToken)
+        {
+            return Task.FromResult(responseFactory(request));
+        }
+    }
+}
