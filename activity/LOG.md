@@ -336,3 +336,11 @@ Every material repository action is recorded here with its reason, result, verif
 - **Result:** Implementation and tests prepared for commit. HttpClient's default cookie handler is relied on to retain cookies between the homepage and search requests. No live Seznam request is made in tests.
 - **Verification:** Pending GitHub Actions.
 - **Next:** Inspect CI. If green, update README/status to ten providers and decide whether to proceed to further specialist SearXNG engines or begin the compatibility JSON API.
+
+
+### 41. Verify Seznam Web adapter in GitHub Actions
+- **Reason:** Confirm the tenth provider's homepage bootstrap, hidden-field extraction, query construction and HTML parser.
+- **Action:** Inspected workflow run 45009221825 for commit 671143fc87d4aed76eec3cb012e88e262cb5f44b and fetched the job log.
+- **Result:** **CI passed.** Restore and build succeeded; all 76 tests passed (0 failed, 0 skipped). Seven tests cover Seznam parsing, hidden fields, verification URI detection and the two-request bootstrap flow.
+- **Verification:** Workflow run https://github.com/fwjlh/DotNetWebSearchApi/actions/runs/45009221825. Tests use fixture HTML and fake HTTP handlers; they do not contact Seznam.
+- **Next:** Mark the first ten-provider milestone complete. Move to the agreed SearXNG-compatible JSON API, then the browser search/admin/diagnostics experience. Keep additional regional/specialist providers as follow-on work rather than delaying the API milestone.

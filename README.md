@@ -49,9 +49,10 @@ DotNetWebSearchApi puts that work behind one service:
 | Qwant Web adapter | Working (experimental) | Undocumented JSON API; DataDome may deny requests |
 | Yahoo Web adapter | Working (experimental) | HTML parser, sB preferences and bounded YBV redirect handling; live availability not tested |
 | Yandex Search API adapter | Working (optional, paid) | Requires YANDEX_SEARCH_API_KEY and YANDEX_FOLDER_ID |
+| Naver Web adapter | Working (regional) | Korean general-web HTML results; first page only |\n| Seznam Web adapter | Working (regional) | Homepage bootstrap, hidden fields and cookie reuse; live availability not tested |
 | Automated build and tests | Working | GitHub Actions / .NET 10 |
 | Major web-search adapters | In progress | Bing, Brave, Google and DuckDuckGo adapters are implemented |
-| First 5–10 provider adapters | In progress | Five providers are implemented; extend the useful provider set next |
+| First 5–10 provider adapters | Initial target met | Ten provider adapters are implemented and CI-tested |
 | SearXNG-compatible JSON API | Planned | Compatibility layer after core adapters |
 | Browser search interface | Planned | Search, provider selection and result display |
 | Administration and diagnostics | Planned | Provider configuration, health, logs and operational visibility |
@@ -74,9 +75,11 @@ The implementation strategy is to work from the major general-purpose search eng
 | 6 | Qwant | Working (experimental) | Undocumented JSON API; relies on HTTP cookie handling; live availability not tested in CI |
 | 7 | Yahoo Web | Working (experimental) | HTML adapter with cookie and redirect handling; live availability not tested in CI |
 | 8 | Yandex Search API | Working (optional, paid) | Requires API key, folder ID and billing account; current synchronous price about $4/1,000 daytime and $3/1,000 night-time requests |
-| 9 | Mojeek | Deferred | Current SearXNG settings mark it inactive due to proof-of-work CAPTCHA |
-| 10 | Startpage | Deferred | Current SearXNG settings mark it inactive due to Anubis proof-of-work |
-| 11+ | Further SearXNG providers | Planned | Prioritise by usefulness, reliability, accessibility and maintenance cost |
+| 9 | Naver Web | Working (regional) | Korean first-page HTML results; disabled by default in SearXNG |
+| 10 | Seznam Web | Working (regional) | HTML with homepage bootstrap and cookie reuse; disabled by default in SearXNG |
+| 11 | Mojeek | Deferred | Current SearXNG settings mark it inactive due to proof-of-work CAPTCHA |
+| 12 | Startpage | Deferred | Current SearXNG settings mark it inactive due to Anubis proof-of-work |
+| 13+ | Further SearXNG providers | Planned | Prioritise by usefulness, reliability, accessibility and maintenance cost |
 
 Provider ordering is a development priority, not a claim that every upstream service offers a free or unrestricted API. Current SearXNG settings mark Mojeek inactive because of its proof-of-work CAPTCHA and Startpage inactive because of its Anubis proof-of-work challenge; those are deferred until their CPU and access implications are understood. Brave's current Search plan is listed at $5 per 1,000 requests with $5 in monthly credits; activating a plan requires payment-card details. Check the [current Brave plans](https://brave.com/search/api/) before use. Each adapter must respect the provider's current access rules, terms, rate limits and attribution requirements. Where a provider requires credentials, keys will be configured as secrets and never committed to source control.
 
@@ -217,14 +220,14 @@ Run from the repository root:
 
 GitHub Actions runs restore, build and tests for pushes and pull requests. The badge at the top links to the workflow.
 
-The current verified implementation passes CI with **64 tests passing** (9 foundation tests, 6 Bing adapter tests, 8 Brave adapter tests, 7 Google adapter tests, 11 DuckDuckGo adapter tests, 8 Qwant adapter tests, 7 Yahoo adapter tests and 8 Yandex adapter tests). Check the Actions history for the latest result; this README does not assume that a previous successful run proves every future commit is green.
+The current verified implementation passes CI with **76 tests passing** across the aggregation layer and ten provider adapters. Check the Actions history for the latest result; this README does not assume that a previous successful run proves every future commit is green.
 
 ## Planned delivery sequence
 
 The work is intentionally staged so the useful search capability comes before the polish:
 
 1. **Provider foundation and major engines.** Keep the provider contract, aggregation and test structure solid; implement the major general-purpose engines first.
-2. **First 5–10 adapters.** Work down the provider priority list, testing each adapter and recording access requirements.
+2. **First 5–10 adapters.** Initial target met: ten adapters are implemented and tested. Continue expanding only where a provider adds real value.
 3. **SearXNG-compatible JSON API.** Add a compatibility surface so existing clients can consume a familiar response format.
 4. **Browser interface and administration.** Add a practical search page, provider controls, configuration management and diagnostics.
 5. **Operational hardening.** Add SQL Server-backed configuration where useful, API-key authentication, quotas, rate limiting, metrics and deployment guidance before public exposure.
