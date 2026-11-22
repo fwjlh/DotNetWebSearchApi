@@ -8,6 +8,8 @@ public sealed class JsonApiSearchProvider : ISearchProvider
 {
     private readonly HttpClient _httpClient;
     private readonly JsonApiSearchDefinition _definition;
+    private readonly SemaphoreSlim _requestGate = new(1, 1);
+    private DateTimeOffset _nextRequestUtc = DateTimeOffset.MinValue;
 
     public JsonApiSearchProvider(HttpClient httpClient, JsonApiSearchDefinition definition)
     {
@@ -23,8 +25,9 @@ public sealed class JsonApiSearchProvider : ISearchProvider
         SearchQuery query,
         CancellationToken cancellationToken)
     {
-        Uri requestUri = BuildRequestUri(query);
-        using HttpResponseMessage response = await _httpClient.GetAsync(requestUri, cancellationToken);
+        await WaitForRequestSlotAsync(cancellationToken);
+        using HttpRequestMessage request = BuildRequest(query);
+        using HttpResponseMessage response = await _httpClient.SendAsync(request, cancellationToken);
         response.EnsureSuccessStatusCode();
 
         await using Stream responseStream = await response.Content.ReadAsStreamAsync(cancellationToken);
@@ -35,13 +38,63 @@ public sealed class JsonApiSearchProvider : ISearchProvider
         return ReadResults(document.RootElement);
     }
 
+    private HttpRequestMessage BuildRequest(SearchQuery query)
+    {
+        if (string.Equals(_definition.RequestMethod, "POST", StringComparison.OrdinalIgnoreCase))
+        {
+            Dictionary<string, object> body = _definition.BodyFixedParameters.ToDictionary(
+                parameter => parameter.Key,
+                parameter => parameter.Value,
+                StringComparer.Ordinal);
+            body[_definition.BodyQueryParameter] = query.Text;
+            if (!string.IsNullOrWhiteSpace(_definition.BodyLimitParameter))
+            {
+                body[_definition.BodyLimitParameter] = Math.Clamp(query.Limit, 1, 50);
+            }
+
+            return new HttpRequestMessage(HttpMethod.Post, _definition.Endpoint)
+            {
+                Content = JsonContent.Create(body)
+            };
+        }
+
+        return new HttpRequestMessage(HttpMethod.Get, BuildRequestUri(query));
+    }
+
+    private async Task WaitForRequestSlotAsync(CancellationToken cancellationToken)
+    {
+        if (_definition.MinimumIntervalMilliseconds <= 0)
+        {
+            return;
+        }
+
+        await _requestGate.WaitAsync(cancellationToken);
+        try
+        {
+            TimeSpan delay = _nextRequestUtc - DateTimeOffset.UtcNow;
+            if (delay > TimeSpan.Zero)
+            {
+                await Task.Delay(delay, cancellationToken);
+            }
+
+            _nextRequestUtc = DateTimeOffset.UtcNow.AddMilliseconds(_definition.MinimumIntervalMilliseconds);
+        }
+        finally
+        {
+            _requestGate.Release();
+        }
+    }
+
     private Uri BuildRequestUri(SearchQuery query)
     {
         Dictionary<string, string> parameters = _definition.FixedParameters.ToDictionary(
             parameter => parameter.Key,
             parameter => parameter.Value,
             StringComparer.Ordinal);
-        parameters[_definition.QueryParameter] = query.Text;
+        if (!string.IsNullOrWhiteSpace(_definition.QueryParameter))
+        {
+            parameters[_definition.QueryParameter] = query.Text;
+        }
         if (!string.IsNullOrWhiteSpace(_definition.LimitParameter))
         {
             parameters[_definition.LimitParameter] = Math.Clamp(query.Limit, 1, 50).ToString();
@@ -199,6 +252,17 @@ public sealed record JsonApiSearchDefinition
     public string SnippetPath { get; init; } = string.Empty;
     public string UrlPrefix { get; init; } = string.Empty;
     public string Attribution { get; init; } = string.Empty;
+    public string RequestMethod { get; init; } = "GET";
+    public string BodyQueryParameter { get; init; } = string.Empty;
+    public string BodyLimitParameter { get; init; } = string.Empty;
+    public IReadOnlyDictionary<string, object> BodyFixedParameters { get; init; } =
+        new Dictionary<string, object>();
+    public IReadOnlyDictionary<string, string> Headers { get; init; } =
+        new Dictionary<string, string>();
+    public string ApiKeyConfigurationKey { get; init; } = string.Empty;
+    public string ApiKeyHeader { get; init; } = string.Empty;
+    public string ApiKeyPrefix { get; init; } = string.Empty;
+    public int MinimumIntervalMilliseconds { get; init; }
     public IReadOnlyDictionary<string, string> FixedParameters { get; init; } =
         new Dictionary<string, string>();
 }

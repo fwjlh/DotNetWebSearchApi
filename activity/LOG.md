@@ -577,3 +577,15 @@ Every material repository action is recorded here with its reason, result, verif
 - **Correction history:** Initial batch commit 41ee52ac3334ea20984a21d49f57dc8de6eb1d70 failed compilation because a comma was missing between provider definitions. The error was identified from the compiler log and corrected in commit 64c664c91a243bdd9561d18fd5ae4ee7ddd3d5cb.
 - **Verification:** https://github.com/fwjlh/DotNetWebSearchApi/actions/runs/45019256660. Eight new fixture cases passed. The 50 providers are implemented, registered and CI fixture-tested; live upstream acceptance remains unverified.
 - **Next:** Continue from 50 to 100, keeping the original priority of general web search providers before the remaining specialist catalogue.
+
+
+## 2026-11-22 — Batch 6 implementation
+
+### 68. Add six search API adapters and two RSS search providers
+- **Reason:** Continue prioritising independent general web search and major news search sources after the 50-provider milestone.
+- **Action:** Added Mwmbl, Marginalia Search, Yep, Kagi, Exa and Wiktionary JSON adapters; added Google News and Bing News RSS adapters. Extended JSON request handling for POST bodies, provider headers, optional API-key configuration and per-provider request spacing. Mwmbl is throttled to one request per second. Kagi, Exa and Yep are only registered when their API keys are configured; no credentials are committed.
+- **RSS handling:** Added safe XML parsing with DTD processing prohibited, RSS and Atom support, and Bing News publisher-link unwrapping.
+- **Tests:** Added six JSON fixtures and two RSS fixtures, including POST payload construction and Bing redirect resolution.
+- **Result:** 58 provider adapters are implemented in source; Kagi, Exa and Yep remain optional until their credentials are configured.
+- **Verification:** Pending GitHub Actions. No live upstream requests were made.
+- **Next:** Verify build and fixtures; then continue toward 100, prioritising general web search providers and avoiding unlicensed or undocumented assumptions.

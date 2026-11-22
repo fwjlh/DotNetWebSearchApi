@@ -499,14 +499,138 @@ public static class JsonApiProviderCatalog
             UrlPath = "foreign_landing_url",
             SnippetPath = "attribution"
         }
+        ,
+        new JsonApiSearchDefinition
+        {
+            Name = "mwmbl",
+            Endpoint = "https://api.mwmbl.org/api/v2/search/",
+            QueryParameter = "q",
+            LimitParameter = string.Empty,
+            ResultsPath = "results",
+            TitlePath = "title",
+            UrlPath = "url",
+            SnippetPath = "content",
+            MinimumIntervalMilliseconds = 1000
+        },
+        new JsonApiSearchDefinition
+        {
+            Name = "marginalia",
+            Endpoint = "https://api2.marginalia-search.com/search",
+            QueryParameter = "query",
+            LimitParameter = "count",
+            ResultsPath = "results",
+            TitlePath = "title",
+            UrlPath = "url",
+            SnippetPath = "description",
+            Headers = new Dictionary<string, string> { ["API-Key"] = "public" }
+        },
+        new JsonApiSearchDefinition
+        {
+            Name = "yep",
+            Endpoint = "https://api.yep.com/search",
+            QueryParameter = "query",
+            LimitParameter = "limit",
+            ResultsPath = "1.results",
+            TitlePath = "title",
+            UrlPath = "url",
+            SnippetPath = "snippet",
+            FixedParameters = new Dictionary<string, string> { ["safeSearch"] = "moderate" }
+        },
+        new JsonApiSearchDefinition
+        {
+            Name = "kagi",
+            Endpoint = "https://kagi.com/api/v1/search",
+            QueryParameter = string.Empty,
+            LimitParameter = string.Empty,
+            ResultsPath = "data.search",
+            TitlePath = "title",
+            UrlPath = "url",
+            SnippetPath = "snippet",
+            RequestMethod = "POST",
+            BodyQueryParameter = "query",
+            BodyLimitParameter = "limit",
+            BodyFixedParameters = new Dictionary<string, object> { ["workflow"] = "search" },
+            ApiKeyConfigurationKey = "KAGI_API_KEY",
+            ApiKeyHeader = "Authorization",
+            ApiKeyPrefix = "Bearer "
+        },
+        new JsonApiSearchDefinition
+        {
+            Name = "exa",
+            Endpoint = "https://api.exa.ai/search",
+            QueryParameter = string.Empty,
+            LimitParameter = string.Empty,
+            ResultsPath = "results",
+            TitlePath = "title",
+            UrlPath = "url",
+            SnippetPath = "highlights.0",
+            RequestMethod = "POST",
+            BodyQueryParameter = "query",
+            BodyLimitParameter = "numResults",
+            BodyFixedParameters = new Dictionary<string, object>
+            {
+                ["type"] = "auto",
+                ["contents"] = new Dictionary<string, object> { ["highlights"] = true }
+            },
+            ApiKeyConfigurationKey = "EXA_API_KEY",
+            ApiKeyHeader = "x-api-key"
+        },
+        new JsonApiSearchDefinition
+        {
+            Name = "wiktionary",
+            Endpoint = "https://en.wiktionary.org/w/api.php",
+            QueryParameter = "srsearch",
+            LimitParameter = "srlimit",
+            ResultsPath = "query.search",
+            TitlePath = "title",
+            UrlPath = "title",
+            SnippetPath = "snippet",
+            UrlPrefix = "https://en.wiktionary.org/wiki/",
+            FixedParameters = new Dictionary<string, string>
+            {
+                ["action"] = "query",
+                ["list"] = "search",
+                ["format"] = "json",
+                ["srprop"] = "snippet"
+            }
+        }
     };
 
-    public static void Register(IServiceCollection services)
+    public static void Register(IServiceCollection services, IConfiguration configuration)
     {
         foreach (JsonApiSearchDefinition definition in Definitions)
         {
-            RegisterProvider(services, definition);
+            if (TryConfigureDefinition(definition, configuration, out JsonApiSearchDefinition configured))
+            {
+                RegisterProvider(services, configured);
+            }
         }
+    }
+
+    private static bool TryConfigureDefinition(
+        JsonApiSearchDefinition definition,
+        IConfiguration configuration,
+        out JsonApiSearchDefinition configured)
+    {
+        configured = definition;
+        if (string.IsNullOrWhiteSpace(definition.ApiKeyConfigurationKey))
+        {
+            return true;
+        }
+
+        string? apiKey = configuration[definition.ApiKeyConfigurationKey];
+        if (string.IsNullOrWhiteSpace(apiKey))
+        {
+            return false;
+        }
+
+        Dictionary<string, string> headers = definition.Headers.ToDictionary(
+            item => item.Key,
+            item => item.Value,
+            StringComparer.OrdinalIgnoreCase);
+        headers[definition.ApiKeyHeader] = definition.ApiKeyPrefix + apiKey;
+        configured = definition with { Headers = headers };
+        return true;
     }
 
     private static void RegisterProvider(IServiceCollection services, JsonApiSearchDefinition definition)
@@ -516,6 +640,10 @@ public static class JsonApiProviderCatalog
             client.DefaultRequestHeaders.UserAgent.ParseAdd(
                 "DotNetWebSearchApi/0.1 (+https://github.com/fwjlh/DotNetWebSearchApi)");
             client.DefaultRequestHeaders.Accept.ParseAdd("application/json");
+            foreach (KeyValuePair<string, string> header in definition.Headers)
+            {
+                client.DefaultRequestHeaders.TryAddWithoutValidation(header.Key, header.Value);
+            }
         });
         services.AddSingleton<ISearchProvider>(serviceProvider =>
             new JsonApiSearchProvider(

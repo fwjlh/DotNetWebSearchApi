@@ -92,6 +92,14 @@ DotNetWebSearchApi puts that work behind one service:
 | Wikinews | Working (JSON API) | English-language news archive search |
 | Spanish Wikipedia | Working (JSON API) | Regional MediaWiki search |
 | Openverse | Working (JSON API) | Openly licensed image search; anonymous API rate limits apply |
+| Mwmbl | Implemented (JSON API) | Independent web index; throttled to its documented anonymous request rate |
+| Marginalia Search | Implemented (JSON API) | Independent small-web index; public API key may be rate limited |
+| Yep | Implemented (JSON API) | Yep search API; requires YEP_API_KEY |
+| Kagi | Implemented (JSON API) | Premium search API; requires KAGI_API_KEY and paid API balance |
+| Exa | Implemented (JSON API) | Search API; requires EXA_API_KEY and account credits |
+| Google News | Implemented (RSS) | UK-edition news search feed; undocumented feed contract |
+| Bing News | Implemented (RSS) | UK-edition news search feed; publisher links are unwrapped |
+| Wiktionary | Implemented (JSON API) | English dictionary and etymology search |
 | Automated build and tests | Working | GitHub Actions / .NET 10 |
 | Major web-search adapters | Initial wave complete | Bing, Brave, Google, DuckDuckGo and other priority providers are implemented |
 | First 5–10 provider adapters | Initial target met | Forty-two provider adapters are implemented and CI-tested |
@@ -126,7 +134,8 @@ The implementation strategy is to work from the major general-purpose search eng
 | 27–34 | Developer and package API wave 3 | CI-verified | Super User, Server Fault, Ask Ubuntu, GitLab, Gitea, Maven Central, Packagist and pub.dev |
 | 35–42 | Media, knowledge and academic wave 4 | CI-verified | arXiv, Bilibili, Dailymotion, Deezer, Steam, MusicBrainz, Wikidata and German Wikipedia |
 | 43–50 | Search, media and regional wave 5 | CI-verified | Wiby, TVmaze, Radio Browser, PeerTube, Wikimedia Commons, Wikinews, Spanish Wikipedia and Openverse |
-| 51–100 | Further SearXNG providers | Planned | Prioritise by usefulness, reliability, accessibility, terms and maintenance cost; count only tested request/parser/registration adapters |
+| 51–58 | General search and news wave 6 | Implemented in code; CI pending | Mwmbl, Marginalia Search, Yep, Kagi, Exa, Google News, Bing News and Wiktionary |
+| 59–100 | Further SearXNG providers | Planned | Prioritise by usefulness, reliability, accessibility, terms and maintenance cost; count only tested request/parser/registration adapters |
 
 Provider ordering is a development priority, not a claim that every upstream service offers a free or unrestricted API. Current SearXNG settings mark Mojeek inactive because of its proof-of-work CAPTCHA and Startpage inactive because of its Anubis proof-of-work challenge; those are deferred until their CPU and access implications are understood. Brave's current Search plan is listed at $5 per 1,000 requests with $5 in monthly credits; activating a plan requires payment-card details. Check the [current Brave plans](https://brave.com/search/api/) before use. Each adapter must respect the provider's current access rules, terms, rate limits and attribution requirements. Where a provider requires credentials, keys will be configured as secrets and never committed to source control.
 

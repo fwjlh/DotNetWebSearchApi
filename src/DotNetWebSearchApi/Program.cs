@@ -2,7 +2,8 @@ using System.Net;
 using DotNetWebSearchApi.Search;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
-JsonApiProviderCatalog.Register(builder.Services);
+JsonApiProviderCatalog.Register(builder.Services, builder.Configuration);
+RssProviderCatalog.Register(builder.Services);
 builder.Services.AddHttpClient<BingSearchProvider>(client => client.DefaultRequestHeaders.UserAgent.ParseAdd("DotNetWebSearchApi/0.1 (+https://github.com/fwjlh/DotNetWebSearchApi)"));
 builder.Services.AddHttpClient<DuckDuckGoSearchProvider>(client =>
 {

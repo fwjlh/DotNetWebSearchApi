@@ -16,9 +16,13 @@ public sealed class JsonApiSearchProviderTests
         string expectedUrl)
     {
         Uri? requestUri = null;
+        string? requestBody = null;
+        HttpMethod? requestMethod = null;
         using HttpClient client = new(new StubHttpMessageHandler(request =>
         {
             requestUri = request.RequestUri;
+            requestMethod = request.Method;
+            requestBody = request.Content?.ReadAsStringAsync().GetAwaiter().GetResult();
             return new HttpResponseMessage(HttpStatusCode.OK)
             {
                 Content = new StringContent(fixture, Encoding.UTF8, "application/json")
@@ -34,10 +38,20 @@ public sealed class JsonApiSearchProviderTests
         Assert.Equal(definition.Name, result.Provider);
         Assert.Equal(expectedTitle, result.Title);
         Assert.Equal(expectedUrl, result.Url);
-        Assert.Contains("C%23%20%26%20search", requestUri!.Query);
-        if (!string.IsNullOrWhiteSpace(definition.LimitParameter))
+        if (string.Equals(definition.RequestMethod, "POST", StringComparison.OrdinalIgnoreCase))
         {
-            Assert.Contains(definition.LimitParameter + "=", Uri.UnescapeDataString(requestUri.Query));
+            Assert.Equal(HttpMethod.Post, requestMethod);
+            Assert.Contains("\"query\":\"C# & search\"", requestBody);
+            Assert.Contains(definition.BodyLimitParameter, requestBody);
+        }
+        else
+        {
+            Assert.Equal(HttpMethod.Get, requestMethod);
+            Assert.Contains("C%23%20%26%20search", requestUri!.Query);
+            if (!string.IsNullOrWhiteSpace(definition.LimitParameter))
+            {
+                Assert.Contains(definition.LimitParameter + "=", Uri.UnescapeDataString(requestUri.Query));
+            }
         }
         if (definition.Name == "wiby")
         {
@@ -348,6 +362,49 @@ public sealed class JsonApiSearchProviderTests
             "{\"results\":[{\"title\":\"Openly licensed image\",\"foreign_landing_url\":\"https://example.org/media/1\",\"attribution\":\"CC BY 4.0 by Example\"}]}",
             "Openly licensed image",
             "https://example.org/media/1"
+        };
+
+        yield return new object[]
+        {
+            JsonApiProviderCatalog.Definitions.Single(item => item.Name == "mwmbl"),
+            "{\"results\":[{\"title\":\"Mwmbl result\",\"url\":\"https://example.org/mwmbl\",\"content\":\"An independent web search result\"}]}",
+            "Mwmbl result",
+            "https://example.org/mwmbl"
+        };
+        yield return new object[]
+        {
+            JsonApiProviderCatalog.Definitions.Single(item => item.Name == "marginalia"),
+            "{\"results\":[{\"title\":\"Small web result\",\"url\":\"https://example.org/small-web\",\"description\":\"An independent index\"}]}",
+            "Small web result",
+            "https://example.org/small-web"
+        };
+        yield return new object[]
+        {
+            JsonApiProviderCatalog.Definitions.Single(item => item.Name == "yep"),
+            "[{}, {\"results\":[{\"title\":\"Yep result\",\"url\":\"https://example.org/yep\",\"snippet\":\"Search result\"}]}]",
+            "Yep result",
+            "https://example.org/yep"
+        };
+        yield return new object[]
+        {
+            JsonApiProviderCatalog.Definitions.Single(item => item.Name == "kagi"),
+            "{\"data\":{\"search\":[{\"title\":\"Kagi result\",\"url\":\"https://example.org/kagi\",\"snippet\":\"Premium search result\"}]}}",
+            "Kagi result",
+            "https://example.org/kagi"
+        };
+        yield return new object[]
+        {
+            JsonApiProviderCatalog.Definitions.Single(item => item.Name == "exa"),
+            "{\"results\":[{\"title\":\"Exa result\",\"url\":\"https://example.org/exa\",\"highlights\":[\"A search highlight\"]}]}",
+            "Exa result",
+            "https://example.org/exa"
+        };
+        yield return new object[]
+        {
+            JsonApiProviderCatalog.Definitions.Single(item => item.Name == "wiktionary"),
+            "{\"query\":{\"search\":[{\"title\":\"search\",\"snippet\":\"An English word\"}]}}",
+            "search",
+            "https://en.wiktionary.org/wiki/search"
         };
     }
 
