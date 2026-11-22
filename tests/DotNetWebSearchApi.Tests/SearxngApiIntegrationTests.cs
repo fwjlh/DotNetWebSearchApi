@@ -12,6 +12,16 @@ namespace DotNetWebSearchApi.Tests;
 public sealed class SearxngApiIntegrationTests
 {
     [Fact]
+    public void ProviderCookieContainers_AreIsolated()
+    {
+        using WebApplicationFactory<Program> factory = CreateFactory(Provider("alpha", Result("A", "https://example.com/a")));
+        CookieContainer mojeek = factory.Services.GetRequiredKeyedService<CookieContainer>("mojeek");
+        CookieContainer yahoo = factory.Services.GetRequiredKeyedService<CookieContainer>("yahoo");
+
+        Assert.NotSame(mojeek, yahoo);
+    }
+
+    [Fact]
     public async Task GetSearch_ReturnsSearxngCompatibleJson()
     {
         using WebApplicationFactory<Program> factory = CreateFactory(Provider("alpha", Result("Example result", "https://example.com/page")));
