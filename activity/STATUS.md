@@ -6,7 +6,7 @@ Updated: 2026-11-22
 - Public repository: https://github.com/fwjlh/DotNetWebSearchApi
 - Default branch: main
 - Latest verified code commit: c9dc51d51b162fd9ae6711cc52c2e84a7b18ca17
-- Current verified milestone: 58 providers; Mojeek adapter adds the 59th source and is awaiting CI.
+- Current verified milestone: 58 providers; Mojeek adapter adds the 59th source. Its production code compiled; a test-handler return type was corrected and the duplicate cookie registration removed. CI re-verification pending.
 - Project overview and roadmap: [README.md](../README.md)
 
 ## Working application

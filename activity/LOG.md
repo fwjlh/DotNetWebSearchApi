@@ -627,3 +627,11 @@ Every material repository action is recorded here with its reason, result, verif
 - **Result:** 59 provider adapters are implemented in source.
 - **Verification:** Pending GitHub Actions. No live upstream requests were made.
 - **Next:** Verify the Mojeek port, then continue down the major-engine list and remaining specialist sources.
+
+
+### 73. Correct Mojeek test handler return type and shared cookie registration
+- **Reason:** Review the Mojeek CI build failure.
+- **Action:** The production Mojeek adapter compiled. The test's unsolved-challenge handler returned HttpResponseMessage instead of Task<HttpResponseMessage>; wrapped the response in Task.FromResult. Also removed a duplicate CookieContainer singleton registration introduced with the provider.
+- **Result:** Test compile correction and DI cleanup committed.
+- **Verification:** Pending CI.
+- **Next:** Verify the Mojeek challenge and result fixtures.

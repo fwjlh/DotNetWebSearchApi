@@ -56,7 +56,7 @@ public sealed class MojeekSearchProviderTests
     {
         const string challenge = "{\"parameters\":{\"algorithm\":\"PBKDF2/SHA-256\",\"nonce\":\"01020304\",\"salt\":\"05060708\",\"keyPrefix\":\"ffffffffffffffffffffffffffffffff\",\"cost\":1,\"keyLength\":16}}";
         using HttpClient client = new(new StubHttpMessageHandler(_ =>
-            JsonResponse(challenge)));
+            Task.FromResult(JsonResponse(challenge))));
         MojeekSearchProvider provider = new(client, new CookieContainer());
 
         await Assert.ThrowsAsync<HttpRequestException>(() =>
