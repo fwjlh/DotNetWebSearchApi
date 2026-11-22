@@ -71,6 +71,76 @@ public sealed class YahooSearchProviderTests
     }
 
     [Fact]
+    public async Task SearchAsync_MapsLocalePageTimeRangeAndSafeSearch()
+    {
+        Uri? requestedUri = null;
+        CookieContainer cookies = new();
+        using HttpClient client = new(new StubHttpMessageHandler(request =>
+        {
+            requestedUri = request.RequestUri;
+            return HtmlResponse(ResultPage);
+        }));
+        YahooSearchProvider provider = new(client, cookies);
+
+        await provider.SearchAsync(new SearchQuery("cats", 10)
+        {
+            Language = "en-GB",
+            Page = 2,
+            TimeRange = SearchTimeRange.Week,
+            SafeSearch = 2
+        }, CancellationToken.None);
+
+        Assert.Equal("uk.search.yahoo.com", requestedUri?.Host);
+        Assert.Contains("btf=w", requestedUri?.Query);
+        Assert.Contains("b=15", requestedUri?.Query);
+        Assert.Contains("pz=7", requestedUri?.Query);
+        string cookie = cookies.GetCookieHeader(new Uri("https://search.yahoo.com/"));
+        Assert.Contains("vm=r", cookie);
+        Assert.Contains("vl=lang_en", cookie);
+    }
+
+    [Fact]
+    public async Task SearchAsync_CachesYbvCookieForTwentyFourHours()
+    {
+        int requests = 0;
+        CookieContainer cookies = new();
+        using HttpClient client = new(new StubHttpMessageHandler(_ =>
+        {
+            requests++;
+            if (requests == 1)
+            {
+                HttpResponseMessage redirect = new(HttpStatusCode.Redirect)
+                {
+                    Headers = { Location = new Uri("https://search.yahoo.com/tracking.gif") }
+                };
+                redirect.Headers.TryAddWithoutValidation("Set-Cookie", "YBV=v0.2-test-token; Domain=.yahoo.com; Path=/");
+                return redirect;
+            }
+
+            return HtmlResponse(ResultPage);
+        }));
+        YahooSearchProvider provider = new(client, cookies);
+
+        await provider.SearchAsync(new SearchQuery("test", 10), CancellationToken.None);
+
+        Cookie? ybv = cookies.GetCookies(new Uri("https://search.yahoo.com/"))["YBV"];
+        Assert.NotNull(ybv);
+        Assert.StartsWith("v0.2", ybv!.Value);
+        Assert.True(ybv.Expires > DateTime.UtcNow.AddHours(23));
+    }
+
+    [Fact]
+    public void Capabilities_DeclareOnlyYahooSupportedTimeRanges()
+    {
+        YahooSearchProvider provider = new(new HttpClient(), new CookieContainer());
+        Assert.True(provider.Capabilities.SupportsPagination);
+        Assert.True(provider.Capabilities.SupportsSafeSearch);
+        Assert.True(provider.Capabilities.SupportsLocale);
+        Assert.True(provider.Capabilities.Supports(new SearchQuery("test", 10) { TimeRange = SearchTimeRange.Month }));
+        Assert.False(provider.Capabilities.Supports(new SearchQuery("test", 10) { TimeRange = SearchTimeRange.Year }));
+    }
+
+    [Fact]
     public async Task SearchAsync_FollowsYahooTrackingRedirect()
     {
         int requests = 0;

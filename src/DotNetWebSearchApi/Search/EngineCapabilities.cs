@@ -9,6 +9,7 @@ public sealed record EngineCapabilities(
     bool SupportsLocale,
     double Weight = 1.0)
 {
+    public IReadOnlySet<SearchTimeRange>? SupportedTimeRanges { get; init; }
     public static EngineCapabilities BasicWeb { get; } = new(
         new HashSet<string>(StringComparer.OrdinalIgnoreCase) { "general" },
         false,
@@ -26,7 +27,8 @@ public sealed record EngineCapabilities(
             ?? new HashSet<string>(StringComparer.OrdinalIgnoreCase) { "general" };
         if (requestedCategories.Any(category => !Categories.Any(
             supported => supported.Equals(category, StringComparison.OrdinalIgnoreCase)))) return false;
-        if (query.TimeRange is not null && !SupportsTimeRange) return false;
+        if (query.TimeRange is SearchTimeRange timeRange
+            && (!SupportsTimeRange || SupportedTimeRanges is not null && !SupportedTimeRanges.Contains(timeRange))) return false;
         if (query.SafeSearch > 0 && !SupportsSafeSearch) return false;
         if (!string.IsNullOrWhiteSpace(query.Language)
             && !query.Language.Equals("auto", StringComparison.OrdinalIgnoreCase)

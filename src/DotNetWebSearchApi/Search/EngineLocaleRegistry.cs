@@ -151,8 +151,62 @@ public static class EngineLocaleRegistry
             ["pt-PT"] = "pt_PT", ["pt-BR"] = "pt_PT"
         };
 
+        Dictionary<string, string> yahooLanguages = new(StringComparer.OrdinalIgnoreCase)
+        {
+            ["ar"] = "ar", ["bg"] = "bg", ["cs"] = "cs", ["da"] = "da",
+            ["de"] = "de", ["el"] = "el", ["en"] = "en", ["es"] = "es",
+            ["et"] = "et", ["fi"] = "fi", ["fr"] = "fr", ["he"] = "he",
+            ["hr"] = "hr", ["hu"] = "hu", ["it"] = "it", ["ja"] = "ja",
+            ["ko"] = "ko", ["lt"] = "lt", ["lv"] = "lv", ["nl"] = "nl",
+            ["no"] = "no", ["pl"] = "pl", ["pt"] = "pt", ["ro"] = "ro",
+            ["ru"] = "ru", ["sk"] = "sk", ["sl"] = "sl", ["sv"] = "sv",
+            ["th"] = "th", ["tr"] = "tr", ["zh"] = "zh_chs"
+        };
+        Dictionary<string, string> yahooRegions = new(StringComparer.OrdinalIgnoreCase)
+        {
+            ["en-GB"] = "GB", ["en-US"] = "US", ["en-CA"] = "CA",
+            ["en-AU"] = "AU", ["en-NZ"] = "NZ", ["en-IE"] = "IE",
+            ["fr-FR"] = "FR", ["de-DE"] = "DE", ["es-ES"] = "ES",
+            ["pt-BR"] = "BR", ["it-IT"] = "IT", ["nl-NL"] = "NL",
+            ["sv-SE"] = "SE", ["no-NO"] = "NO", ["da-DK"] = "DK",
+            ["fi-FI"] = "FI", ["tr-TR"] = "TR", ["pl-PL"] = "PL",
+            ["ro-RO"] = "RO", ["th-TH"] = "TH", ["id-ID"] = "ID",
+            ["vi-VN"] = "VN", ["zh-CN"] = "CN", ["zh-TW"] = "TW",
+            ["ja-JP"] = "JP", ["ko-KR"] = "KR"
+        };
+        Dictionary<string, string> yahooDomains = new(StringComparer.OrdinalIgnoreCase)
+        {
+            ["CO"] = "co.search.yahoo.com", ["TH"] = "th.search.yahoo.com",
+            ["VE"] = "ve.search.yahoo.com", ["CL"] = "cl.search.yahoo.com",
+            ["PE"] = "pe.search.yahoo.com", ["CA"] = "ca.search.yahoo.com",
+            ["DE"] = "de.search.yahoo.com", ["FR"] = "fr.search.yahoo.com",
+            ["GB"] = "uk.search.yahoo.com", ["UK"] = "uk.search.yahoo.com",
+            ["BR"] = "br.search.yahoo.com", ["IN"] = "in.search.yahoo.com",
+            ["ES"] = "espanol.search.yahoo.com", ["PH"] = "ph.search.yahoo.com",
+            ["AR"] = "ar.search.yahoo.com", ["MX"] = "mx.search.yahoo.com",
+            ["SG"] = "sg.search.yahoo.com", ["AU"] = "au.search.yahoo.com",
+            ["NZ"] = "nz.search.yahoo.com", ["IE"] = "ie.search.yahoo.com",
+            ["ZA"] = "za.search.yahoo.com", ["US"] = "search.yahoo.com",
+            ["IT"] = "it.search.yahoo.com", ["NL"] = "nl.search.yahoo.com",
+            ["BE"] = "be.search.yahoo.com", ["CH"] = "ch.search.yahoo.com",
+            ["AT"] = "at.search.yahoo.com", ["SE"] = "se.search.yahoo.com",
+            ["NO"] = "no.search.yahoo.com", ["DK"] = "dk.search.yahoo.com",
+            ["FI"] = "fi.search.yahoo.com", ["GR"] = "gr.search.yahoo.com",
+            ["TR"] = "tr.search.yahoo.com", ["MY"] = "malaysia.search.yahoo.com",
+            ["ID"] = "id.search.yahoo.com", ["VN"] = "vn.search.yahoo.com",
+            ["PL"] = "pl.search.yahoo.com", ["RO"] = "ro.search.yahoo.com"
+        };
+
         return new Dictionary<string, EngineLocaleTraits>(StringComparer.OrdinalIgnoreCase)
         {
+            ["yahoo"] = new EngineLocaleTraits(
+                yahooLanguages,
+                yahooRegions,
+                null,
+                new Dictionary<string, IReadOnlyDictionary<string, string>>(StringComparer.OrdinalIgnoreCase)
+                {
+                    ["region2domain"] = yahooDomains
+                }),
             ["qwant"] = new EngineLocaleTraits(
                 new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase),
                 qwantRegions,
