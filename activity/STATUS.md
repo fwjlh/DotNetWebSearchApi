@@ -5,7 +5,7 @@ Updated: 2026-11-22
 ## Repository
 - Public repository: https://github.com/fwjlh/DotNetWebSearchApi
 - Default branch: main
-- Latest code commit: `9d590ce6a46a4c5b969b4a4e3c55d0adefe84fd9` (main provider paths migrated to shared HTTP transport; build-and-test passed with 182 tests, 0 skipped in [run 45026001326](https://github.com/fwjlh/DotNetWebSearchApi/actions/runs/45026001326)). Latest repository changes are documentation commits reconciling the porting corpus, audit and README.
+- Latest code commit: `ebde18239b35cf6cc22a39a8d3fbb8bc0227922c` (provider cookie-store isolation and shared transport fixes; build-and-test passed with 184 tests, 0 skipped in [run 45026298077](https://github.com/fwjlh/DotNetWebSearchApi/actions/runs/45026298077)). Latest repository changes are documentation commits recording the cookie/session boundary.
 - Current provider catalogue: **67 adapters, frozen** pending shared-framework refactoring.
 - Previous provider-catalogue baseline: build 0 warnings/errors; 156 tests passed (0 failed, 0 skipped), run [45020266512](https://github.com/fwjlh/DotNetWebSearchApi/actions/runs/45020266512). The subsequent request-context/capability code has now passed its GitHub Actions build-and-test job in [run 45022944719](https://github.com/fwjlh/DotNetWebSearchApi/actions/runs/45022944719); the workflow job reports success.
 - Current direction and consumer boundary: [docs/ARCHITECTURE_DECISIONS.md](../docs/ARCHITECTURE_DECISIONS.md).
@@ -14,6 +14,7 @@ Updated: 2026-11-22
 - Typed provider outcomes distinguish success, failure and skipped; failure kinds include timeout, rate limit, transient HTTP, invalid response, authentication, access denied, challenge, configuration and unknown. Explicit provider failures can carry RetryAfter. Caller cancellation still propagates.
 - ProviderHealthRegistry now adds process-local Closed/Open/HalfOpen states, failure thresholds, failure-kind cooldowns, capped exponential backoff and one half-open recovery probe. Cooling-down providers are skipped and reported separately; diagnostics expose health snapshots. CI passed with 174 tests in run 45025031994. Policy is global and resets on process restart.
 - Shared HTTP transport now covers Bing, Brave, DuckDuckGo, Google, Mojeek, Naver, Qwant, Seznam, Yahoo, Yandex Cloud, Wikipedia, arXiv, generic JSON and RSS/Atom paths. It enforces a 4 MiB response limit, per-host concurrency, response-header capture and Retry-After. CI passed with 182 tests in run 45026001326.
+- Mojeek and Yahoo now have separate keyed CookieContainers; Seznam retains its own typed-client handler jar. These are provider-process sessions, not per-user sessions. Added DI/integration coverage and Qwant DataDome challenge classification. CI passed with 184 tests in run 45026298077.
 - Project overview and roadmap: [README.md](../README.md)
 
 ## Working application
