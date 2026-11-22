@@ -30,7 +30,7 @@ public sealed class SearchAggregator
     public async Task<SearchExecutionResult> SearchDetailedAsync(SearchQuery query, CancellationToken cancellationToken)
     {
         if (string.IsNullOrWhiteSpace(query.Text) || query.Limit < 1)
-            return new SearchExecutionResult(Array.Empty<SearchResult>(), Array.Empty<string>());
+            return new SearchExecutionResult(Array.Empty<SearchResult>(), Array.Empty<string>(), Array.Empty<string>());
 
         ISearchProvider[] selectedProviders = query.ProviderNames is null
             ? _providers.ToArray()
