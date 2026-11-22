@@ -888,3 +888,15 @@ Every material repository action is recorded here with its reason, result, verif
 - **Action:** Recorded Exa as C#-only at the pinned revision and StackExchange as a shared multi-site integration, not a proven one-to-one Python port.
 - **Verification:** Documentation-only; no code changed. The preceding weighted-ranking code commit `9d4d38d6769bbca66a2e09b6eaa656a4b10f46ff` remains green at 188 tests. Specialist corpus and status handover docs will be verified by their own CI runs.
 - **Next:** Continue dedicated provider studies where the Python module has request state or custom result types (Semantic Scholar, Kagi verticals, Wikidata, image/video feeds). Do not claim direct ports where the upstream module is absent or the protocol differs.
+
+
+### 97. Extract Kagi into a dedicated provider and preserve request context
+- **Reason:** The generic JSON definition could not express Kagi's page, region, safe-search and time-range request mapping. Treating it as a simple query-to-array API silently dropped supported Python behaviour.
+- **Action:** Added `KagiSearchProvider` with bearer-key authentication, JSON POST body, general workflow, page 1–10, boolean safe-search, locale region and `filters.after` date derived from the requested time range. It parses `data.search` and cleans HTML text.
+- **Action:** Added `ISearchProviderCapabilities` declaration for general category, pagination up to page 10, safe-search, locale and time-range. It is the first production provider with a non-default capability profile. Images/news/videos remain unsupported because the common result model is link-oriented.
+- **Action:** Removed Kagi from `JsonApiProviderCatalog`, retained Exa's generic JSON definition, registered Kagi only when `KAGI_API_KEY` is configured, and removed the obsolete Kagi generic fixture.
+- **Action:** Corrected generic JSON and RSS provider factories to resolve the singleton `SearchHttpTransport`; before this, those factories were constructing isolated transport instances and therefore did not share host gates/diagnostics.
+- **Tests:** Added Kagi tests for bearer auth, page, safe-search, region, after-date, HTML text cleanup and capability rejection for page 11/news. Generic JSON tests retain Exa coverage. CI run [45028349848](https://github.com/fwjlh/DotNetWebSearchApi/actions/runs/45028349848) passed: build succeeded, 190 passed, 0 failed, 0 skipped.
+- **CI correction trail:** The first Kagi test fixture used a synchronous handler return where its stub expected a Task; corrected. The first catalog edit removed the adjacent Exa definition as well as Kagi; restored Exa and confirmed its generic fixture. The current code run is green.
+- **Corpus/docs:** Updated Python-to-C# corpus, provider inventory, architecture audit, README and activity handover. Kagi's general workflow is now a documented dedicated port; do not claim parity for its news/image/video verticals.
+- **Next:** Identify the next generic definition whose Python source contains meaningful request context or rich result types; prefer dedicated ports only where they preserve real upstream behaviour. Keep provider count at 67.
