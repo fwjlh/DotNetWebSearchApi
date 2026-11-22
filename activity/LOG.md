@@ -415,3 +415,12 @@ Every material repository action is recorded here with its reason, result, verif
 - **Correction:** Move the five static assets into src/DotNetWebSearchApi/wwwroot, preserving their contents.
 - **Verification:** Failure log https://github.com/fwjlh/DotNetWebSearchApi/actions/runs/45010196457.
 - **Next:** Commit the corrected paths and rerun all tests.
+
+
+### 50. Verify browser search and diagnostics in GitHub Actions
+- **Reason:** Confirm the browser pages are served from the ASP.NET Core web root and that provider diagnostics remain accurate.
+- **Action:** Inspected corrected workflow run 45010292934 for commit 3a4970a3d58a5e0ddac89676539bd605d662bbd7.
+- **Result:** **CI passed.** Restore and build succeeded; all 95 tests passed (0 failed, 0 skipped). This includes five browser/admin/provider-diagnostics integration tests and four SearchDiagnostics unit tests.
+- **Correction history:** Initial run 45010196457 passed restore/build and 93/95 tests. The two static-page tests returned 404 because assets were at repository-root wwwroot instead of src/DotNetWebSearchApi/wwwroot. Assets were moved into the application project's web root; corrected run is green.
+- **Verification:** Successful workflow https://github.com/fwjlh/DotNetWebSearchApi/actions/runs/45010292934. Initial failure https://github.com/fwjlh/DotNetWebSearchApi/actions/runs/45010196457.
+- **Next:** Mark initial browser and read-only diagnostics milestone complete. Design editable provider configuration and secret references before adding admin write actions.

@@ -6,7 +6,7 @@ Updated: 2026-11-22
 
 - Public repository: https://github.com/fwjlh/DotNetWebSearchApi
 - Default branch: main
-- Latest verified code commit: 39c8987e4ffb0e7e0177ee33b991d145b2c0d1f4 (static asset path correction pending CI)
+- Latest verified code commit: 3a4970a3d58a5e0ddac89676539bd605d662bbd7
 - Full project overview and roadmap: [README.md](../README.md)
 
 ## Working vertical slice
@@ -28,9 +28,12 @@ Updated: 2026-11-22
 
 ## Verification
 
-- Previous JSON API CI run: https://github.com/fwjlh/DotNetWebSearchApi/actions/runs/45009659712
-- Previous verified result: 86 passed, 0 failed, 0 skipped.
-- Current browser/admin increment: pending CI.
+- CI run: https://github.com/fwjlh/DotNetWebSearchApi/actions/runs/45010292934
+- Commit tested: 3a4970a3d58a5e0ddac89676539bd605d662bbd7
+- Restore: passed.
+- Build: passed.
+- Tests: 95 passed, 0 failed, 0 skipped.
+- Previous failed run: https://github.com/fwjlh/DotNetWebSearchApi/actions/runs/45010196457 (93 passed, two static file path failures); corrected in the verified commit.
 - Local .NET SDK is not installed in the orchestration environment; verification is performed by GitHub Actions.
 - Provider tests use deterministic fixtures and fake HTTP handlers. They verify parsing/request behaviour, not live acceptance by upstream providers.
 
@@ -52,7 +55,7 @@ Updated: 2026-11-22
 Initial response-compatible surface is implemented:
 
 - GET /search?q=...&format=json.
-- GET /?q=...&format=json when a query is present; bare / redirects to the search page.
+- GET /?q=...&format=json when a query is present; bare / serves the search page.
 - POST /search using application/x-www-form-urlencoded.
 - Engine selection through engines=bing,google.
 - Response fields include query, number_of_results, results, answers, corrections, infoboxes, suggestions and unresponsive_engines.
@@ -90,9 +93,9 @@ There is no SQL Server provider store, general configurable HTTP provider, API-k
 
 ## Next actions
 
-1. Verify the browser/admin increment in GitHub Actions.
-2. Add safe provider configuration management; decide SQL Server schema and secret-reference model before writing configuration UI.
-3. Add API-key authentication, quotas and rate limiting before any untrusted public deployment.
-4. Expand diagnostics with health-check timing and optional persistence if useful.
-5. Continue browser UI polish and operational guidance.
+1. Design provider configuration models and secret references; keep credentials outside provider definition rows.
+2. Decide the SQL Server configuration schema and optional storage abstraction before implementing admin write actions.
+3. Add API-key authentication, quotas and rate limiting before untrusted public exposure.
+4. Add safe provider enable/disable and configuration editing to the admin UI after persistence and authorization exist.
+5. Continue UI refinement and deployment guidance for Kestrel/IIS.
 6. Keep SearchBox.NET.Forge as a separate follow-on project for upstream monitoring and AI-assisted porting proposals; require tests and human review, never auto-merge.

@@ -10,7 +10,7 @@ DotNetWebSearchApi aims to bring the useful metasearch ideas behind [SearXNG](ht
 
 The goal is not to build another search index. It is to provide a practical, extensible aggregation layer that can run on infrastructure you already operate: particularly Windows Server, IIS and SQL Server environments.
 
-> **Project status: early development.** The provider contract, parallel aggregation, ten provider adapters, initial SearXNG-shaped JSON API and automated integration tests are in place. The next implementation priority is the browser search experience, provider selection, administration and diagnostics.
+ > **Project status: initial search stack implemented.** Ten provider adapters, the SearXNG-shaped JSON API, a browser search page and read-only provider diagnostics are in place. The next implementation priority is safe provider configuration management, operational hardening and UI refinement.
 
 This is an independent implementation inspired by SearXNG. It is not affiliated with, endorsed by, or a drop-in replacement for the SearXNG project. See [UPSTREAM.md](UPSTREAM.md) for provenance and [LICENSE](LICENSE) for licensing.
 
@@ -205,7 +205,7 @@ There is no Docker or Python dependency in the intended deployment model.
     dotnet restore
     dotnet run --project src/DotNetWebSearchApi
 
-The application prints its local listening address when it starts. Use that address for the requests below.
+The application prints its local listening address when it starts. Open that address in a browser for the search page. Use /admin for read-only provider diagnostics. The admin page shows active providers, success/failure counts, last duration and last error type; it does not expose secrets or edit configuration.
 
 ### Optional Brave Search provider
 
