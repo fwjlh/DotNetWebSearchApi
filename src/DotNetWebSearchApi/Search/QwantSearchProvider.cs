@@ -7,19 +7,38 @@ public sealed class QwantSearchProvider : ISearchProvider
 {
     private const string SearchEndpoint = "https://api.qwant.com/v3/search/web";
     private readonly HttpClient _httpClient;
+    private readonly SearchHttpTransport _transport;
 
-    public QwantSearchProvider(HttpClient httpClient) { _httpClient = httpClient; }
+    public QwantSearchProvider(HttpClient httpClient, SearchHttpTransport? transport = null)
+    {
+        _httpClient = httpClient;
+        _transport = transport ?? new SearchHttpTransport();
+    }
+
     public string Name => "qwant";
+
     public TimeSpan Timeout => TimeSpan.FromSeconds(8);
 
-    public async Task<IReadOnlyList<SearchResult>> SearchAsync(SearchQuery query, CancellationToken cancellationToken)
+    public async Task<IReadOnlyList<SearchResult>> SearchAsync(
+        SearchQuery query,
+        CancellationToken cancellationToken)
     {
-        using HttpResponseMessage response = await _httpClient.GetAsync(BuildRequestUrl(query.Text), cancellationToken);
+        using HttpRequestMessage request = new(HttpMethod.Get, BuildRequestUrl(query.Text));
+        SearchHttpResponse response = await _transport.SendAsync(_httpClient, request, cancellationToken);
         if (response.StatusCode == HttpStatusCode.Forbidden)
-            throw new HttpRequestException("Qwant denied the request; it may require a valid DataDome session.");
-        response.EnsureSuccessStatusCode();
-        await using Stream responseStream = await response.Content.ReadAsStreamAsync(cancellationToken);
-        using JsonDocument document = await JsonDocument.ParseAsync(responseStream, cancellationToken: cancellationToken);
+        {
+            ProviderFailureKind kind = response.Content.Contains("captcha", StringComparison.OrdinalIgnoreCase)
+                || response.Content.Contains("datadome", StringComparison.OrdinalIgnoreCase)
+                ? ProviderFailureKind.Challenge
+                : ProviderFailureKind.AccessDenied;
+            throw new ProviderFailureException(
+                kind,
+                "Qwant denied the request; a DataDome session or browser verification may be required.",
+                response.RetryAfter);
+        }
+
+        response.EnsureSuccessStatusCode(Name);
+        using JsonDocument document = JsonDocument.Parse(response.Content);
         return QwantSearchResultParser.Parse(document.RootElement);
     }
 
