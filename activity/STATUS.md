@@ -5,7 +5,7 @@ Updated: 2026-11-22
 ## Repository
 - Public repository: https://github.com/fwjlh/DotNetWebSearchApi
 - Default branch: main
-- Latest code commit: `ebde18239b35cf6cc22a39a8d3fbb8bc0227922c` (provider cookie-store isolation and shared transport fixes; build-and-test passed with 184 tests, 0 skipped in [run 45026298077](https://github.com/fwjlh/DotNetWebSearchApi/actions/runs/45026298077)). Latest repository changes are documentation commits recording the cookie/session boundary.
+- Latest code commit: `f434fd95b2f08f6d9295b6ccdafcb2cc5b16c4d2` (provider-keyed minimum intervals moved into shared transport; build-and-test passed with 185 tests, 0 skipped in [run 45026506065](https://github.com/fwjlh/DotNetWebSearchApi/actions/runs/45026506065)). Latest repository changes are documentation commits recording the transport rate-spacing rationale.
 - Current provider catalogue: **67 adapters, frozen** pending shared-framework refactoring.
 - Previous provider-catalogue baseline: build 0 warnings/errors; 156 tests passed (0 failed, 0 skipped), run [45020266512](https://github.com/fwjlh/DotNetWebSearchApi/actions/runs/45020266512). The subsequent request-context/capability code has now passed its GitHub Actions build-and-test job in [run 45022944719](https://github.com/fwjlh/DotNetWebSearchApi/actions/runs/45022944719); the workflow job reports success.
 - Current direction and consumer boundary: [docs/ARCHITECTURE_DECISIONS.md](../docs/ARCHITECTURE_DECISIONS.md).
@@ -15,6 +15,7 @@ Updated: 2026-11-22
 - ProviderHealthRegistry now adds process-local Closed/Open/HalfOpen states, failure thresholds, failure-kind cooldowns, capped exponential backoff and one half-open recovery probe. Cooling-down providers are skipped and reported separately; diagnostics expose health snapshots. CI passed with 174 tests in run 45025031994. Policy is global and resets on process restart.
 - Shared HTTP transport now covers Bing, Brave, DuckDuckGo, Google, Mojeek, Naver, Qwant, Seznam, Yahoo, Yandex Cloud, Wikipedia, arXiv, generic JSON and RSS/Atom paths. It enforces a 4 MiB response limit, per-host concurrency, response-header capture and Retry-After. CI passed with 182 tests in run 45026001326.
 - Mojeek and Yahoo now have separate keyed CookieContainers; Seznam retains its own typed-client handler jar. These are provider-process sessions, not per-user sessions. Added DI/integration coverage and Qwant DataDome challenge classification. CI passed with 184 tests in run 45026298077.
+- Generic JSON provider minimum intervals have moved from JsonApiSearchProvider's local semaphore/clock into SearchHttpTransport's provider-keyed rate gate. CI passed with 185 tests in run 45026506065.
 - Project overview and roadmap: [README.md](../README.md)
 
 ## Working application
