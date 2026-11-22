@@ -71,7 +71,13 @@ public sealed class SearchHttpTransportTests
         using HttpClient client = new(new AsyncStubHttpMessageHandler(async (_, cancellationToken) =>
         {
             int current = Interlocked.Increment(ref active);
-            Interlocked.Exchange(ref maximumActive, Math.Max(maximumActive, current));
+            int observed = Volatile.Read(ref maximumActive);
+            while (current > observed)
+            {
+                int previous = Interlocked.CompareExchange(ref maximumActive, current, observed);
+                if (previous == observed) break;
+                observed = previous;
+            }
             await Task.Delay(20, cancellationToken);
             Interlocked.Decrement(ref active);
             return new HttpResponseMessage(HttpStatusCode.OK);
