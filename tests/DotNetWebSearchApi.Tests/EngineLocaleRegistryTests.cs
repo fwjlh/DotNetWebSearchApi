@@ -63,6 +63,21 @@ public sealed class EngineLocaleRegistryTests
         Assert.Equal("ZZ", EngineLocaleRegistry.GetRegion("google", "auto"));
     }
 
+    [Theory]
+    [InlineData("en-GB", "en_GB")]
+    [InlineData("fr-FR", "fr_FR")]
+    [InlineData("de-CH", "de_CH")]
+    public void GetRegion_ResolvesQwantRegion(string locale, string expected)
+    {
+        Assert.Equal(expected, EngineLocaleRegistry.GetRegion("qwant", locale));
+    }
+
+    [Fact]
+    public void GetRegion_UsesQwantDefaultLocaleForAutomaticLanguage()
+    {
+        Assert.Equal("en_US", EngineLocaleRegistry.GetRegion("qwant", "auto"));
+    }
+
     [Fact]
     public void GetRegion_ReturnsCallerFallbackForUnknownProvider()
     {

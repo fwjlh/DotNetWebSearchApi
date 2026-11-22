@@ -140,8 +140,23 @@ public static class EngineLocaleRegistry
             ["pt-BR"] = "BR", ["it-IT"] = "IT", ["nl-NL"] = "NL"
         };
 
+        Dictionary<string, string> qwantRegions = new(StringComparer.OrdinalIgnoreCase)
+        {
+            ["en-GB"] = "en_GB", ["en-US"] = "en_US", ["en-AU"] = "en_AU",
+            ["en-CA"] = "en_CA", ["en-IE"] = "en_IE", ["en-NZ"] = "en_NZ",
+            ["fr-FR"] = "fr_FR", ["fr-CA"] = "fr_CA", ["fr-BE"] = "fr_BE",
+            ["fr-CH"] = "fr_CH", ["de-DE"] = "de_DE", ["de-AT"] = "de_AT",
+            ["de-CH"] = "de_CH", ["es-ES"] = "es_ES", ["es-MX"] = "es_MX",
+            ["it-IT"] = "it_IT", ["nl-NL"] = "nl_NL", ["nl-BE"] = "nl_BE",
+            ["pt-PT"] = "pt_PT", ["pt-BR"] = "pt_PT"
+        };
+
         return new Dictionary<string, EngineLocaleTraits>(StringComparer.OrdinalIgnoreCase)
         {
+            ["qwant"] = new EngineLocaleTraits(
+                new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase),
+                qwantRegions,
+                "en_US"),
             ["google"] = new EngineLocaleTraits(googleLanguages, googleRegions, "ZZ"),
             ["bing"] = new EngineLocaleTraits(
                 new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase),

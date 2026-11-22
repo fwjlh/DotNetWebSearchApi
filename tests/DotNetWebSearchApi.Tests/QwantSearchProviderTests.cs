@@ -55,8 +55,55 @@ public sealed class QwantSearchProviderTests
         }));
         QwantSearchProvider provider = new(client);
         IReadOnlyList<SearchResult> results = await provider.SearchAsync(new SearchQuery("cats & dogs", 10), CancellationToken.None);
-        Assert.Equal("https://api.qwant.com/v3/search/web?t=web&q=cats%20%26%20dogs&count=10&locale=en_GB&offset=0&tgp=1&device=desktop&safesearch=1", requestedUri?.AbsoluteUri);
+        Assert.Equal("https://api.qwant.com/v3/search/web?t=web&q=cats%20%26%20dogs&count=10&locale=en_US&offset=0&tgp=1&device=desktop&safesearch=0", requestedUri?.AbsoluteUri);
         Assert.Single(results);
+    }
+
+    [Fact]
+    public async Task SearchAsync_MapsLocalePageAndSafeSearch()
+    {
+        Uri? requestedUri = null;
+        using HttpClient client = new(new StubHttpMessageHandler(request =>
+        {
+            requestedUri = request.RequestUri;
+            return JsonResponse(SearchResponse);
+        }));
+        QwantSearchProvider provider = new(client);
+
+        await provider.SearchAsync(new SearchQuery("bonjour", 10)
+        {
+            Language = "fr-FR",
+            Page = 3,
+            SafeSearch = 2
+        }, CancellationToken.None);
+
+        Assert.Contains("locale=fr_FR", requestedUri?.Query);
+        Assert.Contains("offset=20", requestedUri?.Query);
+        Assert.Contains("safesearch=2", requestedUri?.Query);
+    }
+
+    [Fact]
+    public void Capabilities_DeclareOnlyImplementedQwantFeatures()
+    {
+        QwantSearchProvider provider = new(new HttpClient());
+        Assert.True(provider.Capabilities.SupportsPagination);
+        Assert.Equal(5, provider.Capabilities.MaximumPage);
+        Assert.True(provider.Capabilities.SupportsSafeSearch);
+        Assert.True(provider.Capabilities.SupportsLocale);
+        Assert.False(provider.Capabilities.SupportsTimeRange);
+    }
+
+    [Fact]
+    public async Task SearchAsync_ClassifiesApiRateLimitCode()
+    {
+        const string error = """{"status":"error","data":{"error_code":24}}""";
+        using HttpClient client = new(new StubHttpMessageHandler(_ => JsonResponse(error)));
+        QwantSearchProvider provider = new(client);
+
+        ProviderFailureException exception = await Assert.ThrowsAsync<ProviderFailureException>(
+            () => provider.SearchAsync(new SearchQuery("test", 10), CancellationToken.None));
+
+        Assert.Equal(ProviderFailureKind.RateLimited, exception.FailureKind);
     }
 
     [Fact]
