@@ -102,7 +102,7 @@ DotNetWebSearchApi puts that work behind one service:
 | Wiktionary | Implemented (JSON API) | English dictionary and etymology search |
 | Automated build and tests | Working | GitHub Actions / .NET 10 |
 | Major web-search adapters | Initial wave complete | Bing, Brave, Google, DuckDuckGo and other priority providers are implemented |
-| First 5–10 provider adapters | Initial target met | Sixty-seven provider adapters are implemented and CI-tested |
+| Provider catalogue | Frozen | Sixty-seven adapters are implemented; no new ports until shared-framework work is complete |
 | SearXNG-compatible JSON API | Initial surface working | JSON response and engine selection; unsupported features return explicit status codes |
 | Browser search interface | Working (initial) | Search page at / with selectable providers and result cards |
 | Read-only administration and diagnostics | Working (initial) | /admin, provider health counters, last outcome and active provider list |
@@ -115,11 +115,11 @@ The status above is deliberately conservative: a provider is only marked **Worki
 
 The provider catalogue is currently frozen at **67 adapters**. No additional provider ports are planned until the shared search framework has been generalised and the existing catalogue has been reviewed against the common contracts.
 
-The first 12 priorities are Bing, Brave, Google, DuckDuckGo, Wikipedia, Mojeek, Startpage, Qwant, Yahoo, Yandex, Naver and Seznam. Mojeek is implemented and CI-verified; Startpage remains deferred because its current Anubis challenge is CPU-intensive and the upstream SearXNG implementation disables it by default.
+The initial major-engine wave includes Bing, Brave, Google, DuckDuckGo, Wikipedia, Mojeek, Startpage (deferred), Qwant, Yahoo, Yandex, Naver and Seznam. This is a record of the original porting scope, not an active queue; provider work is paused while shared capabilities and infrastructure are generalised.
 
 The full provider inventory, implementation status, API-key requirements, rate limits and wave-by-wave progress are maintained in [docs/PROVIDERS.md](docs/PROVIDERS.md).
 
-Provider expansion is paused. The existing inventory remains documented in [docs/PROVIDERS.md](docs/PROVIDERS.md); provider count is not the current progress metric.
+
 
 ### What makes an adapter complete?
 
@@ -303,19 +303,21 @@ Run from the repository root:
 
 GitHub Actions runs restore, build and tests for pushes and pull requests. The badge at the top links to the workflow.
 
-The current verified implementation passes CI with **138 tests passing** across the aggregation layer, ten provider adapters, JSON API integration tests and provider diagnostics. Check the Actions history for the latest result; this README does not assume that a previous successful run proves every future commit is green.
+The last fully verified provider-catalogue baseline passed CI with **156 tests**, 0 failures and 0 skipped, with 0 build warnings and 0 errors ([run 45020266512](https://github.com/fwjlh/DotNetWebSearchApi/actions/runs/45020266512)). This predates the current request-context/capability changes; those newer commits are awaiting CI verification. The 156-test result must not be treated as proof that the latest code is green.
 
 ## Planned delivery sequence
 
-The work is intentionally staged so the useful search capability comes before the polish:
+Provider-count expansion is frozen. The active sequence is:
 
-1. **Provider foundation and major engines.** Keep the provider contract, aggregation and test structure solid; implement the major general-purpose engines first.
-2. **First 5–10 adapters.** Initial target met: ten adapters are implemented and tested. Continue expanding only where a provider adds real value.
-3. **SearXNG-compatible JSON API.** Initial response-compatible GET/POST surface is working; expand compatibility only where the provider model supports it.
-4. **Browser interface and administration.** Initial search and read-only diagnostics pages are working. Next, add safe provider configuration management and richer operational diagnostics.
-5. **Operational hardening.** Add SQL Server-backed configuration where useful, API-key authentication, quotas, rate limiting, metrics and deployment guidance before public exposure.
+1. **Request context and engine capabilities.** Add locale, categories, safe-search, paging and time-range context with pre-flight provider eligibility.
+2. **Typed outcomes and provider health.** Classify failures and add cooldown/backoff and half-open recovery.
+3. **Shared transport and sessions.** Consolidate request construction, cookies, redirect rules, timeout, retry, rate policy and diagnostics.
+4. **Challenge handling.** Distinguish blocks, rate limits, browser verification, permitted proof-of-work and human CAPTCHA; AI may classify challenges but must not bypass them.
+5. **Result aggregation and traits.** Retain contributing engines/positions, improve weighted ranking and add locale/region mappings.
+6. **API and operational hardening.** Define compatibility tests, then authentication, quotas, rate limiting and outbound request controls before public exposure.
+7. **Consumer integration.** Add a general HTTP search client to CoderInBox while keeping DotNetWebSearchApi independent and WebView2 optional.
 
-The exact provider access method may affect the order within the first stage. Reliability, legality, maintainability and real-world availability take precedence over simply matching an upstream engine count.
+See [docs/ARCHITECTURE_DECISIONS.md](docs/ARCHITECTURE_DECISIONS.md) for the consumer boundary and definition of done.
 
 ## Security and privacy
 
