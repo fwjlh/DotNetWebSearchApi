@@ -921,3 +921,14 @@ Every material repository action is recorded here with its reason, result, verif
 - **Tests:** Added common locale, unknown-locale fallback, Hong Kong special case, request parameter and capability tests. GitHub Actions [run 45028984202](https://github.com/fwjlh/DotNetWebSearchApi/actions/runs/45028984202) completed successfully (build and test steps green; detailed test count not captured). No live provider calls.
 - **Documentation:** Added [docs/PORTING/LOCALE_TRAITS.md](../docs/PORTING/LOCALE_TRAITS.md), updated the rationale corpus, audit, README and handover.
 - **Next:** Add DuckDuckGo's region/language-region traits, then Wikipedia host/LanguageConverter traits. Keep provider count frozen at 67.
+
+
+### 100. Port DuckDuckGo locale and time-range request semantics
+- **Reason:** The first Bing locale port established a reusable mapping registry. DuckDuckGo's Python engine demonstrates a second shape: region codes are sent in a form field and cookie, and time-range filters are duplicated into form data and cookies.
+- **Python evidence:** Pinned `duckduckgo.py` maps locale regions (including `en-GB → uk-en`, `zh-HK → hk-tzh`, `zh-TW → tw-tzh`, `ja-JP → jp-jp`), uses `kl` for region, `df` for day/week/month/year, and retains VQD cache state for later pages.
+- **Action:** Extended `EngineLocaleRegistry` with a curated DDG region subset and all-region fallback `wt-wt`. DuckDuckGo now maps locale to `kl`, time-range to `df=d/w/m/y`, and writes matching preference cookies on the request.
+- **Capabilities:** Declares general/web, locale and time-range support; remains first-page-only and does not advertise safe-search because the C# request path does not currently implement that control.
+- **Known omissions:** No dynamic region/language trait fetch, VQD cache/pagination, bang quoting, zero-click answer results, Firefox TLS impersonation or locale-specific Accept-Language yet. Do not add page offsets without the VQD flow.
+- **Tests:** Added DDG locale/time-range form and cookie assertions, curated locale mappings and capability assertions. GitHub Actions [run 45029215535](https://github.com/fwjlh/DotNetWebSearchApi/actions/runs/45029215535) completed successfully (build and test steps green; detailed test count not captured). No live provider calls.
+- **Documentation:** Updated the DDG port rationale, locale-traits notes, porting audit and handover.
+- **Next:** Port Wikipedia's language-to-host mapping and LanguageConverter variants. Keep provider count frozen at 67.

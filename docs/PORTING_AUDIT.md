@@ -86,11 +86,11 @@ Our aggregator now assigns one-based positions from each provider's returned ord
 
 ### 6. Engine traits: locale, language and region mappings
 
-SearXNG has an `EngineTraits` model and persisted trait maps. Providers translate SearXNG locales into each upstream service's language and region codes. The C# request model now carries `SearchQuery.Language`, and `EngineLocaleRegistry` provides the first static provider-specific mapping for Bing. Bing consumes that mapping for `setlang`/`cc` and maps safe-search 0/1/2 to off/moderate/strict. Its declared capabilities now reflect the implemented request builder: general/web categories, locale and safe-search, but no paging or time range.
+SearXNG has an `EngineTraits` model and persisted trait maps. Providers translate SearXNG locales into each upstream service's language and region codes. The C# request model now carries `SearchQuery.Language`, and `EngineLocaleRegistry` provides curated static provider-specific mappings for Bing and DuckDuckGo. Bing consumes locale and safe-search; DuckDuckGo consumes locale and time-range. Bing consumes that mapping for `setlang`/`cc` and maps safe-search 0/1/2 to off/moderate/strict. Its declared capabilities now reflect the implemented request builder: general/web categories, locale and safe-search, but no paging or time range.
 
-This is a deliberately small first port, not a full `EngineTraits` replacement. The registry has no dynamic refresh or persistence and only Bing's common region map is populated. Unknown Bing locales resolve to the upstream `clear` all-market value rather than a guessed country.
+This is a deliberately small first port, not a full `EngineTraits` replacement. The registry has no dynamic refresh or persistence and only curated Bing and DuckDuckGo region subsets are populated. Unknown locales resolve to each provider's upstream all-market value rather than a guessed country.
 
-**Next:** add DuckDuckGo's locale/language-region mapping and Wikipedia's language-to-host/LanguageConverter rules as separate provider traits. Add Google locale/region maps after its request builder consumes them. Keep traits versioned and static until refresh/persistence provides clear value. See [locale traits notes](PORTING/LOCALE_TRAITS.md).
+**Next:** add Wikipedia's language-to-host/LanguageConverter rules and Google locale/region maps after their request builders consume them. Expand DDG's language-region subset from pinned source evidence. Keep traits versioned and static until refresh/persistence provides clear value. See [locale traits notes](PORTING/LOCALE_TRAITS.md).
 
 ### 7. Provider definitions are more than URL + JSON paths
 

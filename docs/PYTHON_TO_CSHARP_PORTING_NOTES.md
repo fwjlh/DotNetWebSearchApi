@@ -87,12 +87,12 @@ These are translation targets, not assertions that every row is already implemen
 **Important missing behaviour**
 
 - Python's second-page flow requires a cached `vqd` token, uses additional form fields and calculates offsets. It deliberately refuses to request a later page without that token because doing so can trigger bot protection. The current C# implementation only submits the first-page form and has no VQD acquisition/cache/pagination.
-- Python maps locale and time range into form fields and cookies. C# currently hardcodes `kl=wt-wt` and does not implement `df`, cookie persistence or the full locale mapping.
-- Python sets browser-navigation headers and documents the relationship between user-agent, referrer, Sec-Fetch headers and bot detection. C# currently relies on the configured HttpClient defaults and does not reproduce this request profile.
-- Python raises a CAPTCHA-specific engine exception with suspension semantics. C# currently throws a generic `HttpRequestException`; typed challenge outcomes and cooldown are framework work still to do.
+- Python maps locale and time range into form fields and cookies. C# now resolves a curated region subset through `EngineLocaleRegistry`, sends `kl` in the form and request cookie, and maps day/week/month/year to `df=d/w/m/y` in both. This is a deliberate first slice, not the full dynamic region/language map or cookie-jar lifecycle.
+- Python sets browser-navigation headers, Firefox impersonation, referrer and a locale-derived Accept-Language value. C#'s typed HttpClient configuration supplies User-Agent, Accept, Accept-Language, Referer and Sec-Fetch headers, but .NET's default handler does not reproduce Firefox TLS impersonation and the Accept-Language header is not yet varied per request locale.
+- Python raises a CAPTCHA-specific engine exception with suspension semantics and a zero-second suspension for this DDG CAPTCHA path. C# raises a typed `Challenge` outcome with `InteractiveCaptcha`; the shared health policy currently applies its general challenge cooldown, so exact per-engine suspension tuning remains future work.
 - Python can emit a separate answer/zero-click result. The current C# `SearchResult` parser only returns ordinary web links.
 
-**Interpretation:** the current adapter is a bounded first-page HTML search implementation. It preserves the basic form and result extraction, but not the stateful/paged SearXNG workflow. Do not enable paging by simply adding an offset.
+**Interpretation:** the current adapter is a bounded first-page HTML search implementation with locale and time-range request mapping. It preserves the basic form and result extraction, but not the stateful/paged SearXNG workflow, VQD cache or zero-click answer result. Do not enable paging by simply adding an offset.
 
 ### Brave Search
 

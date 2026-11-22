@@ -47,20 +47,30 @@ C# source:
 - [BingSearchProviderTests.cs](../../tests/DotNetWebSearchApi.Tests/BingSearchProviderTests.cs)
 - [EngineLocaleRegistryTests.cs](../../tests/DotNetWebSearchApi.Tests/EngineLocaleRegistryTests.cs)
 
+## DuckDuckGo: locale and time-range request mapping
+
+**Python source:** [searx/engines/duckduckgo.py](https://github.com/searxng/searxng/blob/c6ee3e9fd0235004a694e63720efc869bb1e3594/searx/engines/duckduckgo.py)
+
+Python's no-JavaScript request resolves an upstream region code, places it in the `kl` form field and cookie, and maps day/week/month/year to `df=d/w/m/y` in both form data and cookies. Its `fetch_traits` dynamically extracts region/language tables from a DuckDuckGo JavaScript bundle and applies special cases such as `zh-HK → hk-tzh`, `zh-TW → tw-tzh`, `ja-JP → jp-jp` and `en-GB → uk-en`. Python also caches a VQD token to paginate; C# deliberately remains first-page-only until it has the full token flow.
+
+C# now maps a curated set of common regions through `EngineLocaleRegistry`, writes `kl` and `df` into the form and matching request cookies, and declares general/web, locale and time-range support. It does not declare paging or safe-search support because the current request builder does not implement those controls. The configured HTTP client supplies navigation headers, but does not emulate Firefox TLS fingerprinting or dynamic per-locale Accept-Language.
+
+This is an evidence-based subset, not a complete dynamic traits port. Unknown regions fall back to `wt-wt`; no live trait fetch occurs in the request path.
+
 ## Why this is not yet a full EngineTraits port
 
-- The registry currently contains Bing region mappings only; the language-map and custom-trait slots are present for future providers but are not populated.
+- The registry currently contains curated Bing and DuckDuckGo region mappings only; language maps and custom-trait slots are present for future providers but are not populated.
 - The curated list is deliberately smaller than the dynamic upstream map. Unknown locales fall back to the provider's all-locale value; they are not silently mapped to a guessed country.
 - DuckDuckGo has region and language traits plus a special language-region mapping; Wikipedia maps language codes to hostnames and language-converter variants. Those need separate data and tests rather than being forced into Bing's market-code logic.
 - No automatic trait refresh, JSON persistence, conflict resolution or stale-data fallback has been implemented yet.
 
 ## Next porting sequence
 
-1. Add DuckDuckGo region/language maps and carry `kl` / `df` request state only when the provider implementation supports the relevant fields.
+1. Expand DuckDuckGo's static region map and add language-region mappings only where its current HTML path consumes them.
 2. Add Wikipedia language-to-host mappings and LanguageConverter variants; preserve its different API/result semantics.
 3. Add Google locale/region traits and map `hl`, `lr` and `cr` without claiming support until the request builder consumes them.
 4. Add a versioned external JSON source only if maintaining static maps becomes costly. Do not make live trait fetching part of a user search.
 
 ## Verification limits
 
-Fixture tests verify known Bing mappings, safe-search request construction and conservative fallback. They do not prove current live market behaviour. No live upstream requests were made.
+Fixture tests verify known Bing and DuckDuckGo mappings, Bing safe-search request construction, DuckDuckGo time-range form/cookie mapping and conservative fallbacks. They do not prove current live market behaviour. No live upstream requests were made.
