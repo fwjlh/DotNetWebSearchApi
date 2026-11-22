@@ -408,6 +408,63 @@ public sealed class JsonApiSearchProviderTests
             "search",
             "https://en.wiktionary.org/wiki/search"
         };
+
+        yield return new object[]
+        {
+            JsonApiProviderCatalog.Definitions.Single(item => item.Name == "datacite"),
+            "{\"data\":[{\"attributes\":{\"titles\":[{\"title\":\"DataCite record\"}],\"url\":\"https://example.org/dataset\",\"descriptions\":[{\"description\":\"Research data metadata\"}]}}]}",
+            "DataCite record",
+            "https://example.org/dataset"
+        };
+        yield return new object[]
+        {
+            JsonApiProviderCatalog.Definitions.Single(item => item.Name == "zenodo"),
+            "{\"hits\":{\"hits\":[{\"metadata\":{\"title\":\"Zenodo record\",\"description\":\"A published research output\"},\"links\":{\"html\":\"https://zenodo.org/records/123\"}}]}}",
+            "Zenodo record",
+            "https://zenodo.org/records/123"
+        };
+        yield return new object[]
+        {
+            JsonApiProviderCatalog.Definitions.Single(item => item.Name == "openaire"),
+            "{\"results\":[{\"id\":\"dedup_wf_001\",\"mainTitle\":\"OpenAIRE record\",\"descriptions\":[\"Open research metadata\"]}]}",
+            "OpenAIRE record",
+            "https://explore.openaire.eu/search/publication?pid=dedup_wf_001"
+        };
+        yield return new object[]
+        {
+            JsonApiProviderCatalog.Definitions.Single(item => item.Name == "plos"),
+            "{\"response\":{\"docs\":[{\"id\":\"10.1371/journal.pone.0000001\",\"title_display\":\"PLOS article\",\"abstract\":\"Open access abstract\"}]}}",
+            "PLOS article",
+            "https://doi.org/10.1371/journal.pone.0000001"
+        };
+        yield return new object[]
+        {
+            JsonApiProviderCatalog.Definitions.Single(item => item.Name == "wikisource"),
+            "{\"query\":{\"search\":[{\"title\":\"Example text\",\"snippet\":\"A source text\"}]}}",
+            "Example text",
+            "https://en.wikisource.org/wiki/Example%20text"
+        };
+        yield return new object[]
+        {
+            JsonApiProviderCatalog.Definitions.Single(item => item.Name == "wikibooks"),
+            "{\"query\":{\"search\":[{\"title\":\"Example book\",\"snippet\":\"A learning book\"}]}}",
+            "Example book",
+            "https://en.wikibooks.org/wiki/Example%20book"
+        };
+        yield return new object[]
+        {
+            JsonApiProviderCatalog.Definitions.Single(item => item.Name == "wikiversity"),
+            "{\"query\":{\"search\":[{\"title\":\"Example course\",\"snippet\":\"An open course\"}]}}",
+            "Example course",
+            "https://en.wikiversity.org/wiki/Example%20course"
+        };
+        yield return new object[]
+        {
+            JsonApiProviderCatalog.Definitions.Single(item => item.Name == "wikivoyage"),
+            "{\"query\":{\"search\":[{\"title\":\"Example destination\",\"snippet\":\"A travel guide\"}]}}",
+            "Example destination",
+            "https://en.wikivoyage.org/wiki/Example%20destination"
+        };
     }
 
     private sealed class StubHttpMessageHandler(

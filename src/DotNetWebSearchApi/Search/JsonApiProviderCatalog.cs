@@ -2,9 +2,9 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace DotNetWebSearchApi.Search;
 
-public static class JsonApiProviderCatalog
+public static partial class JsonApiProviderCatalog
 {
-    public static IReadOnlyList<JsonApiSearchDefinition> Definitions { get; } = new[]
+    private static IReadOnlyList<JsonApiSearchDefinition> BaseDefinitions { get; } = new[]
     {
         new JsonApiSearchDefinition
         {
@@ -595,6 +595,9 @@ public static class JsonApiProviderCatalog
             }
         }
     };
+
+    public static IReadOnlyList<JsonApiSearchDefinition> Definitions =>
+        BaseDefinitions.Concat(AdditionalDefinitions).ToArray();
 
     public static void Register(IServiceCollection services, IConfiguration configuration)
     {

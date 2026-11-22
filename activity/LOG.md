@@ -645,3 +645,15 @@ Every material repository action is recorded here with its reason, result, verif
 - **Verification:** https://github.com/fwjlh/DotNetWebSearchApi/actions/runs/45019896375. The Altcha challenge, proof submission, cookie handling, result parsing and unsolved-proof failure path are fixture-tested.
 - **Live status:** No live Mojeek request has been made; the provider is CI-verified only. CAPTCHA difficulty, service policy and live acceptance still require testing after the user pulls the repo.
 - **Next:** Continue from 59, preserving the original major-engine order; Startpage is the next major candidate but its current Anubis proof-of-work is CPU-intensive and was disabled by default in the upstream implementation.
+
+
+## 2026-11-22 — Batch 7 implementation
+
+### 75. Add scholarly metadata and open-knowledge search providers
+- **Reason:** Continue down the provider list after the major general-search engines, adding reliable public scholarly and reference sources.
+- **Action:** Added DataCite, Zenodo, OpenAIRE Graph v4, PLOS Search, Wikisource, Wikibooks, Wikiversity and Wikivoyage. Split the JSON provider catalog into base and additional definition files to keep source files within the preferred size limit.
+- **Rate limits:** PLOS is throttled to one request every six seconds to respect its published 10-per-minute limit. Other APIs remain subject to their upstream public quotas.
+- **Tests:** Added eight JSON fixture cases covering nested JSON:API records, Zenodo search hits, OpenAIRE Graph results, PLOS Solr response and four MediaWiki instances.
+- **Result:** 67 provider adapters are implemented in source.
+- **Verification:** Pending GitHub Actions. No live upstream requests were made.
+- **Next:** Verify all 156 tests; continue toward 100 with the remaining specialist sources and search engines.
