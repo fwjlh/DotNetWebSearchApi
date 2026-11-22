@@ -121,8 +121,28 @@ public static class EngineLocaleRegistry
             ["id"] = "id.wikipedia.org", ["he"] = "he.wikipedia.org"
         };
 
+        Dictionary<string, string> googleLanguages = new(StringComparer.OrdinalIgnoreCase)
+        {
+            ["en"] = "lang_en", ["fr"] = "lang_fr", ["de"] = "lang_de",
+            ["es"] = "lang_es", ["ja"] = "lang_ja", ["ko"] = "lang_ko",
+            ["zh"] = "lang_zh-CN", ["zh-TW"] = "lang_zh-TW",
+            ["zh-HK"] = "lang_zh-TW", ["ru"] = "lang_ru",
+            ["pt"] = "lang_pt-PT", ["pt-BR"] = "lang_pt-BR",
+            ["it"] = "lang_it", ["nl"] = "lang_nl", ["ar"] = "lang_ar"
+        };
+        Dictionary<string, string> googleRegions = new(StringComparer.OrdinalIgnoreCase)
+        {
+            ["en-US"] = "US", ["en-GB"] = "GB", ["en-AU"] = "AU",
+            ["en-CA"] = "CA", ["fr-FR"] = "FR", ["fr-CA"] = "CA",
+            ["de-DE"] = "DE", ["es-ES"] = "ES", ["es-MX"] = "MX",
+            ["ja-JP"] = "JP", ["ko-KR"] = "KR", ["zh-CN"] = "CN",
+            ["zh-TW"] = "TW", ["zh-HK"] = "HK", ["ru-RU"] = "RU",
+            ["pt-BR"] = "BR", ["it-IT"] = "IT", ["nl-NL"] = "NL"
+        };
+
         return new Dictionary<string, EngineLocaleTraits>(StringComparer.OrdinalIgnoreCase)
         {
+            ["google"] = new EngineLocaleTraits(googleLanguages, googleRegions, "ZZ"),
             ["bing"] = new EngineLocaleTraits(
                 new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase),
                 bingRegions,

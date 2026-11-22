@@ -72,6 +72,44 @@ public sealed class GoogleSearchProviderTests
     }
 
     [Fact]
+    public async Task SearchAsync_MapsLocaleSafeSearchTimeRangeAndPage()
+    {
+        Uri? requestedUri = null;
+        using HttpClient client = new(new StubHttpMessageHandler(request =>
+        {
+            requestedUri = request.RequestUri;
+            return HtmlResponse(ResultPage);
+        }));
+        GoogleSearchProvider provider = new(client);
+
+        await provider.SearchAsync(new SearchQuery("bonjour", 10)
+        {
+            Language = "fr-FR",
+            Page = 3,
+            SafeSearch = 2,
+            TimeRange = SearchTimeRange.Week
+        }, CancellationToken.None);
+
+        Assert.Contains("hl=fr", requestedUri?.Query);
+        Assert.Contains("lr=lang_fr", requestedUri?.Query);
+        Assert.Contains("cr=countryFR", requestedUri?.Query);
+        Assert.Contains("start=20", requestedUri?.Query);
+        Assert.Contains("tbs=qdr%3Aw", requestedUri?.Query);
+        Assert.Contains("safe=high", requestedUri?.Query);
+    }
+
+    [Fact]
+    public void Capabilities_DeclareImplementedGoogleRequestFeatures()
+    {
+        GoogleSearchProvider provider = new(new HttpClient());
+        Assert.True(provider.Capabilities.SupportsPagination);
+        Assert.Equal(50, provider.Capabilities.MaximumPage);
+        Assert.True(provider.Capabilities.SupportsTimeRange);
+        Assert.True(provider.Capabilities.SupportsSafeSearch);
+        Assert.True(provider.Capabilities.SupportsLocale);
+    }
+
+    [Fact]
     public async Task SearchAsync_ThrowsWhenGoogleReturnsCaptchaPage()
     {
         using HttpClient client = new(new StubHttpMessageHandler(_ =>

@@ -40,6 +40,29 @@ public sealed class EngineLocaleRegistryTests
         Assert.Equal("wt-wt", EngineLocaleRegistry.GetRegion("duckduckgo", "xx-ZZ"));
     }
 
+    [Theory]
+    [InlineData("fr-FR", "lang_fr")]
+    [InlineData("zh-TW", "lang_zh-TW")]
+    [InlineData("en-GB", "lang_en")]
+    public void GetLanguage_ResolvesGoogleLanguage(string locale, string expected)
+    {
+        Assert.Equal(expected, EngineLocaleRegistry.GetLanguage("google", locale));
+    }
+
+    [Theory]
+    [InlineData("fr-FR", "FR")]
+    [InlineData("zh-HK", "HK")]
+    public void GetRegion_ResolvesGoogleCountry(string locale, string expected)
+    {
+        Assert.Equal(expected, EngineLocaleRegistry.GetRegion("google", locale));
+    }
+
+    [Fact]
+    public void GetRegion_ReturnsGoogleAllLocaleForAutomaticLanguage()
+    {
+        Assert.Equal("ZZ", EngineLocaleRegistry.GetRegion("google", "auto"));
+    }
+
     [Fact]
     public void GetRegion_ReturnsCallerFallbackForUnknownProvider()
     {
