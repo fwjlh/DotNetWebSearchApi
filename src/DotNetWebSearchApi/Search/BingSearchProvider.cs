@@ -4,10 +4,12 @@ public sealed class BingSearchProvider : ISearchProvider
 {
     private const string SearchEndpoint = "https://www.bing.com/search";
     private readonly HttpClient _httpClient;
+    private readonly SearchHttpTransport _transport;
 
-    public BingSearchProvider(HttpClient httpClient)
+    public BingSearchProvider(HttpClient httpClient, SearchHttpTransport? transport = null)
     {
         _httpClient = httpClient;
+        _transport = transport ?? new SearchHttpTransport();
     }
 
     public string Name => "bing";
@@ -19,11 +21,10 @@ public sealed class BingSearchProvider : ISearchProvider
         CancellationToken cancellationToken)
     {
         string requestUrl = BuildRequestUrl(query.Text);
-        using HttpResponseMessage response = await _httpClient.GetAsync(requestUrl, cancellationToken);
-        response.EnsureSuccessStatusCode();
-
-        string html = await response.Content.ReadAsStringAsync(cancellationToken);
-        return BingSearchResultParser.Parse(html);
+        using HttpRequestMessage request = new(HttpMethod.Get, requestUrl);
+        SearchHttpResponse response = await _transport.SendAsync(_httpClient, request, cancellationToken);
+        response.EnsureSuccessStatusCode(Name);
+        return BingSearchResultParser.Parse(response.Content);
     }
 
     private static string BuildRequestUrl(string query)
