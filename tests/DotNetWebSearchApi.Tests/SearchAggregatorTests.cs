@@ -190,7 +190,7 @@ public sealed class SearchAggregatorTests
         Assert.Equal(1, capableCalls);
         Assert.Equal(0, legacyCalls);
         Assert.Equal("Paged", Assert.Single(execution.Results).Title);
-        Assert.Equal("legacy", Assert.Single(execution.UnsupportedProviders!));
+        Assert.Equal("legacy", Assert.Single(execution.UnsupportedProviders));
         Assert.Empty(execution.UnresponsiveProviders);
     }
 
