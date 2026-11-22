@@ -1,3 +1,5 @@
+using System.Net;
+using System.Text.Json;
 using Xunit;
 using DotNetWebSearchApi.Search;
 using Microsoft.Extensions.Logging.Abstractions;
@@ -96,11 +98,83 @@ public sealed class SearchAggregatorTests
             TimeSpan.FromMilliseconds(20));
         SearchAggregator aggregator = CreateAggregator(slowProvider);
 
-        IReadOnlyList<SearchResult> results = await aggregator.SearchAsync(
+        SearchExecutionResult execution = await aggregator.SearchDetailedAsync(
             new SearchQuery("test", 10),
             CancellationToken.None);
 
-        Assert.Empty(results);
+        Assert.Empty(execution.Results);
+        Assert.Equal(ProviderFailureKind.Timeout, Assert.Single(execution.ProviderOutcomes).FailureKind);
+    }
+
+    [Theory]
+    [InlineData(401, ProviderFailureKind.Authentication)]
+    [InlineData(403, ProviderFailureKind.AccessDenied)]
+    [InlineData(429, ProviderFailureKind.RateLimited)]
+    [InlineData(503, ProviderFailureKind.TransientHttp)]
+    public async Task SearchDetailedAsync_ClassifiesHttpFailures(int statusCode, ProviderFailureKind expectedKind)
+    {
+        TestProvider provider = new(
+            "http",
+            (_, _) => throw new HttpRequestException("upstream failure", null, (HttpStatusCode)statusCode));
+        SearchAggregator aggregator = CreateAggregator(provider);
+
+        SearchExecutionResult execution = await aggregator.SearchDetailedAsync(
+            new SearchQuery("test", 10),
+            CancellationToken.None);
+
+        ProviderOutcome outcome = Assert.Single(execution.ProviderOutcomes);
+        Assert.Equal(ProviderOutcomeStatus.Failed, outcome.Status);
+        Assert.Equal(expectedKind, outcome.FailureKind);
+        Assert.Equal("http", Assert.Single(execution.UnresponsiveProviders));
+    }
+
+    [Fact]
+    public async Task SearchDetailedAsync_ClassifiesMalformedProviderResponse()
+    {
+        TestProvider provider = new("malformed", (_, _) => throw new JsonException("invalid JSON"));
+        SearchAggregator aggregator = CreateAggregator(provider);
+
+        SearchExecutionResult execution = await aggregator.SearchDetailedAsync(
+            new SearchQuery("test", 10),
+            CancellationToken.None);
+
+        Assert.Equal(ProviderFailureKind.InvalidResponse, Assert.Single(execution.ProviderOutcomes).FailureKind);
+    }
+
+    [Fact]
+    public async Task SearchDetailedAsync_PreservesTypedChallengeAndRetryAfter()
+    {
+        TimeSpan retryAfter = TimeSpan.FromSeconds(15);
+        TestProvider provider = new(
+            "challenge",
+            (_, _) => throw new ProviderFailureException(
+                ProviderFailureKind.Challenge,
+                "Verification required",
+                retryAfter));
+        SearchAggregator aggregator = CreateAggregator(provider);
+
+        SearchExecutionResult execution = await aggregator.SearchDetailedAsync(
+            new SearchQuery("test", 10),
+            CancellationToken.None);
+
+        ProviderOutcome outcome = Assert.Single(execution.ProviderOutcomes);
+        Assert.Equal(ProviderFailureKind.Challenge, outcome.FailureKind);
+        Assert.Equal(retryAfter, outcome.RetryAfter);
+    }
+
+    [Fact]
+    public async Task SearchDetailedAsync_ReportsSuccessfulEmptyResponseAsSuccess()
+    {
+        SearchAggregator aggregator = CreateAggregator(
+            new TestProvider("empty", (_, _) =>
+                Task.FromResult<IReadOnlyList<SearchResult>>(Array.Empty<SearchResult>())));
+
+        SearchExecutionResult execution = await aggregator.SearchDetailedAsync(
+            new SearchQuery("test", 10),
+            CancellationToken.None);
+
+        Assert.Empty(execution.UnresponsiveProviders);
+        Assert.Equal(ProviderOutcomeStatus.Succeeded, Assert.Single(execution.ProviderOutcomes).Status);
     }
 
     [Fact]
