@@ -33,6 +33,7 @@ This is an architectural comparison, not a line-by-line port certification. Sear
 - A SearXNG-shaped `/search` response mapper and provider-selection parameter.
 - Search request context and capability pre-flight, with unsupported providers reported separately.
 - Typed provider outcomes and a process-local Closed/Open/HalfOpen health registry with cooldown, backoff, one recovery probe and caller-cancellation release.
+- Initial shared HTTP transport used by Bing and Qwant: bounded response reads, per-host concurrency, response-header capture and Retry-After extraction.
 
 These are good foundations. The JSON definition approach is especially useful for providers whose request and response shapes are genuinely simple.
 
@@ -58,14 +59,14 @@ An `EngineCapabilities` record and optional `ISearchProviderCapabilities` interf
 
 SearXNG separates an engine's request-building function from its response parser, then sends the request through a common network layer. That common layer owns consistent transport behaviour and engine-specific request parameters can adjust headers, cookies, proxy/impersonation, redirects and request body.
 
-Our C# providers currently build and send requests inside each `SearchAsync`. Common user-agent and header configuration is repeated in `Program.cs`; cookies and redirect handling are configured differently for individual providers. The JSON adapter has its own throttling mechanism, while other adapters have no shared rate policy.
+Bing and Qwant now use `SearchHttpTransport`; the remaining adapters still send requests directly. The transport uses `ResponseHeadersRead`, enforces a 4 MiB response limit by default, caps concurrency per host, preserves response headers and captures Retry-After. It maps common HTTP statuses to typed provider failures. Common user-agent/header configuration is still repeated in `Program.cs`; cookies and redirect handling remain provider-specific. The JSON adapter has its own throttling mechanism.
 
-**Port:** use a small pipeline:
-1. provider builds a typed `SearchRequest` (method, URI, headers, cookies, body, redirect policy);
-2. shared `SearchHttpTransport` executes it;
-3. provider-specific parser converts the response into typed results.
+**Port:** continue the small pipeline:
+1. provider builds a request (method, URI, provider-specific headers/body and session requirements);
+2. shared `SearchHttpTransport` executes it and returns bounded content plus status/header metadata;
+3. provider-specific challenge/status logic and parser convert the response into typed outcomes/results.
 
-The transport should centralise timeout, cancellation, decompression, redirect policy, cookies, proxy support, response-size limits, retry policy for safe transient failures, Retry-After handling, request diagnostics and per-host/per-provider concurrency limits. Do not retry CAPTCHA, access-denied or other permanent failures.
+The transport still needs a deliberate policy for timeout ownership, decompression, redirects, cookie/session isolation, proxy support, request diagnostics, provider-specific rate spacing and safe retries. Do not retry CAPTCHA, access-denied or other permanent failures. Do not move all cookie and redirect behaviour into a single handler where it would break provider-specific flows.
 
 ### 4. Failure classification and provider suspension
 
