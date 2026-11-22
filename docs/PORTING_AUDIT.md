@@ -31,6 +31,8 @@ This is an architectural comparison, not a line-by-line port certification. Sear
 - A separate RSS/Atom adapter and dedicated HTML/XML implementations where a generic JSON mapping is insufficient.
 - Provider fixture tests and GitHub Actions CI.
 - A SearXNG-shaped `/search` response mapper and provider-selection parameter.
+- Search request context and capability pre-flight, with unsupported providers reported separately.
+- Typed provider outcomes and a process-local Closed/Open/HalfOpen health registry with cooldown, backoff, one recovery probe and caller-cancellation release.
 
 These are good foundations. The JSON definition approach is especially useful for providers whose request and response shapes are genuinely simple.
 
@@ -113,7 +115,7 @@ The current `/search` endpoint is a useful compatibility starting point, but it 
 | Priority | Shared component | Why it comes first |
 |---|---|---|
 | P0 | Provider capability declarations | Advertises only options the current C# request builders genuinely honour |
-| P0 | Provider execution/health state | Adds cooldown, backoff and half-open recovery on top of the new typed outcomes |
+| P0 | Persistent/provider-specific health policy | Extends the initial process-local cooldown and half-open registry with persistence and per-engine policy |
 | P1 | Shared HTTP transport and request model | Removes repeated headers/cookie/timeout/rate-limit plumbing |
 | P1 | Result container, source positions and scoring | Makes multi-provider aggregation meaningfully SearXNG-like |
 | P1 | Engine traits registry | Allows the same provider to serve different regions/languages correctly |
