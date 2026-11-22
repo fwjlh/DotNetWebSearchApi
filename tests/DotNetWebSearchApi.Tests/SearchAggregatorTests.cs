@@ -122,6 +122,47 @@ public sealed class SearchAggregatorTests
     }
 
     [Fact]
+    public async Task SearchDetailedAsync_ReportsUnresponsiveProviders()
+    {
+        SearchAggregator aggregator = CreateAggregator(
+            new TestProvider("broken", (_, _) => throw new InvalidOperationException("failure")),
+            Provider("working", Result("Available", "https://example.com/ok")));
+
+        SearchExecutionResult execution = await aggregator.SearchDetailedAsync(
+            new SearchQuery("test", 10),
+            CancellationToken.None);
+
+        Assert.Single(execution.Results);
+        Assert.Equal("broken", Assert.Single(execution.UnresponsiveProviders));
+    }
+
+    [Fact]
+    public async Task SearchDetailedAsync_RunsOnlyRequestedProviders()
+    {
+        int alphaCalls = 0;
+        int betaCalls = 0;
+        SearchAggregator aggregator = CreateAggregator(
+            new TestProvider("alpha", (_, _) =>
+            {
+                alphaCalls++;
+                return Task.FromResult<IReadOnlyList<SearchResult>>(new[] { Result("Alpha", "https://example.com/a") });
+            }),
+            new TestProvider("beta", (_, _) =>
+            {
+                betaCalls++;
+                return Task.FromResult<IReadOnlyList<SearchResult>>(new[] { Result("Beta", "https://example.com/b") });
+            }));
+
+        SearchExecutionResult execution = await aggregator.SearchDetailedAsync(
+            new SearchQuery("test", 10, new HashSet<string>(StringComparer.OrdinalIgnoreCase) { "alpha" }),
+            CancellationToken.None);
+
+        Assert.Equal(1, alphaCalls);
+        Assert.Equal(0, betaCalls);
+        Assert.Equal("Alpha", Assert.Single(execution.Results).Title);
+    }
+
+    [Fact]
     public async Task SearchAsync_ReturnsEmptyForBlankQuery()
     {
         SearchAggregator aggregator = CreateAggregator(Provider("one", Result("One", "https://example.com/1")));

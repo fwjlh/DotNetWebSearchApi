@@ -352,3 +352,19 @@ Every material repository action is recorded here with its reason, result, verif
 - **Result:** Provider capability table now renders Naver and Seznam as separate rows.
 - **Verification:** Re-fetched README.md from GitHub and inspected the current capabilities table.
 - **Next:** Begin SearXNG-compatible JSON API work.
+
+
+## 2026-11-22 — SearXNG-compatible JSON API
+
+### 43. Define compatibility scope
+- **Reason:** The agreed ten-provider target is complete; move to milestone 5, the SearXNG-compatible JSON API, before the browser/admin work.
+- **Action:** Reviewed SearXNG JSON response conventions and identified the initial compatible surface: query, number_of_results, results, answers, corrections, infoboxes, suggestions and unresponsive_engines; result fields include engine, engines, positions, score, category, template and parsed_url.
+- **Result:** Implement a JSON-only GET/POST /search route (plus GET /) with engine selection and explicit 501 responses for unsupported paging/time-range/safesearch/language features. Preserve the existing /api/search contract.
+- **Next:** Track provider failures in SearchAggregator so unresponsive_engines is meaningful; add integration tests using WebApplicationFactory.
+
+### 44. Implement compatibility response and diagnostics
+- **Reason:** Provide the SearXNG-shaped response while accurately exposing provider failures and selected engines.
+- **Action:** Added SearchExecutionResult and SearchAggregator.SearchDetailedAsync, optional provider selection on SearchQuery, response DTO/mapper with snake_case fields, GET/POST /search and GET / routes, plus engine filtering and unsupported-feature responses. Added two aggregator tests and eight WebApplicationFactory integration tests. Added Microsoft.AspNetCore.Mvc.Testing 10.0.0.
+- **Result:** Implementation and tests prepared for commit. Existing /api/search remains unchanged. Compatibility is deliberately limited: only JSON, general category, page one, no time-range or safe-search overrides; provider result positions are inferred from current adapter scores.
+- **Verification:** Pending GitHub Actions.
+- **Next:** Inspect restore/build/test; correct any integration issues before claiming compatibility.

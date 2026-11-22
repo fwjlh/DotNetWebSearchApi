@@ -7,43 +7,50 @@ public sealed class SearchAggregator
     private readonly IReadOnlyList<ISearchProvider> _providers;
     private readonly ILogger<SearchAggregator> _logger;
 
-    public SearchAggregator(
-        IEnumerable<ISearchProvider> providers,
-        ILogger<SearchAggregator> logger)
+    public SearchAggregator(IEnumerable<ISearchProvider> providers, ILogger<SearchAggregator> logger)
     {
         _providers = providers.ToArray();
         _logger = logger;
     }
 
-    public async Task<IReadOnlyList<SearchResult>> SearchAsync(
-        SearchQuery query,
-        CancellationToken cancellationToken)
+    public IReadOnlyList<string> ProviderNames => _providers.Select(provider => provider.Name).ToArray();
+
+    public async Task<IReadOnlyList<SearchResult>> SearchAsync(SearchQuery query, CancellationToken cancellationToken)
     {
-        if (string.IsNullOrWhiteSpace(query.Text) || query.Limit < 1)
-        {
-            return Array.Empty<SearchResult>();
-        }
-
-        Task<IReadOnlyList<SearchResult>>[] tasks = _providers
-            .Select(provider => ExecuteProviderAsync(provider, query, cancellationToken))
-            .ToArray();
-
-        IReadOnlyList<SearchResult>[] providerResults = await Task.WhenAll(tasks);
-        return MergeResults(providerResults, query.Limit);
+        SearchExecutionResult execution = await SearchDetailedAsync(query, cancellationToken);
+        return execution.Results;
     }
 
-    private async Task<IReadOnlyList<SearchResult>> ExecuteProviderAsync(
+    public async Task<SearchExecutionResult> SearchDetailedAsync(SearchQuery query, CancellationToken cancellationToken)
+    {
+        if (string.IsNullOrWhiteSpace(query.Text) || query.Limit < 1)
+            return new SearchExecutionResult(Array.Empty<SearchResult>(), Array.Empty<string>());
+
+        ISearchProvider[] selectedProviders = query.ProviderNames is null
+            ? _providers.ToArray()
+            : _providers.Where(provider => query.ProviderNames.Contains(provider.Name)).ToArray();
+        ProviderExecutionResult[] providerResults = await Task.WhenAll(
+            selectedProviders.Select(provider => ExecuteProviderAsync(provider, query, cancellationToken)));
+
+        IReadOnlyList<SearchResult> results = MergeResults(providerResults.Select(item => item.Results), query.Limit);
+        string[] unresponsiveProviders = providerResults
+            .Where(item => item.Failed)
+            .Select(item => item.ProviderName)
+            .ToArray();
+        return new SearchExecutionResult(results, unresponsiveProviders);
+    }
+
+    private async Task<ProviderExecutionResult> ExecuteProviderAsync(
         ISearchProvider provider,
         SearchQuery query,
         CancellationToken cancellationToken)
     {
-        using CancellationTokenSource timeoutSource =
-            CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+        using CancellationTokenSource timeoutSource = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
         timeoutSource.CancelAfter(provider.Timeout);
-
         try
         {
-            return await provider.SearchAsync(query, timeoutSource.Token);
+            IReadOnlyList<SearchResult> results = await provider.SearchAsync(query, timeoutSource.Token);
+            return new ProviderExecutionResult(provider.Name, results, false);
         }
         catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
         {
@@ -52,28 +59,18 @@ public sealed class SearchAggregator
         catch (Exception exception)
         {
             _logger.LogWarning(exception, "Search provider {Provider} failed.", provider.Name);
-            return Array.Empty<SearchResult>();
+            return new ProviderExecutionResult(provider.Name, Array.Empty<SearchResult>(), true);
         }
     }
 
-    private static IReadOnlyList<SearchResult> MergeResults(
-        IEnumerable<IReadOnlyList<SearchResult>> providerResults,
-        int limit)
+    private static IReadOnlyList<SearchResult> MergeResults(IEnumerable<IReadOnlyList<SearchResult>> providerResults, int limit)
     {
         Dictionary<string, SearchResult> uniqueResults = new(StringComparer.OrdinalIgnoreCase);
-
         foreach (SearchResult result in providerResults.SelectMany(results => results))
         {
-            if (!TryGetCanonicalUrl(result.Url, out string canonicalUrl))
-            {
-                continue;
-            }
-
-            if (!uniqueResults.TryGetValue(canonicalUrl, out SearchResult? existing)
-                || result.Score > existing.Score)
-            {
+            if (!TryGetCanonicalUrl(result.Url, out string canonicalUrl)) continue;
+            if (!uniqueResults.TryGetValue(canonicalUrl, out SearchResult? existing) || result.Score > existing.Score)
                 uniqueResults[canonicalUrl] = result;
-            }
         }
 
         return uniqueResults.Values
@@ -88,18 +85,13 @@ public sealed class SearchAggregator
         canonicalUrl = string.Empty;
         if (!Uri.TryCreate(value, UriKind.Absolute, out Uri? uri)
             || (uri.Scheme != Uri.UriSchemeHttp && uri.Scheme != Uri.UriSchemeHttps))
-        {
             return false;
-        }
-
-        UriBuilder builder = new(uri)
-        {
-            Fragment = string.Empty
-        };
-
+        UriBuilder builder = new(uri) { Fragment = string.Empty };
         string path = builder.Path.TrimEnd('/');
         builder.Path = path.Length == 0 ? "/" : path;
         canonicalUrl = builder.Uri.AbsoluteUri;
         return true;
     }
+
+    private sealed record ProviderExecutionResult(string ProviderName, IReadOnlyList<SearchResult> Results, bool Failed);
 }

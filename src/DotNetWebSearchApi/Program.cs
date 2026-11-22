@@ -93,6 +93,9 @@ builder.Services.AddSingleton<SearchAggregator>();
 WebApplication app = builder.Build();
 app.MapGet("/health", HealthEndpoint);
 app.MapGet("/api/search", SearchEndpoint);
+app.MapGet("/search", SearxngSearchEndpoint);
+app.MapGet("/", SearxngSearchEndpoint);
+app.MapPost("/search", SearxngSearchEndpoint);
 app.Run();
 
 static IResult HealthEndpoint() => Results.Ok(new { status = "ok" });
@@ -104,6 +107,84 @@ static async Task<IResult> SearchEndpoint(string? q, int? limit, SearchAggregato
     if (resultLimit is < 1 or > 50) return Results.BadRequest(new { error = "Limit must be between 1 and 50." });
     IReadOnlyList<SearchResult> results = await aggregator.SearchAsync(new SearchQuery(q.Trim(), resultLimit), cancellationToken);
     return Results.Ok(new SearchResponse(q.Trim(), results));
+}
+
+static async Task<IResult> SearxngSearchEndpoint(HttpRequest request, SearchAggregator aggregator, CancellationToken cancellationToken)
+{
+    IFormCollection? form = null;
+    if (HttpMethods.IsPost(request.Method))
+    {
+        if (!request.HasFormContentType) return Results.StatusCode(StatusCodes.Status415UnsupportedMediaType);
+        form = await request.ReadFormAsync(cancellationToken);
+    }
+
+    string? queryText = ReadParameter(request, form, "q");
+    if (string.IsNullOrWhiteSpace(queryText)) return Results.BadRequest(new { error = "Query parameter 'q' is required." });
+    string? format = ReadParameter(request, form, "format");
+    if (!string.IsNullOrWhiteSpace(format) && !format.Equals("json", StringComparison.OrdinalIgnoreCase))
+        return Results.StatusCode(StatusCodes.Status406NotAcceptable);
+
+    string? pageValue = ReadParameter(request, form, "pageno");
+    if (!string.IsNullOrWhiteSpace(pageValue) && (!int.TryParse(pageValue, out int pageNumber) || pageNumber != 1))
+        return Results.StatusCode(StatusCodes.Status501NotImplemented);
+
+    string? categoryValue = ReadParameter(request, form, "categories");
+    if (!string.IsNullOrWhiteSpace(categoryValue)
+        && categoryValue.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+            .Any(category => !category.Equals("general", StringComparison.OrdinalIgnoreCase)))
+        return Results.BadRequest(new { error = "Only the general category is currently supported." });
+
+    if (!string.IsNullOrWhiteSpace(ReadParameter(request, form, "time_range")))
+        return Results.StatusCode(StatusCodes.Status501NotImplemented);
+
+    string? language = ReadParameter(request, form, "language");
+    if (!string.IsNullOrWhiteSpace(language) && !language.Equals("auto", StringComparison.OrdinalIgnoreCase))
+        return Results.StatusCode(StatusCodes.Status501NotImplemented);
+
+    string? safeSearchValue = ReadParameter(request, form, "safesearch");
+    if (!string.IsNullOrWhiteSpace(safeSearchValue)
+        && (!int.TryParse(safeSearchValue, out int safeSearch) || safeSearch != 0))
+        return Results.StatusCode(StatusCodes.Status501NotImplemented);
+
+    IReadOnlySet<string>? selectedProviders = ReadSelectedProviders(
+        ReadParameter(request, form, "engines"),
+        aggregator.ProviderNames,
+        out string[] unknownProviders);
+    if (unknownProviders.Length > 0)
+    {
+        return Results.BadRequest(new
+        {
+            error = "One or more requested engines are not available.",
+            unknown_engines = unknownProviders,
+            available_engines = aggregator.ProviderNames
+        });
+    }
+
+    SearchExecutionResult execution = await aggregator.SearchDetailedAsync(
+        new SearchQuery(queryText.Trim(), 10, selectedProviders),
+        cancellationToken);
+    return Results.Ok(SearxngSearchResponseMapper.Map(queryText.Trim(), execution));
+}
+
+static string? ReadParameter(HttpRequest request, IFormCollection? form, string name)
+{
+    string? formValue = form is null ? null : form[name].FirstOrDefault();
+    return string.IsNullOrWhiteSpace(formValue) ? request.Query[name].FirstOrDefault() : formValue;
+}
+
+static IReadOnlySet<string>? ReadSelectedProviders(
+    string? providerValue,
+    IReadOnlyList<string> availableProviders,
+    out string[] unknownProviders)
+{
+    unknownProviders = Array.Empty<string>();
+    if (string.IsNullOrWhiteSpace(providerValue)) return null;
+    HashSet<string> requested = new(
+        providerValue.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries),
+        StringComparer.OrdinalIgnoreCase);
+    HashSet<string> available = new(availableProviders, StringComparer.OrdinalIgnoreCase);
+    unknownProviders = requested.Where(provider => !available.Contains(provider)).ToArray();
+    return requested;
 }
 
 public sealed record SearchResponse(string Query, IReadOnlyList<SearchResult> Results);

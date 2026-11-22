@@ -6,7 +6,7 @@ Updated: 2026-11-22
 
 - Public repository: https://github.com/fwjlh/DotNetWebSearchApi
 - Default branch: main
-- Latest verified code commit: 671143fc87d4aed76eec3cb012e88e262cb5f44b
+- Latest verified code commit: 671143fc87d4aed76eec3cb012e88e262cb5f44b (SearXNG JSON API pending CI)
 - Full project overview and roadmap: [README.md](../README.md)
 
 ## Working vertical slice
@@ -76,8 +76,8 @@ There is no SQL Server provider store, general configurable HTTP provider, API-k
 
 ## Next actions
 
-1. Implement the SearXNG-compatible JSON API surface, including response shape and format negotiation.
-2. Add API integration tests and compatibility fixtures.
+1. Verify the SearXNG-compatible JSON API implementation and integration tests in GitHub Actions.
+2. Expand response compatibility only where supported by real provider capabilities.
 3. Build the browser search interface and provider selection.
 4. Add administration and diagnostics, including provider health and configuration.
 5. Design SQL Server provider configuration, secret references, API keys, quotas and rate limiting before exposing an instance to untrusted traffic.
