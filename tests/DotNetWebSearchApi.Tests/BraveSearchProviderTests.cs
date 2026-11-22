@@ -115,7 +115,7 @@ public sealed class BraveSearchProviderTests
             }));
         BraveSearchProvider provider = new(client);
 
-        await Assert.ThrowsAsync<JsonException>(() =>
+        await Assert.ThrowsAnyAsync<JsonException>(() =>
             provider.SearchAsync(new SearchQuery("test", 10), CancellationToken.None));
     }
 

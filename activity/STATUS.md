@@ -6,7 +6,7 @@ Updated: 2026-11-22
 
 - Public repository: https://github.com/fwjlh/DotNetWebSearchApi
 - Default branch: main
-- Latest verified code commit: b037b44e9b7d00debdcae9eab1a910a125da7c9b (Brave adapter pending CI)
+- Latest verified code commit: b037b44e9b7d00debdcae9eab1a910a125da7c9b (Brave adapter CI correction pending)
 - Documentation refresh is being committed separately.
 - Full project overview and roadmap: [README.md](../README.md)
 

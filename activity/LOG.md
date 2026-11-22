@@ -134,3 +134,12 @@ Every material repository action is recorded here with its reason, result, verif
 - **Result:** Implementation and tests prepared for commit. Without the environment variable, the provider is not registered and no key is required. The test suite uses fixture JSON and a fake HTTP handler; it does not make billable/live Brave requests.
 - **Verification:** Pending GitHub Actions.
 - **Next:** Inspect CI. If green, record Brave as implemented-but-key-required. Then evaluate Google's supported options (Custom Search JSON API is closed to new customers) and DuckDuckGo's HTML route/bot protection before the next adapter.
+
+
+### 17. Diagnose Brave adapter CI test failure
+- **Reason:** The first automated run must be inspected and any real failures corrected before counting the adapter as verified.
+- **Action:** Inspected GitHub Actions run 45008000838 for commit d2531b69a997709ccf80082ddaa76bbd802f4500 and read the job log.
+- **Result:** Restore and build succeeded with 0 warnings and 0 errors. Of 23 tests, 22 passed and one failed because the malformed-JSON test used Assert.ThrowsAsync<JsonException>, which requires an exact exception type; System.Text.Json returned JsonReaderException, a more specific JsonException subtype. This is a test assertion mismatch, not a production adapter defect.
+- **Correction:** Change the assertion to Assert.ThrowsAnyAsync<JsonException> so derived JSON parse exceptions are accepted.
+- **Verification:** Correction is committed with the activity update; the next CI run must confirm all tests pass.
+- **Next:** Inspect the corrected CI run. If green, mark Brave as verified-but-key-required and proceed to Google, then DuckDuckGo.
