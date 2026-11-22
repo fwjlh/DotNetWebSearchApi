@@ -101,8 +101,9 @@ public sealed class YahooSearchProviderTests
             new HttpResponseMessage(HttpStatusCode.ServiceUnavailable)));
         YahooSearchProvider provider = new(client, new CookieContainer());
 
-        await Assert.ThrowsAsync<HttpRequestException>(() =>
+        ProviderFailureException exception = await Assert.ThrowsAsync<ProviderFailureException>(() =>
             provider.SearchAsync(new SearchQuery("test", 10), CancellationToken.None));
+        Assert.Equal(ProviderFailureKind.TransientHttp, exception.FailureKind);
     }
 
     private static HttpResponseMessage HtmlResponse(string html)
