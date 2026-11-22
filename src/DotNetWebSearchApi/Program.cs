@@ -149,13 +149,18 @@ static Task<IResult> RootEndpoint(HttpRequest request, SearchAggregator aggregat
     return SearxngSearchEndpoint(request, aggregator, cancellationToken);
 }
 
-static async Task<IResult> SearchEndpoint(string? q, int? limit, SearchAggregator aggregator, CancellationToken cancellationToken)
+static async Task<IResult> SearchEndpoint(HttpRequest request, SearchAggregator aggregator, CancellationToken cancellationToken)
 {
-    if (string.IsNullOrWhiteSpace(q)) return Results.BadRequest(new { error = "Query parameter 'q' is required." });
-    int resultLimit = limit ?? 10;
-    if (resultLimit is < 1 or > 50) return Results.BadRequest(new { error = "Limit must be between 1 and 50." });
-    IReadOnlyList<SearchResult> results = await aggregator.SearchAsync(new SearchQuery(q.Trim(), resultLimit), cancellationToken);
-    return Results.Ok(new SearchResponse(q.Trim(), results));
+    string? queryText = ReadParameter(request, null, "q");
+    if (string.IsNullOrWhiteSpace(queryText)) return Results.BadRequest(new { error = "Query parameter 'q' is required." });
+    string? limitValue = ReadParameter(request, null, "limit");
+    if (!string.IsNullOrWhiteSpace(limitValue) && (!int.TryParse(limitValue, out int parsedLimit) || parsedLimit is < 1 or > 50))
+        return Results.BadRequest(new { error = "Limit must be between 1 and 50." });
+    int resultLimit = string.IsNullOrWhiteSpace(limitValue) ? 10 : int.Parse(limitValue);
+    if (!TryBuildSearchQuery(request, null, queryText.Trim(), resultLimit, null, out SearchQuery query, out string? error))
+        return Results.BadRequest(new { error });
+    SearchExecutionResult execution = await aggregator.SearchDetailedAsync(query, cancellationToken);
+    return Results.Ok(new SearchResponse(query.Text, execution.Results, execution.UnsupportedProviders));
 }
 
 static async Task<IResult> SearxngSearchEndpoint(HttpRequest request, SearchAggregator aggregator, CancellationToken cancellationToken)
@@ -173,28 +178,6 @@ static async Task<IResult> SearxngSearchEndpoint(HttpRequest request, SearchAggr
     if (!string.IsNullOrWhiteSpace(format) && !format.Equals("json", StringComparison.OrdinalIgnoreCase))
         return Results.StatusCode(StatusCodes.Status406NotAcceptable);
 
-    string? pageValue = ReadParameter(request, form, "pageno");
-    if (!string.IsNullOrWhiteSpace(pageValue) && (!int.TryParse(pageValue, out int pageNumber) || pageNumber != 1))
-        return Results.StatusCode(StatusCodes.Status501NotImplemented);
-
-    string? categoryValue = ReadParameter(request, form, "categories");
-    if (!string.IsNullOrWhiteSpace(categoryValue)
-        && categoryValue.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
-            .Any(category => !category.Equals("general", StringComparison.OrdinalIgnoreCase)))
-        return Results.BadRequest(new { error = "Only the general category is currently supported." });
-
-    if (!string.IsNullOrWhiteSpace(ReadParameter(request, form, "time_range")))
-        return Results.StatusCode(StatusCodes.Status501NotImplemented);
-
-    string? language = ReadParameter(request, form, "language");
-    if (!string.IsNullOrWhiteSpace(language) && !language.Equals("auto", StringComparison.OrdinalIgnoreCase))
-        return Results.StatusCode(StatusCodes.Status501NotImplemented);
-
-    string? safeSearchValue = ReadParameter(request, form, "safesearch");
-    if (!string.IsNullOrWhiteSpace(safeSearchValue)
-        && (!int.TryParse(safeSearchValue, out int safeSearch) || safeSearch != 0))
-        return Results.StatusCode(StatusCodes.Status501NotImplemented);
-
     IReadOnlySet<string>? selectedProviders = ReadSelectedProviders(
         ReadParameter(request, form, "engines"),
         aggregator.ProviderNames,
@@ -209,10 +192,83 @@ static async Task<IResult> SearxngSearchEndpoint(HttpRequest request, SearchAggr
         });
     }
 
-    SearchExecutionResult execution = await aggregator.SearchDetailedAsync(
-        new SearchQuery(queryText.Trim(), 10, selectedProviders),
-        cancellationToken);
-    return Results.Ok(SearxngSearchResponseMapper.Map(queryText.Trim(), execution));
+    if (!TryBuildSearchQuery(request, form, queryText.Trim(), 10, selectedProviders, out SearchQuery query, out string? error))
+        return Results.BadRequest(new { error });
+    SearchExecutionResult execution = await aggregator.SearchDetailedAsync(query, cancellationToken);
+    return Results.Ok(SearxngSearchResponseMapper.Map(query.Text, execution));
+}
+
+static bool TryBuildSearchQuery(
+    HttpRequest request,
+    IFormCollection? form,
+    string queryText,
+    int limit,
+    IReadOnlySet<string>? selectedProviders,
+    out SearchQuery query,
+    out string? error)
+{
+    query = new SearchQuery(queryText, limit, selectedProviders);
+    error = null;
+
+    string? pageValue = ReadParameter(request, form, "pageno");
+    int page = 1;
+    if (!string.IsNullOrWhiteSpace(pageValue)
+        && (!int.TryParse(pageValue, out page) || page < 1 || page > 50))
+    {
+        error = "Page number must be between 1 and 50.";
+        return false;
+    }
+
+    string? categoryValue = ReadParameter(request, form, "categories");
+    IReadOnlySet<string>? categories = string.IsNullOrWhiteSpace(categoryValue)
+        ? null
+        : new HashSet<string>(
+            categoryValue.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries),
+            StringComparer.OrdinalIgnoreCase);
+    if (categories is { Count: 0 })
+    {
+        error = "At least one category must be supplied.";
+        return false;
+    }
+
+    string language = ReadParameter(request, form, "language")?.Trim() ?? "auto";
+    if (language.Length > 35)
+    {
+        error = "Language value is too long.";
+        return false;
+    }
+
+    string? safeSearchValue = ReadParameter(request, form, "safesearch");
+    int safeSearch = 0;
+    if (!string.IsNullOrWhiteSpace(safeSearchValue)
+        && (!int.TryParse(safeSearchValue, out safeSearch) || safeSearch is < 0 or > 2))
+    {
+        error = "Safe-search must be 0, 1 or 2.";
+        return false;
+    }
+
+    string? timeRangeValue = ReadParameter(request, form, "time_range");
+    SearchTimeRange? timeRange = null;
+    if (!string.IsNullOrWhiteSpace(timeRangeValue))
+    {
+        if (!Enum.TryParse(timeRangeValue, true, out SearchTimeRange parsedRange)
+            || !Enum.IsDefined(parsedRange))
+        {
+            error = "Time range must be day, week, month or year.";
+            return false;
+        }
+        timeRange = parsedRange;
+    }
+
+    query = new SearchQuery(queryText, limit, selectedProviders)
+    {
+        Categories = categories,
+        Language = string.IsNullOrWhiteSpace(language) ? "auto" : language,
+        SafeSearch = safeSearch,
+        Page = page,
+        TimeRange = timeRange
+    };
+    return true;
 }
 
 static string? ReadParameter(HttpRequest request, IFormCollection? form, string name)
@@ -236,5 +292,5 @@ static IReadOnlySet<string>? ReadSelectedProviders(
     return requested;
 }
 
-public sealed record SearchResponse(string Query, IReadOnlyList<SearchResult> Results);
+public sealed record SearchResponse(string Query, IReadOnlyList<SearchResult> Results, IReadOnlyList<string> UnsupportedProviders);
 public partial class Program;
