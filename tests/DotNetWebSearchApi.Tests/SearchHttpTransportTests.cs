@@ -89,10 +89,10 @@ public sealed class SearchHttpTransportTests
         Assert.Equal(1, maximumActive);
     }
 
-    private static Task<SearchHttpResponse> SendAsync(SearchHttpTransport transport, HttpClient client)
+    private static async Task<SearchHttpResponse> SendAsync(SearchHttpTransport transport, HttpClient client)
     {
         using HttpRequestMessage request = new(HttpMethod.Get, "https://example.com/search");
-        return transport.SendAsync(client, request, CancellationToken.None);
+        return await transport.SendAsync(client, request, CancellationToken.None);
     }
 
     [Fact]
