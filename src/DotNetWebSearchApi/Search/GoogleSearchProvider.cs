@@ -7,10 +7,12 @@ public sealed class GoogleSearchProvider : ISearchProvider
 {
     private const string SearchEndpoint = "https://www.google.com/search";
     private readonly HttpClient _httpClient;
+    private readonly SearchHttpTransport _transport;
 
-    public GoogleSearchProvider(HttpClient httpClient)
+    public GoogleSearchProvider(HttpClient httpClient, SearchHttpTransport? transport = null)
     {
         _httpClient = httpClient;
+        _transport = transport ?? new SearchHttpTransport();
     }
 
     public string Name => "google";
@@ -21,17 +23,16 @@ public sealed class GoogleSearchProvider : ISearchProvider
         SearchQuery query,
         CancellationToken cancellationToken)
     {
-        using HttpResponseMessage response = await _httpClient.GetAsync(
-            BuildRequestUrl(query.Text),
-            cancellationToken);
-        string html = await response.Content.ReadAsStringAsync(cancellationToken);
+        using HttpRequestMessage request = new(HttpMethod.Get, BuildRequestUrl(query.Text));
+        SearchHttpResponse response = await _transport.SendAsync(_httpClient, request, cancellationToken);
+        string html = response.Content;
 
         if (IsCaptchaResponse(response, html))
         {
-            throw new HttpRequestException("Google returned a CAPTCHA or blocking page.");
+            throw new ProviderFailureException(ProviderFailureKind.Challenge, "Google returned a CAPTCHA or blocking page.");
         }
 
-        response.EnsureSuccessStatusCode();
+        response.EnsureSuccessStatusCode(Name);
         return GoogleSearchResultParser.Parse(html);
     }
 
@@ -42,12 +43,11 @@ public sealed class GoogleSearchProvider : ISearchProvider
             + "&adtest=on&adtest-useragent=SAMSUNG-GT-S5230&adtest=preview";
     }
 
-    private static bool IsCaptchaResponse(HttpResponseMessage response, string html)
+    private static bool IsCaptchaResponse(SearchHttpResponse response, string html)
     {
-        Uri? responseUri = response.RequestMessage?.RequestUri;
-        bool redirectedToCaptcha = responseUri is not null
-            && (responseUri.Host.Equals("sorry.google.com", StringComparison.OrdinalIgnoreCase)
-                || responseUri.AbsolutePath.StartsWith("/sorry", StringComparison.OrdinalIgnoreCase));
+        Uri responseUri = response.RequestUri;
+        bool redirectedToCaptcha = responseUri.Host.Equals("sorry.google.com", StringComparison.OrdinalIgnoreCase)
+            || responseUri.AbsolutePath.StartsWith("/sorry", StringComparison.OrdinalIgnoreCase);
 
         return redirectedToCaptcha
             || response.StatusCode == HttpStatusCode.Redirect
