@@ -493,8 +493,9 @@ These are translation targets, not assertions that every row is already implemen
 
 - SearXNG providers build request-specific data but delegate execution to a shared network layer. C# keeps provider-owned `HttpClient` instances and handler configuration, while a shared `SearchHttpTransport` owns the common send/read boundary. This avoids forcing different cookie and redirect strategies into one global handler.
 - The transport sends with `ResponseHeadersRead`, applies a bounded response body (4 MiB by default), decodes the declared response charset, and returns status, final request URI, headers and parsed Retry-After metadata.
-- A per-host semaphore caps concurrent requests (four by default), so separate adapters hitting the same host share a concurrency limit when they use the singleton transport.
+- A per-host semaphore caps concurrent requests (four by default), so separate adapters hitting the same host share a concurrency limit when they use the singleton transport. Provider-keyed minimum start intervals are also supported; generic JSON definitions now pass their configured interval to this gate.
 - `SearchHttpResponse.EnsureSuccessStatusCode` maps 401, 403, 429, 408, 425 and 5xx to typed provider failures. Qwant can inspect a 403 body first and distinguish a challenge from ordinary access denial.
+- If a provider/client has not supplied a User-Agent or Accept header, the transport adds a conservative default. Existing provider-specific values are not overwritten.
 - The transport is now used by Bing, Brave, DuckDuckGo, Google, Mojeek, Naver, Qwant, Seznam, Yahoo, Yandex Cloud, Wikipedia, arXiv, the generic JSON API adapter and RSS/Atom. Their parsers remain provider-specific and continue to receive text/JSON/XML rather than transport internals.
 - Retry-After is captured while the response headers are available and carried in `ProviderFailureException`; the health registry can then apply the bounded cooldown.
 - The response object copies headers for provider-specific protocols, but cookies and tokens must never be logged or exposed in API responses.
@@ -505,11 +506,12 @@ These are translation targets, not assertions that every row is already implemen
 - Redirect behaviour remains configured per HttpClient handler or implemented in the provider (Yahoo's bounded manual redirect loop); the transport does not yet own a redirect policy.
 - Cookie/session ownership remains provider-specific. Mojeek and Yahoo now receive separate keyed CookieContainers; Seznam retains its own HttpClientFactory handler-managed jar. The transport does not create, persist or share a cookie jar. These are process-scoped provider sessions, not per-caller sessions.
 - No automatic retries are performed. This is deliberate until retry safety can be decided per request and challenge/access-denied conditions are excluded.
+- Optional debug/warning diagnostics record method, host, status, response byte count, elapsed time and exception type. They deliberately omit URL paths/query strings, response bodies, cookies and tokens.
 - Provider cookie jars are isolated from one another but remain process-wide. Multi-tenant/per-user session isolation and cookie rotation/expiry policy have not been designed.
-- The current transport does not centralise proxy selection, TLS/HTTP version policy, request-header profiles or request-body limits. Per-provider minimum intervals are now supported through an optional transport argument and used by the generic JSON definitions.
+- The current transport does not centralise proxy selection, TLS/HTTP version policy, full request-header profiles, request-body limits or adaptive quota policies. Per-provider minimum intervals are supported through an optional transport argument and used by generic JSON definitions.
 - Response-size overflow and unsupported charset are classified as invalid provider responses. The default size limit and host concurrency limit are configurable through `SearchHttpTransportOptions`.
 
-**Verification:** [SearchHttpTransportTests.cs](../tests/DotNetWebSearchApi.Tests/SearchHttpTransportTests.cs) covers response body/headers/Retry-After, typed HTTP status mapping, size limits, charset decoding, per-host concurrency and per-provider minimum intervals. Bing and Qwant fixture tests cover their use of the transport and provider-specific status handling.
+**Verification:** [SearchHttpTransportTests.cs](../tests/DotNetWebSearchApi.Tests/SearchHttpTransportTests.cs) covers response body/headers/Retry-After, typed HTTP status mapping, size limits, charset decoding, default-header fallback, provider-header preservation, per-host concurrency and per-provider minimum intervals. Bing and Qwant fixture tests cover their use of the transport and provider-specific status handling.
 
 **Interpretation:** this is the first extraction of the common Python network-layer responsibility into a reusable .NET transport. It is intentionally a small foundation; provider-specific session, redirect and challenge state remain explicit.
 
