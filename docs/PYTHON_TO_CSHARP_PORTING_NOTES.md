@@ -546,6 +546,70 @@ These are translation targets, not assertions that every row is already implemen
 
 **Interpretation:** provider provenance, actual returned-order positions and the core Python-style weighted position score are now implemented. Remaining ranking differences are provider-specific weight values (currently all default to 1.0), SearXNG's high/low priority modes, richer metadata merging and category/template grouping.
 
+
+
+### Specialist JSON engines and the generic definition adapter
+
+**Python source examples (pinned):**
+- [Crossref](https://github.com/searxng/searxng/blob/c6ee3e9fd0235004a694e63720efc869bb1e3594/searx/engines/crossref.py)
+- [OpenAlex](https://github.com/searxng/searxng/blob/c6ee3e9fd0235004a694e63720efc869bb1e3594/searx/engines/openalex.py)
+- [Hacker News](https://github.com/searxng/searxng/blob/c6ee3e9fd0235004a694e63720efc869bb1e3594/searx/engines/hackernews.py)
+- [GitHub](https://github.com/searxng/searxng/blob/c6ee3e9fd0235004a694e63720efc869bb1e3594/searx/engines/github.py)
+- [Open Library](https://github.com/searxng/searxng/blob/c6ee3e9fd0235004a694e63720efc869bb1e3594/searx/engines/openlibrary.py)
+- [Wikidata](https://github.com/searxng/searxng/blob/c6ee3e9fd0235004a694e63720efc869bb1e3594/searx/engines/wikidata.py)
+- [Kagi](https://github.com/searxng/searxng/blob/c6ee3e9fd0235004a694e63720efc869bb1e3594/searx/engines/kagi.py)
+- [Semantic Scholar](https://github.com/searxng/searxng/blob/c6ee3e9fd0235004a694e63720efc869bb1e3594/searx/engines/semantic_scholar.py)
+- [npm / npms.io](https://github.com/searxng/searxng/blob/c6ee3e9fd0235004a694e63720efc869bb1e3594/searx/engines/npm.py)
+
+**C# source:**
+- [JsonApiSearchProvider.cs](../src/DotNetWebSearchApi/Search/JsonApiSearchProvider.cs)
+- [JsonApiProviderCatalog.cs](../src/DotNetWebSearchApi/Search/JsonApiProviderCatalog.cs)
+- [JsonApiSearchProviderTests.cs](../tests/DotNetWebSearchApi.Tests/JsonApiSearchProviderTests.cs)
+
+**Why the C# code has this shape**
+
+The Python engines above are separate modules with custom request and response code. The C# catalogue deliberately compresses the repeatable subset into `JsonApiSearchDefinition`:
+
+- endpoint, query parameter and limit parameter;
+- fixed query parameters;
+- JSON result-array path and title/URL/snippet paths, including nested object and array-index paths;
+- URL prefix for APIs returning identifiers instead of full URLs;
+- GET or JSON POST, fixed POST body values, static headers and optional API-key header/configuration;
+- attribution text and a provider-keyed minimum request interval.
+
+This is a data-driven C# equivalent for straightforward APIs. It avoids one class per endpoint while leaving the HTTP transport, cancellation, response limits, Retry-After and health lifecycle shared. It is not a generic Python interpreter and should not be stretched to cover stateful or semantically rich engines.
+
+**Representative divergences**
+
+| Engine | Python behaviour | Current C# definition | Important gap |
+|---|---|---|---|
+| Crossref | Uses `offset` from page number; excludes component records; builds Paper results with DOI, journal, pages, publisher, tags, authors and publication date | Uses `query`, `rows`, `message.items`, `title[0]`, `URL` and `abstract` | No offset/paging, component filtering or Paper metadata |
+| OpenAlex | Page/per-page, relevance sort, language filter, optional mailto; reconstructs abstract inverted index and maps authors, venue, publisher, DOI, tags, PDF/HTML and date | Simple `search`, `per-page`, `results`, `title`, `id` | No page, locale filter, polite-pool mailto, abstract reconstruction or rich paper fields |
+| Hacker News | Algolia page, story tags, typo/query options, time-range numeric filter; maps points, comments, author and created date | Simple `query`, `hitsPerPage`, `hits`, title/url/story text | No paging/time range or points/comments/date metadata |
+| GitHub | Sorts by stars, sets a preview Accept header and maps language, owner, topics, stars, license, homepage and timestamps | Maps `items`, `full_name`, `html_url`, description | No sort/header profile or package/repository metadata |
+| Open Library | Page and limit, requests `fields=*`, maps Paper metadata, ISBN, authors, cover and publication dates | Maps `docs`, title and key with URL prefix | No paging, field selection or bibliographic metadata |
+| Kagi | Bearer key; POST body includes page, workflow/category, safe-search, locale region and time filter; supports general/news/images/videos and page cap 10 | POST body includes query, limit and fixed workflow; API key header | No page, locale, safe-search, time filter or image/news/video result types |
+| Wikidata | SPARQL POST with locale-derived query template, contact-url setup requirement, entity deduplication and rich infobox/list attributes | MediaWiki search API definition using `w/api.php` and `query.search` | Different protocol and semantics; this is not a direct port of the Python Wikidata engine |
+| npm | Uses npms.io search API, paging, flags, keywords, version, maintainer, homepage, repository and date | Uses registry.npmjs.org search endpoint and maps package name/link/description | Different upstream API and a much thinner result model |
+
+**Additional C#-only or alternate integrations**
+
+- Exa is a C# generic JSON POST integration with an API key, `type=auto` and `contents.highlights=true`. No matching SearXNG engine module was found at the pinned upstream revision, so do not describe it as a Python port.
+- The C# StackExchange definitions reuse the Stack Exchange API for Stack Overflow, Super User, Server Fault and Ask Ubuntu. This is a compact multi-site API integration; do not assume one dedicated Python engine module maps one-to-one to each site.
+- Some other C# JSON definitions (GitLab, Gitea, NuGet, crates.io, Maven Central, Packagist, pub.dev, RubyGems, Hugging Face, Docker Hub, Google Books, Internet Archive, Bilibili, Dailymotion, Deezer, Steam, MusicBrainz, TVMaze, Radio Browser, PeerTube, Openverse, Wiby, Mwmbl, Marginalia and Yep) are also data-driven definitions or alternate API choices. Record a dedicated Python source only where one exists and has actually been compared.
+
+**Generic adapter limits**
+
+- Only one query parameter and one limit parameter are dynamic for GET definitions; other values are fixed. POST supports one dynamic query field, one optional limit field and fixed body values.
+- There is no generic offset/page/cursor calculation, token bootstrap, multi-request sequence, locale/safe-search/time-range mapping, custom result transformation or result-type factory.
+- The parser extracts text/number/boolean values from JSON paths. It does not reconstruct inverted indexes, combine nested fields, interpret API error envelopes, parse dates, normalise authors/tags, filter special records or preserve arbitrary metadata.
+- Static headers and API-key injection are supported, but request-dependent headers and credential refresh flows require a dedicated provider.
+- A successful empty result is not proof that an API definition is correct or that the upstream service accepted the request.
+
+**Verification:** [JsonApiSearchProviderTests.cs](../tests/DotNetWebSearchApi.Tests/JsonApiSearchProviderTests.cs) covers GET/POST construction, nested paths, URL prefixes, static parameters, API key headers, empty arrays, malformed responses and minimum intervals through the shared transport. These are fixture tests; no live upstream acceptance is implied.
+
+**Interpretation:** use the generic definition when the upstream API is genuinely a simple query-to-array mapping. Promote it to a dedicated provider when pagination, locale, session state, dynamic headers, challenge handling, response transformations or rich result types become important. A smaller C# definition is an intentional simplification only when its lost Python behaviour is explicitly recorded.
+
 ## How to add the next corpus entry
 
 Copy this outline for every provider or shared framework concept:
