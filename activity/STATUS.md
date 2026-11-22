@@ -6,7 +6,7 @@ Updated: 2026-11-22
 
 - Public repository: https://github.com/fwjlh/DotNetWebSearchApi
 - Default branch: main
-- Latest verified code commit: b037b44e9b7d00debdcae9eab1a910a125da7c9b
+- Latest verified code commit: b037b44e9b7d00debdcae9eab1a910a125da7c9b (Brave adapter pending CI)
 - Documentation refresh is being committed separately.
 - Full project overview and roadmap: [README.md](../README.md)
 
@@ -18,7 +18,7 @@ Updated: 2026-11-22
 - Parallel provider aggregation with per-provider timeout and provider-failure isolation.
 - Caller cancellation is propagated.
 - HTTP(S)-only result URL validation, duplicate removal, deterministic score/title ordering, and result limit.
-- Two concrete adapters: Bing Web HTML and Wikipedia MediaWiki search API.
+- Three adapters in the current branch: Bing Web HTML, Brave Search API (optional key), and Wikipedia MediaWiki search API.
 - xUnit test project and GitHub Actions .NET 10 CI.
 
 ## Verification

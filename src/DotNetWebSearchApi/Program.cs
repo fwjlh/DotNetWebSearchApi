@@ -13,6 +13,20 @@ builder.Services.AddHttpClient<WikipediaSearchProvider>(client =>
 });
 builder.Services.AddSingleton<ISearchProvider>(serviceProvider => serviceProvider.GetRequiredService<BingSearchProvider>());
 builder.Services.AddSingleton<ISearchProvider>(serviceProvider => serviceProvider.GetRequiredService<WikipediaSearchProvider>());
+
+string? braveApiKey = builder.Configuration["BRAVE_SEARCH_API_KEY"];
+if (!string.IsNullOrWhiteSpace(braveApiKey))
+{
+    builder.Services.AddHttpClient<BraveSearchProvider>(client =>
+    {
+        client.DefaultRequestHeaders.UserAgent.ParseAdd(
+            "DotNetWebSearchApi/0.1 (+https://github.com/fwjlh/DotNetWebSearchApi)");
+        client.DefaultRequestHeaders.Accept.ParseAdd("application/json");
+        client.DefaultRequestHeaders.Add("X-Subscription-Token", braveApiKey);
+    });
+    builder.Services.AddSingleton<ISearchProvider>(serviceProvider => serviceProvider.GetRequiredService<BraveSearchProvider>());
+}
+
 builder.Services.AddSingleton<SearchAggregator>();
 
 WebApplication app = builder.Build();

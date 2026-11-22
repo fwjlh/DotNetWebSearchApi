@@ -117,3 +117,20 @@ Every material repository action is recorded here with its reason, result, verif
 - **Result:** **CI passed.** Restore succeeded, build succeeded with 0 warnings and 0 errors, and all 15 tests passed (0 failed, 0 skipped). Six tests cover the Bing adapter; nine existing tests cover the search aggregator.
 - **Verification:** Workflow run https://github.com/fwjlh/DotNetWebSearchApi/actions/runs/45007833897. The adapter tests use fixture HTML and a fake HTTP handler; they do not claim live Bing availability.
 - **Next:** Mark Bing Web as implemented, then implement Brave Search. Prefer its official JSON API with an optional key supplied only through environment configuration; document the provider's published pricing and free-credit allowance. Do not store the key in source control or ordinary provider data.
+
+
+## 2026-11-22 — Brave Search API adapter
+
+### 15. Validate Brave Search access and pricing
+- **Reason:** Choose a maintainable route for the second major provider and avoid reverse-engineering an HTML/JavaScript application when an official API exists.
+- **Action:** Reviewed Brave's current Web Search API reference, authentication guide, quickstart and published plans, plus the SearXNG Brave API adapter.
+- **Result:** Official endpoint is GET https://api.search.brave.com/res/v1/web/search. Requests require X-Subscription-Token. The Search plan is listed at $5 per 1,000 requests and includes $5 monthly credits; activation requires selecting a plan and entering card details. Treat this as optional, not a zero-cost guaranteed service.
+- **Verification:** Official Brave API documentation and current SearXNG adapter reviewed. See https://api-dashboard.search.brave.com/api-reference/web/search/get and https://api-dashboard.search.brave.com/documentation/guides/authentication.
+- **Next:** Implement an optional adapter activated only when BRAVE_SEARCH_API_KEY is present in environment configuration. Never commit the key.
+
+### 16. Implement Brave Search API adapter
+- **Reason:** Add a second major general-purpose provider using its documented JSON API and explicit secret handling.
+- **Action:** Added BraveSearchProvider and BraveSearchResultParser, conditional DI registration via BRAVE_SEARCH_API_KEY, and seven tests for JSON parsing, missing/invalid results, query encoding, page-size clamping, HTTP errors and malformed JSON.
+- **Result:** Implementation and tests prepared for commit. Without the environment variable, the provider is not registered and no key is required. The test suite uses fixture JSON and a fake HTTP handler; it does not make billable/live Brave requests.
+- **Verification:** Pending GitHub Actions.
+- **Next:** Inspect CI. If green, record Brave as implemented-but-key-required. Then evaluate Google's supported options (Custom Search JSON API is closed to new customers) and DuckDuckGo's HTML route/bot protection before the next adapter.
