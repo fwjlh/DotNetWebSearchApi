@@ -64,7 +64,9 @@ public sealed class QwantSearchProviderTests
     {
         using HttpClient client = new(new StubHttpMessageHandler(_ => new HttpResponseMessage(HttpStatusCode.Forbidden)));
         QwantSearchProvider provider = new(client);
-        await Assert.ThrowsAsync<HttpRequestException>(() => provider.SearchAsync(new SearchQuery("test", 10), CancellationToken.None));
+        ProviderFailureException exception = await Assert.ThrowsAsync<ProviderFailureException>(
+            () => provider.SearchAsync(new SearchQuery("test", 10), CancellationToken.None));
+        Assert.Equal(ProviderFailureKind.AccessDenied, exception.FailureKind);
     }
 
     [Fact]
@@ -72,7 +74,9 @@ public sealed class QwantSearchProviderTests
     {
         using HttpClient client = new(new StubHttpMessageHandler(_ => new HttpResponseMessage(HttpStatusCode.ServiceUnavailable)));
         QwantSearchProvider provider = new(client);
-        await Assert.ThrowsAsync<HttpRequestException>(() => provider.SearchAsync(new SearchQuery("test", 10), CancellationToken.None));
+        ProviderFailureException exception = await Assert.ThrowsAsync<ProviderFailureException>(
+            () => provider.SearchAsync(new SearchQuery("test", 10), CancellationToken.None));
+        Assert.Equal(ProviderFailureKind.TransientHttp, exception.FailureKind);
     }
 
     [Fact]
