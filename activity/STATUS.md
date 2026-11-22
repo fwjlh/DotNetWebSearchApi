@@ -17,6 +17,7 @@ Updated: 2026-11-22
 - Mojeek and Yahoo now have separate keyed CookieContainers; Seznam retains its own typed-client handler jar. These are provider-process sessions, not per-user sessions. Added DI/integration coverage and Qwant DataDome challenge classification. CI passed with 184 tests in run 45026298077.
 - Generic JSON provider minimum intervals have moved from JsonApiSearchProvider's local semaphore/clock into SearchHttpTransport's provider-keyed rate gate. CI passed with 185 tests in run 45026506065.
 - Shared transport now adds fallback User-Agent and Accept headers only when neither the request nor HttpClient supplies them. Debug/warning diagnostics record method, host, status, byte count, elapsed time and exception type without URL query strings, bodies, cookies or tokens. Tests passed with 187 tests in run 45026662957.
+- SearchResult now carries one-based provider position, contributing engine names and per-engine positions. SearchAggregator assigns position from provider result order, merges provenance for duplicate URLs, and SearXNG mapper emits actual positions instead of inferring them from score. Score selection is still highest adapter score; engine-weighted ranking remains unimplemented. CI passed with 187 tests in run 45027214590.
 - Project overview and roadmap: [README.md](../README.md)
 
 ## Working application
