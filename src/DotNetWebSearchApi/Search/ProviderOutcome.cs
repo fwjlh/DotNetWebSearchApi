@@ -1,9 +1,11 @@
 using System.Net;
 using System.Text.Json;
 using System.Xml;
+using System.Text.Json.Serialization;
 
 namespace DotNetWebSearchApi.Search;
 
+[JsonConverter(typeof(JsonStringEnumConverter))]
 public enum ProviderOutcomeStatus
 {
     Succeeded,
@@ -11,6 +13,7 @@ public enum ProviderOutcomeStatus
     Skipped
 }
 
+[JsonConverter(typeof(JsonStringEnumConverter))]
 public enum ProviderFailureKind
 {
     Timeout,
@@ -24,11 +27,24 @@ public enum ProviderFailureKind
     Unknown
 }
 
+[JsonConverter(typeof(JsonStringEnumConverter))]
+public enum ProviderChallengeKind
+{
+    TemporaryBlock,
+    BrowserVerification,
+    ProofOfWork,
+    InteractiveCaptcha,
+    InteractiveVerification,
+    LoginRequired,
+    Unknown
+}
+
 public sealed record ProviderOutcome(
     string ProviderName,
     ProviderOutcomeStatus Status,
     ProviderFailureKind? FailureKind = null,
-    TimeSpan? RetryAfter = null);
+    TimeSpan? RetryAfter = null,
+    ProviderChallengeKind? ChallengeKind = null);
 
 public sealed class ProviderFailureException : Exception
 {
@@ -36,12 +52,16 @@ public sealed class ProviderFailureException : Exception
         ProviderFailureKind failureKind,
         string message,
         TimeSpan? retryAfter = null,
-        Exception? innerException = null)
+        Exception? innerException = null,
+        ProviderChallengeKind? challengeKind = null)
         : base(message, innerException)
     {
         FailureKind = failureKind;
         RetryAfter = retryAfter;
+        ChallengeKind = challengeKind;
     }
+
+    public ProviderChallengeKind? ChallengeKind { get; }
 
     public ProviderFailureKind FailureKind { get; }
 
@@ -58,7 +78,8 @@ internal static class ProviderFailureClassifier
                 providerName,
                 ProviderOutcomeStatus.Failed,
                 providerFailure.FailureKind,
-                providerFailure.RetryAfter);
+                providerFailure.RetryAfter,
+                providerFailure.ChallengeKind);
         }
 
         ProviderFailureKind failureKind = Classify(exception, timedOut);

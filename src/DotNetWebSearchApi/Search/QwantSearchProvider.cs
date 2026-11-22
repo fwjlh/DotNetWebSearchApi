@@ -34,7 +34,8 @@ public sealed class QwantSearchProvider : ISearchProvider
             throw new ProviderFailureException(
                 kind,
                 "Qwant denied the request; a DataDome session or browser verification may be required.",
-                response.RetryAfter);
+                response.RetryAfter,
+                challengeKind: kind == ProviderFailureKind.Challenge ? ProviderChallengeKind.BrowserVerification : null);
         }
 
         response.EnsureSuccessStatusCode(Name);

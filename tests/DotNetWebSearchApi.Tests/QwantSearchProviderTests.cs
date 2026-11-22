@@ -83,6 +83,7 @@ public sealed class QwantSearchProviderTests
             () => provider.SearchAsync(new SearchQuery("test", 10), CancellationToken.None));
 
         Assert.Equal(ProviderFailureKind.Challenge, exception.FailureKind);
+        Assert.Equal(ProviderChallengeKind.BrowserVerification, exception.ChallengeKind);
     }
 
     [Fact]

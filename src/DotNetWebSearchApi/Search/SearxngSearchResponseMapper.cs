@@ -8,7 +8,10 @@ public static class SearxngSearchResponseMapper
         return new SearxngSearchResponse(
             query, results.Length, results, Array.Empty<string>(), Array.Empty<string>(),
             Array.Empty<object>(), Array.Empty<string>(), execution.UnresponsiveProviders,
-            execution.UnsupportedProviders, execution.CoolingDownProviders);
+            execution.UnsupportedProviders, execution.CoolingDownProviders)
+        {
+            ProviderOutcomes = execution.ProviderOutcomes
+        };
     }
 
     private static SearxngSearchResult MapResult(SearchResult result)

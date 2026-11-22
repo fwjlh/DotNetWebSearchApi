@@ -37,6 +37,15 @@ public sealed class YandexSearchProvider : ISearchProvider
 
         using HttpRequestMessage request = BuildRequest(query);
         SearchHttpResponse response = await _transport.SendAsync(_httpClient, request, cancellationToken);
+        if (response.TryGetHeader("x-yandex-captcha", out IReadOnlyList<string>? challengeHeaders)
+            && challengeHeaders?.Any(value => value.Equals("captcha", StringComparison.OrdinalIgnoreCase)) == true)
+        {
+            throw new ProviderFailureException(
+                ProviderFailureKind.Challenge,
+                "Yandex requires interactive CAPTCHA verification.",
+                challengeKind: ProviderChallengeKind.InteractiveCaptcha);
+        }
+
         response.EnsureSuccessStatusCode(Name);
         using JsonDocument document = JsonDocument.Parse(response.Content);
 

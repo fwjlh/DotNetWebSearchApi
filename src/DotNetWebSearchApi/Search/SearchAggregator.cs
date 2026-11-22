@@ -65,7 +65,8 @@ public sealed class SearchAggregator
                 provider.Name,
                 ProviderOutcomeStatus.Skipped,
                 admission.Snapshot.LastFailureKind,
-                admission.RetryAfter));
+                admission.RetryAfter,
+                admission.Snapshot.LastChallengeKind));
         }
 
         ProviderExecutionResult[] providerResults = await Task.WhenAll(
@@ -127,7 +128,8 @@ public sealed class SearchAggregator
             _health.RecordFailure(
                 provider.Name,
                 outcome.FailureKind ?? ProviderFailureKind.Unknown,
-                outcome.RetryAfter);
+                outcome.RetryAfter,
+                outcome.ChallengeKind);
             _logger.LogWarning(
                 exception,
                 "Search provider {Provider} failed with {FailureKind}.",

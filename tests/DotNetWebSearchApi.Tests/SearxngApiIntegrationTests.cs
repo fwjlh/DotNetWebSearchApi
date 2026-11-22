@@ -177,6 +177,41 @@ public sealed class SearxngApiIntegrationTests
     }
 
     [Fact]
+    public async Task ApiSearch_ExposesTypedChallengeClassification()
+    {
+        using WebApplicationFactory<Program> factory = CreateFactory(
+            new TestProvider("captcha", (_, _) => throw new ProviderFailureException(
+                ProviderFailureKind.Challenge,
+                "Verification required",
+                challengeKind: ProviderChallengeKind.InteractiveCaptcha)));
+        using HttpClient client = factory.CreateClient();
+
+        using HttpResponseMessage response = await client.GetAsync("/api/search?q=test");
+        using JsonDocument document = await JsonDocument.ParseAsync(await response.Content.ReadAsStreamAsync());
+        JsonElement outcome = document.RootElement.GetProperty("providerOutcomes")[0];
+
+        Assert.Equal("Challenge", outcome.GetProperty("failureKind").GetString());
+        Assert.Equal("InteractiveCaptcha", outcome.GetProperty("challengeKind").GetString());
+    }
+
+    [Fact]
+    public async Task Search_ExposesTypedChallengeClassification()
+    {
+        using WebApplicationFactory<Program> factory = CreateFactory(
+            new TestProvider("verification", (_, _) => throw new ProviderFailureException(
+                ProviderFailureKind.Challenge,
+                "Browser verification required",
+                challengeKind: ProviderChallengeKind.BrowserVerification)));
+        using HttpClient client = factory.CreateClient();
+
+        using HttpResponseMessage response = await client.GetAsync("/search?q=test");
+        using JsonDocument document = await JsonDocument.ParseAsync(await response.Content.ReadAsStreamAsync());
+        JsonElement outcome = document.RootElement.GetProperty("provider_outcomes")[0];
+
+        Assert.Equal("BrowserVerification", outcome.GetProperty("challengeKind").GetString());
+    }
+
+    [Fact]
     public async Task Search_RejectsUnknownEngineNames()
     {
         using WebApplicationFactory<Program> factory = CreateFactory(Provider("alpha", Result("A", "https://example.com/a")));

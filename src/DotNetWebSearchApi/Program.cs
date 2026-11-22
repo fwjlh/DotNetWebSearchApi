@@ -184,7 +184,10 @@ static async Task<IResult> SearchEndpoint(HttpRequest request, SearchAggregator 
         query.Text,
         execution.Results,
         execution.UnsupportedProviders,
-        execution.CoolingDownProviders));
+        execution.CoolingDownProviders)
+    {
+        ProviderOutcomes = execution.ProviderOutcomes
+    });
 }
 
 static async Task<IResult> SearxngSearchEndpoint(HttpRequest request, SearchAggregator aggregator, CancellationToken cancellationToken)
@@ -320,5 +323,8 @@ public sealed record SearchResponse(
     string Query,
     IReadOnlyList<SearchResult> Results,
     IReadOnlyList<string> UnsupportedProviders,
-    IReadOnlyList<string> CoolingDownProviders);
+    IReadOnlyList<string> CoolingDownProviders)
+{
+    public IReadOnlyList<ProviderOutcome> ProviderOutcomes { get; init; } = Array.Empty<ProviderOutcome>();
+}
 public partial class Program;

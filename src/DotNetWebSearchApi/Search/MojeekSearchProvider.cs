@@ -47,7 +47,8 @@ public sealed class MojeekSearchProvider : ISearchProvider
         {
             throw new ProviderFailureException(
                 ProviderFailureKind.Challenge,
-                "Mojeek returned a CAPTCHA page after challenge verification.");
+                "Mojeek returned an interactive CAPTCHA page after challenge verification.",
+                challengeKind: ProviderChallengeKind.InteractiveCaptcha);
         }
 
         response.EnsureSuccessStatusCode(Name);
@@ -94,7 +95,8 @@ public sealed class MojeekSearchProvider : ISearchProvider
         {
             throw new ProviderFailureException(
                 ProviderFailureKind.Challenge,
-                "Mojeek Altcha proof-of-work exceeded the permitted search limit.");
+                "Mojeek Altcha proof-of-work exceeded the permitted search limit.",
+                challengeKind: ProviderChallengeKind.ProofOfWork);
         }
 
         byte[] payload = JsonSerializer.SerializeToUtf8Bytes(new
@@ -123,7 +125,8 @@ public sealed class MojeekSearchProvider : ISearchProvider
         {
             throw new ProviderFailureException(
                 ProviderFailureKind.Challenge,
-                "Mojeek did not issue a challenge cookie after proof verification.");
+                "Mojeek did not issue a challenge cookie after proof verification.",
+                challengeKind: ProviderChallengeKind.ProofOfWork);
         }
     }
 

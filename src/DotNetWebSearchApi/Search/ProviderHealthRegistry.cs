@@ -27,7 +27,8 @@ public sealed record ProviderHealthSnapshot(
     ProviderHealthStatus Status,
     int ConsecutiveFailures,
     DateTimeOffset? CooldownUntil,
-    ProviderFailureKind? LastFailureKind);
+    ProviderFailureKind? LastFailureKind,
+    ProviderChallengeKind? LastChallengeKind);
 
 public sealed record ProviderHealthAdmission(
     bool CanExecute,
@@ -110,6 +111,7 @@ public sealed class ProviderHealthRegistry
             state.ConsecutiveFailures = 0;
             state.CooldownUntil = null;
             state.LastFailureKind = null;
+            state.LastChallengeKind = null;
             state.ProbeInProgress = false;
         }
     }
@@ -117,13 +119,15 @@ public sealed class ProviderHealthRegistry
     public void RecordFailure(
         string providerName,
         ProviderFailureKind failureKind,
-        TimeSpan? retryAfter = null)
+        TimeSpan? retryAfter = null,
+        ProviderChallengeKind? challengeKind = null)
     {
         ProviderState state = GetState(providerName);
         lock (state.SyncRoot)
         {
             state.ConsecutiveFailures++;
             state.LastFailureKind = failureKind;
+            state.LastChallengeKind = challengeKind;
             state.ProbeInProgress = false;
 
             bool shouldOpen = state.Status == ProviderHealthStatus.HalfOpen
@@ -230,7 +234,8 @@ public sealed class ProviderHealthRegistry
             state.Status,
             state.ConsecutiveFailures,
             state.CooldownUntil,
-            state.LastFailureKind);
+            state.LastFailureKind,
+            state.LastChallengeKind);
     }
 
     private static void ValidatePolicy(ProviderHealthPolicy policy)
@@ -254,6 +259,7 @@ public sealed class ProviderHealthRegistry
         public int ConsecutiveFailures { get; set; }
         public DateTimeOffset? CooldownUntil { get; set; }
         public ProviderFailureKind? LastFailureKind { get; set; }
+        public ProviderChallengeKind? LastChallengeKind { get; set; }
         public bool ProbeInProgress { get; set; }
     }
 }

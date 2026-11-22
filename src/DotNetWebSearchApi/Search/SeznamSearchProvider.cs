@@ -29,8 +29,9 @@ public sealed class SeznamSearchProvider : ISearchProvider
         if (SeznamSearchResultParser.IsVerificationPage(response.RequestUri))
         {
             throw new ProviderFailureException(
-                ProviderFailureKind.AccessDenied,
-                "Seznam redirected the search to its verification page.");
+                ProviderFailureKind.Challenge,
+                "Seznam redirected the search to its browser-verification page.",
+                challengeKind: ProviderChallengeKind.BrowserVerification);
         }
 
         response.EnsureSuccessStatusCode(Name);

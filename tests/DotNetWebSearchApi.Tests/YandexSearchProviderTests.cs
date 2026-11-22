@@ -120,6 +120,24 @@ public sealed class YandexSearchProviderTests
         Assert.Equal(ProviderFailureKind.Authentication, exception.FailureKind);
     }
 
+    [Fact]
+    public async Task SearchAsync_ClassifiesCaptchaResponseHeader()
+    {
+        using HttpClient client = new(new StubHttpMessageHandler(_ =>
+        {
+            HttpResponseMessage response = new(HttpStatusCode.Forbidden);
+            response.Headers.TryAddWithoutValidation("x-yandex-captcha", "captcha");
+            return response;
+        }));
+        YandexSearchProvider provider = new(client, new YandexSearchOptions("test-key", "folder-123"));
+
+        ProviderFailureException exception = await Assert.ThrowsAsync<ProviderFailureException>(() =>
+            provider.SearchAsync(new SearchQuery("test", 10), CancellationToken.None));
+
+        Assert.Equal(ProviderFailureKind.Challenge, exception.FailureKind);
+        Assert.Equal(ProviderChallengeKind.InteractiveCaptcha, exception.ChallengeKind);
+    }
+
     private static string EncodeXml(string xml)
     {
         return Convert.ToBase64String(Encoding.UTF8.GetBytes(xml));

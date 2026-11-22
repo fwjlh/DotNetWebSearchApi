@@ -81,6 +81,7 @@ public sealed class GoogleSearchProviderTests
         ProviderFailureException exception = await Assert.ThrowsAsync<ProviderFailureException>(() =>
             provider.SearchAsync(new SearchQuery("test", 10), CancellationToken.None));
         Assert.Equal(ProviderFailureKind.Challenge, exception.FailureKind);
+        Assert.Equal(ProviderChallengeKind.InteractiveCaptcha, exception.ChallengeKind);
     }
 
     [Fact]

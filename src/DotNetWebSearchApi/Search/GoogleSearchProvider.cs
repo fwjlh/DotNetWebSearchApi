@@ -29,7 +29,10 @@ public sealed class GoogleSearchProvider : ISearchProvider
 
         if (IsCaptchaResponse(response, html))
         {
-            throw new ProviderFailureException(ProviderFailureKind.Challenge, "Google returned a CAPTCHA or blocking page.");
+            throw new ProviderFailureException(
+                ProviderFailureKind.Challenge,
+                "Google returned a CAPTCHA or human-verification page.",
+                challengeKind: ProviderChallengeKind.InteractiveCaptcha);
         }
 
         response.EnsureSuccessStatusCode(Name);

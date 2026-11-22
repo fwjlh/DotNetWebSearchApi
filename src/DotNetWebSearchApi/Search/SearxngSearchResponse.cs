@@ -12,7 +12,11 @@ public sealed record SearxngSearchResponse(
     IReadOnlyList<string> Suggestions,
     [property: JsonPropertyName("unresponsive_engines")] IReadOnlyList<string> UnresponsiveEngines,
     [property: JsonPropertyName("unsupported_engines")] IReadOnlyList<string> UnsupportedEngines,
-    [property: JsonPropertyName("cooling_down_engines")] IReadOnlyList<string> CoolingDownEngines);
+    [property: JsonPropertyName("cooling_down_engines")] IReadOnlyList<string> CoolingDownEngines)
+{
+    [JsonPropertyName("provider_outcomes")]
+    public IReadOnlyList<ProviderOutcome> ProviderOutcomes { get; init; } = Array.Empty<ProviderOutcome>();
+}
 
 public sealed record SearxngSearchResult(
     string Url,

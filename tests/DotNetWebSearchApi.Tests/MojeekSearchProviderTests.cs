@@ -62,6 +62,7 @@ public sealed class MojeekSearchProviderTests
         ProviderFailureException exception = await Assert.ThrowsAsync<ProviderFailureException>(() =>
             provider.SearchAsync(new SearchQuery("Mojeek", 5), CancellationToken.None));
         Assert.Equal(ProviderFailureKind.Challenge, exception.FailureKind);
+        Assert.Equal(ProviderChallengeKind.ProofOfWork, exception.ChallengeKind);
     }
 
     private static HttpResponseMessage JsonResponse(string json)

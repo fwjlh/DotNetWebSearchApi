@@ -34,7 +34,10 @@ public sealed class DuckDuckGoSearchProvider : ISearchProvider
 
         if (DuckDuckGoSearchResultParser.IsCaptchaPage(response.Content))
         {
-            throw new ProviderFailureException(ProviderFailureKind.Challenge, "DuckDuckGo returned a CAPTCHA page.");
+            throw new ProviderFailureException(
+                ProviderFailureKind.Challenge,
+                "DuckDuckGo returned an interactive CAPTCHA page.",
+                challengeKind: ProviderChallengeKind.InteractiveCaptcha);
         }
 
         if (response.StatusCode == HttpStatusCode.SeeOther)
