@@ -5,8 +5,10 @@ Updated: 2026-11-22
 ## Repository
 - Public repository: https://github.com/fwjlh/DotNetWebSearchApi
 - Default branch: main
-- Latest verified code commit: 819595d1bf1fcde3361b25dafabcaaeeec2d87cc
-- Current verified milestone: 58 providers; Mojeek adapter adds the 59th source. CI passed: build 0 warnings/errors; 148 tests passed (0 failed, 0 skipped).
+- Latest verified provider-code commit: 819595d1bf1fcde3361b25dafabcaaeeec2d87cc
+- Current provider catalogue: **67 adapters, frozen** pending shared-framework refactoring.
+- Last verified CI baseline: build 0 warnings/errors; 156 tests passed (0 failed, 0 skipped), run [45020266512](https://github.com/fwjlh/DotNetWebSearchApi/actions/runs/45020266512).
+- Current direction and consumer boundary: [docs/ARCHITECTURE_DECISIONS.md](../docs/ARCHITECTURE_DECISIONS.md).
 - Project overview and roadmap: [README.md](../README.md)
 
 ## Working application
@@ -22,7 +24,7 @@ Updated: 2026-11-22
 - Optional Brave and Yandex providers require their configured credentials.
 
 ## Provider count and current batch
-- **50 registered providers** after the current batch.
+- **67 provider adapters** are registered in the current catalogue. This count is frozen; the dated batch entries below are historical milestones, not the current provider count.
 - The first 42 providers passed CI fixture tests in run [45013727838](https://github.com/fwjlh/DotNetWebSearchApi/actions/runs/45013727838): build passed with 0 warnings/errors; 130 tests passed.
 - Batch 5 and the full 50-provider catalogue passed CI in run [45019256660](https://github.com/fwjlh/DotNetWebSearchApi/actions/runs/45019256660): build passed with 0 warnings/errors; 138 tests passed.
 - Batch 6 and the full 58-provider source catalogue passed CI in run [45019669530](https://github.com/fwjlh/DotNetWebSearchApi/actions/runs/45019669530): build passed with 0 warnings/errors; 146 tests passed.
@@ -81,8 +83,12 @@ Search/media/regional providers (batch 5): Wiby, TVmaze, Radio Browser, PeerTube
 7. Push each increment to main and inspect the resulting GitHub Actions run before continuing.
 
 ## Next actions
-1. Verify batch 5 and correct any build/test failures.
-2. Continue real provider ports from 50 to 100, prioritising general web search first, then specialist and regional providers.
-3. Keep API keys optional and outside source control; record quotas, rate limits and access restrictions.
-4. At 100, stop feature additions and prepare the pull/build/integration/live-provider testing handover.
-5. After live tests, harden authentication, rate limiting, outbound request policy, SQL Server configuration and admin editing.
+1. Keep provider expansion frozen at 67; do not add adapters during the shared-framework milestone.
+2. Add immutable search request context and explicit engine capabilities with backwards-compatible defaults.
+3. Add typed provider outcomes, health/cooldown and half-open recovery tests.
+4. Introduce shared HTTP request/transport/session policies, retaining provider-specific strategies where necessary.
+5. Add challenge classification and safe handling; distinguish rate limits, temporary blocks, browser verification, proof-of-work and interactive CAPTCHA. No automatic CAPTCHA bypass.
+6. Improve duplicate merging, source-engine/position retention and weighted ranking.
+7. Record locale/region traits and API compatibility conformance tests.
+8. Reconcile README, status and activity log after each milestone; resume provider ports only when the architecture definition of done is met.
+9. Keep CoderInBox as an independent HTTP consumer; do not move provider code into that repository.
