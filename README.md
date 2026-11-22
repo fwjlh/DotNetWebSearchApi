@@ -48,6 +48,7 @@ DotNetWebSearchApi puts that work behind one service:
 | DuckDuckGo Web adapter | Working (first page) | HTML POST; CAPTCHA detection; no pagination/VQD |
 | Qwant Web adapter | Working (experimental) | Undocumented JSON API; DataDome may deny requests |
 | Yahoo Web adapter | Working (experimental) | HTML parser, sB preferences and bounded YBV redirect handling; live availability not tested |
+| Yandex Search API adapter | Working (optional, paid) | Requires YANDEX_SEARCH_API_KEY and YANDEX_FOLDER_ID |
 | Automated build and tests | Working | GitHub Actions / .NET 10 |
 | Major web-search adapters | In progress | Bing, Brave, Google and DuckDuckGo adapters are implemented |
 | First 5–10 provider adapters | In progress | Five providers are implemented; extend the useful provider set next |
@@ -72,9 +73,10 @@ The implementation strategy is to work from the major general-purpose search eng
 | 5 | Wikipedia | Working | First adapter; retain as a useful reference implementation |
 | 6 | Qwant | Working (experimental) | Undocumented JSON API; relies on HTTP cookie handling; live availability not tested in CI |
 | 7 | Yahoo Web | Working (experimental) | HTML adapter with cookie and redirect handling; live availability not tested in CI |
-| 8 | Mojeek | Deferred | Current SearXNG settings mark it inactive due to proof-of-work CAPTCHA |
-| 9 | Startpage | Deferred | Current SearXNG settings mark it inactive due to Anubis proof-of-work |
-| 10+ | Further SearXNG providers | Planned | Prioritise by usefulness, reliability, accessibility and maintenance cost |
+| 8 | Yandex Search API | Working (optional, paid) | Requires API key, folder ID and billing account; current synchronous price about $4/1,000 daytime and $3/1,000 night-time requests |
+| 9 | Mojeek | Deferred | Current SearXNG settings mark it inactive due to proof-of-work CAPTCHA |
+| 10 | Startpage | Deferred | Current SearXNG settings mark it inactive due to Anubis proof-of-work |
+| 11+ | Further SearXNG providers | Planned | Prioritise by usefulness, reliability, accessibility and maintenance cost |
 
 Provider ordering is a development priority, not a claim that every upstream service offers a free or unrestricted API. Current SearXNG settings mark Mojeek inactive because of its proof-of-work CAPTCHA and Startpage inactive because of its Anubis proof-of-work challenge; those are deferred until their CPU and access implications are understood. Brave's current Search plan is listed at $5 per 1,000 requests with $5 in monthly credits; activating a plan requires payment-card details. Check the [current Brave plans](https://brave.com/search/api/) before use. Each adapter must respect the provider's current access rules, terms, rate limits and attribution requirements. Where a provider requires credentials, keys will be configured as secrets and never committed to source control.
 
@@ -164,6 +166,16 @@ Brave is enabled only when an API key is supplied through the BRAVE_SEARCH_API_K
 
 For IIS or a Windows service, configure the environment variable in the hosting environment. Never put a real key in appsettings committed to the repository or in source code.
 
+### Optional Yandex Search API provider
+
+Yandex is enabled only when both YANDEX_SEARCH_API_KEY and YANDEX_FOLDER_ID are supplied. It requires a Yandex Cloud billing account and is a paid integration. In PowerShell:
+
+    $env:YANDEX_SEARCH_API_KEY = "your-yandex-api-key"
+    $env:YANDEX_FOLDER_ID = "your-folder-id"
+    dotnet run --project src/DotNetWebSearchApi
+
+The current published synchronous rates for customers billed in USD are approximately $4 per 1,000 daytime requests and $3 per 1,000 night-time requests, excluding VAT. Rates depend on the contracting entity and can change. See the [official Yandex Search API pricing](https://aistudio.yandex.ru/en/docs/search-api/pricing) and [quick start](https://aistudio.yandex.ru/en/docs/search-api/quickstart/) before enabling it.
+
 ### Check health
 
     GET /health
@@ -205,7 +217,7 @@ Run from the repository root:
 
 GitHub Actions runs restore, build and tests for pushes and pull requests. The badge at the top links to the workflow.
 
-The current verified implementation passes CI with **56 tests passing** (9 foundation tests, 6 Bing adapter tests, 8 Brave adapter tests, 7 Google adapter tests, 11 DuckDuckGo adapter tests, 8 Qwant adapter tests and 7 Yahoo adapter tests). Check the Actions history for the latest result; this README does not assume that a previous successful run proves every future commit is green.
+The current verified implementation passes CI with **64 tests passing** (9 foundation tests, 6 Bing adapter tests, 8 Brave adapter tests, 7 Google adapter tests, 11 DuckDuckGo adapter tests, 8 Qwant adapter tests, 7 Yahoo adapter tests and 8 Yandex adapter tests). Check the Actions history for the latest result; this README does not assume that a previous successful run proves every future commit is green.
 
 ## Planned delivery sequence
 

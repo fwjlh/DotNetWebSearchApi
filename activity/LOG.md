@@ -287,3 +287,18 @@ Every material repository action is recorded here with its reason, result, verif
 - **Result:** No runtime behaviour changed; source remains otherwise unchanged.
 - **Verification:** Re-fetched Program.cs from GitHub and checked the top-level imports.
 - **Next:** Run GitHub Actions for the Yandex adapter and correct any compiler/test failures before marking it complete.
+
+
+### 35. Diagnose first Yandex CI failure and correct source import
+- **Reason:** The initial Yandex commit must pass a clean build before the adapter can be counted.
+- **Action:** Inspected workflow run 45008940032 for commit bb2fd25541b831aff5ef0e59ff7700c44f764368.
+- **Result:** Restore passed; build failed before tests with CS0105 because Program.cs contained a duplicate DotNetWebSearchApi.Search using directive. The duplicate was removed in commit 48413e42f3f37efd24417d14e19b07d5ec083c2d.
+- **Verification:** Failure log https://github.com/fwjlh/DotNetWebSearchApi/actions/runs/45008940032. This was a compile-time import issue, not a Yandex parser/runtime failure.
+- **Next:** Confirm the corrected commit's CI run.
+
+### 36. Verify corrected Yandex adapter in GitHub Actions
+- **Reason:** Verify the duplicate-import correction and the complete optional Yandex implementation.
+- **Action:** Inspected workflow run 45008975175 for commit 48413e42f3f37efd24417d14e19b07d5ec083c2d.
+- **Result:** **CI passed.** Restore succeeded, build succeeded, and all 64 tests passed (0 failed, 0 skipped).
+- **Verification:** Workflow run https://github.com/fwjlh/DotNetWebSearchApi/actions/runs/45008975175. Eight Yandex tests cover Base64 XML parsing, passages, API error handling, invalid URLs, credentials/body construction and query length. Tests use fixtures and do not make paid requests.
+- **Next:** Record Yandex as optional/paid, update README and status, then assess the next useful providers to reach ten.
