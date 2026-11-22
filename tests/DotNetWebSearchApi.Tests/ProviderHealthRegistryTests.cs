@@ -75,10 +75,10 @@ public sealed class ProviderHealthRegistryTests
     [Fact]
     public void RecordFailure_ClampsRetryAfterToMaximumCooldown()
     {
-        ProviderHealthRegistry registry = new(new ProviderHealthPolicy
-        {
-            MaximumCooldown = TimeSpan.FromSeconds(30)
-        });
+        TestTimeProvider clock = new(DateTimeOffset.Parse("2026-11-22T12:00:00Z"));
+        ProviderHealthRegistry registry = new(
+            new ProviderHealthPolicy { MaximumCooldown = TimeSpan.FromSeconds(30) },
+            clock);
         registry.RecordFailure("alpha", ProviderFailureKind.RateLimited, TimeSpan.FromMinutes(10));
 
         ProviderHealthAdmission admission = registry.TryAcquire("alpha");
