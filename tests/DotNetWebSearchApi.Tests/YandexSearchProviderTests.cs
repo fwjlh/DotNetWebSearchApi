@@ -115,8 +115,9 @@ public sealed class YandexSearchProviderTests
             new HttpResponseMessage(HttpStatusCode.Unauthorized)));
         YandexSearchProvider provider = new(client, new YandexSearchOptions("test-key", "folder-123"));
 
-        await Assert.ThrowsAsync<HttpRequestException>(() =>
+        ProviderFailureException exception = await Assert.ThrowsAsync<ProviderFailureException>(() =>
             provider.SearchAsync(new SearchQuery("test", 10), CancellationToken.None));
+        Assert.Equal(ProviderFailureKind.Authentication, exception.FailureKind);
     }
 
     private static string EncodeXml(string xml)
