@@ -14,15 +14,14 @@ public static class SearxngSearchResponseMapper
     private static SearxngSearchResult MapResult(SearchResult result)
     {
         Uri uri = new(result.Url);
-        int position = result.Score > 0 ? Math.Max(1, (int)Math.Round(1.0 / result.Score)) : 1;
-        Dictionary<string, int> positions = new(StringComparer.OrdinalIgnoreCase) { [result.Provider] = position };
+        string[] engines = result.Engines.Count > 0 ? result.Engines.ToArray() : new[] { result.Provider };
         string[] parsedUrl =
         {
             uri.Scheme, uri.Authority, uri.AbsolutePath, string.Empty,
             uri.Query.TrimStart('?'), uri.Fragment.TrimStart('#')
         };
         return new SearxngSearchResult(
-            result.Url, result.Title, result.Snippet, result.Provider, new[] { result.Provider },
-            positions, result.Score, "general", "default.html", parsedUrl, null);
+            result.Url, result.Title, result.Snippet, result.Provider, engines,
+            result.Positions, result.Score, "general", "default.html", parsedUrl, null);
     }
 }
