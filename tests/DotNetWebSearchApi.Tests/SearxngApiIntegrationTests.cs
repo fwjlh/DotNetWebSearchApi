@@ -148,6 +148,25 @@ public sealed class SearxngApiIntegrationTests
     }
 
     [Fact]
+    public async Task Search_ReportsCoolingDownProvidersSeparatelyFromFailures()
+    {
+        using WebApplicationFactory<Program> factory = CreateFactory(
+            new TestProvider("challenge", (_, _) =>
+                throw new ProviderFailureException(ProviderFailureKind.Challenge, "verification")));
+        using HttpClient client = factory.CreateClient();
+
+        using HttpResponseMessage firstResponse = await client.GetAsync("/search?q=test");
+        using JsonDocument firstDocument = await JsonDocument.ParseAsync(await firstResponse.Content.ReadAsStreamAsync());
+        Assert.Equal("challenge", firstDocument.RootElement.GetProperty("unresponsive_engines")[0].GetString());
+
+        using HttpResponseMessage secondResponse = await client.GetAsync("/search?q=test");
+        using JsonDocument secondDocument = await JsonDocument.ParseAsync(await secondResponse.Content.ReadAsStreamAsync());
+
+        Assert.Empty(secondDocument.RootElement.GetProperty("unresponsive_engines").EnumerateArray());
+        Assert.Equal("challenge", secondDocument.RootElement.GetProperty("cooling_down_engines")[0].GetString());
+    }
+
+    [Fact]
     public async Task Search_RejectsUnknownEngineNames()
     {
         using WebApplicationFactory<Program> factory = CreateFactory(Provider("alpha", Result("A", "https://example.com/a")));
