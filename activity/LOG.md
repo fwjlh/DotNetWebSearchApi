@@ -846,3 +846,12 @@ Every material repository action is recorded here with its reason, result, verif
 - **Corpus/audit:** Updated the Python-to-C# rationale and porting audit to describe fallback headers, provider-specific overrides and privacy-safe logging. README roadmap now distinguishes implemented defaults/diagnostics from the remaining full provider header profiles.
 - **Limits:** Provider-specific User-Agent, Accept-Language, fetch metadata, referrer and other protocol headers are still authored in provider/client configuration. The transport does not yet centralise proxy/TLS policy, full header profiles or safe retries. No query/cookie/token logging.
 - **Next:** Review redirects and cookie/session lifecycle provider by provider; then define safe retry rules and timeout ownership. Keep provider challenge protocols intact and provider catalogue frozen at 67.
+
+
+### 93. Record the result-container and ranking divergence
+- **Reason:** Provider ports are only part of the translation. The aggregation layer also needs a rationale record so future ranking work does not assume the current C# merge is equivalent to SearXNG.
+- **Action:** Added a corpus section comparing SearXNG's `ResultContainer` and `calculate_score` with `SearchResult`, `SearchAggregator.MergeResults` and the SearXNG response mapper.
+- **Findings:** Python retains multiple contributing engines and their positions, applies engine weights and position-based scoring, and supports rich result types/metadata. C# currently deduplicates modestly by canonical URL, keeps the single highest adapter-supplied score, discards other provider provenance, and maps score back to a fabricated position. This is explicitly documented as a compatibility gap, not a port.
+- **Action:** Corrected [docs/PORTING_AUDIT.md](../docs/PORTING_AUDIT.md) to describe the score/position fabrication accurately. The next ranking implementation should add actual per-provider positions and provenance before applying any weighted scoring formula.
+- **Verification:** Documentation-only; no code changed. CI runs [45026866625](https://github.com/fwjlh/DotNetWebSearchApi/actions/runs/45026866625) and [45026895410](https://github.com/fwjlh/DotNetWebSearchApi/actions/runs/45026895410) are in progress at log time.
+- **Next:** The highest-value framework gaps remaining are full request-header/redirect policy and a result model that preserves provider positions/contributions. Keep provider count frozen at 67.
