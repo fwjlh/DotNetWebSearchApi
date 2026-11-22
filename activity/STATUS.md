@@ -6,7 +6,7 @@ Updated: 2026-11-22
 
 - Public repository: https://github.com/fwjlh/DotNetWebSearchApi
 - Default branch: main
-- Latest verified code commit: b037b44e9b7d00debdcae9eab1a910a125da7c9b (Brave adapter CI correction pending)
+- Latest verified code commit: 66ffe447972eaab8bdc4d90dd2e8cc4cd2ea882b
 - Documentation refresh is being committed separately.
 - Full project overview and roadmap: [README.md](../README.md)
 
@@ -23,11 +23,12 @@ Updated: 2026-11-22
 
 ## Verification
 
-- CI run: https://github.com/fwjlh/DotNetWebSearchApi/actions/runs/45007833897\n- Previous foundation-only run: https://github.com/fwjlh/DotNetWebSearchApi/actions/runs/44942530782
+- CI run: https://github.com/fwjlh/DotNetWebSearchApi/actions/runs/45008067698
+- Bing adapter run: https://github.com/fwjlh/DotNetWebSearchApi/actions/runs/45007833897\n- Previous foundation-only run: https://github.com/fwjlh/DotNetWebSearchApi/actions/runs/44942530782
 - Commit tested: 7e088b4112c0424fad411f42ddf9f4861ddff103
 - Restore: passed.
 - Build: passed.
-- Tests: 15 passed, 0 failed, 0 skipped.
+- Tests: 23 passed, 0 failed, 0 skipped.
 - Local .NET SDK is not installed in the orchestration environment; verification was performed by GitHub Actions.
 - The first two CI runs exposed compiler and test-import errors. Both were corrected; the third run passed. See [LOG.md](LOG.md).
 
@@ -36,7 +37,7 @@ Updated: 2026-11-22
 The agreed approach is major general-purpose search engines first, then work down the list:
 
 1. Bing Web — implemented using the current SearXNG HTML route; live upstream availability remains to be exercised.
-2. Brave Search — establish API/key requirements.
+2. Brave Search API — implemented and CI-verified; optional, requires BRAVE_SEARCH_API_KEY. The provider is not registered when no key is configured.
 3. Google Search — select a supported access method and document quotas/costs.
 4. DuckDuckGo — validate current public interface and limitations.
 5. Wikipedia — already implemented; retain as the reference adapter.

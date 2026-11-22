@@ -60,14 +60,14 @@ The implementation strategy is to work from the major general-purpose search eng
 | Priority | Provider | Status | Implementation notes |
 |---:|---|---|---|
 | 1 | Bing Web | Working | SearXNG-style HTML adapter; parser and request tests pass; live availability not tested in CI |
-| 2 | Brave Search | Planned | Confirm API access and key/configuration requirements |
+| 2 | Brave Search API | Working (optional) | Official JSON API; requires BRAVE_SEARCH_API_KEY; not enabled without a key |
 | 3 | Google Search | Planned | Select a supported access method; document account, quota or billing requirements |
 | 4 | DuckDuckGo | Planned | Evaluate the current public search interface and its limitations |
 | 5 | Wikipedia | Working | First adapter; retain as a useful reference implementation |
 | 6 | Mojeek | Planned | Add after the major providers |
 | 7+ | Further SearXNG providers | Planned | Prioritise by usefulness, reliability, accessibility and maintenance cost |
 
-Provider ordering is a development priority, not a claim that every upstream service offers a free or unrestricted API. Each adapter must respect the provider's current access rules, terms, rate limits and attribution requirements. Where a provider requires credentials, keys will be configured as secrets and never committed to source control.
+Provider ordering is a development priority, not a claim that every upstream service offers a free or unrestricted API. Brave's current Search plan is listed at $5 per 1,000 requests with $5 in monthly credits; activating a plan requires payment-card details. Check the [current Brave plans](https://brave.com/search/api/) before use. Each adapter must respect the provider's current access rules, terms, rate limits and attribution requirements. Where a provider requires credentials, keys will be configured as secrets and never committed to source control.
 
 ### What makes an adapter complete?
 
@@ -146,6 +146,15 @@ There is no Docker or Python dependency in the intended deployment model.
 
 The application prints its local listening address when it starts. Use that address for the requests below.
 
+### Optional Brave Search provider
+
+Brave is enabled only when an API key is supplied through the BRAVE_SEARCH_API_KEY environment variable. Without the variable, the service starts normally and skips Brave. In PowerShell, set it for the current session before starting the application:
+
+    $env:BRAVE_SEARCH_API_KEY = "your-brave-api-key"
+    dotnet run --project src/DotNetWebSearchApi
+
+For IIS or a Windows service, configure the environment variable in the hosting environment. Never put a real key in appsettings committed to the repository or in source code.
+
 ### Check health
 
     GET /health
@@ -187,7 +196,7 @@ Run from the repository root:
 
 GitHub Actions runs restore, build and tests for pushes and pull requests. The badge at the top links to the workflow.
 
-The current verified implementation passes CI with **15 tests passing** (9 foundation tests and 6 Bing adapter tests). Check the Actions history for the latest result; this README does not assume that a previous successful run proves every future commit is green.
+The current verified implementation passes CI with **23 tests passing** (9 foundation tests, 6 Bing adapter tests and 8 Brave adapter tests). Check the Actions history for the latest result; this README does not assume that a previous successful run proves every future commit is green.
 
 ## Planned delivery sequence
 

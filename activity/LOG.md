@@ -143,3 +143,12 @@ Every material repository action is recorded here with its reason, result, verif
 - **Correction:** Change the assertion to Assert.ThrowsAnyAsync<JsonException> so derived JSON parse exceptions are accepted.
 - **Verification:** Correction is committed with the activity update; the next CI run must confirm all tests pass.
 - **Next:** Inspect the corrected CI run. If green, mark Brave as verified-but-key-required and proceed to Google, then DuckDuckGo.
+
+
+### 18. Verify Brave Search adapter in GitHub Actions
+- **Reason:** Confirm the optional official API adapter and corrected malformed-JSON assertion with a real .NET 10 CI run.
+- **Action:** Inspected workflow run 45008067698 for commit 66ffe447972eaab8bdc4d90dd2e8cc4cd2ea882b and fetched the job log.
+- **Result:** **CI passed.** Restore succeeded, build succeeded, and all 23 tests passed (0 failed, 0 skipped). This includes eight Brave adapter tests and six Bing adapter tests.
+- **Correction verified:** The malformed-JSON test now accepts JsonReaderException as a JsonException subtype.
+- **Verification:** Workflow run https://github.com/fwjlh/DotNetWebSearchApi/actions/runs/45008067698. The Brave tests use fixture JSON and a fake HTTP handler; they do not make billable/live API requests.
+- **Next:** Record Brave as implemented but optional/key-required. Proceed to Google web search (the official Custom Search JSON API is closed to new customers) and DuckDuckGo HTML search (documented bot protection is a risk).
