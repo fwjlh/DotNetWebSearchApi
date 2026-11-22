@@ -424,3 +424,11 @@ Every material repository action is recorded here with its reason, result, verif
 - **Correction history:** Initial run 45010196457 passed restore/build and 93/95 tests. The two static-page tests returned 404 because assets were at repository-root wwwroot instead of src/DotNetWebSearchApi/wwwroot. Assets were moved into the application project's web root; corrected run is green.
 - **Verification:** Successful workflow https://github.com/fwjlh/DotNetWebSearchApi/actions/runs/45010292934. Initial failure https://github.com/fwjlh/DotNetWebSearchApi/actions/runs/45010196457.
 - **Next:** Mark initial browser and read-only diagnostics milestone complete. Design editable provider configuration and secret references before adding admin write actions.
+
+
+### 51. Polish README project status and overview tense
+- **Reason:** Keep the landing page aligned with features that are now implemented rather than describing them as future intentions.
+- **Action:** Removed an unnecessary leading space before the project-status blockquote and changed the overview from future-tense goals to present-tense capabilities.
+- **Result:** README opening now accurately describes the working provider aggregation and current implementation stage.
+- **Verification:** Re-fetched README.md from GitHub and checked the opening section.
+- **Next:** Continue with safe provider configuration management and deployment hardening.

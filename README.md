@@ -6,11 +6,11 @@
 
 **A self-hosted metasearch API, written in native C# and ASP.NET Core.**
 
-DotNetWebSearchApi aims to bring the useful metasearch ideas behind [SearXNG](https://github.com/searxng/searxng) into a straightforward .NET deployment. It will query multiple independent search providers, combine and normalise their results, and give applications one API that they can host and control.
+DotNetWebSearchApi brings the useful metasearch ideas behind [SearXNG](https://github.com/searxng/searxng) into a straightforward .NET deployment. It queries multiple independent search providers, combines and normalises their results, and gives applications one API that they can host and control.
 
 The goal is not to build another search index. It is to provide a practical, extensible aggregation layer that can run on infrastructure you already operate: particularly Windows Server, IIS and SQL Server environments.
 
- > **Project status: initial search stack implemented.** Ten provider adapters, the SearXNG-shaped JSON API, a browser search page and read-only provider diagnostics are in place. The next implementation priority is safe provider configuration management, operational hardening and UI refinement.
+> **Project status: initial search stack implemented.** Ten provider adapters, the SearXNG-shaped JSON API, a browser search page and read-only provider diagnostics are in place. The next implementation priority is safe provider configuration management, operational hardening and UI refinement.
 
 This is an independent implementation inspired by SearXNG. It is not affiliated with, endorsed by, or a drop-in replacement for the SearXNG project. See [UPSTREAM.md](UPSTREAM.md) for provenance and [LICENSE](LICENSE) for licensing.
 
