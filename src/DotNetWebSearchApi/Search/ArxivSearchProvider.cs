@@ -7,10 +7,12 @@ public sealed class ArxivSearchProvider : ISearchProvider
 {
     private static readonly XNamespace AtomNamespace = "http://www.w3.org/2005/Atom";
     private readonly HttpClient _httpClient;
+    private readonly SearchHttpTransport _transport;
 
-    public ArxivSearchProvider(HttpClient httpClient)
+    public ArxivSearchProvider(HttpClient httpClient, SearchHttpTransport? transport = null)
     {
         _httpClient = httpClient;
+        _transport = transport ?? new SearchHttpTransport();
     }
 
     public string Name => "arxiv";
@@ -21,19 +23,18 @@ public sealed class ArxivSearchProvider : ISearchProvider
         SearchQuery query,
         CancellationToken cancellationToken)
     {
-        string requestUrl = BuildRequestUrl(query);
-        using HttpResponseMessage response = await _httpClient.GetAsync(requestUrl, cancellationToken);
-        response.EnsureSuccessStatusCode();
+        using HttpRequestMessage request = new(HttpMethod.Get, BuildRequestUrl(query));
+        SearchHttpResponse response = await _transport.SendAsync(_httpClient, request, cancellationToken);
+        response.EnsureSuccessStatusCode(Name);
 
-        await using Stream responseStream = await response.Content.ReadAsStreamAsync(cancellationToken);
+        using StringReader textReader = new(response.Content);
         XmlReaderSettings settings = new()
         {
             DtdProcessing = DtdProcessing.Prohibit,
-            XmlResolver = null,
-            Async = true
+            XmlResolver = null
         };
-        using XmlReader reader = XmlReader.Create(responseStream, settings);
-        XDocument document = await XDocument.LoadAsync(reader, LoadOptions.None, cancellationToken);
+        using XmlReader reader = XmlReader.Create(textReader, settings);
+        XDocument document = XDocument.Load(reader, LoadOptions.None);
         return ReadResults(document);
     }
 
