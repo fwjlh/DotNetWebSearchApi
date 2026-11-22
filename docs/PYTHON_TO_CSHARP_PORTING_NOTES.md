@@ -530,21 +530,21 @@ These are translation targets, not assertions that every row is already implemen
 
 - SearXNG's `ResultContainer` is a stateful collection, not just a LINQ `Distinct`. It collects main results, infoboxes, answers, suggestions, corrections, engine metadata and timings; it merges duplicate results and preserves the contributing engines and source positions.
 - SearXNG's score calculation multiplies the configured engine weights, multiplies by the number of contributing positions, then sums a position contribution (normally weight divided by position; priority can also be high or low). This rewards independent engines agreeing on the same result and strong placement within each engine.
-- The C# `SearchResult` is intentionally a small common web-link DTO: title, URL, snippet, one provider name and one numeric score. It is sufficient for the first search API and does not yet model SearXNG's richer result types.
-- C# canonicalises HTTP(S) URLs by removing fragments and trailing path slashes, deduplicates case-insensitively, keeps the single result with the highest supplied score, then sorts by score descending and title as a deterministic tie-breaker. It rejects non-HTTP(S) URLs.
+- The C# `SearchResult` is a common web-link DTO: title, URL, snippet, primary provider, score, actual result position, contributing engine names and per-engine positions. It still does not model SearXNG's richer result types.
+- C# canonicalises HTTP(S) URLs by removing fragments and trailing path slashes, deduplicates case-insensitively, preserves the first actual position for each contributing provider, keeps the highest-scoring result as the display record, and sorts by adapter-supplied score descending and title as a deterministic tie-breaker. The aggregator assigns positions from each provider's returned order when a parser has not supplied one. It rejects non-HTTP(S) URLs.
 - The current merge is easy to test and keeps the API small, but it is not a translation of SearXNG's scoring algorithm. It does not combine provider positions or engine weights, preserve all contributing providers, merge thumbnails/attributes, group by category/template, or represent infoboxes/answers/suggestions.
 
 **Known divergence / omissions**
 
-- The C# aggregator does not know a provider's result position because `SearchResult` has no position field. It cannot calculate the Python position score.
-- The C# result carries one `Provider` string. When the same URL appears in multiple engines, the winning result discards the other contributing provider names.
+- C# now records the one-based position in each provider's returned list. This assumes adapters preserve upstream result order; it is not a separately parsed rank field. The aggregator still does not calculate Python's engine-weight/position score.
+- The C# result retains a primary `Provider` for display plus `Engines` and `Positions` collections. Duplicate URLs now preserve the contributing providers and each provider's first observed position.
 - Provider `Score` values are currently adapter-defined and are not normalised across engines. A score of 0.9 from one adapter is not necessarily comparable to 0.9 from another.
 - Canonicalisation is intentionally modest. It does not remove tracking query parameters, normalise default ports, resolve redirects, or merge URL variants beyond fragment/trailing slash handling. Aggressive query stripping could destroy meaningful search destinations, so it needs an explicit policy and tests.
 - SearXNG has separate result models and grouping rules; do not flatten image/video/news/answer/infobox results into ordinary links if those verticals are later added.
 
 **Verification:** [SearchAggregatorTests.cs](../tests/DotNetWebSearchApi.Tests/SearchAggregatorTests.cs) covers URL deduplication, highest-score selection, deterministic score/title ordering, limits and rejection of non-HTTP(S) URLs. It does not test multi-engine position weighting because that model is not implemented.
 
-**Interpretation:** this is a deliberately simplified first-pass aggregator. The next correct evolution is to preserve per-engine contributions and positions, then implement an explicit deterministic scoring policy; copying the Python formula before C# captures the required provenance would produce false precision.
+**Interpretation:** provider provenance and actual returned-order positions are now preserved, fixing the previous fabricated-position mapping. The remaining divergence is ranking: C# still selects the highest adapter score and does not apply engine weights, position aggregation or rich-result grouping. Implement scoring only after provider weights and result-position semantics are explicit.
 
 ## How to add the next corpus entry
 
