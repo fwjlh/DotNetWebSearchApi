@@ -9,6 +9,7 @@ public sealed class SearchAggregator
     private readonly ILogger<SearchAggregator> _logger;
     private readonly SearchDiagnostics _diagnostics;
     private readonly ProviderHealthRegistry _health;
+    private readonly IReadOnlyDictionary<string, double> _providerWeights;
 
     public SearchAggregator(
         IEnumerable<ISearchProvider> providers,
@@ -20,6 +21,10 @@ public sealed class SearchAggregator
         _logger = logger;
         _diagnostics = diagnostics ?? new SearchDiagnostics();
         _health = health ?? new ProviderHealthRegistry();
+        _providerWeights = _providers.ToDictionary(
+            provider => provider.Name,
+            provider => GetProviderWeight(provider),
+            StringComparer.OrdinalIgnoreCase);
     }
 
     public IReadOnlyList<string> ProviderNames => _providers.Select(provider => provider.Name).ToArray();
@@ -150,10 +155,12 @@ public sealed class SearchAggregator
                 }
 
                 string providerName = providerResult.Outcome.ProviderName;
-                Dictionary<string, int> positions = result.Positions.ToDictionary(
-                    item => item.Key,
-                    item => item.Value,
-                    StringComparer.OrdinalIgnoreCase);
+                Dictionary<string, int> positions = result.Positions
+                    .Where(item => item.Value > 0)
+                    .ToDictionary(
+                        item => item.Key,
+                        item => item.Value,
+                        StringComparer.OrdinalIgnoreCase);
                 if (!positions.TryGetValue(providerName, out int position))
                 {
                     position = result.Position is > 0 ? result.Position.Value : resultIndex;
@@ -168,10 +175,12 @@ public sealed class SearchAggregator
                 SearchResult normalized = result with
                 {
                     Provider = providerName,
+                    ProviderScore = result.ProviderScore ?? result.Score,
                     Position = position,
                     Engines = engines,
                     Positions = positions
                 };
+                normalized = normalized with { Score = CalculateScore(engines, positions) };
 
                 if (!uniqueResults.TryGetValue(canonicalUrl, out SearchResult? existing))
                 {
@@ -197,7 +206,7 @@ public sealed class SearchAggregator
                     .Concat(mergedPositions.Keys)
                     .Distinct(StringComparer.OrdinalIgnoreCase)
                     .ToArray();
-                SearchResult preferred = normalized.Score > existing.Score ? normalized : existing;
+                SearchResult preferred = normalized.ProviderScore > existing.ProviderScore ? normalized : existing;
                 int? preferredPosition = mergedPositions.TryGetValue(preferred.Provider, out int selectedPosition)
                     ? selectedPosition
                     : preferred.Position;
@@ -205,7 +214,8 @@ public sealed class SearchAggregator
                 {
                     Position = preferredPosition,
                     Engines = mergedEngines,
-                    Positions = mergedPositions
+                    Positions = mergedPositions,
+                    Score = CalculateScore(mergedEngines, mergedPositions)
                 };
             }
         }
@@ -215,6 +225,41 @@ public sealed class SearchAggregator
             .ThenBy(result => result.Title, StringComparer.OrdinalIgnoreCase)
             .Take(limit)
             .ToArray();
+    }
+
+    private double CalculateScore(
+        IReadOnlyList<string> engines,
+        IReadOnlyDictionary<string, int> positions)
+    {
+        if (positions.Count == 0)
+        {
+            return 0;
+        }
+
+        double weight = 1;
+        foreach (string engine in engines)
+        {
+            if (_providerWeights.TryGetValue(engine, out double engineWeight))
+            {
+                weight *= engineWeight;
+            }
+        }
+
+        weight *= positions.Count;
+        return positions.Values.Sum(position => weight / position);
+    }
+
+    private static double GetProviderWeight(ISearchProvider provider)
+    {
+        double weight = GetCapabilities(provider).Weight;
+        if (!double.IsFinite(weight) || weight <= 0)
+        {
+            throw new ArgumentOutOfRangeException(
+                nameof(provider),
+                $"Provider '{provider.Name}' must declare a positive finite weight.");
+        }
+
+        return weight;
     }
 
     private static bool TryGetCanonicalUrl(string value, out string canonicalUrl)
