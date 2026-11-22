@@ -8,13 +8,18 @@ public sealed class JsonApiSearchProvider : ISearchProvider
 {
     private readonly HttpClient _httpClient;
     private readonly JsonApiSearchDefinition _definition;
+    private readonly SearchHttpTransport _transport;
     private readonly SemaphoreSlim _requestGate = new(1, 1);
     private DateTimeOffset _nextRequestUtc = DateTimeOffset.MinValue;
 
-    public JsonApiSearchProvider(HttpClient httpClient, JsonApiSearchDefinition definition)
+    public JsonApiSearchProvider(
+        HttpClient httpClient,
+        JsonApiSearchDefinition definition,
+        SearchHttpTransport? transport = null)
     {
         _httpClient = httpClient;
         _definition = definition;
+        _transport = transport ?? new SearchHttpTransport();
     }
 
     public string Name => _definition.Name;
@@ -27,13 +32,9 @@ public sealed class JsonApiSearchProvider : ISearchProvider
     {
         await WaitForRequestSlotAsync(cancellationToken);
         using HttpRequestMessage request = BuildRequest(query);
-        using HttpResponseMessage response = await _httpClient.SendAsync(request, cancellationToken);
-        response.EnsureSuccessStatusCode();
-
-        await using Stream responseStream = await response.Content.ReadAsStreamAsync(cancellationToken);
-        using JsonDocument document = await JsonDocument.ParseAsync(
-            responseStream,
-            cancellationToken: cancellationToken);
+        SearchHttpResponse response = await _transport.SendAsync(_httpClient, request, cancellationToken);
+        response.EnsureSuccessStatusCode(Name);
+        using JsonDocument document = JsonDocument.Parse(response.Content);
 
         return ReadResults(document.RootElement);
     }
