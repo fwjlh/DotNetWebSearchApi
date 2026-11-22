@@ -67,7 +67,7 @@ public sealed class KagiSearchProviderTests
     [Fact]
     public void Capabilities_DeclareOnlySupportedGeneralSearchFeatures()
     {
-        KagiSearchProvider provider = CreateProvider(new HttpClient(new StubHttpMessageHandler(_ => JsonResponse("{\"data\":{\"search\":[]}}"))));
+        KagiSearchProvider provider = CreateProvider(new HttpClient(new StubHttpMessageHandler(_ => Task.FromResult(JsonResponse("{\"data\":{\"search\":[]}}")))));
 
         Assert.True(provider.Capabilities.Supports(new SearchQuery("test", 10)
         {
