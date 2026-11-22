@@ -72,6 +72,8 @@ public sealed class SearchHttpTransport
 {
     private readonly ConcurrentDictionary<string, SemaphoreSlim> _hostGates =
         new(StringComparer.OrdinalIgnoreCase);
+    private readonly ConcurrentDictionary<string, ProviderRateState> _providerRates =
+        new(StringComparer.OrdinalIgnoreCase);
     private readonly SearchHttpTransportOptions _options;
     private readonly TimeProvider _timeProvider;
 
@@ -90,10 +92,13 @@ public sealed class SearchHttpTransport
     public async Task<SearchHttpResponse> SendAsync(
         HttpClient client,
         HttpRequestMessage request,
-        CancellationToken cancellationToken)
+        CancellationToken cancellationToken,
+        string? providerName = null,
+        TimeSpan? minimumInterval = null)
     {
         Uri requestUri = request.RequestUri
             ?? throw new ArgumentException("The request URI is required.", nameof(request));
+        await WaitForProviderSlotAsync(providerName, minimumInterval, cancellationToken);
         SemaphoreSlim gate = _hostGates.GetOrAdd(
             requestUri.IdnHost,
             _ => new SemaphoreSlim(_options.MaximumConcurrentRequestsPerHost));
@@ -116,6 +121,34 @@ public sealed class SearchHttpTransport
         finally
         {
             gate.Release();
+        }
+    }
+
+    private async Task WaitForProviderSlotAsync(
+        string? providerName,
+        TimeSpan? minimumInterval,
+        CancellationToken cancellationToken)
+    {
+        if (string.IsNullOrWhiteSpace(providerName) || minimumInterval is not { } interval || interval <= TimeSpan.Zero)
+        {
+            return;
+        }
+
+        ProviderRateState state = _providerRates.GetOrAdd(providerName, _ => new ProviderRateState());
+        await state.Gate.WaitAsync(cancellationToken);
+        try
+        {
+            TimeSpan delay = state.NextRequestUtc - _timeProvider.GetUtcNow();
+            if (delay > TimeSpan.Zero)
+            {
+                await Task.Delay(delay, _timeProvider, cancellationToken);
+            }
+
+            state.NextRequestUtc = _timeProvider.GetUtcNow().Add(interval);
+        }
+        finally
+        {
+            state.Gate.Release();
         }
     }
 
@@ -184,6 +217,12 @@ public sealed class SearchHttpTransport
         }
 
         return null;
+    }
+
+    private sealed class ProviderRateState
+    {
+        public SemaphoreSlim Gate { get; } = new(1, 1);
+        public DateTimeOffset NextRequestUtc { get; set; } = DateTimeOffset.MinValue;
     }
 
     private static IReadOnlyDictionary<string, IReadOnlyList<string>> CopyHeaders(HttpResponseMessage response)
