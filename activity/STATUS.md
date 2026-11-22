@@ -5,7 +5,7 @@ Updated: 2026-11-22
 ## Repository
 - Public repository: https://github.com/fwjlh/DotNetWebSearchApi
 - Default branch: main
-- Latest code commit: 265a2aaa1efbddb0ac6639975795283364c27275 (request-context/capability foundation; CI verification pending).
+- Latest code commit: ab52977e1fed0fa3407651da90daea98effe045a (request-context/capability foundation; CI verification pending).
 - Current provider catalogue: **67 adapters, frozen** pending shared-framework refactoring.
 - Last fully verified CI baseline before the new code changes: build 0 warnings/errors; 156 tests passed (0 failed, 0 skipped), run [45020266512](https://github.com/fwjlh/DotNetWebSearchApi/actions/runs/45020266512). Do not treat this as verification of the newer commits.
 - Current direction and consumer boundary: [docs/ARCHITECTURE_DECISIONS.md](../docs/ARCHITECTURE_DECISIONS.md).
