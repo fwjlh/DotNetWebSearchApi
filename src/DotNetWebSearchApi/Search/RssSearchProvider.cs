@@ -181,7 +181,8 @@ public static class RssProviderCatalog
             services.AddSingleton<ISearchProvider>(serviceProvider =>
                 new RssSearchProvider(
                     serviceProvider.GetRequiredService<IHttpClientFactory>().CreateClient(definition.Name),
-                    definition));
+                    definition,
+                    serviceProvider.GetRequiredService<SearchHttpTransport>()));
         }
     }
 }
