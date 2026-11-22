@@ -61,7 +61,7 @@ The implementation strategy is to work from the major general-purpose search eng
 |---:|---|---|---|
 | 1 | Bing Web | Working | SearXNG-style HTML adapter; parser and request tests pass; live availability not tested in CI |
 | 2 | Brave Search API | Working (optional) | Official JSON API; requires BRAVE_SEARCH_API_KEY; not enabled without a key |
-| 3 | Google Search | Planned | Select a supported access method; document account, quota or billing requirements |
+| 3 | Google Web | Working (HTML) | SearXNG-style HTML adapter; no API key; CAPTCHA/blocking remains an upstream risk |
 | 4 | DuckDuckGo | Planned | Evaluate the current public search interface and its limitations |
 | 5 | Wikipedia | Working | First adapter; retain as a useful reference implementation |
 | 6 | Mojeek | Planned | Add after the major providers |
@@ -196,7 +196,7 @@ Run from the repository root:
 
 GitHub Actions runs restore, build and tests for pushes and pull requests. The badge at the top links to the workflow.
 
-The current verified implementation passes CI with **23 tests passing** (9 foundation tests, 6 Bing adapter tests and 8 Brave adapter tests). Check the Actions history for the latest result; this README does not assume that a previous successful run proves every future commit is green.
+The current verified implementation passes CI with **30 tests passing** (9 foundation tests, 6 Bing adapter tests, 8 Brave adapter tests and 7 Google adapter tests). Check the Actions history for the latest result; this README does not assume that a previous successful run proves every future commit is green.
 
 ## Planned delivery sequence
 

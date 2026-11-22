@@ -6,7 +6,7 @@ Updated: 2026-11-22
 
 - Public repository: https://github.com/fwjlh/DotNetWebSearchApi
 - Default branch: main
-- Latest verified code commit: 66ffe447972eaab8bdc4d90dd2e8cc4cd2ea882b (Google adapter pending CI)
+- Latest verified code commit: 5386354d644eeca5d89941ab01e1752b4c4c09eb
 - Documentation refresh is being committed separately.
 - Full project overview and roadmap: [README.md](../README.md)
 
@@ -23,12 +23,13 @@ Updated: 2026-11-22
 
 ## Verification
 
-- CI run: https://github.com/fwjlh/DotNetWebSearchApi/actions/runs/45008067698
+- CI run: https://github.com/fwjlh/DotNetWebSearchApi/actions/runs/45008244135
+- Brave adapter run: https://github.com/fwjlh/DotNetWebSearchApi/actions/runs/45008067698
 - Bing adapter run: https://github.com/fwjlh/DotNetWebSearchApi/actions/runs/45007833897\n- Previous foundation-only run: https://github.com/fwjlh/DotNetWebSearchApi/actions/runs/44942530782
 - Commit tested: 7e088b4112c0424fad411f42ddf9f4861ddff103
 - Restore: passed.
 - Build: passed.
-- Tests: 23 passed, 0 failed, 0 skipped.
+- Tests: 30 passed, 0 failed, 0 skipped.
 - Local .NET SDK is not installed in the orchestration environment; verification was performed by GitHub Actions.
 - The first two CI runs exposed compiler and test-import errors. Both were corrected; the third run passed. See [LOG.md](LOG.md).
 

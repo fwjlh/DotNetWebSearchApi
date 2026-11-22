@@ -169,3 +169,11 @@ Every material repository action is recorded here with its reason, result, verif
 - **Result:** Implementation and tests prepared for commit. The adapter uses the public Google HTML page, not Custom Search JSON API. Automated tests do not contact Google.
 - **Verification:** Pending GitHub Actions.
 - **Next:** Inspect CI and record the result. If green, assess DuckDuckGo's HTML request flow and bot-protection constraints.
+
+
+### 21. Verify Google Web adapter in GitHub Actions
+- **Reason:** Confirm the Google HTML parser, request construction and CAPTCHA handling compile and pass their deterministic tests.
+- **Action:** Inspected workflow run 45008244135 for commit 5386354d644eeca5d89941ab01e1752b4c4c09eb and fetched the job log.
+- **Result:** **CI passed.** Restore succeeded, build succeeded, and all 30 tests passed (0 failed, 0 skipped). This includes seven Google adapter tests.
+- **Verification:** Workflow run https://github.com/fwjlh/DotNetWebSearchApi/actions/runs/45008244135. Tests use fixture HTML and a fake HTTP handler; they do not contact Google or prove live search availability.
+- **Next:** Record Google Web as implemented with CAPTCHA/blocking risk. Proceed to DuckDuckGo HTML, with explicit first-page-only behaviour and CAPTCHA detection.
