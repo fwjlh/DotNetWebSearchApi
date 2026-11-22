@@ -1,4 +1,5 @@
 using System.Net;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace DotNetWebSearchApi.Search;
 
@@ -12,7 +13,7 @@ public sealed class YahooSearchProvider : ISearchProvider
 
     public YahooSearchProvider(
         HttpClient httpClient,
-        CookieContainer cookies,
+        [FromKeyedServices("yahoo")] CookieContainer cookies,
         SearchHttpTransport? transport = null)
     {
         _httpClient = httpClient;
