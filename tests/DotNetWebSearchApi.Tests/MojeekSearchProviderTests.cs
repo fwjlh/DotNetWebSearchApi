@@ -59,8 +59,9 @@ public sealed class MojeekSearchProviderTests
             Task.FromResult(JsonResponse(challenge))));
         MojeekSearchProvider provider = new(client, new CookieContainer());
 
-        await Assert.ThrowsAsync<HttpRequestException>(() =>
+        ProviderFailureException exception = await Assert.ThrowsAsync<ProviderFailureException>(() =>
             provider.SearchAsync(new SearchQuery("Mojeek", 5), CancellationToken.None));
+        Assert.Equal(ProviderFailureKind.Challenge, exception.FailureKind);
     }
 
     private static HttpResponseMessage JsonResponse(string json)
