@@ -6,7 +6,7 @@ Updated: 2026-11-22
 
 - Public repository: https://github.com/fwjlh/DotNetWebSearchApi
 - Default branch: main
-- Latest verified code commit: 7e088b4112c0424fad411f42ddf9f4861ddff103
+- Latest verified code commit: 7e088b4112c0424fad411f42ddf9f4861ddff103 (Bing adapter pending CI)
 - Documentation refresh is being committed separately.
 - Full project overview and roadmap: [README.md](../README.md)
 
@@ -57,7 +57,7 @@ Do not divert into the admin UI or compatibility layer before the core provider 
 
 ## Important limitations
 
-Only Wikipedia is wired in. There is no SQL Server provider store, general configurable HTTP provider, API-key authentication, quotas, admin UI or SearXNG-compatible JSON API yet. Do not expose this endpoint as a public unrestricted search service before authentication, rate limiting and outbound request policy are implemented.
+Wikipedia is wired in. The Bing HTML adapter has been added but is pending CI verification. There is no SQL Server provider store, general configurable HTTP provider, API-key authentication, quotas, admin UI or SearXNG-compatible JSON API yet. Do not expose this endpoint as a public unrestricted search service before authentication, rate limiting and outbound request policy are implemented.
 
 Some major search providers may require credentials or have changed/retired access routes. Validate provider terms, access, quotas and cost before implementation; do not promise free or unrestricted access.
 

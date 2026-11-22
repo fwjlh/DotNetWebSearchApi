@@ -92,3 +92,20 @@ Every material repository action is recorded here with its reason, result, verif
 - **Result:** Documentation update prepared for commit; no application source changed in this increment.
 - **Verification:** README content checked against the current API routes, request validation, response record fields, project layout and current single-provider implementation. Existing CI result remains the last code verification; this documentation change does not claim a new test run.
 - **Next:** Implement the next provider-focused increment. Validate current access methods for the first major search engines, then add adapters with isolated parsing/request tests. Keep each provider honest about required credentials, terms and availability.
+
+
+## 2026-11-22 — First major-engine adapter: Bing
+
+### 12. Validate upstream access strategy
+- **Reason:** The legacy Bing Search API was retired; the project must follow a currently used upstream route rather than code against a dead API.
+- **Action:** Reviewed Microsoft lifecycle guidance and the current SearXNG Bing engine documentation/source.
+- **Result:** Microsoft states Bing Search APIs were retired on 11 August 2025. Current SearXNG Bing Web uses the public Bing HTML search page and extracts result cards from the HTML response.
+- **Verification:** Microsoft lifecycle notice and current SearXNG engine documentation/source reviewed. See the project README provider roadmap.
+- **Next:** Implement the HTML adapter with isolated parser and HTTP behaviour tests.
+
+### 13. Implement Bing Web adapter
+- **Reason:** Start provider coverage with a major general-purpose search engine using the current SearXNG-compatible access pattern.
+- **Action:** Added BingSearchProvider, BingSearchResultParser, HtmlAgilityPack 1.13.1, provider registration and six adapter tests covering title/snippet extraction, HTML entity decoding, decorative icon removal, Bing tracking URL unwrapping, invalid/missing result rejection, encoded query construction and HTTP error handling.
+- **Result:** Implementation and tests prepared for commit. The provider uses Bing Web HTML, not the retired Bing Search API. No live request has been made as part of the automated tests; tests use deterministic fixture HTML and a fake HTTP handler.
+- **Verification:** Pending GitHub Actions build and test run.
+- **Next:** Inspect CI. If green, mark Bing adapter implemented; then assess Brave official API and web-interface paths, followed by Google and DuckDuckGo. Preserve each provider's credential, quota and bot-protection constraints.

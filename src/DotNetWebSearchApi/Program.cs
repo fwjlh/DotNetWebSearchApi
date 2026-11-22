@@ -1,11 +1,17 @@
 using DotNetWebSearchApi.Search;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
+builder.Services.AddHttpClient<BingSearchProvider>(client =>
+{
+    client.DefaultRequestHeaders.UserAgent.ParseAdd(
+        "DotNetWebSearchApi/0.1 (+https://github.com/fwjlh/DotNetWebSearchApi)");
+});
 builder.Services.AddHttpClient<WikipediaSearchProvider>(client =>
 {
     client.DefaultRequestHeaders.UserAgent.ParseAdd(
         "DotNetWebSearchApi/0.1 (+https://github.com/fwjlh/DotNetWebSearchApi)");
 });
+builder.Services.AddSingleton<ISearchProvider>(serviceProvider => serviceProvider.GetRequiredService<BingSearchProvider>());
 builder.Services.AddSingleton<ISearchProvider>(serviceProvider => serviceProvider.GetRequiredService<WikipediaSearchProvider>());
 builder.Services.AddSingleton<SearchAggregator>();
 
