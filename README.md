@@ -10,7 +10,7 @@ DotNetWebSearchApi aims to bring the useful metasearch ideas behind [SearXNG](ht
 
 The goal is not to build another search index. It is to provide a practical, extensible aggregation layer that can run on infrastructure you already operate: particularly Windows Server, IIS and SQL Server environments.
 
-> **Project status: early development.** The API, provider contract, parallel aggregation, Wikipedia adapter and first automated test suite are in place. The next implementation priority is major search-provider adapters. The compatibility API and browser-based administration/search experience follow those adapters.
+> **Project status: early development.** The provider contract, parallel aggregation, ten provider adapters, initial SearXNG-shaped JSON API and automated integration tests are in place. The next implementation priority is the browser search experience, provider selection, administration and diagnostics.
 
 This is an independent implementation inspired by SearXNG. It is not affiliated with, endorsed by, or a drop-in replacement for the SearXNG project. See [UPSTREAM.md](UPSTREAM.md) for provenance and [LICENSE](LICENSE) for licensing.
 
@@ -35,7 +35,7 @@ DotNetWebSearchApi puts that work behind one service:
 |---|---|---|
 | ASP.NET Core 10 API | Working | Minimal API host |
 | Health endpoint | Working | GET /health |
-| Unified search endpoint | Working | GET /api/search?q=... |
+| Unified search endpoint | Working | GET /api/search?q=... |\n| SearXNG-shaped JSON endpoint | Working (initial compatibility) | GET /search, POST /search and GET /; JSON response with provider status |
 | Provider contract | Working | Common query and result types |
 | Parallel provider execution | Working | Providers run concurrently |
 | Timeout and failure isolation | Working | Partial results can survive provider failures |
@@ -54,7 +54,7 @@ DotNetWebSearchApi puts that work behind one service:
 | Automated build and tests | Working | GitHub Actions / .NET 10 |
 | Major web-search adapters | Initial wave complete | Bing, Brave, Google, DuckDuckGo and other priority providers are implemented |
 | First 5–10 provider adapters | Initial target met | Ten provider adapters are implemented and CI-tested |
-| SearXNG-compatible JSON API | Planned | Compatibility layer after core adapters |
+| SearXNG-compatible JSON API | Initial surface working | JSON response and engine selection; unsupported features return explicit status codes |
 | Browser search interface | Planned | Search, provider selection and result display |
 | Administration and diagnostics | Planned | Provider configuration, health, logs and operational visibility |
 | SQL Server configuration store | Planned | Optional persistence and administration |
@@ -131,6 +131,49 @@ The intended request flow is:
 The first implementation uses explicit C# adapters. A later provider-definition layer is intended to support common HTTP GET/POST patterns and structured response extraction. Providers with unusual protocols or parsing requirements can continue to use dedicated C# code.
 
 SQL Server is planned as an optional configuration store, not a prerequisite for running the initial service. Secrets should be supplied through environment-specific configuration or a secret store and referenced by name; they should not be stored as plaintext in provider-definition rows.
+
+## SearXNG-compatible JSON API
+
+The initial compatibility surface is available at:
+
+- `GET /search?q=dotnet&format=json`
+- `GET /?q=dotnet&format=json`
+- `POST /search` with `application/x-www-form-urlencoded` fields
+
+The `format` parameter defaults to JSON; `format=html` is not supported. The `engines` parameter accepts a comma-separated list of configured provider names, for example `engines=bing,google`. Unknown engines return HTTP 400. The initial implementation supports the `general` category and first page only. `pageno` values other than 1, non-default language/safesearch and `time_range` currently return HTTP 501 rather than being silently ignored.
+
+The response uses the familiar SearXNG field names: `query`, `number_of_results`, `results`, `answers`, `corrections`, `infoboxes`, `suggestions` and `unresponsive_engines`. Result entries include `url`, `title`, `content`, `engine`, `engines`, `positions`, `score`, `category`, `template`, `parsed_url` and `publishedDate`. Empty answer/infobox/suggestion arrays are returned until those result types are implemented. `positions` is currently inferred from the adapter score, and duplicate URLs retain the highest-scoring provider rather than combining every engine position. This is response-shape compatibility, not full SearXNG feature parity.
+
+Example:
+
+    GET /search?q=dotnet&format=json
+
+    {
+      "query": "dotnet",
+      "number_of_results": 1,
+      "results": [
+        {
+          "url": "https://example.com/article",
+          "title": "Example result",
+          "content": "A short result description.",
+          "engine": "bing",
+          "engines": ["bing"],
+          "positions": { "bing": 1 },
+          "score": 1.0,
+          "category": "general",
+          "template": "default.html",
+          "parsed_url": ["https", "example.com", "/article", "", "", ""],
+          "publishedDate": null
+        }
+      ],
+      "answers": [],
+      "corrections": [],
+      "infoboxes": [],
+      "suggestions": [],
+      "unresponsive_engines": []
+    }
+
+The example is illustrative; actual results and unresponsive provider names depend on upstream responses.
 
 ## Technology and deployment direction
 
@@ -221,7 +264,7 @@ Run from the repository root:
 
 GitHub Actions runs restore, build and tests for pushes and pull requests. The badge at the top links to the workflow.
 
-The current verified implementation passes CI with **76 tests passing** across the aggregation layer and ten provider adapters. Check the Actions history for the latest result; this README does not assume that a previous successful run proves every future commit is green.
+The current verified implementation passes CI with **86 tests passing** across the aggregation layer, ten provider adapters and the JSON API integration tests. Check the Actions history for the latest result; this README does not assume that a previous successful run proves every future commit is green.
 
 ## Planned delivery sequence
 
@@ -229,8 +272,8 @@ The work is intentionally staged so the useful search capability comes before th
 
 1. **Provider foundation and major engines.** Keep the provider contract, aggregation and test structure solid; implement the major general-purpose engines first.
 2. **First 5–10 adapters.** Initial target met: ten adapters are implemented and tested. Continue expanding only where a provider adds real value.
-3. **SearXNG-compatible JSON API.** Add a compatibility surface so existing clients can consume a familiar response format.
-4. **Browser interface and administration.** Add a practical search page, provider controls, configuration management and diagnostics.
+3. **SearXNG-compatible JSON API.** Initial response-compatible GET/POST surface is working; expand compatibility only where the provider model supports it.
+4. **Browser interface and administration.** Next priority: add a practical search page, provider selection, configuration management and diagnostics.
 5. **Operational hardening.** Add SQL Server-backed configuration where useful, API-key authentication, quotas, rate limiting, metrics and deployment guidance before public exposure.
 
 The exact provider access method may affect the order within the first stage. Reliability, legality, maintainability and real-world availability take precedence over simply matching an upstream engine count.

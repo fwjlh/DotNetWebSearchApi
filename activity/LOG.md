@@ -377,3 +377,13 @@ Every material repository action is recorded here with its reason, result, verif
 - **Correction:** Change the integration-test provider helper to set SearchResult.Provider to the registered provider name.
 - **Verification:** Failure details in https://github.com/fwjlh/DotNetWebSearchApi/actions/runs/45009580290.
 - **Next:** Commit the fixture correction and verify all 86 tests in a new CI run.
+
+
+### 46. Verify SearXNG-compatible JSON API in GitHub Actions
+- **Reason:** Confirm the new compatibility routes, response serialization, provider filtering, failure reporting and integration test host.
+- **Action:** Inspected corrected workflow run 45009659712 for commit 1f764bf864953c76ef28b0d802568e6db70dc5fa.
+- **Result:** **CI passed.** Restore and build succeeded; all 86 tests passed (0 failed, 0 skipped). This includes eight WebApplicationFactory integration tests and two new aggregator tests.
+- **Correction history:** The first run 45009580290 passed restore/build and 85/86 tests; one test fixture named its provider alpha but its SearchResult.Provider fixture. The fixture now uses the registered provider name.
+- **Verification:** Successful workflow https://github.com/fwjlh/DotNetWebSearchApi/actions/runs/45009659712. Initial failure https://github.com/fwjlh/DotNetWebSearchApi/actions/runs/45009580290.
+- **Scope:** GET /search, GET / and form POST /search return the initial SearXNG-shaped JSON response. Engine filtering and unresponsive_engines are supported. Pagination, HTML output, time range, language overrides and non-default safe-search are explicitly unsupported.
+- **Next:** Update README/status, then proceed to the browser search interface, provider selection, administration and diagnostics as agreed.

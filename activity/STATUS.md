@@ -6,31 +6,33 @@ Updated: 2026-11-22
 
 - Public repository: https://github.com/fwjlh/DotNetWebSearchApi
 - Default branch: main
-- Latest verified code commit: d663c18baa166dde7f36e7dbd596d4fbac5ce273 (integration fixture correction pending CI)
+- Latest verified code commit: 1f764bf864953c76ef28b0d802568e6db70dc5fa
 - Full project overview and roadmap: [README.md](../README.md)
 
 ## Working vertical slice
 
 - Native ASP.NET Core 10 Web API.
 - GET /health and GET /api/search?q=...
-- Search query/result/provider contracts.
+- Initial SearXNG-shaped JSON API: GET /search, GET / and form POST /search.
+- Query/result/provider contracts and ten provider adapters.
 - Parallel provider aggregation with per-provider timeout and provider-failure isolation.
-- Caller cancellation is propagated.
+- Detailed search execution reports failed providers as unresponsive_engines.
+- Provider selection through comma-separated engines parameter.
 - HTTP(S)-only result URL validation, duplicate removal, deterministic score/title ordering, and result limit.
-- Ten adapters: Bing Web HTML, Brave Search API (optional key), Google Web HTML, DuckDuckGo Web HTML (first page), Qwant JSON API, Yahoo Web HTML, Yandex Search API (optional paid key), Naver Web HTML, Seznam Web HTML, and Wikipedia MediaWiki search API.
 - Brave is registered only when BRAVE_SEARCH_API_KEY is configured.
 - Yandex is registered only when both YANDEX_SEARCH_API_KEY and YANDEX_FOLDER_ID are configured.
-- xUnit test project and GitHub Actions .NET 10 CI.
+- xUnit tests and GitHub Actions .NET 10 CI.
 
 ## Verification
 
-- CI run: https://github.com/fwjlh/DotNetWebSearchApi/actions/runs/45009221825
-- Commit tested: 671143fc87d4aed76eec3cb012e88e262cb5f44b
+- CI run: https://github.com/fwjlh/DotNetWebSearchApi/actions/runs/45009659712
+- Commit tested: 1f764bf864953c76ef28b0d802568e6db70dc5fa
 - Restore: passed.
 - Build: passed.
-- Tests: 76 passed, 0 failed, 0 skipped.
+- Tests: 86 passed, 0 failed, 0 skipped.
+- First JSON API run: https://github.com/fwjlh/DotNetWebSearchApi/actions/runs/45009580290 (85 passed, one test-fixture mismatch); corrected run above is green.
 - Local .NET SDK is not installed in the orchestration environment; verification was performed by GitHub Actions.
-- Tests use deterministic fixtures and fake HTTP handlers. They verify parsing/request behaviour, not live acceptance by upstream providers.
+- Provider tests use deterministic fixtures and fake HTTP handlers. They verify parsing/request behaviour, not live acceptance by upstream providers.
 
 ## Provider status
 
@@ -45,23 +47,34 @@ Updated: 2026-11-22
 9. Naver Web — implemented and CI-verified; Korean regional first-page HTML adapter; disabled by default upstream.
 10. Seznam Web — implemented and CI-verified; Czech regional HTML adapter with homepage bootstrap; disabled by default upstream.
 
-Target: first 5–10 genuinely implemented and tested providers. **Initial target met: ten adapters.** Additional providers should be selected for usefulness and sustainable access, not count alone.
+## SearXNG-compatible JSON API
+
+Initial response-compatible surface is implemented:
+
+- GET /search?q=...&format=json.
+- GET /?q=...&format=json.
+- POST /search using application/x-www-form-urlencoded.
+- Engine selection through engines=bing,google.
+- Response fields include query, number_of_results, results, answers, corrections, infoboxes, suggestions and unresponsive_engines.
+- Result fields include url, title, content, engine, engines, positions, score, category, template, parsed_url and publishedDate.
+- Failed providers are listed in unresponsive_engines.
+- Existing /api/search response contract is unchanged.
+
+Known compatibility limits: JSON only; general category; first page only; no time_range, non-default language or safe-search overrides; no answer/infobox/suggestion generation; positions are inferred from current provider scores; duplicate URLs retain one highest-scoring provider rather than merging engine positions. This is not full SearXNG feature parity.
 
 ## Agreed delivery sequence
 
 1. Provider foundation and major search engines — complete.
-2. First 5–10 provider adapters — initial ten-provider target complete.
-3. SearXNG-compatible JSON API — next priority.
-4. Browser search interface, administration and diagnostics — after the compatibility API.
+2. First 5–10 provider adapters — ten implemented and CI-tested.
+3. SearXNG-compatible JSON API — initial response surface complete; expand only where supported by actual provider capabilities.
+4. Browser search interface, provider selection, administration and diagnostics — next priority.
 5. Operational hardening: SQL Server configuration where useful, API keys, quotas, rate limiting, metrics and deployment guidance.
-
-Do not divert into the admin UI before the compatibility API and core search surface are useful.
 
 ## Important limitations
 
 Ten providers are wired in and fixture-tested. Live upstream acceptance is not verified. Brave requires a key and is not registered when BRAVE_SEARCH_API_KEY is absent. Yandex is paid and is not registered without both YANDEX_SEARCH_API_KEY and YANDEX_FOLDER_ID. DuckDuckGo pagination is not implemented. Qwant's API is undocumented and may return DataDome challenges. Yahoo's cookie and redirect flow is only fixture-tested. Naver and Seznam are regional and disabled by default in current SearXNG settings. Mojeek and Startpage remain deferred due to upstream proof-of-work challenges.
 
-There is no SQL Server provider store, general configurable HTTP provider, API-key authentication, quotas, admin UI or SearXNG-compatible JSON API yet. Do not expose this endpoint as a public unrestricted search service before authentication, rate limiting and outbound request policy are implemented.
+The JSON API is an initial compatibility surface, not full feature parity. There is no SQL Server provider store, general configurable HTTP provider, API-key authentication, quotas, browser UI or admin diagnostics yet. Do not expose this endpoint as a public unrestricted search service before authentication, rate limiting and outbound request policy are implemented.
 
 ## Working rules
 
@@ -76,9 +89,8 @@ There is no SQL Server provider store, general configurable HTTP provider, API-k
 
 ## Next actions
 
-1. Verify the SearXNG-compatible JSON API implementation and integration tests in GitHub Actions.
-2. Expand response compatibility only where supported by real provider capabilities.
-3. Build the browser search interface and provider selection.
-4. Add administration and diagnostics, including provider health and configuration.
-5. Design SQL Server provider configuration, secret references, API keys, quotas and rate limiting before exposing an instance to untrusted traffic.
-6. Keep SearchBox.NET.Forge as a separate follow-on project for upstream monitoring and AI-assisted porting proposals; require tests and human review, never auto-merge.
+1. Expand SearXNG response compatibility only where supported by real provider capabilities; do not claim feature parity.
+2. Build the browser search interface with provider selection and result display.
+3. Add administration and diagnostics, including provider health, configuration, logs and operational visibility.
+4. Design SQL Server provider configuration, secret references, API keys, quotas and rate limiting before exposing an instance to untrusted traffic.
+5. Keep SearchBox.NET.Forge as a separate follow-on project for upstream monitoring and AI-assisted porting proposals; require tests and human review, never auto-merge.
