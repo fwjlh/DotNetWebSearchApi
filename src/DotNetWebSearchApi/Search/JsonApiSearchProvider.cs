@@ -81,7 +81,13 @@ public sealed class JsonApiSearchProvider : ISearchProvider
             return false;
         }
 
-        if (!Uri.TryCreate(url, UriKind.Absolute, out Uri? resultUri) && !string.IsNullOrWhiteSpace(_definition.UrlPrefix))
+        Uri? resultUri = null;
+        if (Uri.TryCreate(url, UriKind.Absolute, out Uri? absoluteUri)
+            && (absoluteUri.Scheme == Uri.UriSchemeHttp || absoluteUri.Scheme == Uri.UriSchemeHttps))
+        {
+            resultUri = absoluteUri;
+        }
+        else if (!string.IsNullOrWhiteSpace(_definition.UrlPrefix))
         {
             resultUri = new Uri(new Uri(_definition.UrlPrefix), url.TrimStart('/'));
         }

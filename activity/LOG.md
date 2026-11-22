@@ -458,3 +458,12 @@ Every material repository action is recorded here with its reason, result, verif
 - **Correction:** Add the missing nested JSON path traversal helper, import System.Net, and copy fixed query parameters through ToDictionary.
 - **Verification:** Failure log https://github.com/fwjlh/DotNetWebSearchApi/actions/runs/45012798957. No tests are claimed as run for this commit.
 - **Next:** Commit correction, inspect CI again, and only then mark the eight providers verified.
+
+
+### 55. Diagnose specialist-provider test failures and correct URL/query handling
+- **Reason:** The compiler correction produced a successful build; inspect all test failures rather than accepting a partially green run.
+- **Action:** Inspected workflow run 45012899977 for commit 6255aa7c36e52f9c973da8528e8b734bb5157905.
+- **Result:** Build passed with 0 warnings and 0 errors. Of 105 tests, 103 passed and two failed. NuGet's "$top" parameter was correctly URL-encoded as "%24top", but the test asserted the unencoded spelling. Open Library relative keys such as "/works/OL123W" were parsed by Uri.TryCreate as absolute file URIs and rejected before the configured HTTPS prefix could be applied.
+- **Correction:** Accept an absolute result URL only when its scheme is HTTP or HTTPS; otherwise apply the provider's configured URL prefix. Decode the query string in the assertion before checking parameter names.
+- **Verification:** Run https://github.com/fwjlh/DotNetWebSearchApi/actions/runs/45012899977. Build succeeded; test result 103 passed, 2 failed before this correction. Corrected commit remains unverified.
+- **Next:** Push correction and inspect a fresh full CI run.

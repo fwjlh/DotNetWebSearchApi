@@ -35,7 +35,7 @@ public sealed class JsonApiSearchProviderTests
         Assert.Equal(expectedTitle, result.Title);
         Assert.Equal(expectedUrl, result.Url);
         Assert.Contains("C%23%20%26%20search", requestUri!.Query);
-        Assert.Contains(definition.LimitParameter + "=", requestUri.Query);
+        Assert.Contains(definition.LimitParameter + "=", Uri.UnescapeDataString(requestUri.Query));
     }
 
     [Fact]

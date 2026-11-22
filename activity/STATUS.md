@@ -6,7 +6,7 @@ Updated: 2026-11-22
 
 - Public repository: https://github.com/fwjlh/DotNetWebSearchApi
 - Default branch: main
-- Latest commit: f30ba0eca15e07370e47951602ce6d9bce82bdbe (provider batch; CI failed at compile, correction in progress)
+- Latest commit: 6255aa7c36e52f9c973da8528e8b734bb5157905 (provider batch compile correction; two test failures remain, correction in progress)
 - Full project overview and roadmap: [README.md](../README.md)
 
 ## Working vertical slice
@@ -82,7 +82,7 @@ Known compatibility limits: JSON only; general category; first page only; no tim
 
 ## Important limitations
 
-Eighteen providers are wired in after this increment; the eight new JSON API adapters have fixture tests. CI verification for this increment initially failed at compile; correction is in progress. Live upstream acceptance is not verified. Brave requires a key and is not registered when BRAVE_SEARCH_API_KEY is absent. Yandex is paid and is not registered without both YANDEX_SEARCH_API_KEY and YANDEX_FOLDER_ID. DuckDuckGo pagination is not implemented. Qwant's API is undocumented and may return DataDome challenges. Yahoo's cookie and redirect flow is only fixture-tested. Naver and Seznam are regional and disabled by default in current SearXNG settings. Mojeek and Startpage remain deferred due to upstream proof-of-work challenges.
+Eighteen providers are wired in after this increment; the eight new JSON API adapters have fixture tests. CI verification: build now passes, but 2 of 105 tests failed; correction is in progress. Live upstream acceptance is not verified. Brave requires a key and is not registered when BRAVE_SEARCH_API_KEY is absent. Yandex is paid and is not registered without both YANDEX_SEARCH_API_KEY and YANDEX_FOLDER_ID. DuckDuckGo pagination is not implemented. Qwant's API is undocumented and may return DataDome challenges. Yahoo's cookie and redirect flow is only fixture-tested. Naver and Seznam are regional and disabled by default in current SearXNG settings. Mojeek and Startpage remain deferred due to upstream proof-of-work challenges.
 
 There is no SQL Server provider store, general configurable HTTP provider, API-key authentication, quotas or editable admin configuration yet. Do not expose this endpoint as a public unrestricted search service before authentication, rate limiting and outbound request policy are implemented.
 
@@ -114,3 +114,6 @@ There is no SQL Server provider store, general configurable HTTP provider, API-k
 - Restore passed; build failed because the shared adapter referenced a missing JSON-path helper and lacked the `System.Net` import for HTML decoding. No tests executed.
 - Correction: add the JSON-path traversal helper and required import; also make the fixed-parameter dictionary copy compatible with `IReadOnlyDictionary`.
 - The corrected build is not yet verified.
+
+
+- Second CI run: https://github.com/fwjlh/DotNetWebSearchApi/actions/runs/45012899977. Build passed with 0 warnings/errors; 103 tests passed and 2 failed. One test expected the NuGet `$top` parameter before URL encoding; the assertion now decodes the query. The other exposed relative Open Library paths being interpreted as absolute file URIs; URL handling now accepts only absolute HTTP(S) URLs before applying the configured prefix.
