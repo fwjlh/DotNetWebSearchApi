@@ -6,4 +6,6 @@ public sealed record SearchExecutionResult(
     IReadOnlyList<string> UnsupportedProviders)
 {
     public IReadOnlyList<ProviderOutcome> ProviderOutcomes { get; init; } = Array.Empty<ProviderOutcome>();
+
+    public IReadOnlyList<string> CoolingDownProviders { get; init; } = Array.Empty<string>();
 }
