@@ -10,7 +10,7 @@ DotNetWebSearchApi brings the useful metasearch ideas behind [SearXNG](https://g
 
 The goal is not to build another search index. It is to provide a practical, extensible aggregation layer that can run on infrastructure you already operate: particularly Windows Server, IIS and SQL Server environments.
 
-> **Project status: initial search stack implemented.** Ten provider adapters, the SearXNG-shaped JSON API, a browser search page and read-only provider diagnostics are in place. The next implementation priority is safe provider configuration management, operational hardening and UI refinement.
+> **Project status: initial search stack implemented.** Eighteen provider adapters, the SearXNG-shaped JSON API, a browser search page and read-only provider diagnostics are in place. The next implementation priority is expanding the SearXNG provider catalogue towards 100 tested adapters, then operational hardening.
 
 This is an independent implementation inspired by SearXNG. It is not affiliated with, endorsed by, or a drop-in replacement for the SearXNG project. See [UPSTREAM.md](UPSTREAM.md) for provenance and [LICENSE](LICENSE) for licensing.
 
@@ -52,9 +52,17 @@ DotNetWebSearchApi puts that work behind one service:
 | Yandex Search API adapter | Working (optional, paid) | Requires YANDEX_SEARCH_API_KEY and YANDEX_FOLDER_ID |
 | Naver Web adapter | Working (regional) | Korean general-web HTML results; first page only |
 | Seznam Web adapter | Working (regional) | Homepage bootstrap, hidden fields and cookie reuse; live availability not tested |
+| Crossref | Working (JSON API) | Scholarly works; fixture-tested, live acceptance not tested |
+| OpenAlex | Working (JSON API) | Scholarly works; fixture-tested, live acceptance not tested |
+| Hacker News | Working (JSON API) | Algolia search endpoint; fixture-tested |
+| Stack Overflow | Working (JSON API) | Stack Exchange API; fixture-tested, quota rules apply |
+| npm | Working (JSON API) | Package registry search; fixture-tested |
+| crates.io | Working (JSON API) | Rust package registry; fixture-tested |
+| NuGet | Working (JSON API) | NuGet search service; fixture-tested |
+| Open Library | Working (JSON API) | Book catalogue; fixture-tested |
 | Automated build and tests | Working | GitHub Actions / .NET 10 |
 | Major web-search adapters | Initial wave complete | Bing, Brave, Google, DuckDuckGo and other priority providers are implemented |
-| First 5–10 provider adapters | Initial target met | Ten provider adapters are implemented and CI-tested |
+| First 5–10 provider adapters | Initial target met | Eighteen provider adapters are implemented and CI-tested |
 | SearXNG-compatible JSON API | Initial surface working | JSON response and engine selection; unsupported features return explicit status codes |
 | Browser search interface | Working (initial) | Search page at / with selectable providers and result cards |
 | Read-only administration and diagnostics | Working (initial) | /admin, provider health counters, last outcome and active provider list |
@@ -65,7 +73,7 @@ The status above is deliberately conservative: a provider is only marked **Worki
 
 ## Search provider roadmap
 
-The implementation strategy is to work from the major general-purpose search engines down through specialist and topic-specific providers. The first target is a useful set of approximately 5–10 providers, not a long list of untested names.
+The implementation strategy is to work from the major general-purpose search engines down through specialist and topic-specific providers. The first target is a useful set of 100 tested provider adapters, not a long list of untested names.
 
 | Priority | Provider | Status | Implementation notes |
 |---:|---|---|---|
@@ -81,7 +89,8 @@ The implementation strategy is to work from the major general-purpose search eng
 | 10 | Seznam Web | Working (regional) | HTML with homepage bootstrap and cookie reuse; disabled by default in SearXNG |
 | 11 | Mojeek | Deferred | Current SearXNG settings mark it inactive due to proof-of-work CAPTCHA |
 | 12 | Startpage | Deferred | Current SearXNG settings mark it inactive due to Anubis proof-of-work |
-| 13+ | Further SearXNG providers | Planned | Prioritise by usefulness, reliability, accessibility and maintenance cost |
+| 13–20 | Specialist JSON APIs | Initial wave implemented | Crossref, OpenAlex, Hacker News, Stack Overflow, npm, crates.io, NuGet and Open Library |
+| 21–100 | Further SearXNG providers | Planned | Prioritise by usefulness, reliability, accessibility, terms and maintenance cost; count only tested request/parser/registration adapters |
 
 Provider ordering is a development priority, not a claim that every upstream service offers a free or unrestricted API. Current SearXNG settings mark Mojeek inactive because of its proof-of-work CAPTCHA and Startpage inactive because of its Anubis proof-of-work challenge; those are deferred until their CPU and access implications are understood. Brave's current Search plan is listed at $5 per 1,000 requests with $5 in monthly credits; activating a plan requires payment-card details. Check the [current Brave plans](https://brave.com/search/api/) before use. Each adapter must respect the provider's current access rules, terms, rate limits and attribution requirements. Where a provider requires credentials, keys will be configured as secrets and never committed to source control.
 

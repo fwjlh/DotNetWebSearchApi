@@ -6,7 +6,7 @@ Updated: 2026-11-22
 
 - Public repository: https://github.com/fwjlh/DotNetWebSearchApi
 - Default branch: main
-- Latest verified code commit: 3a4970a3d58a5e0ddac89676539bd605d662bbd7
+- Latest verified code commit: c5b0cfd94ab716ffb68f6533a3b5c9f2a369e758
 - Full project overview and roadmap: [README.md](../README.md)
 
 ## Working vertical slice
@@ -18,7 +18,7 @@ Updated: 2026-11-22
 - Read-only diagnostics page at /admin.
 - GET /api/providers lists active providers.
 - GET /api/diagnostics returns in-memory provider health counters.
-- Ten search adapters: Bing, Brave, Google, DuckDuckGo, Qwant, Yahoo, Yandex, Naver, Seznam and Wikipedia.
+- Eighteen search adapters: the ten original providers plus Crossref, OpenAlex, Hacker News, Stack Overflow, npm, crates.io, NuGet and Open Library.
 - Parallel provider aggregation with per-provider timeout and provider-failure isolation.
 - Detailed search execution reports failed providers as unresponsive_engines.
 - HTTP(S)-only result URL validation, duplicate removal, deterministic score/title ordering and result limit.
@@ -32,12 +32,14 @@ Updated: 2026-11-22
 - Commit tested: 3a4970a3d58a5e0ddac89676539bd605d662bbd7
 - Restore: passed.
 - Build: passed.
-- Tests: 95 passed, 0 failed, 0 skipped.
+- Tests: 95 passed, 0 failed, 0 skipped (latest verified CI before this increment).
 - Previous failed run: https://github.com/fwjlh/DotNetWebSearchApi/actions/runs/45010196457 (93 passed, two static file path failures); corrected in the verified commit.
 - Local .NET SDK is not installed in the orchestration environment; verification is performed by GitHub Actions.
 - Provider tests use deterministic fixtures and fake HTTP handlers. They verify parsing/request behaviour, not live acceptance by upstream providers.
 
 ## Provider status
+
+The eight specialist JSON API adapters in the current increment are implemented but must not be treated as CI-verified until the new workflow run completes. All fixture tests use fake HTTP handlers; they do not establish live upstream acceptance.
 
 1. Bing Web — implemented and CI-verified; live upstream availability not tested.
 2. Brave Search API — implemented and CI-verified; optional, requires BRAVE_SEARCH_API_KEY.
@@ -49,6 +51,10 @@ Updated: 2026-11-22
 8. Yandex Search API — implemented and CI-verified; optional paid provider, requires API key and folder ID.
 9. Naver Web — implemented and CI-verified; Korean regional first-page HTML adapter; disabled by default upstream.
 10. Seznam Web — implemented and CI-verified; Czech regional HTML adapter with homepage bootstrap; disabled by default upstream.
+
+## Specialist provider adapters
+
+The JSON API provider catalog currently includes Crossref, OpenAlex, Hacker News, Stack Overflow, npm, crates.io, NuGet and Open Library. Each definition supplies its real upstream endpoint, query/limit parameters and response paths. The common adapter builds encoded requests, maps provider-specific JSON paths and rejects non-HTTP(S) result URLs. Stack Overflow uses the public Stack Exchange API and remains subject to its published quota rules. Live upstream access has not been tested.
 
 ## SearXNG-compatible JSON API
 
@@ -76,7 +82,7 @@ Known compatibility limits: JSON only; general category; first page only; no tim
 
 ## Important limitations
 
-Ten providers are wired in and fixture-tested. Live upstream acceptance is not verified. Brave requires a key and is not registered when BRAVE_SEARCH_API_KEY is absent. Yandex is paid and is not registered without both YANDEX_SEARCH_API_KEY and YANDEX_FOLDER_ID. DuckDuckGo pagination is not implemented. Qwant's API is undocumented and may return DataDome challenges. Yahoo's cookie and redirect flow is only fixture-tested. Naver and Seznam are regional and disabled by default in current SearXNG settings. Mojeek and Startpage remain deferred due to upstream proof-of-work challenges.
+Eighteen providers are wired in after this increment; the eight new JSON API adapters have fixture tests. CI verification for this increment is pending. Live upstream acceptance is not verified. Brave requires a key and is not registered when BRAVE_SEARCH_API_KEY is absent. Yandex is paid and is not registered without both YANDEX_SEARCH_API_KEY and YANDEX_FOLDER_ID. DuckDuckGo pagination is not implemented. Qwant's API is undocumented and may return DataDome challenges. Yahoo's cookie and redirect flow is only fixture-tested. Naver and Seznam are regional and disabled by default in current SearXNG settings. Mojeek and Startpage remain deferred due to upstream proof-of-work challenges.
 
 There is no SQL Server provider store, general configurable HTTP provider, API-key authentication, quotas or editable admin configuration yet. Do not expose this endpoint as a public unrestricted search service before authentication, rate limiting and outbound request policy are implemented.
 
@@ -93,9 +99,9 @@ There is no SQL Server provider store, general configurable HTTP provider, API-k
 
 ## Next actions
 
-1. Design provider configuration models and secret references; keep credentials outside provider definition rows.
-2. Decide the SQL Server configuration schema and optional storage abstraction before implementing admin write actions.
-3. Add API-key authentication, quotas and rate limiting before untrusted public exposure.
-4. Add safe provider enable/disable and configuration editing to the admin UI after persistence and authorization exist.
+1. Continue provider ports from 18 towards 100, prioritising high-value general search, specialist search, developer, academic, news, image, video and regional sources. Count only implemented, registered and fixture-tested adapters.
+2. Keep provider definitions explicit and review authentication, quotas, rate limits, terms and bot protection for each upstream.
+3. After the 100-provider milestone, pull and build locally and perform live/integration testing before exposing the service publicly.
+4. Then add SQL Server configuration, API-key authentication, quotas and safe admin editing.
 5. Continue UI refinement and deployment guidance for Kestrel/IIS.
 6. Keep SearchBox.NET.Forge as a separate follow-on project for upstream monitoring and AI-assisted porting proposals; require tests and human review, never auto-merge.

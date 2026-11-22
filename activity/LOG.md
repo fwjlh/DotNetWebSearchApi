@@ -432,3 +432,20 @@ Every material repository action is recorded here with its reason, result, verif
 - **Result:** README opening now accurately describes the working provider aggregation and current implementation stage.
 - **Verification:** Re-fetched README.md from GitHub and checked the opening section.
 - **Next:** Continue with safe provider configuration management and deployment hardening.
+
+
+## 2026-11-22 — Expand provider catalogue towards 100
+
+### 52. Establish a 100-provider target and inspect upstream inventory
+- **Reason:** The user set a new milestone: reach 100 providers before pulling the repository locally for a meaningful build and test cycle.
+- **Action:** Inspected the current repository handover, provider contracts, dependency registration and tests. Enumerated the current SearXNG upstream engine directory; it contains 256 Python engine modules, including general web, academic, developer, media, regional and specialist sources.
+- **Result:** Confirmed 18 is the target baseline for this increment: ten existing adapters plus eight specialist JSON API adapters. A provider will count only when it has a real endpoint/request, response mapping, registration and automated fixture tests; a roadmap name or placeholder does not count.
+- **Verification:** Repository main head before this increment was `c5b0cfd94ab716ffb68f6533a3b5c9f2a369e758`. Existing CI at commit `3a4970a3d58a5e0ddac89676539bd605d662bbd7` passed 95 tests. Current SearXNG engine inventory read from https://github.com/searxng/searxng/tree/master/searx/engines.
+- **Next:** Add and CI-verify the first specialist JSON API adapter batch, then continue in small provider batches until 100. Live upstream testing remains a separate phase after the user pulls and builds locally.
+
+### 53. Implement eight specialist JSON API adapters
+- **Reason:** Add useful, low-friction specialist indexes after the first general-web wave, using a reusable adapter while retaining provider-specific endpoint and JSON-path definitions.
+- **Action:** Added Crossref, OpenAlex, Hacker News, Stack Overflow, npm, crates.io, NuGet and Open Library definitions. Added shared JSON API request/response adapter with query encoding, result-limit mapping, nested JSON path support, HTML snippet cleaning, URL prefix support and HTTP(S)-only result validation. Registered all eight providers and added eight fixture-driven provider mapping tests plus malformed-response and HTTP-error tests.
+- **Result:** Provider count increases from 10 to 18. No credentials are required for these initial public endpoints. Stack Exchange API quotas apply. No live upstream requests were made.
+- **Verification:** Pending GitHub Actions; the tests are authored but not yet confirmed executed.
+- **Next:** Inspect CI, fix any real failures, then continue with the next provider batch. Do not count this batch as verified until CI is green.
