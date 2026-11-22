@@ -737,3 +737,12 @@ Every material repository action is recorded here with its reason, result, verif
 - **Action:** Linked the corpus from README and added it to the handover status. Provider catalogue remains frozen at 67; no provider code changed.
 - **Verification:** Documentation-only. The GitHub combined status lookup for `ab52977e1fed0fa3407651da90daea98effe045a` returned no status entries, and the workflow-run lookup returned no runs (that connector view filters to PR-triggered runs). Therefore CI for the capability slice remains unconfirmed; the last verified baseline is still run 45020266512 (156 tests, 0 failures, 0 skipped, 0 warnings/errors). No live provider calls were made.
 - **Next:** Continue shared request-context/API integration and typed outcomes/health; expand this corpus for Google, Qwant, Yahoo, Yandex, Naver, Seznam and the generic JSON/RSS adapter patterns. Do not resume provider expansion yet.
+
+
+### 84. Verify capability slice and porting-corpus documentation in GitHub Actions
+- **Reason:** The initial connector status view did not expose push-triggered runs, so query the repository Actions API directly before leaving CI as pending.
+- **Capability code:** Commit `ab52977e1fed0fa3407651da90daea98effe045a` completed run [45022944719](https://github.com/fwjlh/DotNetWebSearchApi/actions/runs/45022944719). Its single `build-and-test` job completed successfully; restore, build and test steps all report success.
+- **Documentation:** README/status/log/corpus updates completed successfully in runs [45023354409](https://github.com/fwjlh/DotNetWebSearchApi/actions/runs/45023354409) and [45023360277](https://github.com/fwjlh/DotNetWebSearchApi/actions/runs/45023360277). Both single build-and-test jobs report success.
+- **Result:** The new capability slice is no longer awaiting CI. Detailed test totals for run 45022944719 were not independently captured, so no new test count or warning count is claimed. The historical 156-test baseline remains separately identified.
+- **Action:** Updated activity/STATUS.md to distinguish the historical catalogue baseline from the verified capability slice and documentation commits.
+- **Next:** Continue the API request-context integration and typed provider outcomes/health. Expand the rationale corpus for the remaining major engines while keeping the provider catalogue frozen at 67.
