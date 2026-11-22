@@ -10,11 +10,16 @@ public sealed class YandexSearchProvider : ISearchProvider
     private const int MaximumQueryLength = 400;
     private readonly HttpClient _httpClient;
     private readonly YandexSearchOptions _options;
+    private readonly SearchHttpTransport _transport;
 
-    public YandexSearchProvider(HttpClient httpClient, YandexSearchOptions options)
+    public YandexSearchProvider(
+        HttpClient httpClient,
+        YandexSearchOptions options,
+        SearchHttpTransport? transport = null)
     {
         _httpClient = httpClient;
         _options = options;
+        _transport = transport ?? new SearchHttpTransport();
     }
 
     public string Name => "yandex";
@@ -31,13 +36,9 @@ public sealed class YandexSearchProvider : ISearchProvider
         }
 
         using HttpRequestMessage request = BuildRequest(query);
-        using HttpResponseMessage response = await _httpClient.SendAsync(request, cancellationToken);
-        response.EnsureSuccessStatusCode();
-
-        await using Stream responseStream = await response.Content.ReadAsStreamAsync(cancellationToken);
-        using JsonDocument document = await JsonDocument.ParseAsync(
-            responseStream,
-            cancellationToken: cancellationToken);
+        SearchHttpResponse response = await _transport.SendAsync(_httpClient, request, cancellationToken);
+        response.EnsureSuccessStatusCode(Name);
+        using JsonDocument document = JsonDocument.Parse(response.Content);
 
         string rawData = ReadRawData(document.RootElement);
         return YandexSearchResultParser.Parse(rawData);
