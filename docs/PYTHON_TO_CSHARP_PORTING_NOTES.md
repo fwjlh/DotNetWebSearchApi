@@ -476,6 +476,42 @@ These are translation targets, not assertions that every row is already implemen
 
 **Interpretation:** this ports the reusable engine-lifecycle concept into a provider-neutral .NET circuit breaker. The policy is deliberately isolated so it can later be tuned or persisted without changing provider adapters.
 
+
+
+### Shared network layer and bounded HTTP transport
+
+**Python source:** [SearXNG network layer](https://github.com/searxng/searxng/tree/c6ee3e9fd0235004a694e63720efc869bb1e3594/searx/network) and the engine request functions linked in the provider entries above.
+
+**C# source:**
+- [SearchHttpTransport.cs](../src/DotNetWebSearchApi/Search/SearchHttpTransport.cs)
+- [BingSearchProvider.cs](../src/DotNetWebSearchApi/Search/BingSearchProvider.cs)
+- [QwantSearchProvider.cs](../src/DotNetWebSearchApi/Search/QwantSearchProvider.cs)
+- [Program.cs](../src/DotNetWebSearchApi/Program.cs)
+- [SearchHttpTransportTests.cs](../tests/DotNetWebSearchApi.Tests/SearchHttpTransportTests.cs)
+
+**Why the C# code has this shape**
+
+- SearXNG providers build request-specific data but delegate execution to a shared network layer. C# keeps provider-owned `HttpClient` instances and handler configuration, while a shared `SearchHttpTransport` owns the common send/read boundary. This avoids forcing different cookie and redirect strategies into one global handler.
+- The transport sends with `ResponseHeadersRead`, applies a bounded response body (4 MiB by default), decodes the declared response charset, and returns status, final request URI, headers and parsed Retry-After metadata.
+- A per-host semaphore caps concurrent requests (four by default), so separate adapters hitting the same host share a concurrency limit when they use the singleton transport.
+- `SearchHttpResponse.EnsureSuccessStatusCode` maps 401, 403, 429, 408, 425 and 5xx to typed provider failures. Qwant can inspect a 403 body first and distinguish a challenge from ordinary access denial.
+- Bing and Qwant are the first adapters moved onto this transport. Their parsers remain provider-specific and continue to receive text/JSON rather than transport internals.
+- Retry-After is captured while the response headers are available and carried in `ProviderFailureException`; the health registry can then apply the bounded cooldown.
+- The response object copies headers for provider-specific protocols, but cookies and tokens must never be logged or exposed in API responses.
+
+**Current limits**
+
+- Only Bing and Qwant use the shared transport at this point. Other providers still call HttpClient directly.
+- Redirect behaviour remains configured per HttpClient handler or implemented in the provider (Yahoo's bounded manual redirect loop); the transport does not yet own a redirect policy.
+- Cookie/session ownership remains provider-specific. The transport does not create, persist or share a cookie jar.
+- No automatic retries are performed. This is deliberate until retry safety can be decided per request and challenge/access-denied conditions are excluded.
+- The current transport does not centralise proxy selection, TLS/HTTP version policy, request-header profiles, request-body limits or per-provider minimum intervals.
+- Response-size overflow and unsupported charset are classified as invalid provider responses. The default size limit and host concurrency limit are configurable through `SearchHttpTransportOptions`.
+
+**Verification:** [SearchHttpTransportTests.cs](../tests/DotNetWebSearchApi.Tests/SearchHttpTransportTests.cs) covers response body/headers/Retry-After, typed HTTP status mapping, size limits and charset decoding. Bing and Qwant fixture tests cover their use of the transport and provider-specific status handling.
+
+**Interpretation:** this is the first extraction of the common Python network-layer responsibility into a reusable .NET transport. It is intentionally a small foundation; provider-specific session, redirect and challenge state remain explicit.
+
 ## How to add the next corpus entry
 
 Copy this outline for every provider or shared framework concept:
