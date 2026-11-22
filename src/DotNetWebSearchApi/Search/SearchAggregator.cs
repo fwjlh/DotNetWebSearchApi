@@ -138,7 +138,7 @@ public sealed class SearchAggregator
         }
     }
 
-    private static IReadOnlyList<SearchResult> MergeResults(
+    private IReadOnlyList<SearchResult> MergeResults(
         IEnumerable<ProviderExecutionResult> providerResults,
         int limit)
     {
