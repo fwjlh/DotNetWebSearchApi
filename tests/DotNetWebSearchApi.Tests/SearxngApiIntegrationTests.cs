@@ -133,7 +133,7 @@ public sealed class SearxngApiIntegrationTests
 
     private static TestProvider Provider(string name, SearchResult result)
     {
-        return new TestProvider(name, (_, _) => Task.FromResult<IReadOnlyList<SearchResult>>(new[] { result }));
+        return new TestProvider(name, (_, _) => Task.FromResult<IReadOnlyList<SearchResult>>(new[] { result with { Provider = name } }));
     }
 
     private static SearchResult Result(string title, string url)

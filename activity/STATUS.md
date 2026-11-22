@@ -6,7 +6,7 @@ Updated: 2026-11-22
 
 - Public repository: https://github.com/fwjlh/DotNetWebSearchApi
 - Default branch: main
-- Latest verified code commit: 671143fc87d4aed76eec3cb012e88e262cb5f44b (SearXNG JSON API pending CI)
+- Latest verified code commit: d663c18baa166dde7f36e7dbd596d4fbac5ce273 (integration fixture correction pending CI)
 - Full project overview and roadmap: [README.md](../README.md)
 
 ## Working vertical slice

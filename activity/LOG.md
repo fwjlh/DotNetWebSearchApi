@@ -368,3 +368,12 @@ Every material repository action is recorded here with its reason, result, verif
 - **Result:** Implementation and tests prepared for commit. Existing /api/search remains unchanged. Compatibility is deliberately limited: only JSON, general category, page one, no time-range or safe-search overrides; provider result positions are inferred from current adapter scores.
 - **Verification:** Pending GitHub Actions.
 - **Next:** Inspect restore/build/test; correct any integration issues before claiming compatibility.
+
+
+### 45. Diagnose JSON API integration test fixture mismatch
+- **Reason:** Inspect the first compatibility API CI run before accepting the new endpoint.
+- **Action:** Read workflow run 45009580290 for commit d663c18baa166dde7f36e7dbd596d4fbac5ce273.
+- **Result:** Restore and build succeeded. Of 86 tests, 85 passed and one integration test failed because the test helper registered provider "alpha" but created SearchResult.Provider="fixture"; the response mapper correctly used the result's provider field. This is a test-fixture inconsistency, not a production endpoint defect.
+- **Correction:** Change the integration-test provider helper to set SearchResult.Provider to the registered provider name.
+- **Verification:** Failure details in https://github.com/fwjlh/DotNetWebSearchApi/actions/runs/45009580290.
+- **Next:** Commit the fixture correction and verify all 86 tests in a new CI run.
