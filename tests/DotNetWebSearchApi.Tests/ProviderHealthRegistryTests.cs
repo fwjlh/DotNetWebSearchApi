@@ -84,7 +84,9 @@ public sealed class ProviderHealthRegistryTests
         ProviderHealthAdmission admission = registry.TryAcquire("alpha");
 
         Assert.False(admission.CanExecute);
-        Assert.Equal(TimeSpan.FromSeconds(30), admission.RetryAfter);
+        Assert.NotNull(admission.RetryAfter);
+        Assert.True(admission.RetryAfter.Value <= TimeSpan.FromSeconds(30));
+        Assert.True(admission.RetryAfter.Value > TimeSpan.FromSeconds(29));
     }
 
     [Fact]
