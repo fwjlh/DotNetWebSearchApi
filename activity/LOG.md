@@ -635,3 +635,13 @@ Every material repository action is recorded here with its reason, result, verif
 - **Result:** Test compile correction and DI cleanup committed.
 - **Verification:** Pending CI.
 - **Next:** Verify the Mojeek challenge and result fixtures.
+
+
+### 74. Verify Mojeek and close the 59-provider milestone
+- **Reason:** Confirm the Mojeek proof-of-work implementation and its fixture coverage.
+- **Action:** Inspected GitHub Actions run 45019896375 for correction commit 294f0a0b5e96a6e96e851f3894b4d1b65cbbd70c and retrieved the completed build-and-test log.
+- **Result:** **CI passed.** Build succeeded with 0 warnings and 0 errors; all 148 tests passed (0 failed, 0 skipped).
+- **Corrections:** The first Mojeek attempt had a test-only async return-type error; fixed with Task.FromResult and removed the duplicate CookieContainer registration. Production code compiled on the first run.
+- **Verification:** https://github.com/fwjlh/DotNetWebSearchApi/actions/runs/45019896375. The Altcha challenge, proof submission, cookie handling, result parsing and unsolved-proof failure path are fixture-tested.
+- **Live status:** No live Mojeek request has been made; the provider is CI-verified only. CAPTCHA difficulty, service policy and live acceptance still require testing after the user pulls the repo.
+- **Next:** Continue from 59, preserving the original major-engine order; Startpage is the next major candidate but its current Anubis proof-of-work is CPU-intensive and was disabled by default in the upstream implementation.
