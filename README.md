@@ -313,7 +313,7 @@ Provider-count expansion is frozen. The active sequence is:
 
 1. **Provider capability declarations.** API request context and pre-flight filtering are now implemented; declare only the features each C# request builder genuinely supports, with fixture coverage.
 2. **Typed outcomes and provider health.** Initial classification and process-local cooldown/half-open recovery are implemented; refine provider-specific policies and persistence only where deployment needs it.
-3. **Shared transport and sessions.** Main provider paths now use the bounded transport; Mojeek and Yahoo cookie stores are separated and Seznam keeps its own handler jar. Finish per-caller session isolation, common header profiles, redirect policy, safe retries, request diagnostics and per-provider rate policy.
+3. **Shared transport and sessions.** Main provider paths now use the bounded transport; Mojeek and Yahoo cookie stores are separated and Seznam keeps its own handler jar. Finish per-caller session isolation, common header profiles, redirect policy, safe retries and request diagnostics; provider-keyed minimum intervals are now centralised for generic JSON definitions.
 4. **Challenge handling.** Distinguish blocks, rate limits, browser verification, permitted proof-of-work and human CAPTCHA; AI may classify challenges but must not bypass them.
 5. **Result aggregation and traits.** Retain contributing engines/positions, improve weighted ranking and add locale/region mappings.
 6. **API and operational hardening.** Define compatibility tests, then authentication, quotas, rate limiting and outbound request controls before public exposure.
