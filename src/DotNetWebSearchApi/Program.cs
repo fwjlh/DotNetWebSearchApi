@@ -1,5 +1,6 @@
 using System.Net;
 using DotNetWebSearchApi.Search;
+using DotNetWebSearchApi.Search;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 builder.Services.AddHttpClient<BingSearchProvider>(client => client.DefaultRequestHeaders.UserAgent.ParseAdd("DotNetWebSearchApi/0.1 (+https://github.com/fwjlh/DotNetWebSearchApi)"));
@@ -48,6 +49,19 @@ builder.Services.AddSingleton<ISearchProvider>(sp => sp.GetRequiredService<DuckD
 builder.Services.AddSingleton<ISearchProvider>(sp => sp.GetRequiredService<GoogleSearchProvider>());
 builder.Services.AddSingleton<ISearchProvider>(sp => sp.GetRequiredService<QwantSearchProvider>());
 builder.Services.AddSingleton<ISearchProvider>(sp => sp.GetRequiredService<YahooSearchProvider>());
+
+string? yandexApiKey = builder.Configuration["YANDEX_SEARCH_API_KEY"];
+string? yandexFolderId = builder.Configuration["YANDEX_FOLDER_ID"];
+if (!string.IsNullOrWhiteSpace(yandexApiKey) && !string.IsNullOrWhiteSpace(yandexFolderId))
+{
+    builder.Services.AddSingleton(new YandexSearchOptions(yandexApiKey, yandexFolderId));
+    builder.Services.AddHttpClient<YandexSearchProvider>(client =>
+    {
+        client.DefaultRequestHeaders.UserAgent.ParseAdd("DotNetWebSearchApi/0.1 (+https://github.com/fwjlh/DotNetWebSearchApi)");
+        client.DefaultRequestHeaders.Accept.ParseAdd("application/json");
+    });
+    builder.Services.AddSingleton<ISearchProvider>(sp => sp.GetRequiredService<YandexSearchProvider>());
+}
 builder.Services.AddSingleton<ISearchProvider>(sp => sp.GetRequiredService<WikipediaSearchProvider>());
 
 string? braveApiKey = builder.Configuration["BRAVE_SEARCH_API_KEY"];

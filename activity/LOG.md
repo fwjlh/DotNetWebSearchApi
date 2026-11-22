@@ -262,3 +262,20 @@ Every material repository action is recorded here with its reason, result, verif
 - **Result:** **CI passed.** Restore and build succeeded; all 56 tests passed (0 failed, 0 skipped). Seven tests cover Yahoo result parsing, redirect unwrapping, query construction, cookie creation, bounded redirect flow and HTTP errors.
 - **Verification:** Workflow run https://github.com/fwjlh/DotNetWebSearchApi/actions/runs/45008790126. Tests use fixture HTML and a fake HTTP handler; they do not contact Yahoo or prove live acceptance of the cookie/redirect flow.
 - **Next:** Record Yahoo as experimental/implemented. Assess Yandex Search API credential and pricing requirements, then decide whether an optional paid adapter is worth including.
+
+
+## 2026-11-22 — Yandex Search API adapter
+
+### 32. Validate Yandex API access and cost
+- **Reason:** Decide whether a further major regional search index can be added without hiding commercial requirements.
+- **Action:** Reviewed current SearXNG Yandex Search API documentation, Yandex AI Studio quickstart, pricing and quotas.
+- **Result:** The official API requires a Yandex Cloud account, billing account, API key and folder ID. Current published daytime synchronous pricing is approximately $4 per 1,000 requests and night-time synchronous pricing approximately $3 per 1,000; prices exclude VAT in USD. No separate free allowance is documented. Queries are limited to 400 characters and the API returns Base64-encoded XML in a JSON rawData field.
+- **Verification:** Official pricing and API docs reviewed: https://aistudio.yandex.ru/en/docs/search-api/pricing and https://aistudio.yandex.ru/en/docs/search-api/quickstart/.
+- **Next:** Implement only as an optional adapter activated by both YANDEX_SEARCH_API_KEY and YANDEX_FOLDER_ID. Do not send requests unless both settings are present.
+
+### 33. Implement optional Yandex Search API adapter
+- **Reason:** Add an independent regional index while ensuring the paid service cannot be called accidentally.
+- **Action:** Added YandexSearchOptions, YandexSearchProvider and YandexSearchResultParser. Registration is conditional on both environment variables. Added eight tests for Base64 XML parsing, passages, no-results/error handling, URL validation, request credentials/body and query-length limits.
+- **Result:** Implementation and tests prepared for commit. Without both environment variables the provider is not registered. Tests use fixture XML/JSON and fake HTTP handlers; they do not make paid Yandex requests.
+- **Verification:** Pending GitHub Actions.
+- **Next:** Inspect CI. If green, record Yandex as optional/paid and document pricing. Then decide whether to add regional engines such as Naver or Seznam to reach the first ten providers.
