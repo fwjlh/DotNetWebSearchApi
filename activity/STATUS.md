@@ -6,7 +6,7 @@ Updated: 2026-11-22
 
 - Public repository: https://github.com/fwjlh/DotNetWebSearchApi
 - Default branch: main
-- Latest verified code commit: 93bb6aea3338b0848d119691701c4cca680caf19
+- Latest verified code commit: 93bb6aea3338b0848d119691701c4cca680caf19 (Qwant adapter pending CI)
 - Full project overview and roadmap: [README.md](../README.md)
 
 ## Working vertical slice
@@ -17,7 +17,7 @@ Updated: 2026-11-22
 - Parallel provider aggregation with per-provider timeout and provider-failure isolation.
 - Caller cancellation is propagated.
 - HTTP(S)-only result URL validation, duplicate removal, deterministic score/title ordering, and result limit.
-- Five concrete adapters: Bing Web HTML, Brave Search API (optional key), Google Web HTML, DuckDuckGo Web HTML (first page), and Wikipedia MediaWiki search API.
+- Six adapters in the current branch: Bing Web HTML, Brave Search API (optional key), Google Web HTML, DuckDuckGo Web HTML (first page), Qwant JSON API, and Wikipedia MediaWiki search API.
 - Brave is registered only when BRAVE_SEARCH_API_KEY is configured.
 - xUnit test project and GitHub Actions .NET 10 CI.
 
@@ -75,10 +75,10 @@ There is no SQL Server provider store, general configurable HTTP provider, API-k
 
 ## Next actions
 
-1. Evaluate Qwant's undocumented JSON API, result schema, rate limits and DataDome cookie flow.
-2. Implement and test Qwant if its access route is maintainable and acceptable.
-3. Review Mojeek and Startpage proof-of-work challenges before deciding whether to port them.
-4. Continue adding useful SearXNG providers until the target of 5–10 adapters is reached.
+1. Verify Qwant adapter in GitHub Actions and inspect its error handling.
+2. Review Mojeek and Startpage proof-of-work challenges before deciding whether to port them.
+3. Evaluate Yahoo, Yandex and other SearXNG general-web providers for access and maintenance costs.
+4. Continue adding useful providers until the target of 5–10 adapters is reached.
 5. Add SearXNG-compatible JSON API after provider coverage is useful.
 6. Build browser search, administration and diagnostics after the compatibility API.
 7. Keep SearchBox.NET.Forge as a separate follow-on project for upstream monitoring and AI-assisted porting proposals; require tests and human review, never auto-merge.

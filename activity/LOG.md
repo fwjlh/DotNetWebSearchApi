@@ -203,3 +203,20 @@ Every material repository action is recorded here with its reason, result, verif
 - **Verification:** Workflow run https://github.com/fwjlh/DotNetWebSearchApi/actions/runs/45008393329. Tests use fixture HTML and a fake HTTP handler; they do not contact DuckDuckGo or establish that its bot blocker will accept this server's traffic.
 - **Provider scope:** Only the first HTML results page is implemented. No vqd token caching or pagination is attempted. CAPTCHA pages are treated as provider failures, not bypassed.
 - **Next:** Update the README and handover with the five verified adapters. Evaluate Qwant next; current SearXNG uses its undocumented JSON API and handles DataDome cookies. Defer Mojeek and Startpage until their proof-of-work challenge costs and access constraints are understood.
+
+
+## 2026-11-22 — Qwant JSON adapter
+
+### 25. Inspect Qwant's current SearXNG implementation
+- **Reason:** Select the next provider after the four major general-purpose engines and understand the maintenance risks of its undocumented API.
+- **Action:** Reviewed the current SearXNG Qwant engine source and documentation.
+- **Result:** SearXNG calls the undocumented Qwant v3 JSON API at api.qwant.com/v3/search/web, parses data.result.items.mainline web rows, and caches/reuses the DataDome cookie. API errors distinguish rate limiting, access denial and CAPTCHA responses. Header ordering and browser-like request metadata are used upstream; .NET may not reproduce all fingerprint details.
+- **Verification:** Current SearXNG documentation/source reviewed: https://docs.searxng.org/dev/engines/online/qwant.html
+- **Next:** Implement a small JSON adapter with explicit 403/API error handling. Use HttpClient's cookie handling, but do not attempt to bypass DataDome challenges.
+
+### 26. Implement Qwant Web adapter
+- **Reason:** Extend provider coverage beyond the first five with a no-key general web-search provider.
+- **Action:** Added QwantSearchProvider and QwantSearchResultParser, registered the provider with Qwant request headers, and added eight fixture/fake-handler tests for result parsing, ad filtering, malformed responses, query encoding and HTTP/access failures.
+- **Result:** Implementation and tests prepared for commit. The adapter uses the undocumented Qwant JSON API and relies on HttpClient's cookie container for any DataDome cookie returned by the server. It does not solve or bypass challenges.
+- **Verification:** Pending GitHub Actions. Tests do not make live Qwant requests.
+- **Next:** Inspect CI. If green, document Qwant as implemented but live availability still unverified; continue evaluating the next SearXNG engines.
