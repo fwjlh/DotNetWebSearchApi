@@ -46,7 +46,8 @@ builder.Services.AddHttpClient<QwantSearchProvider>(client =>
     client.DefaultRequestHeaders.Add("Sec-Fetch-Mode", "cors");
     client.DefaultRequestHeaders.Add("Sec-Fetch-Dest", "empty");
 });
-builder.Services.AddSingleton<CookieContainer>();
+builder.Services.AddKeyedSingleton<CookieContainer>("mojeek", _ => new CookieContainer());
+builder.Services.AddKeyedSingleton<CookieContainer>("yahoo", _ => new CookieContainer());
 builder.Services.AddHttpClient<SeznamSearchProvider>(client =>
 {
     client.DefaultRequestHeaders.UserAgent.ParseAdd("DotNetWebSearchApi/0.1 (+https://github.com/fwjlh/DotNetWebSearchApi)");
@@ -61,7 +62,7 @@ builder.Services.AddHttpClient<YahooSearchProvider>(client =>
 {
     AllowAutoRedirect = false,
     UseCookies = true,
-    CookieContainer = serviceProvider.GetRequiredService<CookieContainer>()
+    CookieContainer = serviceProvider.GetRequiredKeyedService<CookieContainer>("yahoo")
 });
 builder.Services.AddHttpClient<WikipediaSearchProvider>(client => client.DefaultRequestHeaders.UserAgent.ParseAdd("DotNetWebSearchApi/0.1 (+https://github.com/fwjlh/DotNetWebSearchApi)"));
 builder.Services.AddHttpClient<ArxivSearchProvider>(client => client.DefaultRequestHeaders.UserAgent.ParseAdd("DotNetWebSearchApi/0.1 (+https://github.com/fwjlh/DotNetWebSearchApi)"));
