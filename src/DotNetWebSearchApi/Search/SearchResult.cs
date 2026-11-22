@@ -5,4 +5,12 @@ public sealed record SearchResult(
     string Url,
     string Snippet,
     string Provider,
-    double Score);
+    double Score)
+{
+    public int? Position { get; init; }
+
+    public IReadOnlyList<string> Engines { get; init; } = Array.Empty<string>();
+
+    public IReadOnlyDictionary<string, int> Positions { get; init; } =
+        new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+}
