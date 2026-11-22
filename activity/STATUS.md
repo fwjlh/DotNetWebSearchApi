@@ -133,3 +133,6 @@ There is no SQL Server provider store, general configurable HTTP provider, API-k
 - Added: Europe PMC, Semantic Scholar, GitHub repository search, Docker Hub, Google Books, Internet Archive, RubyGems and Hugging Face Models.
 - These use public JSON endpoints and the shared JSON adapter. RubyGems and Hugging Face return root arrays; the adapter now supports a root-array selector.
 - Fixture tests are included. CI has not yet run for this batch. Live upstream acceptance and current quotas/availability remain unverified.
+
+
+- CI run 45013175836 failed during build because a handover commit had been constructed from an older Git tree, unintentionally restoring the pre-fix JSON adapter. The second provider batch definitions and fixtures remained. The helper/import, HTTP(S)-only absolute URL handling, relative URL prefixing, dictionary copy and decoded query assertion are restored in the current correction.

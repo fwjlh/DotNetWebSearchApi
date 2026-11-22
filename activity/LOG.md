@@ -486,3 +486,12 @@ Every material repository action is recorded here with its reason, result, verif
 - **Result:** Source catalogue now defines 26 providers (18 in the previous verified batch plus these 8). These are registered as independent provider instances with distinct upstream endpoints and result mappings. No live requests were made.
 - **Verification:** Pending GitHub Actions. Do not count this batch as CI-verified until the workflow succeeds.
 - **Next:** Run CI, correct failures and record exact test count; then continue toward 100.
+
+
+### 58. Diagnose batch-2 build regression and restore adapter corrections
+- **Reason:** The batch-2 CI build failed even though the prior batch had passed. Inspect the exact branch contents and commit tree before applying another fix.
+- **Action:** Inspected workflow run 45013175836 for commit b01d26f3c27babc8371edcc2274a7f3bd8176ae7 and compared the checked-in JSON adapter with the previously corrected version.
+- **Result:** The batch-2 commit had been built from a stale base tree, which unintentionally reverted the JSON path helper, System.Net import, fixed-parameter dictionary conversion, HTTP(S)-only absolute URL detection and decoded query assertion. This was a Git tree composition error, not a defect introduced by the eight new provider definitions. Build failed before tests.
+- **Correction:** Restore the complete corrected JSON adapter, retain root-array support for RubyGems and Hugging Face, restore URL-prefix handling for relative provider IDs, and decode query parameters in the fixture assertion. Future commits must always use the current branch commit's tree SHA as their base tree.
+- **Verification:** Failed workflow https://github.com/fwjlh/DotNetWebSearchApi/actions/runs/45013175836. No tests executed.
+- **Next:** Commit the correction using the exact current branch tree, then verify the complete suite.
