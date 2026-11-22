@@ -694,3 +694,16 @@ Every material repository action is recorded here with its reason, result, verif
 - **Result:** Provider count remains 67. No provider implementation was added in this audit.
 - **Verification:** Source comparison only; no code behaviour changed, so the existing 156-test CI baseline remains the last verified build.
 - **Next:** Implement the request-context and engine-capability foundation first, with backwards-compatible defaults and focused tests. Then shared transport/health, result aggregation and traits before resuming provider expansion.
+
+
+## 2026-11-22 — Freeze provider catalogue and record consumer architecture
+
+### 80. Freeze at 67 and define the independent service boundary
+- **Reason:** Confirm the direction after reviewing the actual CoderInBox search integration and the shared SearXNG framework gaps.
+- **Decision:** DotNetWebSearchApi remains an independent HTTP/JSON service. CoderInBox is its first major consumer; provider implementations must not be merged into CoderInBox.
+- **CoderInBox findings:** Its current WebResearch fallback chain uses direct DuckDuckGo HTML, SearXNG, Wikipedia OpenSearch, optional Presearch and a Google WebView2 browser fallback. Its existing IBrowserSearchService is specifically a browser seam, not a general search-service contract. The recommended integration is a separate IWebSearchService HTTP client in CoderInBox.Tools; keep WebView2 in the WinForms Harness as an optional browser/user-verification capability.
+- **Provider policy:** Freeze the current catalogue at 67 adapters. No new provider ports until shared request context, capabilities, typed outcomes/health, shared transport/session handling, challenge classification and result aggregation have been generalised and tested.
+- **Challenge policy:** Detect and classify temporary blocks, rate limits, browser verification, proof-of-work and interactive CAPTCHA separately. Retain bounded provider-specific permitted protocol handlers such as Mojeek Altcha; support human-operated verification where appropriate. AI vision may classify/explain challenges, not automatically solve or bypass CAPTCHA. Never expose or log session cookies/tokens.
+- **Action:** Added [docs/ARCHITECTURE_DECISIONS.md](../docs/ARCHITECTURE_DECISIONS.md), updated README project status/roadmap, and corrected the current handover summary and next actions in activity/STATUS.md.
+- **Verification:** Documentation-only changes. No provider implementation or runtime behaviour changed. Last verified baseline remains CI run 45020266512: build 0 warnings/errors; 156 tests passed. No live upstream tests were run.
+- **Next:** Implement request context and engine capabilities first, with backwards-compatible API defaults and focused tests. Keep the API host thin and core contracts independent of ASP.NET Core; do not split projects prematurely.
