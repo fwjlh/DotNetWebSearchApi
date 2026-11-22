@@ -198,8 +198,12 @@ public sealed class SearchAggregator
                     .Distinct(StringComparer.OrdinalIgnoreCase)
                     .ToArray();
                 SearchResult preferred = normalized.Score > existing.Score ? normalized : existing;
+                int? preferredPosition = mergedPositions.TryGetValue(preferred.Provider, out int selectedPosition)
+                    ? selectedPosition
+                    : preferred.Position;
                 uniqueResults[canonicalUrl] = preferred with
                 {
+                    Position = preferredPosition,
                     Engines = mergedEngines,
                     Positions = mergedPositions
                 };
