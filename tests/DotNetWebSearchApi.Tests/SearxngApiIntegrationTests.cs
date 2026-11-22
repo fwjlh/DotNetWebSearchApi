@@ -70,12 +70,53 @@ public sealed class SearxngApiIntegrationTests
     }
 
     [Fact]
-    public async Task Search_RejectsUnsupportedPageNumber()
+    public async Task Search_ReportsProvidersThatCannotHandleRequestedPage()
     {
         using WebApplicationFactory<Program> factory = CreateFactory(Provider("alpha", Result("A", "https://example.com/a")));
         using HttpClient client = factory.CreateClient();
         using HttpResponseMessage response = await client.GetAsync("/search?q=test&pageno=2");
-        Assert.Equal(HttpStatusCode.NotImplemented, response.StatusCode);
+        using JsonDocument document = await JsonDocument.ParseAsync(await response.Content.ReadAsStreamAsync());
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        Assert.Empty(document.RootElement.GetProperty("results").EnumerateArray());
+        Assert.Equal("alpha", document.RootElement.GetProperty("unsupported_engines")[0].GetString());
+        Assert.Empty(document.RootElement.GetProperty("unresponsive_engines").EnumerateArray());
+    }
+
+    [Fact]
+    public async Task Search_ParsesAllRequestContextFields()
+    {
+        using WebApplicationFactory<Program> factory = CreateFactory(Provider("alpha", Result("A", "https://example.com/a")));
+        using HttpClient client = factory.CreateClient();
+        using HttpResponseMessage response = await client.GetAsync(
+            "/search?q=test&pageno=2&categories=general&language=fr-FR&safesearch=1&time_range=week");
+        using JsonDocument document = await JsonDocument.ParseAsync(await response.Content.ReadAsStreamAsync());
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        Assert.Equal("alpha", document.RootElement.GetProperty("unsupported_engines")[0].GetString());
+    }
+
+    [Fact]
+    public async Task Search_RejectsInvalidRequestContextValues()
+    {
+        using WebApplicationFactory<Program> factory = CreateFactory(Provider("alpha", Result("A", "https://example.com/a")));
+        using HttpClient client = factory.CreateClient();
+        using HttpResponseMessage response = await client.GetAsync("/search?q=test&safesearch=3");
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task ApiSearch_AcceptsRequestContextAndReportsUnsupportedProviders()
+    {
+        using WebApplicationFactory<Program> factory = CreateFactory(Provider("alpha", Result("A", "https://example.com/a")));
+        using HttpClient client = factory.CreateClient();
+        using HttpResponseMessage response = await client.GetAsync(
+            "/api/search?q=test&limit=5&pageno=2&language=fr-FR");
+        using JsonDocument document = await JsonDocument.ParseAsync(await response.Content.ReadAsStreamAsync());
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        Assert.Equal("alpha", document.RootElement.GetProperty("unsupportedProviders")[0].GetString());
+        Assert.Empty(document.RootElement.GetProperty("results").EnumerateArray());
     }
 
     [Fact]
