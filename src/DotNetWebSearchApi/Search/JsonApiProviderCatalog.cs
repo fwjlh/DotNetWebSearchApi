@@ -538,45 +538,6 @@ public static partial class JsonApiProviderCatalog
         },
         new JsonApiSearchDefinition
         {
-            Name = "kagi",
-            Endpoint = "https://kagi.com/api/v1/search",
-            QueryParameter = string.Empty,
-            LimitParameter = string.Empty,
-            ResultsPath = "data.search",
-            TitlePath = "title",
-            UrlPath = "url",
-            SnippetPath = "snippet",
-            RequestMethod = "POST",
-            BodyQueryParameter = "query",
-            BodyLimitParameter = "limit",
-            BodyFixedParameters = new Dictionary<string, object> { ["workflow"] = "search" },
-            ApiKeyConfigurationKey = "KAGI_API_KEY",
-            ApiKeyHeader = "Authorization",
-            ApiKeyPrefix = "Bearer "
-        },
-        new JsonApiSearchDefinition
-        {
-            Name = "exa",
-            Endpoint = "https://api.exa.ai/search",
-            QueryParameter = string.Empty,
-            LimitParameter = string.Empty,
-            ResultsPath = "results",
-            TitlePath = "title",
-            UrlPath = "url",
-            SnippetPath = "highlights.0",
-            RequestMethod = "POST",
-            BodyQueryParameter = "query",
-            BodyLimitParameter = "numResults",
-            BodyFixedParameters = new Dictionary<string, object>
-            {
-                ["type"] = "auto",
-                ["contents"] = new Dictionary<string, object> { ["highlights"] = true }
-            },
-            ApiKeyConfigurationKey = "EXA_API_KEY",
-            ApiKeyHeader = "x-api-key"
-        },
-        new JsonApiSearchDefinition
-        {
             Name = "wiktionary",
             Endpoint = "https://en.wiktionary.org/w/api.php",
             QueryParameter = "srsearch",
