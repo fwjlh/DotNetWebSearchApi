@@ -180,6 +180,62 @@ public sealed class JsonApiSearchProviderTests
             "org/model",
             "https://huggingface.co/org/model"
         };
+        yield return new object[]
+        {
+            JsonApiProviderCatalog.Definitions.Single(item => item.Name == "superuser"),
+            "{\"items\":[{\"title\":\"Linux desktop help\",\"link\":\"https://superuser.com/questions/1\",\"body\":\"<p>Question</p>\"}]}",
+            "Linux desktop help",
+            "https://superuser.com/questions/1"
+        };
+        yield return new object[]
+        {
+            JsonApiProviderCatalog.Definitions.Single(item => item.Name == "serverfault"),
+            "{\"items\":[{\"title\":\"Server configuration\",\"link\":\"https://serverfault.com/questions/1\",\"body\":\"<p>Admin question</p>\"}]}",
+            "Server configuration",
+            "https://serverfault.com/questions/1"
+        };
+        yield return new object[]
+        {
+            JsonApiProviderCatalog.Definitions.Single(item => item.Name == "askubuntu"),
+            "{\"items\":[{\"title\":\"Ubuntu networking\",\"link\":\"https://askubuntu.com/questions/1\",\"body\":\"<p>Ubuntu question</p>\"}]}",
+            "Ubuntu networking",
+            "https://askubuntu.com/questions/1"
+        };
+        yield return new object[]
+        {
+            JsonApiProviderCatalog.Definitions.Single(item => item.Name == "gitlab"),
+            "[{\"name_with_namespace\":\"group/project\",\"web_url\":\"https://gitlab.com/group/project\",\"description\":\"A GitLab project\"}]",
+            "group/project",
+            "https://gitlab.com/group/project"
+        };
+        yield return new object[]
+        {
+            JsonApiProviderCatalog.Definitions.Single(item => item.Name == "gitea"),
+            "{\"data\":[{\"full_name\":\"owner/repository\",\"html_url\":\"https://gitea.com/owner/repository\",\"description\":\"A Gitea repository\"}]}",
+            "owner/repository",
+            "https://gitea.com/owner/repository"
+        };
+        yield return new object[]
+        {
+            JsonApiProviderCatalog.Definitions.Single(item => item.Name == "mavencentral"),
+            "{\"response\":{\"docs\":[{\"id\":\"org.example:library\",\"latestVersion\":\"1.2.3\"}]}}",
+            "org.example:library",
+            "https://central.sonatype.com/artifact/org.example:library"
+        };
+        yield return new object[]
+        {
+            JsonApiProviderCatalog.Definitions.Single(item => item.Name == "packagist"),
+            "{\"results\":[{\"name\":\"vendor/package\",\"url\":\"https://packagist.org/packages/vendor/package\",\"description\":\"A PHP package\"}]}",
+            "vendor/package",
+            "https://packagist.org/packages/vendor/package"
+        };
+        yield return new object[]
+        {
+            JsonApiProviderCatalog.Definitions.Single(item => item.Name == "pubdev"),
+            "{\"packages\":[{\"package\":\"example_package\"}]}",
+            "example_package",
+            "https://pub.dev/packages/example_package"
+        };
     }
 
     private sealed class StubHttpMessageHandler(

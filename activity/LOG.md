@@ -504,3 +504,13 @@ Every material repository action is recorded here with its reason, result, verif
 - **Correction history:** The prior run 45013175836 failed before tests because the handover commit used an older base tree and reverted adapter helper/import changes. The exact current tree was then used, the fixes restored, and root-array JSON responses retained for RubyGems and Hugging Face.
 - **Verification:** https://github.com/fwjlh/DotNetWebSearchApi/actions/runs/45013295887. Eight new provider fixtures cover Europe PMC, Semantic Scholar, GitHub repository search, Docker Hub, Google Books, Internet Archive, RubyGems and Hugging Face Models. No live upstream requests were made.
 - **Next:** Continue provider ports in batches, targeting 100 before the local pull/build/live-testing handoff.
+
+
+## 2026-11-22 — Developer and package provider batch 3
+
+### 60. Implement eight additional provider adapters
+- **Reason:** Continue the 100-provider target with useful developer communities, source-hosting platforms and package registries.
+- **Action:** Added Super User, Server Fault and Ask Ubuntu through separate Stack Exchange site configurations; added GitLab Projects, Gitea, Maven Central, Packagist and pub.dev using their public JSON search APIs. Added eight fixture cases to the shared adapter test theory.
+- **Result:** Provider catalogue now defines 34 adapters. The three Stack Exchange variants use separate site parameters; the other adapters use provider-specific endpoints and JSON paths. No live requests were made.
+- **Verification:** Pending GitHub Actions. These providers are not counted as verified until CI passes.
+- **Next:** Verify this batch, then continue with news, media, image, academic and regional providers.

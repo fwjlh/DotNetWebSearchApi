@@ -192,6 +192,99 @@ public static class JsonApiProviderCatalog
             UrlPath = "id",
             SnippetPath = "pipeline_tag",
             UrlPrefix = "https://huggingface.co/"
+        },
+        new JsonApiSearchDefinition
+        {
+            Name = "superuser",
+            Endpoint = "https://api.stackexchange.com/2.3/search/advanced",
+            QueryParameter = "q",
+            LimitParameter = "pagesize",
+            ResultsPath = "items",
+            TitlePath = "title",
+            UrlPath = "link",
+            SnippetPath = "body",
+            FixedParameters = new Dictionary<string, string> { ["site"] = "superuser" }
+        },
+        new JsonApiSearchDefinition
+        {
+            Name = "serverfault",
+            Endpoint = "https://api.stackexchange.com/2.3/search/advanced",
+            QueryParameter = "q",
+            LimitParameter = "pagesize",
+            ResultsPath = "items",
+            TitlePath = "title",
+            UrlPath = "link",
+            SnippetPath = "body",
+            FixedParameters = new Dictionary<string, string> { ["site"] = "serverfault" }
+        },
+        new JsonApiSearchDefinition
+        {
+            Name = "askubuntu",
+            Endpoint = "https://api.stackexchange.com/2.3/search/advanced",
+            QueryParameter = "q",
+            LimitParameter = "pagesize",
+            ResultsPath = "items",
+            TitlePath = "title",
+            UrlPath = "link",
+            SnippetPath = "body",
+            FixedParameters = new Dictionary<string, string> { ["site"] = "askubuntu" }
+        },
+        new JsonApiSearchDefinition
+        {
+            Name = "gitlab",
+            Endpoint = "https://gitlab.com/api/v4/projects",
+            QueryParameter = "search",
+            LimitParameter = "per_page",
+            ResultsPath = "$",
+            TitlePath = "name_with_namespace",
+            UrlPath = "web_url",
+            SnippetPath = "description"
+        },
+        new JsonApiSearchDefinition
+        {
+            Name = "gitea",
+            Endpoint = "https://gitea.com/api/v1/repos/search",
+            QueryParameter = "q",
+            LimitParameter = "limit",
+            ResultsPath = "data",
+            TitlePath = "full_name",
+            UrlPath = "html_url",
+            SnippetPath = "description"
+        },
+        new JsonApiSearchDefinition
+        {
+            Name = "mavencentral",
+            Endpoint = "https://search.maven.org/solrsearch/select",
+            QueryParameter = "q",
+            LimitParameter = "rows",
+            ResultsPath = "response.docs",
+            TitlePath = "id",
+            UrlPath = "id",
+            SnippetPath = "latestVersion",
+            UrlPrefix = "https://central.sonatype.com/artifact/",
+            FixedParameters = new Dictionary<string, string> { ["wt"] = "json" }
+        },
+        new JsonApiSearchDefinition
+        {
+            Name = "packagist",
+            Endpoint = "https://packagist.org/search.json",
+            QueryParameter = "q",
+            LimitParameter = "per_page",
+            ResultsPath = "results",
+            TitlePath = "name",
+            UrlPath = "url",
+            SnippetPath = "description"
+        },
+        new JsonApiSearchDefinition
+        {
+            Name = "pubdev",
+            Endpoint = "https://pub.dev/api/search",
+            QueryParameter = "q",
+            LimitParameter = "limit",
+            ResultsPath = "packages",
+            TitlePath = "package",
+            UrlPath = "package",
+            UrlPrefix = "https://pub.dev/packages/"
         }
     };
 

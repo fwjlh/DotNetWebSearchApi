@@ -18,7 +18,7 @@ Updated: 2026-11-22
 - Read-only diagnostics page at /admin.
 - GET /api/providers lists active providers.
 - GET /api/diagnostics returns in-memory provider health counters.
-- Twenty-six search adapters: the ten original providers plus Crossref, OpenAlex, Hacker News, Stack Overflow, npm, crates.io, NuGet and Open Library.
+- Thirty-four search adapters: the ten original providers plus Crossref, OpenAlex, Hacker News, Stack Overflow, npm, crates.io, NuGet and Open Library.
 - Parallel provider aggregation with per-provider timeout and provider-failure isolation.
 - Detailed search execution reports failed providers as unresponsive_engines.
 - HTTP(S)-only result URL validation, duplicate removal, deterministic score/title ordering and result limit.
@@ -99,7 +99,7 @@ There is no SQL Server provider store, general configurable HTTP provider, API-k
 
 ## Next actions
 
-1. Continue provider ports from 26 towards 100, prioritising high-value general search, specialist search, developer, academic, news, image, video and regional sources. Count only implemented, registered and fixture-tested adapters.
+1. Continue provider ports from 34 towards 100, prioritising high-value general search, specialist search, developer, academic, news, image, video and regional sources. Count only implemented, registered and fixture-tested adapters.
 2. Keep provider definitions explicit and review authentication, quotas, rate limits, terms and bot protection for each upstream.
 3. After the 100-provider milestone, pull and build locally and perform live/integration testing before exposing the service publicly.
 4. Then add SQL Server configuration, API-key authentication, quotas and safe admin editing.
@@ -125,7 +125,7 @@ There is no SQL Server provider store, general configurable HTTP provider, API-k
 - CI: https://github.com/fwjlh/DotNetWebSearchApi/actions/runs/45013006368
 - Build: passed, 0 warnings, 0 errors.
 - Tests: 105 passed, 0 failed, 0 skipped.
-- Provider count: 26 implemented, registered and fixture-tested. Live upstream acceptance remains unverified.
+- Provider count: 26 implemented, registered and fixture-tested in the last verified batch. Eight more are pending CI. Live upstream acceptance remains unverified.
 
 
 ## Provider batch 2 — verification pending
@@ -145,3 +145,10 @@ There is no SQL Server provider store, general configurable HTTP provider, API-k
 - Build: passed, 0 warnings, 0 errors.
 - Tests: 113 passed, 0 failed, 0 skipped.
 - Provider count: 26 implemented, registered and fixture-tested. Live upstream acceptance remains unverified.
+
+
+## Provider batch 3 — verification pending
+
+- Added: Super User, Server Fault, Ask Ubuntu, GitLab Projects, Gitea, Maven Central, Packagist and pub.dev.
+- The three Stack Exchange sites use distinct `site` parameters. GitLab and Maven return root arrays/nested JSON respectively; pub.dev uses a nested package path and a provider-specific URL prefix.
+- Fixture tests are included. CI and live upstream acceptance are not yet verified.

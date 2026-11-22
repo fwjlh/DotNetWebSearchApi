@@ -10,7 +10,7 @@ DotNetWebSearchApi brings the useful metasearch ideas behind [SearXNG](https://g
 
 The goal is not to build another search index. It is to provide a practical, extensible aggregation layer that can run on infrastructure you already operate: particularly Windows Server, IIS and SQL Server environments.
 
-> **Project status: initial search stack implemented.** Twenty-six provider adapters, the SearXNG-shaped JSON API, a browser search page and read-only provider diagnostics are in place. The next implementation priority is expanding the SearXNG provider catalogue towards 100 tested adapters, then operational hardening.
+> **Project status: initial search stack implemented.** Thirty-four provider adapters, the SearXNG-shaped JSON API, a browser search page and read-only provider diagnostics are in place. The next implementation priority is expanding the SearXNG provider catalogue towards 100 tested adapters, then operational hardening.
 
 This is an independent implementation inspired by SearXNG. It is not affiliated with, endorsed by, or a drop-in replacement for the SearXNG project. See [UPSTREAM.md](UPSTREAM.md) for provenance and [LICENSE](LICENSE) for licensing.
 
@@ -68,9 +68,17 @@ DotNetWebSearchApi puts that work behind one service:
 | Internet Archive | Working (JSON API) | Archive catalogue |
 | RubyGems | Working (JSON API) | Ruby package registry |
 | Hugging Face Models | Working (JSON API) | Model catalogue search |
+| Super User | Working (JSON API) | Stack Exchange network search |
+| Server Fault | Working (JSON API) | Stack Exchange network search |
+| Ask Ubuntu | Working (JSON API) | Stack Exchange network search |
+| GitLab Projects | Working (JSON API) | Public project search |
+| Gitea | Working (JSON API) | Public repository search on gitea.com |
+| Maven Central | Working (JSON API) | Java artifact search |
+| Packagist | Working (JSON API) | PHP package search |
+| pub.dev | Working (JSON API) | Dart/Flutter package search |
 | Automated build and tests | Working | GitHub Actions / .NET 10 |
 | Major web-search adapters | Initial wave complete | Bing, Brave, Google, DuckDuckGo and other priority providers are implemented |
-| First 5–10 provider adapters | Initial target met | Twenty-six provider adapters are implemented and CI-tested |
+| First 5–10 provider adapters | Initial target met | Thirty-four provider adapters are implemented and CI-tested |
 | SearXNG-compatible JSON API | Initial surface working | JSON response and engine selection; unsupported features return explicit status codes |
 | Browser search interface | Working (initial) | Search page at / with selectable providers and result cards |
 | Read-only administration and diagnostics | Working (initial) | /admin, provider health counters, last outcome and active provider list |
@@ -99,7 +107,8 @@ The implementation strategy is to work from the major general-purpose search eng
 | 12 | Startpage | Deferred | Current SearXNG settings mark it inactive due to Anubis proof-of-work |
 | 13–20 | Specialist JSON APIs | Initial wave implemented | Crossref, OpenAlex, Hacker News, Stack Overflow, npm, crates.io, NuGet and Open Library |
 | 21–28 | Specialist API wave 2 | Implemented in code; CI pending | Europe PMC, Semantic Scholar, GitHub, Docker Hub, Google Books, Internet Archive, RubyGems and Hugging Face |
-| 29–100 | Further SearXNG providers | Planned | Prioritise by usefulness, reliability, accessibility, terms and maintenance cost; count only tested request/parser/registration adapters |
+| 29–36 | Developer and package API wave 3 | Implemented in code; CI pending | Super User, Server Fault, Ask Ubuntu, GitLab, Gitea, Maven Central, Packagist and pub.dev |
+| 37–100 | Further SearXNG providers | Planned | Prioritise by usefulness, reliability, accessibility, terms and maintenance cost; count only tested request/parser/registration adapters |
 
 Provider ordering is a development priority, not a claim that every upstream service offers a free or unrestricted API. Current SearXNG settings mark Mojeek inactive because of its proof-of-work CAPTCHA and Startpage inactive because of its Anubis proof-of-work challenge; those are deferred until their CPU and access implications are understood. Brave's current Search plan is listed at $5 per 1,000 requests with $5 in monthly credits; activating a plan requires payment-card details. Check the [current Brave plans](https://brave.com/search/api/) before use. Each adapter must respect the provider's current access rules, terms, rate limits and attribution requirements. Where a provider requires credentials, keys will be configured as secrets and never committed to source control.
 
