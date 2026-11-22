@@ -67,8 +67,9 @@ public sealed class NaverSearchProviderTests
             new HttpResponseMessage(HttpStatusCode.ServiceUnavailable)));
         NaverSearchProvider provider = new(client);
 
-        await Assert.ThrowsAsync<HttpRequestException>(() =>
+        ProviderFailureException exception = await Assert.ThrowsAsync<ProviderFailureException>(() =>
             provider.SearchAsync(new SearchQuery("test", 10), CancellationToken.None));
+        Assert.Equal(ProviderFailureKind.TransientHttp, exception.FailureKind);
     }
 
     private static HttpResponseMessage HtmlResponse(string html)
