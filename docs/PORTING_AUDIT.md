@@ -59,7 +59,7 @@ An `EngineCapabilities` record and optional `ISearchProviderCapabilities` interf
 
 SearXNG separates an engine's request-building function from its response parser, then sends the request through a common network layer. That common layer owns consistent transport behaviour and engine-specific request parameters can adjust headers, cookies, proxy/impersonation, redirects and request body.
 
-Bing and Qwant now use `SearchHttpTransport`; the remaining adapters still send requests directly. The transport uses `ResponseHeadersRead`, enforces a 4 MiB response limit by default, caps concurrency per host, preserves response headers and captures Retry-After. It maps common HTTP statuses to typed provider failures. Common user-agent/header configuration is still repeated in `Program.cs`; cookies and redirect handling remain provider-specific. The JSON adapter has its own throttling mechanism.
+The main provider paths now use `SearchHttpTransport`: HTML adapters (Bing, DuckDuckGo, Google, Naver, Qwant, Seznam, Yahoo, Mojeek), Brave and Yandex API adapters, Wikipedia and arXiv JSON/XML adapters, plus the generic JSON and RSS/Atom providers. The transport uses `ResponseHeadersRead`, enforces a 4 MiB response limit by default, caps concurrency per host, preserves response headers and captures Retry-After. It maps common HTTP statuses to typed provider failures. Common user-agent/header configuration is still repeated in `Program.cs`; cookies and redirect handling remain provider-specific. The generic JSON adapter retains its provider-specific minimum-interval gate.
 
 **Port:** continue the small pipeline:
 1. provider builds a request (method, URI, provider-specific headers/body and session requirements);
