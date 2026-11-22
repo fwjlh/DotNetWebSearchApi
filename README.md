@@ -10,7 +10,7 @@ DotNetWebSearchApi brings the useful metasearch ideas behind [SearXNG](https://g
 
 The goal is not to build another search index. It is to provide a practical, extensible aggregation layer that can run on infrastructure you already operate: particularly Windows Server, IIS and SQL Server environments.
 
-> **Project status: initial search stack implemented.** Forty-two provider adapters, the SearXNG-shaped JSON API, a browser search page and read-only provider diagnostics are in place. The next implementation priority is expanding the SearXNG provider catalogue towards 100 tested adapters, then operational hardening.
+> **Project status: initial search stack implemented.** Fifty provider adapters, the SearXNG-shaped JSON API, a browser search page and read-only provider diagnostics are in place. The next implementation priority is expanding the SearXNG provider catalogue towards 100 tested adapters, then operational hardening.
 
 This is an independent implementation inspired by SearXNG. It is not affiliated with, endorsed by, or a drop-in replacement for the SearXNG project. See [UPSTREAM.md](UPSTREAM.md) for provenance and [LICENSE](LICENSE) for licensing.
 
@@ -84,6 +84,14 @@ DotNetWebSearchApi puts that work behind one service:
 | MusicBrainz | Working (JSON API) | Music metadata search |
 | Wikidata | Working (JSON API) | Knowledge graph search |
 | German Wikipedia | Working (JSON API) | Regional MediaWiki search |
+| Wiby | Working (JSON API) | Independent small-web index; includes required Wiby attribution |
+| TVmaze | Working (JSON API) | Television show search |
+| Radio Browser | Working (JSON API) | Internet radio station search; free API, best-effort service |
+| PeerTube | Working (JSON API) | Video search on the configured public instance |
+| Wikimedia Commons | Working (JSON API) | MediaWiki file namespace search |
+| Wikinews | Working (JSON API) | English-language news archive search |
+| Spanish Wikipedia | Working (JSON API) | Regional MediaWiki search |
+| Openverse | Working (JSON API) | Openly licensed image search; anonymous API rate limits apply |
 | Automated build and tests | Working | GitHub Actions / .NET 10 |
 | Major web-search adapters | Initial wave complete | Bing, Brave, Google, DuckDuckGo and other priority providers are implemented |
 | First 5–10 provider adapters | Initial target met | Forty-two provider adapters are implemented and CI-tested |
@@ -116,7 +124,8 @@ The implementation strategy is to work from the major general-purpose search eng
 | 13–20 | Specialist JSON APIs | Initial wave implemented | Crossref, OpenAlex, Hacker News, Stack Overflow, npm, crates.io, NuGet and Open Library |
 | 21–28 | Specialist API wave 2 | Implemented in code; CI pending | Europe PMC, Semantic Scholar, GitHub, Docker Hub, Google Books, Internet Archive, RubyGems and Hugging Face |
 | 29–36 | Developer and package API wave 3 | Implemented in code; CI pending | Super User, Server Fault, Ask Ubuntu, GitLab, Gitea, Maven Central, Packagist and pub.dev |
-| 37–44 | Media, knowledge and academic wave 4 | Implemented in code; CI pending | arXiv, Bilibili, Dailymotion, Deezer, Steam, MusicBrainz, Wikidata and German Wikipedia |
+| 37–44 | Media, knowledge and academic wave 4 | CI-verified | arXiv, Bilibili, Dailymotion, Deezer, Steam, MusicBrainz, Wikidata and German Wikipedia |
+| 45–52 | Search, media and regional wave 5 | Implemented in code; CI pending | Wiby, TVmaze, Radio Browser, PeerTube, Wikimedia Commons, Wikinews, Spanish Wikipedia and Openverse |
 | 45–100 | Further SearXNG providers | Planned | Prioritise by usefulness, reliability, accessibility, terms and maintenance cost; count only tested request/parser/registration adapters |
 
 Provider ordering is a development priority, not a claim that every upstream service offers a free or unrestricted API. Current SearXNG settings mark Mojeek inactive because of its proof-of-work CAPTCHA and Startpage inactive because of its Anubis proof-of-work challenge; those are deferred until their CPU and access implications are understood. Brave's current Search plan is listed at $5 per 1,000 requests with $5 in monthly credits; activating a plan requires payment-card details. Check the [current Brave plans](https://brave.com/search/api/) before use. Each adapter must respect the provider's current access rules, terms, rate limits and attribution requirements. Where a provider requires credentials, keys will be configured as secrets and never committed to source control.
@@ -303,7 +312,7 @@ Run from the repository root:
 
 GitHub Actions runs restore, build and tests for pushes and pull requests. The badge at the top links to the workflow.
 
-The current verified implementation passes CI with **95 tests passing** across the aggregation layer, ten provider adapters, JSON API integration tests and provider diagnostics. Check the Actions history for the latest result; this README does not assume that a previous successful run proves every future commit is green.
+The current verified implementation passes CI with **130 tests passing** across the aggregation layer, ten provider adapters, JSON API integration tests and provider diagnostics. Check the Actions history for the latest result; this README does not assume that a previous successful run proves every future commit is green.
 
 ## Planned delivery sequence
 

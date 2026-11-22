@@ -3,171 +3,79 @@
 Updated: 2026-11-22
 
 ## Repository
-
 - Public repository: https://github.com/fwjlh/DotNetWebSearchApi
 - Default branch: main
-- Latest verified code commit: fcc88fe26dd15e5d1e46e9deacb1fe797b55be21
-- Full project overview and roadmap: [README.md](../README.md)
+- Latest code commit before current increment: 92a34b06ec137dfea1625af2d881803c90bc3045
+- Current implementation increment: 50 providers; CI verification pending.
+- Project overview and roadmap: [README.md](../README.md)
 
-## Working vertical slice
-
-- Native ASP.NET Core 10 Web API.
+## Working application
+- Native ASP.NET Core 10 Web API; no Python or Docker runtime.
 - GET /health and GET /api/search?q=...
 - Initial SearXNG-shaped JSON API: GET /search, GET / and form POST /search.
-- Browser search page at the root URL with provider selection and result cards.
-- Read-only diagnostics page at /admin.
-- GET /api/providers lists active providers.
-- GET /api/diagnostics returns in-memory provider health counters.
-- Forty-two search adapters: the ten original providers plus Crossref, OpenAlex, Hacker News, Stack Overflow, npm, crates.io, NuGet and Open Library.
-- Parallel provider aggregation with per-provider timeout and provider-failure isolation.
-- Detailed search execution reports failed providers as unresponsive_engines.
-- HTTP(S)-only result URL validation, duplicate removal, deterministic score/title ordering and result limit.
-- Brave is registered only when BRAVE_SEARCH_API_KEY is configured.
-- Yandex is registered only when both YANDEX_SEARCH_API_KEY and YANDEX_FOLDER_ID are configured.
-- xUnit tests and GitHub Actions .NET 10 CI.
+- Browser search page at root; provider selection and result cards.
+- Read-only diagnostics at /admin.
+- GET /api/providers and GET /api/diagnostics.
+- Parallel provider execution, per-provider timeout and failure isolation.
+- Provider failures surfaced as unresponsive_engines.
+- HTTP(S)-only result URL validation, deduplication, deterministic ordering and result limiting.
+- Optional Brave and Yandex providers require their configured credentials.
 
-## Verification
+## Provider count and current batch
+- **50 registered providers** after the current batch.
+- The first 42 providers passed CI fixture tests in run [45013727838](https://github.com/fwjlh/DotNetWebSearchApi/actions/runs/45013727838): build passed with 0 warnings/errors; 130 tests passed.
+- Batch 5 adds Wiby, TVmaze, Radio Browser, PeerTube, Wikimedia Commons, Wikinews, Spanish Wikipedia and Openverse.
+- Batch 5 includes eight provider fixture cases. Its CI result is pending.
+- No new live upstream API requests have been run. Fixture tests verify request construction and response mapping only.
 
-- CI run: https://github.com/fwjlh/DotNetWebSearchApi/actions/runs/45010292934
-- Commit tested: 3a4970a3d58a5e0ddac89676539bd605d662bbd7
-- Restore: passed.
-- Build: passed.
-- Tests: 95 passed, 0 failed, 0 skipped (latest verified baseline before this increment). The first two CI attempts exposed compile and test issues; both were corrected before the successful run.
-- Previous failed run: https://github.com/fwjlh/DotNetWebSearchApi/actions/runs/45010196457 (93 passed, two static file path failures); corrected in the verified commit.
-- Local .NET SDK is not installed in the orchestration environment; verification is performed by GitHub Actions.
-- Provider tests use deterministic fixtures and fake HTTP handlers. They verify parsing/request behaviour, not live acceptance by upstream providers.
+## Provider inventory
+Original general web adapters: Bing, Brave Search API, Google, DuckDuckGo, Wikipedia, Qwant, Yahoo, Yandex Search API, Naver and Seznam.
 
-## Provider status
+Specialist providers (batch 1): Crossref, OpenAlex, Hacker News, Stack Overflow, npm, crates.io, NuGet and Open Library.
 
-The eight specialist JSON API adapters in the current increment are implemented but must not be treated as CI-verified until the new workflow run completes. All fixture tests use fake HTTP handlers; they do not establish live upstream acceptance.
+Specialist providers (batch 2): Europe PMC, Semantic Scholar, GitHub repository search, Docker Hub, Google Books, Internet Archive, RubyGems and Hugging Face Models.
 
-1. Bing Web — implemented and CI-verified; live upstream availability not tested.
-2. Brave Search API — implemented and CI-verified; optional, requires BRAVE_SEARCH_API_KEY.
-3. Google Web — implemented and CI-verified via HTML; CAPTCHA/blocking risk.
-4. DuckDuckGo Web — implemented and CI-verified for first page; CAPTCHA/bot-blocking risk, no pagination/VQD.
-5. Wikipedia — implemented and CI-verified; reference JSON/API adapter.
-6. Qwant — implemented and CI-verified experimentally; undocumented API and DataDome access risk.
-7. Yahoo Web — implemented and CI-verified experimentally; HTML, sB cookie and bounded YBV redirect handling; live access unverified.
-8. Yandex Search API — implemented and CI-verified; optional paid provider, requires API key and folder ID.
-9. Naver Web — implemented and CI-verified; Korean regional first-page HTML adapter; disabled by default upstream.
-10. Seznam Web — implemented and CI-verified; Czech regional HTML adapter with homepage bootstrap; disabled by default upstream.
+Developer/package providers (batch 3): Super User, Server Fault, Ask Ubuntu, GitLab Projects, Gitea, Maven Central, Packagist and pub.dev.
 
-## Specialist provider adapters
+Media/knowledge/academic providers (batch 4): arXiv, Bilibili, Dailymotion, Deezer, Steam, MusicBrainz, Wikidata and German Wikipedia.
 
-The JSON API provider catalog currently includes Crossref, OpenAlex, Hacker News, Stack Overflow, npm, crates.io, NuGet and Open Library. Each definition supplies its real upstream endpoint, query/limit parameters and response paths. The common adapter builds encoded requests, maps provider-specific JSON paths and rejects non-HTTP(S) result URLs. Stack Overflow uses the public Stack Exchange API and remains subject to its published quota rules. Live upstream access has not been tested.
+Search/media/regional providers (batch 5): Wiby, TVmaze, Radio Browser, PeerTube, Wikimedia Commons, Wikinews, Spanish Wikipedia and Openverse.
 
-## SearXNG-compatible JSON API
+## Important access and quality limits
+- Bing, Google, DuckDuckGo, Qwant, Yahoo, Naver and Seznam are HTML/scrape-based or undocumented paths; CAPTCHA, bot blocking, cookies, locale and egress IP can affect availability.
+- Brave is optional and requires BRAVE_SEARCH_API_KEY.
+- Yandex is optional and requires YANDEX_SEARCH_API_KEY and YANDEX_FOLDER_ID.
+- Stack Exchange quotas, GitHub unauthenticated API limits, Semantic Scholar rate limits, Radio Browser best-effort availability and Openverse anonymous limits apply.
+- PeerTube currently searches the configured public instance and its local scope; it is not a global PeerTube index.
+- Wiby attribution is appended to returned snippets to satisfy its requirement to link to Wiby.
+- Openverse results link to the media landing page, not a direct image download.
+- No adapter should be described as live-tested based only on fixture tests.
 
-Initial response-compatible surface is implemented:
-
+## SearXNG compatibility
 - GET /search?q=...&format=json.
-- GET /?q=...&format=json when a query is present; bare / serves the search page.
+- GET /?q=...&format=json when query present; bare / serves browser page.
 - POST /search using application/x-www-form-urlencoded.
-- Engine selection through engines=bing,google.
-- Response fields include query, number_of_results, results, answers, corrections, infoboxes, suggestions and unresponsive_engines.
-- Result fields include url, title, content, engine, engines, positions, score, category, template, parsed_url and publishedDate.
-- Failed providers are listed in unresponsive_engines.
+- Engine selection via engines=provider1,provider2.
+- Response includes query, number_of_results, results, answers, corrections, infoboxes, suggestions and unresponsive_engines.
+- Initial compatibility only: JSON, general category, first page; no full language/safe-search/time-range support, no answer/infobox/suggestion generation, inferred positions and no merged engine positions for duplicate URLs.
 
-Known compatibility limits: JSON only; general category; first page only; no time_range, non-default language or safe-search overrides; no answer/infobox/suggestion generation; positions are inferred from current provider scores; duplicate URLs retain one highest-scoring provider rather than merging engine positions. This is not full SearXNG feature parity.
-
-## Browser and diagnostics
-
-- Root URL serves the search page; /admin serves the read-only diagnostics page.
-- Provider list is discovered from /api/providers.
-- Search UI allows selection of active providers and displays result title, snippet, provider and score.
-- /api/diagnostics reports status, active providers, success/failure counts, last duration, last result count, last checked time and last exception type.
-- Counters are in-memory and reset on process restart.
-- No provider editing or secret management is implemented in the UI.
-- Upstream result text is inserted with textContent; result links are restricted to HTTP(S).
-
-## Important limitations
-
-Eighteen providers are wired in after this increment; the eight new JSON API adapters have fixture tests. CI verification: passed. Build succeeded with 0 warnings/errors; 105 tests passed, 0 failed, 0 skipped. Live upstream acceptance is not verified. Brave requires a key and is not registered when BRAVE_SEARCH_API_KEY is absent. Yandex is paid and is not registered without both YANDEX_SEARCH_API_KEY and YANDEX_FOLDER_ID. DuckDuckGo pagination is not implemented. Qwant's API is undocumented and may return DataDome challenges. Yahoo's cookie and redirect flow is only fixture-tested. Naver and Seznam are regional and disabled by default in current SearXNG settings. Mojeek and Startpage remain deferred due to upstream proof-of-work challenges.
-
-There is no SQL Server provider store, general configurable HTTP provider, API-key authentication, quotas or editable admin configuration yet. Do not expose this endpoint as a public unrestricted search service before authentication, rate limiting and outbound request policy are implemented.
+## Verification history
+- Latest fully verified batch before batch 5: commit 92a34b06ec137dfea1625af2d881803c90bc3045, CI run 45013727838, build 0 warnings/errors, 130 tests passed.
+- Local .NET SDK is unavailable in the orchestration environment; GitHub Actions is the build/test verification source.
+- Batch 5 verification is pending; do not count its eight providers as CI-verified until the workflow succeeds.
 
 ## Working rules
-
-1. Record every material action in activity/LOG.md, including reason, outcome, verification, commit and next step.
-2. Update this file at each handover.
-3. Implementation code and its tests/log update go in the same commit.
-4. Push each completed increment to main and verify the ref.
-5. Source files preferably below 15–20 KB; hard maximum 25 KB.
-6. Maximum two nesting levels; extract nested blocks over five lines into named functions.
-7. Small single-purpose functions, explicit public types, max four parameters, early returns, nullable enabled, no dead code.
-8. Never describe authored tests as run, or tests as passing, without actual CI evidence.
+1. Record every material action in activity/LOG.md and update this handover.
+2. Keep implementation, fixtures, README and activity updates in the same commit.
+3. Use the current main commit's tree SHA as the base for every Git tree; never reuse stale tree SHAs.
+4. Keep source files preferably below 15–20 KB, hard maximum 25 KB.
+5. Small single-purpose functions, max four parameters, early returns, no dead code.
+6. Never claim live upstream acceptance from fixture-only tests.
+7. Push each increment to main and inspect the resulting GitHub Actions run before continuing.
 
 ## Next actions
-
-1. Continue provider ports from 42 towards 100, prioritising high-value general search, specialist search, developer, academic, news, image, video and regional sources. Count only implemented, registered and fixture-tested adapters.
-2. Keep provider definitions explicit and review authentication, quotas, rate limits, terms and bot protection for each upstream.
-3. After the 100-provider milestone, pull and build locally and perform live/integration testing before exposing the service publicly.
-4. Then add SQL Server configuration, API-key authentication, quotas and safe admin editing.
-5. Continue UI refinement and deployment guidance for Kestrel/IIS.
-6. Keep SearchBox.NET.Forge as a separate follow-on project for upstream monitoring and AI-assisted porting proposals; require tests and human review, never auto-merge.
-
-
-## Latest CI failure and correction
-
-- Run: https://github.com/fwjlh/DotNetWebSearchApi/actions/runs/45012798957
-- Commit: `f30ba0eca15e07370e47951602ce6d9bce82bdbe`
-- Restore passed; build failed because the shared adapter referenced a missing JSON-path helper and lacked the `System.Net` import for HTML decoding. No tests executed.
-- Correction: add the JSON-path traversal helper and required import; also make the fixed-parameter dictionary copy compatible with `IReadOnlyDictionary`.
-- The corrected commit is verified by CI run 45013006368. The next batch is verified by run 45013295887.
-
-
-- Second CI run: https://github.com/fwjlh/DotNetWebSearchApi/actions/runs/45012899977. Build passed with 0 warnings/errors; 103 tests passed and 2 failed. One test expected the NuGet `$top` parameter before URL encoding; the assertion now decodes the query. The other exposed relative Open Library paths being interpreted as absolute file URIs; URL handling now accepts only absolute HTTP(S) URLs before applying the configured prefix.
-
-
-## Latest verified provider batch
-
-- Commit: `fcc88fe26dd15e5d1e46e9deacb1fe797b55be21`
-- CI: https://github.com/fwjlh/DotNetWebSearchApi/actions/runs/45013006368
-- Build: passed, 0 warnings, 0 errors.
-- Tests: 105 passed, 0 failed, 0 skipped.
-- Provider count: 26 implemented, registered and fixture-tested in the last verified batch. The third provider batch passed CI. Live upstream acceptance remains unverified.
-
-
-## Provider batch 2 — verification pending
-
-- Added: Europe PMC, Semantic Scholar, GitHub repository search, Docker Hub, Google Books, Internet Archive, RubyGems and Hugging Face Models.
-- These use public JSON endpoints and the shared JSON adapter. RubyGems and Hugging Face return root arrays; the adapter now supports a root-array selector.
-- Fixture tests are included. CI has not yet run for this batch. Live upstream acceptance and current quotas/availability remain unverified.
-
-
-- CI run 45013175836 failed during build because a handover commit had been constructed from an older Git tree, unintentionally restoring the pre-fix JSON adapter. The second provider batch definitions and fixtures remained. The helper/import, HTTP(S)-only absolute URL handling, relative URL prefixing, dictionary copy and decoded query assertion are restored in the current correction.
-
-
-## Latest verified provider batch
-
-- Commit: `07cc22461140dc81ce7eec6958a0a5d6465b8101`
-- CI: https://github.com/fwjlh/DotNetWebSearchApi/actions/runs/45013295887
-- Build: passed, 0 warnings, 0 errors.
-- Tests: 113 passed, 0 failed, 0 skipped.
-- Provider count: 26 implemented, registered and fixture-tested. Live upstream acceptance remains unverified.
-
-
-## Provider batch 3 — verification pending
-
-- Added: Super User, Server Fault, Ask Ubuntu, GitLab Projects, Gitea, Maven Central, Packagist and pub.dev.
-- The three Stack Exchange sites use distinct `site` parameters. GitLab and Maven return root arrays/nested JSON respectively; pub.dev uses a nested package path and a provider-specific URL prefix.
-- Fixture tests are included. CI and live upstream acceptance are not yet verified.
-
-
-- CI run 45013448673: build succeeded; 120/121 tests passed. The only failure was Maven Central's colon-delimited artifact coordinate being interpreted as an absolute URI scheme instead of a relative path. The URL-prefix path now percent-encodes reserved characters while preserving embedded path separators. Correction is pending CI.
-
-
-## Latest verified provider batch
-
-- Commit: `8145914717e165c632d2c714776f978477611f47`
-- CI: https://github.com/fwjlh/DotNetWebSearchApi/actions/runs/45013542434
-- Build: passed, 0 warnings, 0 errors.
-- Tests: 121 passed, 0 failed, 0 skipped.
-- Provider count: 34 implemented, registered and fixture-tested in the last verified batch. Eight more are pending CI. Live upstream acceptance remains unverified.
-
-
-## Provider batch 4 — verification pending
-
-- Added: arXiv (Atom/XML), Bilibili, Dailymotion, Deezer, Steam, MusicBrainz, Wikidata and German Wikipedia.
-- arXiv uses a dedicated Atom parser with DTD processing prohibited; the remaining seven use provider-specific JSON definitions.
-- Fixture tests are included. CI and live upstream acceptance are not yet verified. Media providers may impose regional, account or anti-automation restrictions.
+1. Verify batch 5 and correct any build/test failures.
+2. Continue real provider ports from 50 to 100, prioritising general web search first, then specialist and regional providers.
+3. Keep API keys optional and outside source control; record quotas, rate limits and access restrictions.
+4. At 100, stop feature additions and prepare the pull/build/integration/live-provider testing handover.
+5. After live tests, harden authentication, rate limiting, outbound request policy, SQL Server configuration and admin editing.

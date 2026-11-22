@@ -380,6 +380,126 @@ public static class JsonApiProviderCatalog
                 ["format"] = "json"
             }
         }
+
+        new JsonApiSearchDefinition
+        {
+            Name = "wiby",
+            Endpoint = "https://wiby.me/json/",
+            QueryParameter = "q",
+            LimitParameter = string.Empty,
+            ResultsPath = "$",
+            TitlePath = "Title",
+            UrlPath = "URL",
+            SnippetPath = "Snippet",
+            Attribution = "Search via https://wiby.me"
+        },
+        new JsonApiSearchDefinition
+        {
+            Name = "tvmaze",
+            Endpoint = "https://api.tvmaze.com/search/shows",
+            QueryParameter = "q",
+            LimitParameter = string.Empty,
+            ResultsPath = "$",
+            TitlePath = "show.name",
+            UrlPath = "show.url",
+            SnippetPath = "show.summary"
+        },
+        new JsonApiSearchDefinition
+        {
+            Name = "radiobrowser",
+            Endpoint = "https://de1.api.radio-browser.info/json/stations/search",
+            QueryParameter = "name",
+            LimitParameter = "limit",
+            ResultsPath = "$",
+            TitlePath = "name",
+            UrlPath = "url",
+            SnippetPath = "tags",
+            FixedParameters = new Dictionary<string, string>
+            {
+                ["order"] = "votes",
+                ["reverse"] = "true",
+                ["hidebroken"] = "true"
+            }
+        },
+        new JsonApiSearchDefinition
+        {
+            Name = "peertube",
+            Endpoint = "https://peertube.cpy.re/api/v1/search/videos",
+            QueryParameter = "search",
+            LimitParameter = "count",
+            ResultsPath = "data",
+            TitlePath = "name",
+            UrlPath = "url",
+            SnippetPath = "description",
+            FixedParameters = new Dictionary<string, string> { ["searchTarget"] = "local" }
+        },
+        new JsonApiSearchDefinition
+        {
+            Name = "wikimedia_commons",
+            Endpoint = "https://commons.wikimedia.org/w/api.php",
+            QueryParameter = "srsearch",
+            LimitParameter = "srlimit",
+            ResultsPath = "query.search",
+            TitlePath = "title",
+            UrlPath = "title",
+            SnippetPath = "snippet",
+            UrlPrefix = "https://commons.wikimedia.org/wiki/",
+            FixedParameters = new Dictionary<string, string>
+            {
+                ["action"] = "query",
+                ["list"] = "search",
+                ["format"] = "json",
+                ["srnamespace"] = "6",
+                ["srprop"] = "snippet"
+            }
+        },
+        new JsonApiSearchDefinition
+        {
+            Name = "wikinews",
+            Endpoint = "https://en.wikinews.org/w/api.php",
+            QueryParameter = "srsearch",
+            LimitParameter = "srlimit",
+            ResultsPath = "query.search",
+            TitlePath = "title",
+            UrlPath = "title",
+            SnippetPath = "snippet",
+            UrlPrefix = "https://en.wikinews.org/wiki/",
+            FixedParameters = new Dictionary<string, string>
+            {
+                ["action"] = "query",
+                ["list"] = "search",
+                ["format"] = "json",
+                ["srprop"] = "snippet"
+            }
+        },
+        new JsonApiSearchDefinition
+        {
+            Name = "wikipedia_es",
+            Endpoint = "https://es.wikipedia.org/w/api.php",
+            QueryParameter = "srsearch",
+            LimitParameter = "srlimit",
+            ResultsPath = "query.search",
+            TitlePath = "title",
+            UrlPath = "title",
+            UrlPrefix = "https://es.wikipedia.org/wiki/",
+            FixedParameters = new Dictionary<string, string>
+            {
+                ["action"] = "query",
+                ["list"] = "search",
+                ["format"] = "json"
+            }
+        },
+        new JsonApiSearchDefinition
+        {
+            Name = "openverse",
+            Endpoint = "https://api.openverse.org/v1/images/",
+            QueryParameter = "q",
+            LimitParameter = "page_size",
+            ResultsPath = "results",
+            TitlePath = "title",
+            UrlPath = "foreign_landing_url",
+            SnippetPath = "attribution"
+        }
     };
 
     public static void Register(IServiceCollection services)

@@ -35,7 +35,14 @@ public sealed class JsonApiSearchProviderTests
         Assert.Equal(expectedTitle, result.Title);
         Assert.Equal(expectedUrl, result.Url);
         Assert.Contains("C%23%20%26%20search", requestUri!.Query);
-        Assert.Contains(definition.LimitParameter + "=", Uri.UnescapeDataString(requestUri.Query));
+        if (!string.IsNullOrWhiteSpace(definition.LimitParameter))
+        {
+            Assert.Contains(definition.LimitParameter + "=", Uri.UnescapeDataString(requestUri.Query));
+        }
+        if (definition.Name == "wiby")
+        {
+            Assert.Contains("https://wiby.me", result.Snippet);
+        }
     }
 
     [Fact]
@@ -284,6 +291,63 @@ public sealed class JsonApiSearchProviderTests
             "{\"query\":{\"search\":[{\"title\":\"Beispiel\"}]}}",
             "Beispiel",
             "https://de.wikipedia.org/wiki/Beispiel"
+        };
+
+        yield return new object[]
+        {
+            JsonApiProviderCatalog.Definitions.Single(item => item.Name == "wiby"),
+            "[{\"URL\":\"https://example.org/wiby\",\"Title\":\"Wiby result\",\"Snippet\":\"A small web result\"}]",
+            "Wiby result",
+            "https://example.org/wiby"
+        };
+        yield return new object[]
+        {
+            JsonApiProviderCatalog.Definitions.Single(item => item.Name == "tvmaze"),
+            "[{\"show\":{\"name\":\"Example Show\",\"url\":\"https://www.tvmaze.com/shows/1/example\",\"summary\":\"<p>A television show</p>\"}}]",
+            "Example Show",
+            "https://www.tvmaze.com/shows/1/example"
+        };
+        yield return new object[]
+        {
+            JsonApiProviderCatalog.Definitions.Single(item => item.Name == "radiobrowser"),
+            "[{\"name\":\"Example Radio\",\"url\":\"https://stream.example.org/live\",\"tags\":\"jazz,pop\"}]",
+            "Example Radio",
+            "https://stream.example.org/live"
+        };
+        yield return new object[]
+        {
+            JsonApiProviderCatalog.Definitions.Single(item => item.Name == "peertube"),
+            "{\"data\":[{\"name\":\"PeerTube video\",\"url\":\"https://peertube.cpy.re/videos/watch/123\",\"description\":\"A federated video\"}]}",
+            "PeerTube video",
+            "https://peertube.cpy.re/videos/watch/123"
+        };
+        yield return new object[]
+        {
+            JsonApiProviderCatalog.Definitions.Single(item => item.Name == "wikimedia_commons"),
+            "{\"query\":{\"search\":[{\"title\":\"File:Example.jpg\",\"snippet\":\"An image\"}]}}",
+            "File:Example.jpg",
+            "https://commons.wikimedia.org/wiki/File%3AExample.jpg"
+        };
+        yield return new object[]
+        {
+            JsonApiProviderCatalog.Definitions.Single(item => item.Name == "wikinews"),
+            "{\"query\":{\"search\":[{\"title\":\"Example news\",\"snippet\":\"A news report\"}]}}",
+            "Example news",
+            "https://en.wikinews.org/wiki/Example%20news"
+        };
+        yield return new object[]
+        {
+            JsonApiProviderCatalog.Definitions.Single(item => item.Name == "wikipedia_es"),
+            "{\"query\":{\"search\":[{\"title\":\"Ejemplo\",\"snippet\":\"Una página\"}]}}",
+            "Ejemplo",
+            "https://es.wikipedia.org/wiki/Ejemplo"
+        };
+        yield return new object[]
+        {
+            JsonApiProviderCatalog.Definitions.Single(item => item.Name == "openverse"),
+            "{\"results\":[{\"title\":\"Openly licensed image\",\"foreign_landing_url\":\"https://example.org/media/1\",\"attribution\":\"CC BY 4.0 by Example\"}]}",
+            "Openly licensed image",
+            "https://example.org/media/1"
         };
     }
 

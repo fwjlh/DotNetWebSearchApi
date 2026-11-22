@@ -42,7 +42,10 @@ public sealed class JsonApiSearchProvider : ISearchProvider
             parameter => parameter.Value,
             StringComparer.Ordinal);
         parameters[_definition.QueryParameter] = query.Text;
-        parameters[_definition.LimitParameter] = Math.Clamp(query.Limit, 1, 50).ToString();
+        if (!string.IsNullOrWhiteSpace(_definition.LimitParameter))
+        {
+            parameters[_definition.LimitParameter] = Math.Clamp(query.Limit, 1, 50).ToString();
+        }
 
         string queryString = string.Join("&", parameters.Select(parameter =>
             Uri.EscapeDataString(parameter.Key) + "=" + Uri.EscapeDataString(parameter.Value)));
@@ -103,7 +106,7 @@ public sealed class JsonApiSearchProvider : ISearchProvider
         result = new SearchResult(
             title,
             resultUri.AbsoluteUri,
-            CleanText(snippet),
+            AppendAttribution(CleanText(snippet)),
             Name,
             1.0 / (position + 1));
         return true;
@@ -166,6 +169,18 @@ public sealed class JsonApiSearchProvider : ISearchProvider
         return false;
     }
 
+    private string AppendAttribution(string snippet)
+    {
+        if (string.IsNullOrWhiteSpace(_definition.Attribution))
+        {
+            return snippet;
+        }
+
+        return string.IsNullOrWhiteSpace(snippet)
+            ? _definition.Attribution
+            : snippet + " " + _definition.Attribution;
+    }
+
     private static string CleanText(string value)
     {
         return WebUtility.HtmlDecode(Regex.Replace(value, "<[^>]+>", string.Empty)).Trim();
@@ -183,6 +198,7 @@ public sealed record JsonApiSearchDefinition
     public required string UrlPath { get; init; }
     public string SnippetPath { get; init; } = string.Empty;
     public string UrlPrefix { get; init; } = string.Empty;
+    public string Attribution { get; init; } = string.Empty;
     public IReadOnlyDictionary<string, string> FixedParameters { get; init; } =
         new Dictionary<string, string>();
 }

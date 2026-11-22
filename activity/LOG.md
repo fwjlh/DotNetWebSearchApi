@@ -542,3 +542,21 @@ Every material repository action is recorded here with its reason, result, verif
 - **Result:** Catalogue now defines 42 adapters. No live requests were made; media provider acceptance and regional access remain unverified.
 - **Verification:** Pending GitHub Actions.
 - **Next:** Verify this batch, then continue across image, news, video, code, regional and specialist sources.
+
+
+## 2026-11-22 — Batch 4 verification and batch 5 implementation
+
+### 64. Verify media, knowledge and academic provider batch 4
+- **Reason:** Close the pending verification before starting another increment.
+- **Action:** Inspected workflow run 45013727838, including the build-and-test job log, for commit 92a34b06ec137dfea1625af2d881803c90bc3045.
+- **Result:** **CI passed.** Restore succeeded; build succeeded with 0 warnings and 0 errors; all 130 tests passed (0 failed, 0 skipped).
+- **Verification:** https://github.com/fwjlh/DotNetWebSearchApi/actions/runs/45013727838. The 42 adapters are now all CI-verified at fixture level. Live upstream acceptance is not verified.
+- **Next:** Continue provider additions, preserving real endpoints, request parameters, provider-specific response paths and fixture coverage.
+
+### 65. Implement eight additional search and specialist providers
+- **Reason:** Continue from 42 toward the agreed 100-provider milestone while keeping a mix of independent search, media, knowledge and regional sources.
+- **Action:** Added Wiby, TVmaze, Radio Browser, PeerTube, Wikimedia Commons, Wikinews, Spanish Wikipedia and Openverse. Extended the shared JSON definition to support APIs without a limit parameter and provider-required attribution. Wiby attribution is included in result snippets as required by its API terms.
+- **Result:** Catalogue now defines 39 JSON API adapters plus the dedicated arXiv adapter and ten original adapters, for 50 registered providers in total.
+- **Tests:** Added eight deterministic fixture cases, including Wiby attribution and API shapes for nested and root-array responses.
+- **Verification:** Pending GitHub Actions. No live provider calls were made.
+- **Next:** Verify this batch, then continue toward 100. Keep live acceptance, quotas and access restrictions separate from fixture-level CI status.
