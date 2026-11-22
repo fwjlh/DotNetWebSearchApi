@@ -303,23 +303,36 @@ These are translation targets, not assertions that every row is already implemen
 
 **Python source:** [searx/engines/wikipedia.py](https://github.com/searxng/searxng/blob/c6ee3e9fd0235004a694e63720efc869bb1e3594/searx/engines/wikipedia.py)
 
-**C# source:** [WikipediaSearchProvider.cs](../src/DotNetWebSearchApi/Search/WikipediaSearchProvider.cs)
+**C# source:**
+- [WikipediaSearchProvider.cs](../src/DotNetWebSearchApi/Search/WikipediaSearchProvider.cs)
+- [EngineLocaleRegistry.cs](../src/DotNetWebSearchApi/Search/EngineLocaleRegistry.cs)
+- [WikipediaSearchProviderTests.cs](../tests/DotNetWebSearchApi.Tests/WikipediaSearchProviderTests.cs)
 
 **Important: the two implementations do different jobs.**
 
-- SearXNG's Python engine is a page-summary lookup, not a search-results query. It calls the Wikimedia REST summary endpoint for a title, chooses the language-specific Wikipedia host using fetched language/region traits, and supports language-converter variants through the `Accept-Language` header.
-- Python's result is richer than a normal link: depending on display configuration and page type, it can return a list result and/or an infobox containing extract text, thumbnail and links. It treats 404 and a specific invalid-title 400 as empty results.
-- The C# implementation calls the English Wikipedia Action API `w/api.php?action=query&list=search`. It therefore performs a genuine text search and maps each hit's `pageid` to a `?curid=` URL. It parses HTML markup embedded in the API snippet and strips the tags.
-- This is a deliberate change in product semantics: C# offers a search provider where Python's SearXNG module offers a single-page summary/infobox lookup. The two should not be compared as equivalent ports.
+- SearXNG's Python engine is a page-summary lookup, not a search-results query. It calls the Wikimedia REST summary endpoint for a title, chooses the language-specific Wikipedia host using fetched language/region traits, and supports language-converter variants through the Accept-Language header.
+- Python can return a list result and/or an infobox containing extract text, thumbnail and links. It treats 404 and a specific invalid-title 400 as empty results.
+- C# calls the Wikimedia Action API w/api.php?action=query&list=search. It performs a genuine text search and maps each hit's pageid to a ?curid= URL. It strips HTML markup from snippets.
+- This is a deliberate product-semantic change: C# offers a search provider where Python offers a single-page summary/infobox lookup. These are not equivalent ports.
+
+**What has now been carried across from Python's locale model**
+
+- C# resolves BCP-47 language/region values through EngineLocaleRegistry, with a curated set of Wikipedia language codes and region variants.
+- The registry maps language codes to wiki hostnames through a wiki_netloc custom trait, matching Python's traits.custom["wiki_netloc"] concept.
+- Chinese region/script variants select zh.wikipedia.org and send a region-specific Accept-Language header so Wikimedia's LanguageConverter can choose the script.
+- C# declares locale support and passes SearchQuery.Limit as Action API srlimit (bounded 1–50).
 
 **Known divergence / omissions**
 
-- C# is fixed to English and does not fetch or map Wikimedia language traits, non-standard language codes or Chinese script/region variants.
-- It does not call the REST summary API, does not return an infobox, thumbnail or the canonical desktop page URL, and does not implement Python's invalid-title status handling.
-- The C# search API request has no explicit limit parameter, so it uses the Action API default result count rather than `SearchQuery.Limit`.
-- The repository tree contains no dedicated `WikipediaSearchProviderTests.cs` at this review point. This adapter needs fixture tests for valid search JSON, missing properties, HTML snippets, HTTP 404 and query encoding before it should be treated as covered.
+- C# still uses Action API search, not Python's REST summary endpoint; it does not return infoboxes, extracts, thumbnails or the canonical desktop page URL.
+- The locale map is a curated subset, not the complete dynamically fetched Wikimedia language catalogue. Non-standard language codes and all script variants are not yet mapped.
+- C# does not reproduce Python's contact-specific User-Agent requirement, soft redirect policy, invalid-title 400 handling or rich result-type selection.
+- Paging, safe-search and time-range are not declared or implemented.
 
-**Interpretation:** retain the C# implementation as an English Wikipedia search adapter, but document the semantic difference and do not call it a port of SearXNG's summary engine.
+**Verification:** WikipediaSearchProviderTests verifies zh-TW host selection, Accept-Language, result URL, default English host and capabilities. GitHub Actions [run 45029724644](https://github.com/fwjlh/DotNetWebSearchApi/actions/runs/45029724644) passed: 215 tests, 0 failed, 0 skipped. No live Wikimedia requests were made.
+
+**Interpretation:** retain this as a locale-aware Wikipedia Action API search adapter. It is not a port of SearXNG's Wikipedia REST summary engine.
+
 
 ### Generic JSON API adapters
 

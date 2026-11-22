@@ -932,3 +932,12 @@ Every material repository action is recorded here with its reason, result, verif
 - **Tests:** Added DDG locale/time-range form and cookie assertions, curated locale mappings and capability assertions. GitHub Actions [run 45029215535](https://github.com/fwjlh/DotNetWebSearchApi/actions/runs/45029215535) completed successfully (build and test steps green; detailed test count not captured). No live provider calls.
 - **Documentation:** Updated the DDG port rationale, locale-traits notes, porting audit and handover.
 - **Next:** Port Wikipedia's language-to-host mapping and LanguageConverter variants. Keep provider count frozen at 67.
+
+
+### 102. Record Wikipedia locale/host trait translation and semantic boundary
+- **Reason:** Wikipedia's Python EngineTraits use is materially different from Bing market codes and DuckDuckGo region tokens. It maps locale to a language-specific host and uses Accept-Language for language-converter variants.
+- **Action:** Updated the Wikipedia port rationale to distinguish Python's REST page-summary/infobox engine from C#'s Action API text-search provider. The C# implementation now selects a curated language-specific host, sends Accept-Language, and maps SearchQuery.Limit to srlimit.
+- **Action:** Updated locale-traits notes and handover to record the static host map and remaining gaps. No provider catalogue changes.
+- **Verification:** Initial CI run 45029602909 built cleanly but had one test assertion mismatch: .NET formats the Accept-Language quality value with a space ("zh; q=0.9"). The assertion was corrected. Final run [45029724644](https://github.com/fwjlh/DotNetWebSearchApi/actions/runs/45029724644) passed: build 0 warnings/errors; 215 tests passed, 0 failed, 0 skipped.
+- **No live tests:** No Wikimedia request was made; only fixtures and request assertions.
+- **Next:** Add Google locale/region mappings. Keep provider count frozen at 67.

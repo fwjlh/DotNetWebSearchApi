@@ -74,3 +74,26 @@ This is an evidence-based subset, not a complete dynamic traits port. Unknown re
 ## Verification limits
 
 Fixture tests verify known Bing and DuckDuckGo mappings, Bing safe-search request construction, DuckDuckGo time-range form/cookie mapping and conservative fallbacks. They do not prove current live market behaviour. No live upstream requests were made.
+
+
+## Wikipedia: language-to-host and LanguageConverter traits
+
+**Python source:** [searx/engines/wikipedia.py](https://github.com/searxng/searxng/blob/c6ee3e9fd0235004a694e63720efc869bb1e3594/searx/engines/wikipedia.py)
+
+Python's get_wiki_params prefers a region mapping, falls back to a language mapping, then resolves the resulting engine tag through traits.custom["wiki_netloc"]. The source also defines language/script aliases and region variants for Chinese LanguageConverter support. Its request uses the REST summary endpoint and sends the desired language variant through Accept-Language.
+
+C# now has a curated set of Wikipedia language codes, hostnames and Chinese region variants. The Action API search provider selects the mapped host, sends a locale-specific Accept-Language header and carries the requested result limit as srlimit. It declares locale support but not paging, safe-search or time-range.
+
+This is only a partial traits translation: host/locale behaviour is carried across, but the provider still uses Action API search rather than Python's REST summary API. It therefore does not reproduce Python's infobox, extract, thumbnail or display-type behaviour.
+
+## Remaining traits gaps
+
+- The registry has no dynamic refresh or persistence.
+- Bing and DuckDuckGo region maps and Wikipedia language/host maps are curated subsets, not the full dynamic SearXNG traits catalogue.
+- Wikipedia non-standard language codes and all script variants are not yet mapped.
+- DuckDuckGo language-region maps remain partial.
+- Google locale/region mapping remains future work.
+
+Next: expand Wikipedia's non-standard language codes and Google locale/region maps after their request builders consume them. Keep traits versioned and static until refresh/persistence provides clear value.
+
+Verification: fixtures cover Bing, DuckDuckGo and Wikipedia locale mappings, request construction and conservative fallbacks. Wikipedia locale/host tests are green in [run 45029724644](https://github.com/fwjlh/DotNetWebSearchApi/actions/runs/45029724644).
