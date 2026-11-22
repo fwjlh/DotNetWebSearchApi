@@ -7,7 +7,8 @@ namespace DotNetWebSearchApi.Search;
 public enum ProviderOutcomeStatus
 {
     Succeeded,
-    Failed
+    Failed,
+    Skipped
 }
 
 public enum ProviderFailureKind
