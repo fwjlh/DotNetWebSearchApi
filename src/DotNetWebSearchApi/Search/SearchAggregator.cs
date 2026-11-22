@@ -8,15 +8,18 @@ public sealed class SearchAggregator
     private readonly IReadOnlyList<ISearchProvider> _providers;
     private readonly ILogger<SearchAggregator> _logger;
     private readonly SearchDiagnostics _diagnostics;
+    private readonly ProviderHealthRegistry _health;
 
     public SearchAggregator(
         IEnumerable<ISearchProvider> providers,
         ILogger<SearchAggregator> logger,
-        SearchDiagnostics? diagnostics = null)
+        SearchDiagnostics? diagnostics = null,
+        ProviderHealthRegistry? health = null)
     {
         _providers = providers.ToArray();
         _logger = logger;
         _diagnostics = diagnostics ?? new SearchDiagnostics();
+        _health = health ?? new ProviderHealthRegistry();
     }
 
     public IReadOnlyList<string> ProviderNames => _providers.Select(provider => provider.Name).ToArray();
@@ -42,18 +45,43 @@ public sealed class SearchAggregator
             .Except(eligibleProviders)
             .Select(provider => provider.Name)
             .ToArray();
+        List<ProviderOutcome> skippedOutcomes = new();
+        List<ISearchProvider> readyProviders = new();
+        foreach (ISearchProvider provider in eligibleProviders)
+        {
+            ProviderHealthAdmission admission = _health.TryAcquire(provider.Name);
+            if (admission.CanExecute)
+            {
+                readyProviders.Add(provider);
+                continue;
+            }
+
+            skippedOutcomes.Add(new ProviderOutcome(
+                provider.Name,
+                ProviderOutcomeStatus.Skipped,
+                admission.Snapshot.LastFailureKind,
+                admission.RetryAfter));
+        }
+
         ProviderExecutionResult[] providerResults = await Task.WhenAll(
-            eligibleProviders.Select(provider => ExecuteProviderAsync(provider, query, cancellationToken)));
+            readyProviders.Select(provider => ExecuteProviderAsync(provider, query, cancellationToken)));
 
         IReadOnlyList<SearchResult> results = MergeResults(providerResults.Select(item => item.Results), query.Limit);
-        ProviderOutcome[] outcomes = providerResults.Select(item => item.Outcome).ToArray();
+        ProviderOutcome[] outcomes = skippedOutcomes
+            .Concat(providerResults.Select(item => item.Outcome))
+            .ToArray();
         string[] unresponsiveProviders = outcomes
             .Where(item => item.Status == ProviderOutcomeStatus.Failed)
             .Select(item => item.ProviderName)
             .ToArray();
+        string[] coolingDownProviders = outcomes
+            .Where(item => item.Status == ProviderOutcomeStatus.Skipped)
+            .Select(item => item.ProviderName)
+            .ToArray();
         return new SearchExecutionResult(results, unresponsiveProviders, unsupportedProviders)
         {
-            ProviderOutcomes = outcomes
+            ProviderOutcomes = outcomes,
+            CoolingDownProviders = coolingDownProviders
         };
     }
 
@@ -75,12 +103,14 @@ public sealed class SearchAggregator
         try
         {
             IReadOnlyList<SearchResult> results = await provider.SearchAsync(query, timeoutSource.Token);
+            _health.RecordSuccess(provider.Name);
             _diagnostics.RecordSuccess(provider.Name, stopwatch.Elapsed, results.Count);
             ProviderOutcome outcome = new(provider.Name, ProviderOutcomeStatus.Succeeded);
             return new ProviderExecutionResult(results, outcome);
         }
         catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
         {
+            _health.ReleaseProbe(provider.Name);
             throw;
         }
         catch (Exception exception)
@@ -89,6 +119,10 @@ public sealed class SearchAggregator
                 provider.Name,
                 exception,
                 timeoutSource.IsCancellationRequested);
+            _health.RecordFailure(
+                provider.Name,
+                outcome.FailureKind ?? ProviderFailureKind.Unknown,
+                outcome.RetryAfter);
             _logger.LogWarning(
                 exception,
                 "Search provider {Provider} failed with {FailureKind}.",
