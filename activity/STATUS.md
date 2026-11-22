@@ -125,7 +125,7 @@ There is no SQL Server provider store, general configurable HTTP provider, API-k
 - CI: https://github.com/fwjlh/DotNetWebSearchApi/actions/runs/45013006368
 - Build: passed, 0 warnings, 0 errors.
 - Tests: 105 passed, 0 failed, 0 skipped.
-- Provider count: 26 implemented, registered and fixture-tested in the last verified batch. Eight more are pending CI. Live upstream acceptance remains unverified.
+- Provider count: 26 implemented, registered and fixture-tested in the last verified batch. The third provider batch passed CI. Live upstream acceptance remains unverified.
 
 
 ## Provider batch 2 — verification pending
@@ -155,3 +155,12 @@ There is no SQL Server provider store, general configurable HTTP provider, API-k
 
 
 - CI run 45013448673: build succeeded; 120/121 tests passed. The only failure was Maven Central's colon-delimited artifact coordinate being interpreted as an absolute URI scheme instead of a relative path. The URL-prefix path now percent-encodes reserved characters while preserving embedded path separators. Correction is pending CI.
+
+
+## Latest verified provider batch
+
+- Commit: `8145914717e165c632d2c714776f978477611f47`
+- CI: https://github.com/fwjlh/DotNetWebSearchApi/actions/runs/45013542434
+- Build: passed, 0 warnings, 0 errors.
+- Tests: 121 passed, 0 failed, 0 skipped.
+- Provider count: 34 implemented, registered and fixture-tested. Live upstream acceptance remains unverified.

@@ -523,3 +523,12 @@ Every material repository action is recorded here with its reason, result, verif
 - **Correction:** Escape reserved characters when appending provider identifiers to URL prefixes while preserving embedded path separators; update the expected URL to its correctly escaped form.
 - **Verification:** Run https://github.com/fwjlh/DotNetWebSearchApi/actions/runs/45013448673. One test failed; no live provider request was made.
 - **Next:** Push the URL correction and verify the full suite.
+
+
+### 62. Verify developer and package provider batch 3
+- **Reason:** Confirm the Maven URL-prefix correction and all eight provider fixtures.
+- **Action:** Inspected workflow run 45013542434 for commit 8145914717e165c632d2c714776f978477611f47 and fetched the job log.
+- **Result:** **CI passed.** Restore and build succeeded; 0 warnings and 0 errors. All 121 tests passed (0 failed, 0 skipped).
+- **Correction history:** Initial run 45013448673 passed build and 120/121 tests. Maven Central's colon-delimited artifact identifier was being interpreted as a URI scheme. Prefix joining now percent-encodes reserved characters while preserving path separators.
+- **Verification:** https://github.com/fwjlh/DotNetWebSearchApi/actions/runs/45013542434. The batch adds Super User, Server Fault, Ask Ubuntu, GitLab, Gitea, Maven Central, Packagist and pub.dev. Tests use fixtures and fake handlers; live upstream acceptance is not claimed.
+- **Next:** Continue towards 100 provider adapters, then hand over for local build and live testing.
