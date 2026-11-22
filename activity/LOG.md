@@ -983,3 +983,11 @@ Every material repository action is recorded here with its reason, result, verif
 - **Known omissions:** Naver Python supports images/news/videos and emits thumbnail metadata; C# remains general web only and drops thumbnails.
 - **Documentation:** Updated Naver rationale, porting audit, README and handover.
 - **Next:** Add Naver thumbnail metadata and review Seznam hidden-form cookie handling. Provider count remains frozen at 67.
+
+
+### 107. Reconcile Seznam's two-step form and verification behaviour
+- **Reason:** The C# provider already implemented Seznam's homepage → hidden-fields → search flow, but the porting notes incorrectly implied that cookie forwarding was not handled and did not record the new challenge subtype.
+- **Python evidence:** Pinned seznam.py reads hidden input name/value pairs from the homepage, sends q/oq/noredirect=1 with those fields, forwards homepage cookies, and treats a /verify response path as access denied. The engine does not advertise paging, time-range or safe-search.
+- **Action:** Reconciled the corpus and audit with the current C# implementation. The typed HttpClient uses its default cookie-enabled handler across the two requests; the provider does not manually serialize cookies. A /verify route is now Challenge + BrowserVerification.
+- **Verification:** Documentation-only reconciliation. Existing provider fixture tests remain part of the verified 236-test suite in [run 45030669036](https://github.com/fwjlh/DotNetWebSearchApi/actions/runs/45030669036). No live Seznam requests.
+- **Next:** Naver thumbnail metadata, then operational API conformance/security hardening. Provider count remains frozen at 67.
