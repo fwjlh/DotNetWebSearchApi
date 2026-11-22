@@ -101,6 +101,7 @@ if (!string.IsNullOrWhiteSpace(braveApiKey))
 }
 
 builder.Services.AddSingleton<SearchDiagnostics>();
+builder.Services.AddSingleton<SearchHttpTransport>();
 builder.Services.AddSingleton<ProviderHealthRegistry>();
 builder.Services.AddSingleton<SearchAggregator>();
 WebApplication app = builder.Build();
