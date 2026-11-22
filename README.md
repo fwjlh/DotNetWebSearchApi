@@ -59,7 +59,7 @@ The implementation strategy is to work from the major general-purpose search eng
 
 | Priority | Provider | Status | Implementation notes |
 |---:|---|---|---|
-| 1 | Bing | Planned | Validate the currently supported access route and terms before implementation |
+| 1 | Bing Web | Working | SearXNG-style HTML adapter; parser and request tests pass; live availability not tested in CI |
 | 2 | Brave Search | Planned | Confirm API access and key/configuration requirements |
 | 3 | Google Search | Planned | Select a supported access method; document account, quota or billing requirements |
 | 4 | DuckDuckGo | Planned | Evaluate the current public search interface and its limitations |
@@ -187,7 +187,7 @@ Run from the repository root:
 
 GitHub Actions runs restore, build and tests for pushes and pull requests. The badge at the top links to the workflow.
 
-The initial verified implementation passed its CI build with **9 tests passing**. Check the Actions history for the latest result; this README does not assume that a previous successful run proves every future commit is green.
+The current verified implementation passes CI with **15 tests passing** (9 foundation tests and 6 Bing adapter tests). Check the Actions history for the latest result; this README does not assume that a previous successful run proves every future commit is green.
 
 ## Planned delivery sequence
 
