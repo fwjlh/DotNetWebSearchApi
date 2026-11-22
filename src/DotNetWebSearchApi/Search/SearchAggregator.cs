@@ -35,15 +35,29 @@ public sealed class SearchAggregator
         ISearchProvider[] selectedProviders = query.ProviderNames is null
             ? _providers.ToArray()
             : _providers.Where(provider => query.ProviderNames.Contains(provider.Name)).ToArray();
+        ISearchProvider[] eligibleProviders = selectedProviders
+            .Where(provider => GetCapabilities(provider).Supports(query))
+            .ToArray();
+        string[] unsupportedProviders = selectedProviders
+            .Except(eligibleProviders)
+            .Select(provider => provider.Name)
+            .ToArray();
         ProviderExecutionResult[] providerResults = await Task.WhenAll(
-            selectedProviders.Select(provider => ExecuteProviderAsync(provider, query, cancellationToken)));
+            eligibleProviders.Select(provider => ExecuteProviderAsync(provider, query, cancellationToken)));
 
         IReadOnlyList<SearchResult> results = MergeResults(providerResults.Select(item => item.Results), query.Limit);
         string[] unresponsiveProviders = providerResults
             .Where(item => item.Failed)
             .Select(item => item.ProviderName)
             .ToArray();
-        return new SearchExecutionResult(results, unresponsiveProviders);
+        return new SearchExecutionResult(results, unresponsiveProviders, unsupportedProviders);
+    }
+
+    private static EngineCapabilities GetCapabilities(ISearchProvider provider)
+    {
+        return provider is ISearchProviderCapabilities declared
+            ? declared.Capabilities
+            : EngineCapabilities.BasicWeb;
     }
 
     private async Task<ProviderExecutionResult> ExecuteProviderAsync(
