@@ -606,3 +606,12 @@ Every material repository action is recorded here with its reason, result, verif
 - **Result:** One compile-only test project issue corrected; provider code unchanged.
 - **Verification:** Pending CI.
 - **Next:** Verify all tests; then close batch 6.
+
+
+### 71. Verify batch 6 and close the 58-provider milestone
+- **Reason:** Confirm the fixes from the first batch-6 CI attempts.
+- **Action:** Inspected workflow run 45019669530 for commit c9dc51d51b162fd9ae6711cc52c2e84a7b18ca17 and retrieved the completed build-and-test log.
+- **Result:** **CI passed.** Restore succeeded; build succeeded with 0 warnings and 0 errors; all 146 tests passed (0 failed, 0 skipped).
+- **Corrections:** RSS XML readers now allow asynchronous reads while prohibiting DTDs; POST request tests parse JSON rather than assuming a literal unescaped ampersand; the test file imports System.Text.Json.
+- **Verification:** https://github.com/fwjlh/DotNetWebSearchApi/actions/runs/45019669530. Eight new fixture cases passed. The source now contains 58 provider adapters; three API-key providers (Yep, Kagi, Exa) are optional and register only when configured.
+- **Next:** Continue from 58 toward 100. General search engines remain the priority; keep optional paid APIs clearly marked and disabled without credentials.

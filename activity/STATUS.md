@@ -5,8 +5,8 @@ Updated: 2026-11-22
 ## Repository
 - Public repository: https://github.com/fwjlh/DotNetWebSearchApi
 - Default branch: main
-- Latest verified code commit: 64c664c91a243bdd9561d18fd5ae4ee7ddd3d5cb
-- Current verified milestone: 50 providers; batch 6 adds eight adapters (58 total) but its first CI run had four fixture failures. RSS async parsing and JSON body assertions were corrected; a missing test namespace was then caught at build time and fixed. Re-verification pending.
+- Latest verified code commit: c9dc51d51b162fd9ae6711cc52c2e84a7b18ca17
+- Current verified milestone: 58 providers; batch 6 passed CI.
 - Project overview and roadmap: [README.md](../README.md)
 
 ## Working application
@@ -25,7 +25,8 @@ Updated: 2026-11-22
 - **50 registered providers** after the current batch.
 - The first 42 providers passed CI fixture tests in run [45013727838](https://github.com/fwjlh/DotNetWebSearchApi/actions/runs/45013727838): build passed with 0 warnings/errors; 130 tests passed.
 - Batch 5 and the full 50-provider catalogue passed CI in run [45019256660](https://github.com/fwjlh/DotNetWebSearchApi/actions/runs/45019256660): build passed with 0 warnings/errors; 138 tests passed.
-- Batch 6 adds eight adapters and eight fixture tests. First CI build passed; 142/146 tests passed. Four fixture failures were corrected and re-verification is pending.
+- Batch 6 and the full 58-provider source catalogue passed CI in run [45019669530](https://github.com/fwjlh/DotNetWebSearchApi/actions/runs/45019669530): build passed with 0 warnings/errors; 146 tests passed.
+- Batch 6 adds eight adapters and eight fixture tests. CI passed: build 0 warnings/errors; 146 tests passed (0 failed, 0 skipped).
 - Batch 5 adds Wiby, TVmaze, Radio Browser, PeerTube, Wikimedia Commons, Wikinews, Spanish Wikipedia and Openverse. All eight fixture cases passed in CI.
 - No new live upstream API requests have been run. Fixture tests verify request construction and response mapping only.
 
