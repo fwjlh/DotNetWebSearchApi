@@ -117,7 +117,7 @@ The provider catalogue is currently frozen at **67 adapters**. No additional pro
 
 The initial major-engine wave includes Bing, Brave, Google, DuckDuckGo, Wikipedia, Mojeek, Startpage (deferred), Qwant, Yahoo, Yandex, Naver and Seznam. This is a record of the original porting scope, not an active queue; provider work is paused while shared capabilities and infrastructure are generalised.
 
-The full provider inventory, implementation status, API-key requirements, rate limits and wave-by-wave progress are maintained in [docs/PROVIDERS.md](docs/PROVIDERS.md).
+The full provider inventory, implementation status, API-key requirements, rate limits and wave-by-wave progress are maintained in [docs/PROVIDERS.md](docs/PROVIDERS.md). The reasoning behind how upstream Python/SearXNG engine behaviour maps to each C# implementation is recorded in the [Python-to-C# porting rationale corpus](docs/PYTHON_TO_CSHARP_PORTING_NOTES.md); the [porting audit](docs/PORTING_AUDIT.md) tracks shared-framework gaps.
 
 
 
