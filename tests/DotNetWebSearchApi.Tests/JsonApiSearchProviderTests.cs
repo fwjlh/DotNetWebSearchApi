@@ -124,6 +124,62 @@ public sealed class JsonApiSearchProviderTests
             "Example book",
             "https://openlibrary.org/works/OL123W"
         };
+        yield return new object[]
+        {
+            JsonApiProviderCatalog.Definitions.Single(item => item.Name == "europepmc"),
+            "{\"resultList\":{\"result\":[{\"title\":\"Medical paper\",\"id\":\"12345\",\"authorString\":\"A. Author\"}]}}",
+            "Medical paper",
+            "https://europepmc.org/article/MED/12345"
+        };
+        yield return new object[]
+        {
+            JsonApiProviderCatalog.Definitions.Single(item => item.Name == "semanticscholar"),
+            "{\"data\":[{\"title\":\"Semantic paper\",\"url\":\"https://www.semanticscholar.org/paper/example\",\"abstract\":\"A paper abstract\"}]}",
+            "Semantic paper",
+            "https://www.semanticscholar.org/paper/example"
+        };
+        yield return new object[]
+        {
+            JsonApiProviderCatalog.Definitions.Single(item => item.Name == "github"),
+            "{\"items\":[{\"full_name\":\"owner/project\",\"html_url\":\"https://github.com/owner/project\",\"description\":\"A repository\"}]}",
+            "owner/project",
+            "https://github.com/owner/project"
+        };
+        yield return new object[]
+        {
+            JsonApiProviderCatalog.Definitions.Single(item => item.Name == "dockerhub"),
+            "{\"results\":[{\"repo_name\":\"library/nginx\",\"short_description\":\"Web server\"}]}",
+            "library/nginx",
+            "https://hub.docker.com/r/library/nginx"
+        };
+        yield return new object[]
+        {
+            JsonApiProviderCatalog.Definitions.Single(item => item.Name == "googlebooks"),
+            "{\"items\":[{\"volumeInfo\":{\"title\":\"Book title\",\"infoLink\":\"https://books.google.com/books?id=123\",\"description\":\"Book description\"}}]}",
+            "Book title",
+            "https://books.google.com/books?id=123"
+        };
+        yield return new object[]
+        {
+            JsonApiProviderCatalog.Definitions.Single(item => item.Name == "internetarchive"),
+            "{\"response\":{\"docs\":[{\"title\":\"Archive item\",\"identifier\":\"archive-item\",\"description\":\"An archived record\"}]}}",
+            "Archive item",
+            "https://archive.org/details/archive-item"
+        };
+        yield return new object[]
+        {
+            JsonApiProviderCatalog.Definitions.Single(item => item.Name == "rubygems"),
+            "[{\"name\":\"example-gem\",\"project_uri\":\"https://rubygems.org/gems/example-gem\",\"info\":\"A gem\"}]",
+            "example-gem",
+            "https://rubygems.org/gems/example-gem"
+        };
+        yield return new object[]
+        {
+            JsonApiProviderCatalog.Definitions.Single(item => item.Name == "huggingface"),
+            "[{\"id\":\"org/model\",\"pipeline_tag\":\"text-generation\"}]",
+            "org/model",
+            "https://huggingface.co/org/model"
+        };
     }
 
     private sealed class StubHttpMessageHandler(

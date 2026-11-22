@@ -476,3 +476,13 @@ Every material repository action is recorded here with its reason, result, verif
 - **Correction history:** First attempt 45012798957 failed during build due to missing helper/import. Second attempt 45012899977 built successfully but had 2 failing tests (103 passed). The helper/import, relative URL handling and URL-encoded query assertion were corrected.
 - **Verification:** https://github.com/fwjlh/DotNetWebSearchApi/actions/runs/45013006368. New fixture tests cover Crossref, OpenAlex, Hacker News, Stack Overflow, npm, crates.io, NuGet and Open Library. They do not make live upstream requests.
 - **Next:** Continue the provider catalogue in batches, with a target of 100 implemented, registered and fixture-tested adapters before the user's local pull/build/live-testing phase.
+
+
+## 2026-11-22 — Specialist provider batch 2
+
+### 57. Implement eight additional specialist providers
+- **Reason:** Continue from 18 toward the requested 100 real provider adapters, selecting distinct public search APIs across academic, developer, package, model, books and archive domains.
+- **Action:** Added Europe PMC, Semantic Scholar, GitHub repository search, Docker Hub, Google Books, Internet Archive, RubyGems and Hugging Face Models to the JSON provider catalog. Extended the common adapter to support a root-array response selector. Added eight provider-specific JSON fixtures to the adapter theory tests.
+- **Result:** Source catalogue now defines 26 providers (18 in the previous verified batch plus these 8). These are registered as independent provider instances with distinct upstream endpoints and result mappings. No live requests were made.
+- **Verification:** Pending GitHub Actions. Do not count this batch as CI-verified until the workflow succeeds.
+- **Next:** Run CI, correct failures and record exact test count; then continue toward 100.

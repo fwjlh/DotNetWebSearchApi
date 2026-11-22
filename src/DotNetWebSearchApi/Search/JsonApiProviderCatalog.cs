@@ -94,6 +94,104 @@ public static class JsonApiProviderCatalog
             TitlePath = "title",
             UrlPath = "key",
             UrlPrefix = "https://openlibrary.org"
+        },
+        new JsonApiSearchDefinition
+        {
+            Name = "europepmc",
+            Endpoint = "https://www.ebi.ac.uk/europepmc/webservices/rest/search",
+            QueryParameter = "query",
+            LimitParameter = "pageSize",
+            ResultsPath = "resultList.result",
+            TitlePath = "title",
+            UrlPath = "id",
+            SnippetPath = "authorString",
+            UrlPrefix = "https://europepmc.org/article/MED/"
+        },
+        new JsonApiSearchDefinition
+        {
+            Name = "semanticscholar",
+            Endpoint = "https://api.semanticscholar.org/graph/v1/paper/search",
+            QueryParameter = "query",
+            LimitParameter = "limit",
+            ResultsPath = "data",
+            TitlePath = "title",
+            UrlPath = "url",
+            SnippetPath = "abstract",
+            FixedParameters = new Dictionary<string, string> { ["fields"] = "title,url,abstract" }
+        },
+        new JsonApiSearchDefinition
+        {
+            Name = "github",
+            Endpoint = "https://api.github.com/search/repositories",
+            QueryParameter = "q",
+            LimitParameter = "per_page",
+            ResultsPath = "items",
+            TitlePath = "full_name",
+            UrlPath = "html_url",
+            SnippetPath = "description"
+        },
+        new JsonApiSearchDefinition
+        {
+            Name = "dockerhub",
+            Endpoint = "https://hub.docker.com/v2/search/repositories/",
+            QueryParameter = "query",
+            LimitParameter = "page_size",
+            ResultsPath = "results",
+            TitlePath = "repo_name",
+            UrlPath = "repo_name",
+            SnippetPath = "short_description",
+            UrlPrefix = "https://hub.docker.com/r/"
+        },
+        new JsonApiSearchDefinition
+        {
+            Name = "googlebooks",
+            Endpoint = "https://www.googleapis.com/books/v1/volumes",
+            QueryParameter = "q",
+            LimitParameter = "maxResults",
+            ResultsPath = "items",
+            TitlePath = "volumeInfo.title",
+            UrlPath = "volumeInfo.infoLink",
+            SnippetPath = "volumeInfo.description"
+        },
+        new JsonApiSearchDefinition
+        {
+            Name = "internetarchive",
+            Endpoint = "https://archive.org/advancedsearch.php",
+            QueryParameter = "q",
+            LimitParameter = "rows",
+            ResultsPath = "response.docs",
+            TitlePath = "title",
+            UrlPath = "identifier",
+            SnippetPath = "description",
+            UrlPrefix = "https://archive.org/details/",
+            FixedParameters = new Dictionary<string, string>
+            {
+                ["fl[]"] = "identifier,title,description",
+                ["output"] = "json"
+            }
+        },
+        new JsonApiSearchDefinition
+        {
+            Name = "rubygems",
+            Endpoint = "https://rubygems.org/api/v1/search.json",
+            QueryParameter = "query",
+            LimitParameter = "limit",
+            ResultsPath = "$",
+            TitlePath = "name",
+            UrlPath = "project_uri",
+            SnippetPath = "info"
+        },
+        new JsonApiSearchDefinition
+        {
+            Name = "huggingface",
+            Endpoint = "https://huggingface.co/api/models",
+            QueryParameter = "search",
+            LimitParameter = "limit",
+            ResultsPath = "$",
+            TitlePath = "id",
+            UrlPath = "id",
+            SnippetPath = "pipeline_tag",
+            UrlPrefix = "https://huggingface.co/"
         }
     };
 
