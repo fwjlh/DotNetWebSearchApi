@@ -430,7 +430,7 @@ These are translation targets, not assertions that every row is already implemen
 
 **Current limits**
 
-- This is the first classification layer, not a complete retry/cooldown policy. Provider health, open/half-open state and backoff remain separate work.
+- This is the first classification layer; the initial provider-health registry is now implemented separately. It is not yet a configurable per-provider retry policy.
 - A plain `HttpRequestException` carries a status code but not response headers. A generic 429 therefore has no `Retry-After` value at this layer. Shared transport should translate the actual response into a typed failure while it still has access to response headers.
 - Provider-specific challenge detection must throw `ProviderFailureException(Challenge, ...)`; generic 403 is classified as access denied, not automatically assumed to be CAPTCHA.
 - The current diagnostics panel still stores the exception type string. The typed outcome is available to the execution result, but diagnostic persistence/UI should move to failure-kind and retry-after fields in a later slice.
@@ -439,6 +439,42 @@ These are translation targets, not assertions that every row is already implemen
 **Verification:** [SearchAggregatorTests.cs](../tests/DotNetWebSearchApi.Tests/SearchAggregatorTests.cs) covers HTTP 401/403/429/503, malformed JSON, explicit challenge with retry duration, successful empty responses and provider timeouts. Caller cancellation remains separately tested.
 
 **Interpretation:** this is the C# equivalent of SearXNG's typed engine exceptions and suspension hints, expressed as stable provider-neutral outcomes so the aggregator can implement health policy without knowing individual engines.
+
+
+
+### Engine suspension, cooldown and half-open recovery
+
+**Python source:** [SearXNG abstract engine processor](https://github.com/searxng/searxng/blob/c6ee3e9fd0235004a694e63720efc869bb1e3594/searx/search/processors/abstract.py) and the typed engine exceptions described above.
+
+**C# source:**
+- [ProviderHealthRegistry.cs](../src/DotNetWebSearchApi/Search/ProviderHealthRegistry.cs)
+- [SearchAggregator.cs](../src/DotNetWebSearchApi/Search/SearchAggregator.cs)
+- [Program.cs](../src/DotNetWebSearchApi/Program.cs)
+- [SearxngSearchResponse.cs](../src/DotNetWebSearchApi/Search/SearxngSearchResponse.cs)
+- [ProviderHealthRegistryTests.cs](../tests/DotNetWebSearchApi.Tests/ProviderHealthRegistryTests.cs)
+- [SearxngApiIntegrationTests.cs](../tests/DotNetWebSearchApi.Tests/SearxngApiIntegrationTests.cs)
+
+**Why the C# code has this shape**
+
+- SearXNG does not simply log an engine exception and try again on every query. The processor tracks failures and suspension time, then skips engines during the suspension window. The C# aggregator now has a separate `ProviderHealthRegistry` so provider lifecycle policy is not embedded inside every adapter.
+- The registry uses the familiar circuit-breaker states: `Closed` (normal calls), `Open` (cooldown, calls skipped) and `HalfOpen` (one recovery probe allowed).
+- A successful call resets the failure count and closes the circuit. A failed half-open probe reopens it. Concurrent searches cannot all become recovery probes at once.
+- Caller cancellation releases a half-open probe without recording a provider failure. A timeout from the provider's own timeout token is a provider failure.
+- Cooldown is failure-kind aware. Defaults are two consecutive transient failures before opening, 10-second base exponential cooldown, 60 seconds for rate limiting, 15 seconds for challenges, five minutes for authentication/access/configuration failures, one minute for invalid responses and a five-minute maximum. A provider-supplied RetryAfter is honoured but capped by the maximum.
+- Providers skipped during cooldown are not labelled as newly failed. They appear as `Skipped` outcomes and in the additive `cooling_down_engines` / `coolingDownProviders` response fields.
+- `/api/diagnostics` exposes provider health state, consecutive failures, cooldown expiry and last failure kind separately from the older request counters.
+
+**Current limits**
+
+- State is process-local and resets on service restart. It is not persisted to SQL or shared across multiple API instances.
+- The default policy is global rather than provider-specific. Real upstream rate limits and challenge suspension durations should eventually be configurable per provider.
+- A half-open probe is one request; there is no separate low-cost health-check endpoint for providers.
+- The current diagnostics status can remain marked degraded until a successful half-open request proves recovery.
+- The C# policy is inspired by SearXNG's engine suspension lifecycle, not a line-for-line copy of every SearXNG suspension threshold or setting.
+
+**Verification:** [ProviderHealthRegistryTests.cs](../tests/DotNetWebSearchApi.Tests/ProviderHealthRegistryTests.cs) covers cooldown, single half-open probe, success recovery, transient failure threshold, RetryAfter cap and aggregator-level skip/recovery. [SearxngApiIntegrationTests.cs](../tests/DotNetWebSearchApi.Tests/SearxngApiIntegrationTests.cs) covers separate cooldown reporting and diagnostics exposure.
+
+**Interpretation:** this ports the reusable engine-lifecycle concept into a provider-neutral .NET circuit breaker. The policy is deliberately isolated so it can later be tuned or persisted without changing provider adapters.
 
 ## How to add the next corpus entry
 
