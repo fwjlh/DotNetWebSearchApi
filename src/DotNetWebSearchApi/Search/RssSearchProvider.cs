@@ -9,11 +9,16 @@ public sealed class RssSearchProvider : ISearchProvider
 {
     private readonly HttpClient _httpClient;
     private readonly RssSearchDefinition _definition;
+    private readonly SearchHttpTransport _transport;
 
-    public RssSearchProvider(HttpClient httpClient, RssSearchDefinition definition)
+    public RssSearchProvider(
+        HttpClient httpClient,
+        RssSearchDefinition definition,
+        SearchHttpTransport? transport = null)
     {
         _httpClient = httpClient;
         _definition = definition;
+        _transport = transport ?? new SearchHttpTransport();
     }
 
     public string Name => _definition.Name;
@@ -24,19 +29,18 @@ public sealed class RssSearchProvider : ISearchProvider
         SearchQuery query,
         CancellationToken cancellationToken)
     {
-        Uri requestUri = BuildRequestUri(query);
-        using HttpResponseMessage response = await _httpClient.GetAsync(requestUri, cancellationToken);
-        response.EnsureSuccessStatusCode();
+        using HttpRequestMessage request = new(HttpMethod.Get, BuildRequestUri(query));
+        SearchHttpResponse response = await _transport.SendAsync(_httpClient, request, cancellationToken);
+        response.EnsureSuccessStatusCode(Name);
 
-        await using Stream stream = await response.Content.ReadAsStreamAsync(cancellationToken);
-        using XmlReader reader = XmlReader.Create(stream, new XmlReaderSettings
+        using StringReader textReader = new(response.Content);
+        using XmlReader reader = XmlReader.Create(textReader, new XmlReaderSettings
         {
-            Async = true,
             DtdProcessing = DtdProcessing.Prohibit,
             XmlResolver = null,
             IgnoreComments = true
         });
-        XDocument document = await XDocument.LoadAsync(reader, LoadOptions.None, cancellationToken);
+        XDocument document = XDocument.Load(reader, LoadOptions.None);
         return ReadResults(document, query.Limit);
     }
 
