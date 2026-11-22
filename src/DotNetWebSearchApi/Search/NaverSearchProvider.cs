@@ -4,10 +4,12 @@ public sealed class NaverSearchProvider : ISearchProvider
 {
     private const string SearchEndpoint = "https://search.naver.com/search.naver";
     private readonly HttpClient _httpClient;
+    private readonly SearchHttpTransport _transport;
 
-    public NaverSearchProvider(HttpClient httpClient)
+    public NaverSearchProvider(HttpClient httpClient, SearchHttpTransport? transport = null)
     {
         _httpClient = httpClient;
+        _transport = transport ?? new SearchHttpTransport();
     }
 
     public string Name => "naver";
@@ -18,12 +20,10 @@ public sealed class NaverSearchProvider : ISearchProvider
         SearchQuery query,
         CancellationToken cancellationToken)
     {
-        string requestUrl = BuildRequestUrl(query.Text);
-        using HttpResponseMessage response = await _httpClient.GetAsync(requestUrl, cancellationToken);
-        response.EnsureSuccessStatusCode();
-
-        string html = await response.Content.ReadAsStringAsync(cancellationToken);
-        return NaverSearchResultParser.Parse(html);
+        using HttpRequestMessage request = new(HttpMethod.Get, BuildRequestUrl(query.Text));
+        SearchHttpResponse response = await _transport.SendAsync(_httpClient, request, cancellationToken);
+        response.EnsureSuccessStatusCode(Name);
+        return NaverSearchResultParser.Parse(response.Content);
     }
 
     private static string BuildRequestUrl(string query)
