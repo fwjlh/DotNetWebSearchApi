@@ -7,10 +7,12 @@ namespace DotNetWebSearchApi.Search;
 public sealed partial class WikipediaSearchProvider : ISearchProvider
 {
     private readonly HttpClient _httpClient;
+    private readonly SearchHttpTransport _transport;
 
-    public WikipediaSearchProvider(HttpClient httpClient)
+    public WikipediaSearchProvider(HttpClient httpClient, SearchHttpTransport? transport = null)
     {
         _httpClient = httpClient;
+        _transport = transport ?? new SearchHttpTransport();
     }
 
     public string Name => "wikipedia";
@@ -21,14 +23,10 @@ public sealed partial class WikipediaSearchProvider : ISearchProvider
         SearchQuery query,
         CancellationToken cancellationToken)
     {
-        string requestUrl = BuildRequestUrl(query.Text);
-        using HttpResponseMessage response = await _httpClient.GetAsync(requestUrl, cancellationToken);
-        response.EnsureSuccessStatusCode();
-
-        await using Stream responseStream = await response.Content.ReadAsStreamAsync(cancellationToken);
-        using JsonDocument document = await JsonDocument.ParseAsync(
-            responseStream,
-            cancellationToken: cancellationToken);
+        using HttpRequestMessage request = new(HttpMethod.Get, BuildRequestUrl(query.Text));
+        SearchHttpResponse response = await _transport.SendAsync(_httpClient, request, cancellationToken);
+        response.EnsureSuccessStatusCode(Name);
+        using JsonDocument document = JsonDocument.Parse(response.Content);
 
         return ReadResults(document.RootElement);
     }
