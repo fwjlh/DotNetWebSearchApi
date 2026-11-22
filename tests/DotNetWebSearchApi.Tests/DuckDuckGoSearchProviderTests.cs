@@ -111,8 +111,9 @@ public sealed class DuckDuckGoSearchProviderTests
             HtmlResponse("<form id='challenge-form'>Verify you are human</form>")));
         DuckDuckGoSearchProvider provider = new(client);
 
-        await Assert.ThrowsAsync<HttpRequestException>(() =>
+        ProviderFailureException exception = await Assert.ThrowsAsync<ProviderFailureException>(() =>
             provider.SearchAsync(new SearchQuery("test", 10), CancellationToken.None));
+        Assert.Equal(ProviderFailureKind.Challenge, exception.FailureKind);
     }
 
     [Fact]
@@ -136,8 +137,9 @@ public sealed class DuckDuckGoSearchProviderTests
             new HttpResponseMessage(HttpStatusCode.ServiceUnavailable)));
         DuckDuckGoSearchProvider provider = new(client);
 
-        await Assert.ThrowsAsync<HttpRequestException>(() =>
+        ProviderFailureException exception = await Assert.ThrowsAsync<ProviderFailureException>(() =>
             provider.SearchAsync(new SearchQuery("test", 10), CancellationToken.None));
+        Assert.Equal(ProviderFailureKind.TransientHttp, exception.FailureKind);
     }
 
     private static HttpResponseMessage HtmlResponse(string html)
