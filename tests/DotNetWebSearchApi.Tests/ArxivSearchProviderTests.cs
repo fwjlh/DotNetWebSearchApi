@@ -1,0 +1,67 @@
+using System.Net;
+using System.Text;
+using DotNetWebSearchApi.Search;
+using Xunit;
+
+namespace DotNetWebSearchApi.Tests;
+
+public sealed class ArxivSearchProviderTests
+{
+    [Fact]
+    public async Task SearchAsync_ParsesAtomEntriesAndEncodesQuery()
+    {
+        Uri? requestUri = null;
+        using HttpClient client = new(new StubHttpMessageHandler(request =>
+        {
+            requestUri = request.RequestUri;
+            return new HttpResponseMessage(HttpStatusCode.OK)
+            {
+                Content = new StringContent(AtomFixture, Encoding.UTF8, "application/atom+xml")
+            };
+        }));
+        ArxivSearchProvider provider = new(client);
+
+        IReadOnlyList<SearchResult> results = await provider.SearchAsync(
+            new SearchQuery("machine learning & graphs", 8),
+            CancellationToken.None);
+
+        SearchResult result = Assert.Single(results);
+        Assert.Equal("A research paper", result.Title);
+        Assert.Equal("https://arxiv.org/abs/1234.5678", result.Url);
+        Assert.Equal("A research summary.", result.Snippet);
+        Assert.Contains("all%3Amachine%20learning%20%26%20graphs", requestUri!.Query);
+        Assert.Contains("max_results=8", requestUri.Query);
+    }
+
+    [Fact]
+    public async Task SearchAsync_RejectsHttpErrors()
+    {
+        using HttpClient client = new(new StubHttpMessageHandler(_ =>
+            new HttpResponseMessage(HttpStatusCode.ServiceUnavailable)));
+        ArxivSearchProvider provider = new(client);
+
+        await Assert.ThrowsAsync<HttpRequestException>(() =>
+            provider.SearchAsync(new SearchQuery("test", 5), CancellationToken.None));
+    }
+
+    private const string AtomFixture = """
+        <feed xmlns="http://www.w3.org/2005/Atom">
+          <entry>
+            <id>https://arxiv.org/abs/1234.5678</id>
+            <title>A research paper</title>
+            <summary>A research summary.</summary>
+          </entry>
+        </feed>
+        """;
+
+    private sealed class StubHttpMessageHandler(
+        Func<HttpRequestMessage, HttpResponseMessage> responseFactory) : HttpMessageHandler
+    {
+        protected override Task<HttpResponseMessage> SendAsync(
+            HttpRequestMessage request,
+            CancellationToken cancellationToken)
+        {
+            return Task.FromResult(responseFactory(request));
+        }
+    }
+}

@@ -236,6 +236,55 @@ public sealed class JsonApiSearchProviderTests
             "example_package",
             "https://pub.dev/packages/example_package"
         };
+        yield return new object[]
+        {
+            JsonApiProviderCatalog.Definitions.Single(item => item.Name == "bilibili"),
+            "{\"data\":{\"result\":[{\"title\":\"Video title\",\"arcurl\":\"https://www.bilibili.com/video/BV123\",\"description\":\"A video\"}]}}",
+            "Video title",
+            "https://www.bilibili.com/video/BV123"
+        };
+        yield return new object[]
+        {
+            JsonApiProviderCatalog.Definitions.Single(item => item.Name == "dailymotion"),
+            "{\"list\":[{\"title\":\"Dailymotion clip\",\"url\":\"https://www.dailymotion.com/video/x123\",\"description\":\"A clip\"}]}",
+            "Dailymotion clip",
+            "https://www.dailymotion.com/video/x123"
+        };
+        yield return new object[]
+        {
+            JsonApiProviderCatalog.Definitions.Single(item => item.Name == "deezer"),
+            "{\"data\":[{\"title\":\"Track title\",\"link\":\"https://www.deezer.com/track/123\",\"artist\":{\"name\":\"Artist\"}}]}",
+            "Track title",
+            "https://www.deezer.com/track/123"
+        };
+        yield return new object[]
+        {
+            JsonApiProviderCatalog.Definitions.Single(item => item.Name == "steam"),
+            "{\"items\":[{\"name\":\"Example game\",\"id\":12345}]}",
+            "Example game",
+            "https://store.steampowered.com/app/12345"
+        };
+        yield return new object[]
+        {
+            JsonApiProviderCatalog.Definitions.Single(item => item.Name == "musicbrainz"),
+            "{\"artists\":[{\"name\":\"Example artist\",\"id\":\"1234-abcd\",\"disambiguation\":\"A musician\"}]}",
+            "Example artist",
+            "https://musicbrainz.org/artist/1234-abcd"
+        };
+        yield return new object[]
+        {
+            JsonApiProviderCatalog.Definitions.Single(item => item.Name == "wikidata"),
+            "{\"query\":{\"search\":[{\"title\":\"Q42\"}]}}",
+            "Q42",
+            "https://www.wikidata.org/wiki/Q42"
+        };
+        yield return new object[]
+        {
+            JsonApiProviderCatalog.Definitions.Single(item => item.Name == "wikipedia_de"),
+            "{\"query\":{\"search\":[{\"title\":\"Beispiel\"}]}}",
+            "Beispiel",
+            "https://de.wikipedia.org/wiki/Beispiel"
+        };
     }
 
     private sealed class StubHttpMessageHandler(

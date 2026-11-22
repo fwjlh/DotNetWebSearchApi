@@ -18,7 +18,7 @@ Updated: 2026-11-22
 - Read-only diagnostics page at /admin.
 - GET /api/providers lists active providers.
 - GET /api/diagnostics returns in-memory provider health counters.
-- Thirty-four search adapters: the ten original providers plus Crossref, OpenAlex, Hacker News, Stack Overflow, npm, crates.io, NuGet and Open Library.
+- Forty-two search adapters: the ten original providers plus Crossref, OpenAlex, Hacker News, Stack Overflow, npm, crates.io, NuGet and Open Library.
 - Parallel provider aggregation with per-provider timeout and provider-failure isolation.
 - Detailed search execution reports failed providers as unresponsive_engines.
 - HTTP(S)-only result URL validation, duplicate removal, deterministic score/title ordering and result limit.
@@ -99,7 +99,7 @@ There is no SQL Server provider store, general configurable HTTP provider, API-k
 
 ## Next actions
 
-1. Continue provider ports from 34 towards 100, prioritising high-value general search, specialist search, developer, academic, news, image, video and regional sources. Count only implemented, registered and fixture-tested adapters.
+1. Continue provider ports from 42 towards 100, prioritising high-value general search, specialist search, developer, academic, news, image, video and regional sources. Count only implemented, registered and fixture-tested adapters.
 2. Keep provider definitions explicit and review authentication, quotas, rate limits, terms and bot protection for each upstream.
 3. After the 100-provider milestone, pull and build locally and perform live/integration testing before exposing the service publicly.
 4. Then add SQL Server configuration, API-key authentication, quotas and safe admin editing.
@@ -163,4 +163,11 @@ There is no SQL Server provider store, general configurable HTTP provider, API-k
 - CI: https://github.com/fwjlh/DotNetWebSearchApi/actions/runs/45013542434
 - Build: passed, 0 warnings, 0 errors.
 - Tests: 121 passed, 0 failed, 0 skipped.
-- Provider count: 34 implemented, registered and fixture-tested. Live upstream acceptance remains unverified.
+- Provider count: 34 implemented, registered and fixture-tested in the last verified batch. Eight more are pending CI. Live upstream acceptance remains unverified.
+
+
+## Provider batch 4 — verification pending
+
+- Added: arXiv (Atom/XML), Bilibili, Dailymotion, Deezer, Steam, MusicBrainz, Wikidata and German Wikipedia.
+- arXiv uses a dedicated Atom parser with DTD processing prohibited; the remaining seven use provider-specific JSON definitions.
+- Fixture tests are included. CI and live upstream acceptance are not yet verified. Media providers may impose regional, account or anti-automation restrictions.

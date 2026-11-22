@@ -56,6 +56,7 @@ builder.Services.AddHttpClient<YahooSearchProvider>(client =>
     CookieContainer = serviceProvider.GetRequiredService<CookieContainer>()
 });
 builder.Services.AddHttpClient<WikipediaSearchProvider>(client => client.DefaultRequestHeaders.UserAgent.ParseAdd("DotNetWebSearchApi/0.1 (+https://github.com/fwjlh/DotNetWebSearchApi)"));
+builder.Services.AddHttpClient<ArxivSearchProvider>(client => client.DefaultRequestHeaders.UserAgent.ParseAdd("DotNetWebSearchApi/0.1 (+https://github.com/fwjlh/DotNetWebSearchApi)"));
 builder.Services.AddSingleton<ISearchProvider>(sp => sp.GetRequiredService<BingSearchProvider>());
 builder.Services.AddSingleton<ISearchProvider>(sp => sp.GetRequiredService<DuckDuckGoSearchProvider>());
 builder.Services.AddSingleton<ISearchProvider>(sp => sp.GetRequiredService<GoogleSearchProvider>());
@@ -77,6 +78,7 @@ if (!string.IsNullOrWhiteSpace(yandexApiKey) && !string.IsNullOrWhiteSpace(yande
     builder.Services.AddSingleton<ISearchProvider>(sp => sp.GetRequiredService<YandexSearchProvider>());
 }
 builder.Services.AddSingleton<ISearchProvider>(sp => sp.GetRequiredService<WikipediaSearchProvider>());
+builder.Services.AddSingleton<ISearchProvider>(sp => sp.GetRequiredService<ArxivSearchProvider>());
 
 string? braveApiKey = builder.Configuration["BRAVE_SEARCH_API_KEY"];
 if (!string.IsNullOrWhiteSpace(braveApiKey))

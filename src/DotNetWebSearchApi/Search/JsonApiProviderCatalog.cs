@@ -285,6 +285,100 @@ public static class JsonApiProviderCatalog
             TitlePath = "package",
             UrlPath = "package",
             UrlPrefix = "https://pub.dev/packages/"
+        },
+        new JsonApiSearchDefinition
+        {
+            Name = "bilibili",
+            Endpoint = "https://api.bilibili.com/x/web-interface/search/type",
+            QueryParameter = "keyword",
+            LimitParameter = "page_size",
+            ResultsPath = "data.result",
+            TitlePath = "title",
+            UrlPath = "arcurl",
+            SnippetPath = "description",
+            FixedParameters = new Dictionary<string, string> { ["search_type"] = "video" }
+        },
+        new JsonApiSearchDefinition
+        {
+            Name = "dailymotion",
+            Endpoint = "https://api.dailymotion.com/videos",
+            QueryParameter = "search",
+            LimitParameter = "limit",
+            ResultsPath = "list",
+            TitlePath = "title",
+            UrlPath = "url",
+            SnippetPath = "description",
+            FixedParameters = new Dictionary<string, string> { ["fields"] = "id,title,description,url" }
+        },
+        new JsonApiSearchDefinition
+        {
+            Name = "deezer",
+            Endpoint = "https://api.deezer.com/search",
+            QueryParameter = "q",
+            LimitParameter = "limit",
+            ResultsPath = "data",
+            TitlePath = "title",
+            UrlPath = "link",
+            SnippetPath = "artist.name"
+        },
+        new JsonApiSearchDefinition
+        {
+            Name = "steam",
+            Endpoint = "https://store.steampowered.com/api/storesearch/",
+            QueryParameter = "term",
+            LimitParameter = "count",
+            ResultsPath = "items",
+            TitlePath = "name",
+            UrlPath = "id",
+            UrlPrefix = "https://store.steampowered.com/app/",
+            FixedParameters = new Dictionary<string, string> { ["l"] = "english", ["cc"] = "gb" }
+        },
+        new JsonApiSearchDefinition
+        {
+            Name = "musicbrainz",
+            Endpoint = "https://musicbrainz.org/ws/2/artist/",
+            QueryParameter = "query",
+            LimitParameter = "limit",
+            ResultsPath = "artists",
+            TitlePath = "name",
+            UrlPath = "id",
+            SnippetPath = "disambiguation",
+            UrlPrefix = "https://musicbrainz.org/artist/",
+            FixedParameters = new Dictionary<string, string> { ["fmt"] = "json" }
+        },
+        new JsonApiSearchDefinition
+        {
+            Name = "wikidata",
+            Endpoint = "https://www.wikidata.org/w/api.php",
+            QueryParameter = "srsearch",
+            LimitParameter = "srlimit",
+            ResultsPath = "query.search",
+            TitlePath = "title",
+            UrlPath = "title",
+            UrlPrefix = "https://www.wikidata.org/wiki/",
+            FixedParameters = new Dictionary<string, string>
+            {
+                ["action"] = "query",
+                ["list"] = "search",
+                ["format"] = "json"
+            }
+        },
+        new JsonApiSearchDefinition
+        {
+            Name = "wikipedia_de",
+            Endpoint = "https://de.wikipedia.org/w/api.php",
+            QueryParameter = "srsearch",
+            LimitParameter = "srlimit",
+            ResultsPath = "query.search",
+            TitlePath = "title",
+            UrlPath = "title",
+            UrlPrefix = "https://de.wikipedia.org/wiki/",
+            FixedParameters = new Dictionary<string, string>
+            {
+                ["action"] = "query",
+                ["list"] = "search",
+                ["format"] = "json"
+            }
         }
     };
 

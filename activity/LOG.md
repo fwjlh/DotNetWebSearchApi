@@ -532,3 +532,13 @@ Every material repository action is recorded here with its reason, result, verif
 - **Correction history:** Initial run 45013448673 passed build and 120/121 tests. Maven Central's colon-delimited artifact identifier was being interpreted as a URI scheme. Prefix joining now percent-encodes reserved characters while preserving path separators.
 - **Verification:** https://github.com/fwjlh/DotNetWebSearchApi/actions/runs/45013542434. The batch adds Super User, Server Fault, Ask Ubuntu, GitLab, Gitea, Maven Central, Packagist and pub.dev. Tests use fixtures and fake handlers; live upstream acceptance is not claimed.
 - **Next:** Continue towards 100 provider adapters, then hand over for local build and live testing.
+
+
+## 2026-11-22 — Media, knowledge and academic provider batch 4
+
+### 63. Implement eight additional providers
+- **Reason:** Continue toward 100 with a broader mix of academic, media, music, gaming and knowledge sources.
+- **Action:** Added arXiv using a dedicated Atom/XML adapter with DTD processing disabled; added Bilibili, Dailymotion, Deezer, Steam, MusicBrainz, Wikidata and German Wikipedia to the JSON provider catalog. Added provider fixtures and two arXiv request/parser tests.
+- **Result:** Catalogue now defines 42 adapters. No live requests were made; media provider acceptance and regional access remain unverified.
+- **Verification:** Pending GitHub Actions.
+- **Next:** Verify this batch, then continue across image, news, video, code, regional and specialist sources.
