@@ -35,12 +35,12 @@ All upstream source links in the entries below are pinned to that revision. When
 | Mutable `params` dictionary | Typed query/request models | Make supported fields explicit and avoid hidden string-key contracts. |
 | Shared `searx.network` client | Injected `HttpClient` / planned shared transport | Reuse .NET connection pooling, cancellation and DI; centralise policy as the framework matures. |
 | Python `EngineResults` / result subclasses | Current `SearchResult`, with richer result model still planned | Preserve the common web-result contract first; do not pretend images, answers and suggestions are ordinary links. |
-| `EngineTraits` locale maps | Planned typed locale/region traits registry | Keep provider-specific language/market codes out of individual request builders. |
+| `EngineTraits` locale maps | `SearchQuery.Language` plus static `EngineLocaleRegistry` (Bing subset first) | Keep provider-specific language/market codes out of individual request builders without making search depend on live trait downloads. |
 | Engine flags such as `paging`, `safesearch`, `time_range_support` | `EngineCapabilities` | Reject unsupported requests before sending traffic rather than silently ignoring options. |
 | `EngineCache` and provider session state | Explicit cache/session state with bounded lifetime | Make state ownership, expiry and secret handling visible. |
 | Engine exceptions and suspension metadata | Typed provider outcomes and health/cooldown | Distinguish a timeout, a CAPTCHA, a rate limit and a configuration failure. |
 
-These are translation targets, not assertions that every row is already implemented. See [PORTING_AUDIT.md](PORTING_AUDIT.md) for the shared-framework gap analysis and [challenge classification notes](PORTING/CHALLENGE_CLASSIFICATION.md) for the challenge taxonomy and safety boundary.
+These are translation targets, not assertions that every row is already implemented. See [PORTING_AUDIT.md](PORTING_AUDIT.md) for the shared-framework gap analysis, [challenge classification notes](PORTING/CHALLENGE_CLASSIFICATION.md) for challenge handling, and [locale traits notes](PORTING/LOCALE_TRAITS.md) for the first static Bing market map.
 
 ## Provider notes
 

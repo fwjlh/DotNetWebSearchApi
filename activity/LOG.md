@@ -911,3 +911,13 @@ Every material repository action is recorded here with its reason, result, verif
 - **Tests:** Extended Google, DuckDuckGo, Qwant and Mojeek challenge assertions; added Yandex header detection and API serialization tests. GitHub Actions [run 45028609771](https://github.com/fwjlh/DotNetWebSearchApi/actions/runs/45028609771) completed successfully (build and test steps green; detailed test count not captured). No live provider requests.
 - **Documentation:** Added [docs/PORTING/CHALLENGE_CLASSIFICATION.md](../docs/PORTING/CHALLENGE_CLASSIFICATION.md), updated the porting audit, corpus index, README and handover.
 - **Next:** Locale/region traits registry, API conformance tests, richer result types and operational hardening. Provider count remains frozen at 67.
+
+
+### 99. Port the first EngineTraits locale mapping and Bing request semantics
+- **Reason:** `SearchQuery.Language` existed, but almost every provider still ignored it. The shared framework needed a real provider mapping before locale support could be advertised.
+- **Python evidence:** Pinned SearXNG `bing.py` fetches Bing region market codes, maps them to `setlang` and `cc`, skips country restrictions for US/CN/RU, includes the `zh-HK → en-HK` correction and maps safe-search 0/1/2 to off/moderate/strict. Python explicitly says paging/time-range are unavailable because they depend on JavaScript.
+- **Action:** Added `EngineLocaleTraits` and `EngineLocaleRegistry` with a static, versioned subset of common Bing market codes and the upstream `clear` all-locale fallback. No runtime scraping or external data fetch was added.
+- **Action:** Bing now consumes `SearchQuery.Language` and `SafeSearch`, implements `ISearchProviderCapabilities`, and advertises general/web categories, locale and safe-search only. It still rejects page > 1 and time-range requests during capability pre-flight.
+- **Tests:** Added common locale, unknown-locale fallback, Hong Kong special case, request parameter and capability tests. GitHub Actions [run 45028984202](https://github.com/fwjlh/DotNetWebSearchApi/actions/runs/45028984202) completed successfully (build and test steps green; detailed test count not captured). No live provider calls.
+- **Documentation:** Added [docs/PORTING/LOCALE_TRAITS.md](../docs/PORTING/LOCALE_TRAITS.md), updated the rationale corpus, audit, README and handover.
+- **Next:** Add DuckDuckGo's region/language-region traits, then Wikipedia host/LanguageConverter traits. Keep provider count frozen at 67.

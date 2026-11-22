@@ -86,11 +86,11 @@ Our aggregator now assigns one-based positions from each provider's returned ord
 
 ### 6. Engine traits: locale, language and region mappings
 
-SearXNG has an `EngineTraits` model and persisted trait maps. Providers translate SearXNG locales into each upstream service's language and region codes. The Bing, Brave, DuckDuckGo and Wikipedia engines all use these mappings rather than relying on a single global language header.
+SearXNG has an `EngineTraits` model and persisted trait maps. Providers translate SearXNG locales into each upstream service's language and region codes. The C# request model now carries `SearchQuery.Language`, and `EngineLocaleRegistry` provides the first static provider-specific mapping for Bing. Bing consumes that mapping for `setlang`/`cc` and maps safe-search 0/1/2 to off/moderate/strict. Its declared capabilities now reflect the implemented request builder: general/web categories, locale and safe-search, but no paging or time range.
 
-Our implementation hard-codes a few language headers and request defaults. Locale is not part of the search query, so the user cannot request a locale and providers cannot consistently map it.
+This is a deliberately small first port, not a full `EngineTraits` replacement. The registry has no dynamic refresh or persistence and only Bing's common region map is populated. Unknown Bing locales resolve to the upstream `clear` all-market value rather than a guessed country.
 
-**Port:** add a provider-specific traits registry with language and region mappings, a fallback policy and tests. Start with static, versioned JSON data; add automatic trait discovery only where it is stable and useful. Avoid making every search depend on a live traits download.
+**Next:** add DuckDuckGo's locale/language-region mapping and Wikipedia's language-to-host/LanguageConverter rules as separate provider traits. Add Google locale/region maps after its request builder consumes them. Keep traits versioned and static until refresh/persistence provides clear value. See [locale traits notes](PORTING/LOCALE_TRAITS.md).
 
 ### 7. Provider definitions are more than URL + JSON paths
 
