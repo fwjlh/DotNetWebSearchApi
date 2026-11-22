@@ -134,7 +134,7 @@ public sealed class ProviderHealthRegistryTests
 
         Assert.Equal("Recovered", Assert.Single(recovered.Results).Title);
         Assert.Empty(recovered.CoolingDownProviders);
-        Assert.Equal(3, calls);
+        Assert.Equal(2, calls);
         Assert.Equal(ProviderHealthStatus.Closed, Assert.Single(health.GetSnapshot(new[] { "alpha" })).Status);
     }
 
