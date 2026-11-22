@@ -37,6 +37,9 @@ public sealed class SearchAggregatorTests
 
         SearchResult result = Assert.Single(results);
         Assert.Equal("Higher", result.Title);
+        Assert.Equal(new[] { "first", "second" }, result.Engines.OrderBy(name => name));
+        Assert.Equal(1, result.Positions["first"]);
+        Assert.Equal(1, result.Positions["second"]);
     }
 
     [Fact]
