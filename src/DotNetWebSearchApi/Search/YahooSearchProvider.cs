@@ -8,11 +8,16 @@ public sealed class YahooSearchProvider : ISearchProvider
     private const int MaximumRedirects = 4;
     private readonly HttpClient _httpClient;
     private readonly CookieContainer _cookies;
+    private readonly SearchHttpTransport _transport;
 
-    public YahooSearchProvider(HttpClient httpClient, CookieContainer cookies)
+    public YahooSearchProvider(
+        HttpClient httpClient,
+        CookieContainer cookies,
+        SearchHttpTransport? transport = null)
     {
         _httpClient = httpClient;
         _cookies = cookies;
+        _transport = transport ?? new SearchHttpTransport();
     }
 
     public string Name => "yahoo";
@@ -29,17 +34,16 @@ public sealed class YahooSearchProvider : ISearchProvider
         for (int redirect = 0; redirect <= MaximumRedirects; redirect++)
         {
             using HttpRequestMessage request = new(HttpMethod.Get, requestUri);
-            using HttpResponseMessage response = await _httpClient.SendAsync(request, cancellationToken);
+            SearchHttpResponse response = await _transport.SendAsync(_httpClient, request, cancellationToken);
 
             if (response.StatusCode == HttpStatusCode.OK)
             {
-                string html = await response.Content.ReadAsStringAsync(cancellationToken);
-                return YahooSearchResultParser.Parse(html);
+                return YahooSearchResultParser.Parse(response.Content);
             }
 
             if (!TryGetRedirect(response, requestUri, out Uri? nextUri) || nextUri is null)
             {
-                response.EnsureSuccessStatusCode();
+                response.EnsureSuccessStatusCode(Name);
                 return Array.Empty<SearchResult>();
             }
 
@@ -62,18 +66,20 @@ public sealed class YahooSearchProvider : ISearchProvider
     }
 
     private static bool TryGetRedirect(
-        HttpResponseMessage response,
+        SearchHttpResponse response,
         Uri currentUri,
         out Uri? nextUri)
     {
         nextUri = null;
         if (response.StatusCode is not HttpStatusCode.Redirect and not HttpStatusCode.TemporaryRedirect
-            || response.Headers.Location is null)
+            || !response.TryGetHeader("Location", out IReadOnlyList<string>? values)
+            || values is null
+            || values.Count == 0
+            || !Uri.TryCreate(currentUri, values[0], out nextUri))
         {
             return false;
         }
 
-        nextUri = new Uri(currentUri, response.Headers.Location);
         return true;
     }
 }
