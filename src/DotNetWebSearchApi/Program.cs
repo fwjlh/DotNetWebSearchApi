@@ -4,6 +4,14 @@ using DotNetWebSearchApi.Search;
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 JsonApiProviderCatalog.Register(builder.Services, builder.Configuration);
 RssProviderCatalog.Register(builder.Services);
+builder.Services.AddSingleton<CookieContainer>();
+builder.Services.AddHttpClient<MojeekSearchProvider>(client =>
+{
+    client.DefaultRequestHeaders.UserAgent.ParseAdd("Mozilla/5.0 (compatible; DotNetWebSearchApi/0.1; +https://github.com/fwjlh/DotNetWebSearchApi)");
+    client.DefaultRequestHeaders.Accept.ParseAdd("text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8");
+    client.DefaultRequestHeaders.AcceptLanguage.ParseAdd("en-GB,en;q=0.9");
+});
+builder.Services.AddSingleton<ISearchProvider>(sp => sp.GetRequiredService<MojeekSearchProvider>());
 builder.Services.AddHttpClient<BingSearchProvider>(client => client.DefaultRequestHeaders.UserAgent.ParseAdd("DotNetWebSearchApi/0.1 (+https://github.com/fwjlh/DotNetWebSearchApi)"));
 builder.Services.AddHttpClient<DuckDuckGoSearchProvider>(client =>
 {

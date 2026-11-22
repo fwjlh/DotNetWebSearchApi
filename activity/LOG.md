@@ -615,3 +615,15 @@ Every material repository action is recorded here with its reason, result, verif
 - **Corrections:** RSS XML readers now allow asynchronous reads while prohibiting DTDs; POST request tests parse JSON rather than assuming a literal unescaped ampersand; the test file imports System.Text.Json.
 - **Verification:** https://github.com/fwjlh/DotNetWebSearchApi/actions/runs/45019669530. Eight new fixture cases passed. The source now contains 58 provider adapters; three API-key providers (Yep, Kagi, Exa) are optional and register only when configured.
 - **Next:** Continue from 58 toward 100. General search engines remain the priority; keep optional paid APIs clearly marked and disabled without credentials.
+
+
+## 2026-11-22 — Mojeek priority provider
+
+### 72. Port Mojeek search and its Altcha proof-of-work challenge
+- **Reason:** Mojeek was explicitly the next provider in the original major-engine priority order after Bing, Brave, Google, DuckDuckGo and Wikipedia.
+- **Action:** Added a native C# Mojeek adapter. It obtains the Altcha challenge, solves the bounded PBKDF2 proof of work, posts the base64 multipart verification payload, stores the returned challenge cookie, and parses Mojeek's standard web result HTML.
+- **Safety and limits:** Supports SHA-1/256/384/512 challenge algorithms; search attempts are bounded to 1,000 counters. It fails closed when the challenge cannot be solved or Mojeek does not issue the cookie. The adapter does not attempt to bypass any further CAPTCHA or access control.
+- **Tests:** Added an end-to-end fixture test for challenge → verification → cookie → HTML results, plus an unsolved-challenge test.
+- **Result:** 59 provider adapters are implemented in source.
+- **Verification:** Pending GitHub Actions. No live upstream requests were made.
+- **Next:** Verify the Mojeek port, then continue down the major-engine list and remaining specialist sources.
