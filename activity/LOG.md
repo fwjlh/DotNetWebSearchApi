@@ -672,3 +672,13 @@ Every material repository action is recorded here with its reason, result, verif
 - **Action:** Changed the query marker check to the string overload of Contains with StringComparison.
 - **Result:** Keeps the intended URL mapping while avoiding a char/StringComparison overload mismatch.
 - **Verification:** Pending CI.
+
+
+### 78. Verify batch 7 and close the 67-provider milestone
+- **Reason:** Confirm the OpenAIRE query-prefix correction and the full scholarly/open-knowledge batch.
+- **Action:** Inspected GitHub Actions run 45020266512 for commit 819595d1bf1fcde3361b25dafabcaaeeec2d87cc and retrieved the completed build-and-test log.
+- **Result:** **CI passed.** Build succeeded with 0 warnings and 0 errors; all 156 tests passed (0 failed, 0 skipped).
+- **Corrections:** OpenAIRE result URLs now preserve query-string URL prefixes; the first batch-7 run had 155/156 tests pass before this fix.
+- **Verification:** https://github.com/fwjlh/DotNetWebSearchApi/actions/runs/45020266512. All eight new provider fixtures passed.
+- **Live status:** No live API requests were made; this is fixture-level CI verification.
+- **Next:** Continue from 67 toward 100. The original major-engine priorities through Mojeek are now represented; Startpage remains deferred because of its CPU-intensive Anubis challenge.

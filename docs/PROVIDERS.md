@@ -26,7 +26,7 @@ The implementation strategy is to work from the major general-purpose search eng
 | 35–42 | Media, knowledge and academic wave 4 | CI-verified | arXiv, Bilibili, Dailymotion, Deezer, Steam, MusicBrainz, Wikidata and German Wikipedia |
 | 43–50 | Search, media and regional wave 5 | CI-verified | Wiby, TVmaze, Radio Browser, PeerTube, Wikimedia Commons, Wikinews, Spanish Wikipedia and Openverse |
 | 51–58 | General search and news wave 6 | CI-verified | Mwmbl, Marginalia Search, Yep, Kagi, Exa, Google News, Bing News and Wiktionary |
-| 59–100 | Further SearXNG providers | Planned | Prioritise by usefulness, reliability, accessibility, terms and maintenance cost; count only tested request/parser/registration adapters |
+| 68–100 | Further SearXNG providers | Planned | Prioritise by usefulness, reliability, accessibility, terms and maintenance cost; count only tested request/parser/registration adapters |
 
 Provider ordering is a development priority, not a claim that every upstream service offers a free or unrestricted API. Current SearXNG settings mark Mojeek inactive because of its proof-of-work CAPTCHA and Startpage inactive because of its Anubis proof-of-work challenge; those are deferred until their CPU and access implications are understood. Brave's current Search plan is listed at $5 per 1,000 requests with $5 in monthly credits; activating a plan requires payment-card details. Check the [current Brave plans](https://brave.com/search/api/) before use. Each adapter must respect the provider's current access rules, terms, rate limits and attribution requirements. Where a provider requires credentials, keys will be configured as secrets and never committed to source control.
 
@@ -34,14 +34,14 @@ Provider ordering is a development priority, not a claim that every upstream ser
 
 | Provider | Status | Notes |
 |---|---|---|
-| DataCite | Implemented; CI pending | Public DOI metadata API; no authentication |
-| Zenodo | Implemented; CI pending | Public research record search API |
-| OpenAIRE Graph | Implemented; CI pending | Research-products Graph API v4; public rate limits apply |
-| PLOS | Implemented; CI pending | Solr search API; throttled to one request every six seconds |
-| Wikisource | Implemented; CI pending | English MediaWiki source-text search |
-| Wikibooks | Implemented; CI pending | English MediaWiki textbook search |
-| Wikiversity | Implemented; CI pending | English MediaWiki learning-resource search |
-| Wikivoyage | Implemented; CI pending | English MediaWiki travel-guide search |
+| DataCite | CI-verified | Public DOI metadata API; no authentication |
+| Zenodo | CI-verified | Public research record search API |
+| OpenAIRE Graph | CI-verified | Research-products Graph API v4; public rate limits apply |
+| PLOS | CI-verified | Solr search API; throttled to one request every six seconds |
+| Wikisource | CI-verified | English MediaWiki source-text search |
+| Wikibooks | CI-verified | English MediaWiki textbook search |
+| Wikiversity | CI-verified | English MediaWiki learning-resource search |
+| Wikivoyage | CI-verified | English MediaWiki travel-guide search |
 
 ## Verification rule
 

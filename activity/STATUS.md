@@ -5,7 +5,7 @@ Updated: 2026-11-22
 ## Repository
 - Public repository: https://github.com/fwjlh/DotNetWebSearchApi
 - Default branch: main
-- Latest verified code commit: 294f0a0b5e96a6e96e851f3894b4d1b65cbbd70c
+- Latest verified code commit: 819595d1bf1fcde3361b25dafabcaaeeec2d87cc
 - Current verified milestone: 58 providers; Mojeek adapter adds the 59th source. CI passed: build 0 warnings/errors; 148 tests passed (0 failed, 0 skipped).
 - Project overview and roadmap: [README.md](../README.md)
 
@@ -27,7 +27,8 @@ Updated: 2026-11-22
 - Batch 5 and the full 50-provider catalogue passed CI in run [45019256660](https://github.com/fwjlh/DotNetWebSearchApi/actions/runs/45019256660): build passed with 0 warnings/errors; 138 tests passed.
 - Batch 6 and the full 58-provider source catalogue passed CI in run [45019669530](https://github.com/fwjlh/DotNetWebSearchApi/actions/runs/45019669530): build passed with 0 warnings/errors; 146 tests passed.
 - Mojeek and the 59-provider catalogue passed CI in run [45019896375](https://github.com/fwjlh/DotNetWebSearchApi/actions/runs/45019896375): build passed with 0 warnings/errors; 148 tests passed.
-- Batch 7 adds eight scholarly and open-knowledge providers with eight fixtures; CI pending.
+- Batch 7 and the full 67-provider catalogue passed CI in run [45020266512](https://github.com/fwjlh/DotNetWebSearchApi/actions/runs/45020266512): build passed with 0 warnings/errors; 156 tests passed.
+- Batch 7 adds eight scholarly and open-knowledge providers with eight fixtures. CI passed: build 0 warnings/errors; 156 tests passed (0 failed, 0 skipped).
 - Mojeek is implemented with bounded Altcha proof-of-work and two fixture tests; CI pending.
 - Batch 6 adds eight adapters and eight fixture tests. CI passed: build 0 warnings/errors; 146 tests passed (0 failed, 0 skipped).
 - Batch 5 adds Wiby, TVmaze, Radio Browser, PeerTube, Wikimedia Commons, Wikinews, Spanish Wikipedia and Openverse. All eight fixture cases passed in CI.
