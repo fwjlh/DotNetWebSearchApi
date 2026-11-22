@@ -514,3 +514,12 @@ Every material repository action is recorded here with its reason, result, verif
 - **Result:** Provider catalogue now defines 34 adapters. The three Stack Exchange variants use separate site parameters; the other adapters use provider-specific endpoints and JSON paths. No live requests were made.
 - **Verification:** Pending GitHub Actions. These providers are not counted as verified until CI passes.
 - **Next:** Verify this batch, then continue with news, media, image, academic and regional providers.
+
+
+### 61. Diagnose Maven Central URL mapping test
+- **Reason:** The third provider batch compiled successfully but did not pass the full fixture suite.
+- **Action:** Inspected workflow run 45013448673 for commit 19c8b97abb93eca261dc43d4490d4f759190c83f and reviewed the single failing case.
+- **Result:** Build passed. Of 121 tests, 120 passed and one failed. Maven Central's group:artifact identifier was interpreted by Uri as an absolute custom-scheme URI instead of a relative artifact path, so the configured Sonatype URL prefix was not applied.
+- **Correction:** Escape reserved characters when appending provider identifiers to URL prefixes while preserving embedded path separators; update the expected URL to its correctly escaped form.
+- **Verification:** Run https://github.com/fwjlh/DotNetWebSearchApi/actions/runs/45013448673. One test failed; no live provider request was made.
+- **Next:** Push the URL correction and verify the full suite.

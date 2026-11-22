@@ -89,7 +89,9 @@ public sealed class JsonApiSearchProvider : ISearchProvider
         }
         else if (!string.IsNullOrWhiteSpace(_definition.UrlPrefix))
         {
-            resultUri = new Uri(new Uri(_definition.UrlPrefix), url.TrimStart('/'));
+            string relativePath = Uri.EscapeDataString(url.TrimStart('/'))
+                .Replace("%2F", "/", StringComparison.OrdinalIgnoreCase);
+            resultUri = new Uri(new Uri(_definition.UrlPrefix), relativePath);
         }
 
         if (resultUri is null || (resultUri.Scheme != Uri.UriSchemeHttp && resultUri.Scheme != Uri.UriSchemeHttps))

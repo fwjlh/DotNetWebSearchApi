@@ -220,7 +220,7 @@ public sealed class JsonApiSearchProviderTests
             JsonApiProviderCatalog.Definitions.Single(item => item.Name == "mavencentral"),
             "{\"response\":{\"docs\":[{\"id\":\"org.example:library\",\"latestVersion\":\"1.2.3\"}]}}",
             "org.example:library",
-            "https://central.sonatype.com/artifact/org.example:library"
+            "https://central.sonatype.com/artifact/org.example%3Alibrary"
         };
         yield return new object[]
         {

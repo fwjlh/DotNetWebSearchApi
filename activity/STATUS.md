@@ -152,3 +152,6 @@ There is no SQL Server provider store, general configurable HTTP provider, API-k
 - Added: Super User, Server Fault, Ask Ubuntu, GitLab Projects, Gitea, Maven Central, Packagist and pub.dev.
 - The three Stack Exchange sites use distinct `site` parameters. GitLab and Maven return root arrays/nested JSON respectively; pub.dev uses a nested package path and a provider-specific URL prefix.
 - Fixture tests are included. CI and live upstream acceptance are not yet verified.
+
+
+- CI run 45013448673: build succeeded; 120/121 tests passed. The only failure was Maven Central's colon-delimited artifact coordinate being interpreted as an absolute URI scheme instead of a relative path. The URL-prefix path now percent-encodes reserved characters while preserving embedded path separators. Correction is pending CI.
