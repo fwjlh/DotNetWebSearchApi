@@ -878,3 +878,13 @@ Every material repository action is recorded here with its reason, result, verif
 - **Corpus/audit:** Updated the rationale corpus, porting audit and README to record the formula, the distinction between adapter score and merged ranking score, and the fact that all current providers still default to weight 1.0.
 - **Remaining:** SearXNG's high/low priority modes and richer metadata/category/template grouping are not implemented. Provider weights need evidence-based values. The score formula is now present, but this does not establish live parity with SearXNG results.
 - **Next:** Continue specialist-engine rationale and richer result types; do not invent engine weights. Keep the provider catalogue frozen at 67.
+
+
+### 96. Add specialist JSON API rationale and record deliberate substitutions
+- **Reason:** The generic JSON adapter now covers many catalogue entries, but a shared schema can hide substantial differences from SearXNG's dedicated Python request/response modules. The corpus must identify those losses instead of calling every definition a port.
+- **Action:** Added a specialist JSON section comparing Crossref, OpenAlex, Hacker News, GitHub, Open Library, Wikidata, Kagi, Semantic Scholar and npm against the C# JsonApiSearchProvider/JsonApiProviderCatalog.
+- **Findings:** Crossref/OpenAlex lose paging and rich Paper metadata; Hacker News loses page/time-range/ranking metadata; GitHub loses sort/header/package metadata; Open Library loses paging and bibliographic fields; Kagi loses page/locale/safe-search/time-range/verticals; Wikidata uses a different MediaWiki search API rather than Python's SPARQL query flow; C# npm uses registry.npmjs.org rather than Python's npms.io. These are explicit simplifications or protocol substitutions.
+- **Action:** Documented the generic definition's actual contract (GET/POST, query/limit, fixed parameters, nested JSON paths, URL prefixes, headers/API keys, attribution and minimum intervals) and its limits (no dynamic page/cursor logic, token bootstrap, multi-step request, custom transformations or rich result factory).
+- **Action:** Recorded Exa as C#-only at the pinned revision and StackExchange as a shared multi-site integration, not a proven one-to-one Python port.
+- **Verification:** Documentation-only; no code changed. The preceding weighted-ranking code commit `9d4d38d6769bbca66a2e09b6eaa656a4b10f46ff` remains green at 188 tests. Specialist corpus and status handover docs will be verified by their own CI runs.
+- **Next:** Continue dedicated provider studies where the Python module has request state or custom result types (Semantic Scholar, Kagi verticals, Wikidata, image/video feeds). Do not claim direct ports where the upstream module is absent or the protocol differs.
