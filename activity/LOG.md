@@ -962,3 +962,14 @@ Every material repository action is recorded here with its reason, result, verif
 - **Tests:** Added locale/page/safe-search request assertions, capability checks and API rate-limit mapping. GitHub Actions [run 45030233313](https://github.com/fwjlh/DotNetWebSearchApi/actions/runs/45030233313) passed: build 0 warnings/errors; 230 tests passed, 0 failed, 0 skipped. No live Qwant requests.
 - **Documentation:** Updated Qwant rationale, locale-traits notes, porting audit and handover.
 - **Next:** Yahoo request traits and YBV cookie lifecycle. Provider count remains frozen at 67.
+
+
+### 105. Port Yahoo request context and YBV session lifecycle
+- **Reason:** Yahoo's C# HTML parser and tracking redirect loop existed, but its request always used the US host, English/off preferences and no paging/time filters. It also lacked the Python engine's 24-hour YBV cookie cache.
+- **Python evidence:** Pinned yahoo.py maps region to Yahoo subdomains, language to the sB cookie, safe-search 0/1/2 to p/i/r, day/week/month to btf, and page 2+ to b=pageno*7+1 with pz=7/bct=0/xargs=0. It caches YBV for 86400 seconds when the value begins v0.2 and follows up to four redirect hops.
+- **Action:** Added Yahoo language/region/domain traits. Yahoo now builds regional search URLs, language/safe-search sB cookies, time-range parameters and page offsets. It declares general/web, locale, safe-search and paging; max page is 20.
+- **Framework improvement:** Added EngineCapabilities.SupportedTimeRanges so a provider can support a subset of Day/Week/Month/Year. Yahoo declares Day/Week/Month and pre-flight rejects Year instead of silently ignoring it.
+- **Action:** Yahoo now captures YBV Set-Cookie values on redirect hops, accepts only v0.2-prefixed values, stores them in its keyed CookieContainer and applies a 24-hour expiry. The Yahoo CookieContainer remains separate from other providers.
+- **Tests:** Added region/page/time/safe cookie assertions, YBV expiry checks and partial-time-range capability tests. GitHub Actions [run 45030498602](https://github.com/fwjlh/DotNetWebSearchApi/actions/runs/45030498602) passed: build 0 warnings/errors; 234 tests passed, 0 failed, 0 skipped. No live Yahoo requests.
+- **Documentation:** Updated Yahoo rationale, locale-traits notes, porting audit and handover.
+- **Next:** Audit Yandex's deliberate API substitution and improve its request capabilities; then revisit remaining major engines. Provider count remains frozen at 67.

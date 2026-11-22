@@ -94,7 +94,7 @@ This is only a partial traits translation: host/locale behaviour is carried acro
 - DuckDuckGo language-region maps remain partial.
 - Google locale/region mapping remains future work.
 
-Next: expand Wikipedia's non-standard language codes, Google language/region maps and Qwant region coverage from pinned source evidence. Keep traits versioned and static until refresh/persistence provides clear value.
+Next: expand Wikipedia's non-standard language codes, Google language/region maps, Yahoo language/region tables and Qwant region coverage from pinned source evidence. Keep traits versioned and static until refresh/persistence provides clear value.
 
 Verification: fixtures cover Bing, DuckDuckGo and Wikipedia locale mappings, request construction and conservative fallbacks. Wikipedia locale/host tests are green in [run 45029724644](https://github.com/fwjlh/DotNetWebSearchApi/actions/runs/45029724644).
 
@@ -110,3 +110,18 @@ C# now uses a curated Google language/region subset in EngineLocaleRegistry. Goo
 The provider retains the adtest and Samsung user-agent marker used by Python's web vertical. It does not yet send the CONSENT=YES+ cookie, parse suggestions, or implement Google image/news/video verticals.
 
 Verification: Google request/capability tests passed in [run 45030058998](https://github.com/fwjlh/DotNetWebSearchApi/actions/runs/45030058998): 223 tests, 0 failures, 0 skipped. No live Google request was made.
+
+
+## Yahoo: region hosts, language cookie and YBV lifecycle
+
+**Python source:** [searx/engines/yahoo.py](https://github.com/searxng/searxng/blob/c6ee3e9fd0235004a694e63720efc869bb1e3594/searx/engines/yahoo.py)
+
+Python maps the locale's country to region2domain, maps the language subtag through yahoo_languages, and builds an sB cookie carrying safe-search and language preferences. It maps day/week/month to btf, and page 2+ to Yahoo's unusual b=pageno*7+1 / pz=7 / bct=0 / xargs=0 parameters. It also caches a YBV cookie for 24 hours while manually following up to four tracking/geo redirects.
+
+C# now uses curated Yahoo language, region and region2domain custom maps. The sB cookie maps safe-search 0/1/2 to p/i/r and language to lang_xx. The provider maps the same time-range and page-offset fields, follows at most four redirects, and captures YBV Set-Cookie values beginning v0.2 into the keyed Yahoo CookieContainer with a 24-hour expiry.
+
+EngineCapabilities now supports a SupportedTimeRanges set in addition to the broad SupportsTimeRange flag. Yahoo advertises Day, Week and Month but rejects Year during pre-flight. Its maximum page is conservatively capped at 20. This avoids silently accepting a time range the request builder cannot represent.
+
+The region/language/domain maps are curated subsets, not the full upstream tables. Suggestions are still omitted. The Yahoo cookie container is isolated from other providers and shared across the Yahoo typed client lifetime.
+
+Verification: Yahoo request/session tests passed in [run 45030498602](https://github.com/fwjlh/DotNetWebSearchApi/actions/runs/45030498602): 234 tests, 0 failures, 0 skipped.

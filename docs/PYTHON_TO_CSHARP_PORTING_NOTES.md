@@ -225,24 +225,41 @@ These are translation targets, not assertions that every row is already implemen
 **C# source:**
 - [YahooSearchProvider.cs](../src/DotNetWebSearchApi/Search/YahooSearchProvider.cs)
 - [YahooSearchResultParser.cs](../src/DotNetWebSearchApi/Search/YahooSearchResultParser.cs)
+- [EngineLocaleRegistry.cs](../src/DotNetWebSearchApi/Search/EngineLocaleRegistry.cs)
 - [YahooSearchProviderTests.cs](../tests/DotNetWebSearchApi.Tests/YahooSearchProviderTests.cs)
 
 **Why the C# code has this shape**
 
-- Both implementations use Yahoo's HTML web search, not an API-key service. The `algo-sr` result card, `compTitle` link, title and `compText` description are structural DOM data, so C# uses HtmlAgilityPack.
-- Yahoo wraps result URLs in tracking paths containing `/RU=...` and suffix markers such as `/RS` and `/RK`. The C# parser extracts and URL-decodes the embedded destination, matching Python's `parse_url` intent.
-- Yahoo uses a cookie to shape search behaviour. C# injects a `CookieContainer` and sets the `sB` cookie before the search. The explicit redirect loop bounds the tracking/geo redirect chain rather than allowing an unbounded sequence.
-- The fixture test checks both redirect following and result URL unwrapping; these are separate behaviours and should remain separate tests.
+- Both implementations use Yahoo's HTML web search, not an API-key service. The algo-sr result card, compTitle link, title and compText description are structural DOM data, so C# uses HtmlAgilityPack.
+- Yahoo wraps result URLs in tracking paths containing /RU=... and suffix markers such as /RS and /RK. The C# parser extracts and URL-decodes the embedded destination, matching Python's parse_url intent.
+- Yahoo uses an sB preference cookie. C# now maps safe-search 0/1/2 to p/i/r and maps the query language to the vl=lang_xx cookie value.
+- The explicit redirect loop bounds the tracking/geo redirect chain to four hops, matching Python's _YBV_HOPS.
+
+**Request-context translation**
+
+- Python maps locale to a regional Yahoo host through region2domain and language through yahoo_languages. C# now uses EngineLocaleRegistry region/custom host and language maps.
+- Python maps page 1 to iscqry= and later pages to b=pageno*7+1, pz=7, bct=0 and xargs=0. C# reproduces this offset shape and applies a conservative max page of 20.
+- Python maps day/week/month to btf=d/w/m. C# maps the same three values and declares SupportedTimeRanges explicitly; year is rejected before the provider is called.
+- Python maps safe-search 0/1/2 to p/i/r in the sB cookie. C# reproduces those values.
+- The provider declares general/web, locale, safe-search and paging support. It supports only Day, Week and Month time ranges, not Year.
+
+**YBV session lifecycle**
+
+- Python documents YBV as a bot-detection cookie cached for 24 hours. During each manual redirect hop it captures the cookie and caches it only when the value starts with v0.2; the next request sends the cached value.
+- C# now reads YBV Set-Cookie headers during each redirect response, stores the cookie in the keyed Yahoo CookieContainer with an explicit 24-hour expiry when it starts with v0.2, and relies on the same container for subsequent requests. The DI registration uses a dedicated keyed Yahoo container and a manual-redirect handler.
+- This is handler/container-scoped state rather than Python's EngineCache abstraction. Its lifetime is bounded by the registered singleton container and HttpClient handler configuration; it is not shared with other providers.
 
 **Known divergence / omissions**
 
-- Python documents a YBV bot-detection cookie cached for 24 hours. It captures YBV during redirect hops and reuses it on subsequent requests. C# does not implement YBV acquisition/cache; it only supplies the `sB` preference cookie.
-- Python derives the regional Yahoo host from locale, maps language, maps safe-search values and maps time ranges. It also implements page offsets. C# always calls `search.yahoo.com`, hardcodes the `sB` cookie values, and ignores page, language, safe-search and time range.
-- Python follows at most four redirect hops and explicitly carries cookies/headers into each manual request. C# also caps redirects at four, but cookie persistence depends on the injected `HttpClient` handler's CookieContainer configuration. That lifetime and isolation need to be verified in DI.
-- Python extracts `AlsoTry` suggestions. C# only returns web results.
-- Python treats both 302 and 307 as redirect hops. C# recognises 302 and 307; any other redirect status is left to normal HTTP error handling.
+- Python extracts AlsoTry suggestions. C# only returns ordinary web results.
+- The regional host/language map is a curated subset of Python's complete region2domain/yahoo_languages tables.
+- Python carries cookies and request headers explicitly between redirect hops. C# relies on CookieContainer for domain/path matching; custom test handlers do not automatically send cookies, so tests assert the container state.
+- The maximum page 20 is a C# operational cap; Python advertises paging without this same explicit maximum.
 
-**Interpretation:** useful HTML/parser port with tracking URL handling and a bounded redirect loop, but the Yahoo session cookie and locale/paging/safe-search behaviour are not equivalent yet.
+**Verification:** Yahoo tests cover URL unwrapping, regional host, page offset, time range, safe-search/language cookie, four-hop redirect handling and 24-hour YBV cache. GitHub Actions [run 45030498602](https://github.com/fwjlh/DotNetWebSearchApi/actions/runs/45030498602) passed: 234 tests, 0 failed, 0 skipped. No live Yahoo requests were made.
+
+**Interpretation:** this is now a much closer request/session port for Yahoo web search. It still omits suggestions and uses a curated locale map and a conservative paging cap.
+
 
 ### Yandex Web
 
