@@ -108,6 +108,38 @@ public sealed class SearchHttpTransportTests
     }
 
     [Fact]
+    public async Task SendAsync_AppliesDefaultHeadersWhenProviderDoesNotSpecifyThem()
+    {
+        using HttpClient client = new(new StubHttpMessageHandler(request =>
+        {
+            Assert.Contains(request.Headers.UserAgent, item => item.Product?.Name == "DotNetWebSearchApi");
+            Assert.Contains(request.Headers.Accept, item => item.MediaType == "*/*");
+            return new HttpResponseMessage(HttpStatusCode.OK);
+        }));
+        SearchHttpTransport transport = new();
+        using HttpRequestMessage request = new(HttpMethod.Get, "https://example.com/search");
+
+        await transport.SendAsync(client, request, CancellationToken.None);
+    }
+
+    [Fact]
+    public async Task SendAsync_PreservesProviderSpecificHeaders()
+    {
+        using HttpClient client = new(new StubHttpMessageHandler(request =>
+        {
+            Assert.Contains(request.Headers.UserAgent, item => item.Product?.Name == "ProviderClient");
+            Assert.Contains(request.Headers.Accept, item => item.MediaType == "text/html");
+            return new HttpResponseMessage(HttpStatusCode.OK);
+        }));
+        SearchHttpTransport transport = new();
+        using HttpRequestMessage request = new(HttpMethod.Get, "https://example.com/search");
+        request.Headers.UserAgent.ParseAdd("ProviderClient/2.0");
+        request.Headers.Accept.ParseAdd("text/html");
+
+        await transport.SendAsync(client, request, CancellationToken.None);
+    }
+
+    [Fact]
     public async Task SendAsync_AppliesMinimumIntervalPerProvider()
     {
         ConcurrentQueue<long> requestTimes = new();
