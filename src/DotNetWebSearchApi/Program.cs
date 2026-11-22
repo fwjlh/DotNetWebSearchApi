@@ -86,6 +86,18 @@ if (!string.IsNullOrWhiteSpace(yandexApiKey) && !string.IsNullOrWhiteSpace(yande
     });
     builder.Services.AddSingleton<ISearchProvider>(sp => sp.GetRequiredService<YandexSearchProvider>());
 }
+string? kagiApiKey = builder.Configuration["KAGI_API_KEY"];
+if (!string.IsNullOrWhiteSpace(kagiApiKey))
+{
+    builder.Services.AddSingleton(new KagiSearchOptions(kagiApiKey));
+    builder.Services.AddHttpClient<KagiSearchProvider>(client =>
+    {
+        client.DefaultRequestHeaders.UserAgent.ParseAdd("DotNetWebSearchApi/0.1 (+https://github.com/fwjlh/DotNetWebSearchApi)");
+        client.DefaultRequestHeaders.Accept.ParseAdd("application/json");
+    });
+    builder.Services.AddSingleton<ISearchProvider>(sp => sp.GetRequiredService<KagiSearchProvider>());
+}
+
 builder.Services.AddSingleton<ISearchProvider>(sp => sp.GetRequiredService<WikipediaSearchProvider>());
 builder.Services.AddSingleton<ISearchProvider>(sp => sp.GetRequiredService<ArxivSearchProvider>());
 
