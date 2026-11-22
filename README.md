@@ -1,65 +1,246 @@
 # DotNetWebSearchApi
 
-A self-hosted, privacy-oriented metasearch API for .NET 10.
+[![Build and test](https://github.com/fwjlh/DotNetWebSearchApi/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/fwjlh/DotNetWebSearchApi/actions/workflows/ci.yml)
+[![License: AGPL v3](https://img.shields.io/badge/License-AGPL--3.0-blue.svg)](LICENSE)
+[![.NET](https://img.shields.io/badge/.NET-10-512BD4.svg)](https://dotnet.microsoft.com/)
 
-The goal is to bring the useful ideas behind [SearXNG](https://github.com/searxng/searxng) to a native .NET deployment: query multiple independent search providers, normalise and combine their results, and expose one consistent API that you control.
+**A self-hosted metasearch API, written in native C# and ASP.NET Core.**
 
-This repository is an independent .NET implementation. It is not affiliated with, endorsed by, or a drop-in replacement for the SearXNG project. See [UPSTREAM.md](UPSTREAM.md) for provenance and attribution, and [LICENSE](LICENSE) for licensing.
+DotNetWebSearchApi aims to bring the useful metasearch ideas behind [SearXNG](https://github.com/searxng/searxng) into a straightforward .NET deployment. It will query multiple independent search providers, combine and normalise their results, and give applications one API that they can host and control.
 
-## Project status
+The goal is not to build another search index. It is to provide a practical, extensible aggregation layer that can run on infrastructure you already operate: particularly Windows Server, IIS and SQL Server environments.
 
-**Initial implementation in progress.** The first milestone establishes the API, provider contracts, aggregation behaviour, tests, and automated .NET 10 build. SQL-backed provider configuration, API-key management, provider-specific adapters, and the browser-facing search interface follow as separate increments.
+> **Project status: early development.** The API, provider contract, parallel aggregation, Wikipedia adapter and first automated test suite are in place. The next implementation priority is major search-provider adapters. The compatibility API and browser-based administration/search experience follow those adapters.
 
-## Design goals
+This is an independent implementation inspired by SearXNG. It is not affiliated with, endorsed by, or a drop-in replacement for the SearXNG project. See [UPSTREAM.md](UPSTREAM.md) for provenance and [LICENSE](LICENSE) for licensing.
 
-- Native C# and ASP.NET Core 10; no Python runtime or Docker dependency.
-- Self-hosted. Your API callers connect to your server; configured providers receive requests from your server.
-- Provider adapters isolate differences between search engines.
-- Parallel provider execution with bounded timeouts and partial-result handling.
-- Normalised, deduplicated results with deterministic ranking.
-- Provider definitions can evolve towards SQL Server/T-SQL administration without embedding secrets in ordinary configuration rows.
-- Small source files, shallow structure, explicit contracts, and meaningful automated tests.
-- Privacy by design: do not forward caller IP addresses, API keys, or unrelated request headers to upstream providers.
+---
 
-## Planned architecture
+## Why this project?
 
-`HTTP API -> Search orchestration -> Provider registry -> Provider adapters -> External search providers`
+Using several search providers independently creates repeated integration work: different request formats, response structures, ranking signals, timeouts and failure modes.
 
-The first release uses explicit C# provider implementations. A later configurable-provider layer will support common HTTP GET/POST patterns and structured response extraction. Complex providers remain free to use dedicated C# adapters. Razor/CSHTML is intended for controlled server-side templates where it provides real value, not as an unrestricted code-execution mechanism.
+DotNetWebSearchApi puts that work behind one service:
 
-SQL Server will be an optional configuration store, not a requirement for running the initial API. Provider secrets should be supplied through a secret store or environment-specific configuration and referenced by name; they must not be stored as plaintext in provider-definition rows.
+- **One endpoint for many engines.** Applications make one request and receive a merged result set.
+- **Self-hosted control.** Your application calls your server; your server communicates with configured upstream providers.
+- **Native .NET.** Built with C# and ASP.NET Core 10. No Python runtime, Docker or separate search stack is required.
+- **Provider isolation.** Each engine has a focused adapter. One failing or slow provider should not prevent useful results from the others.
+- **Configurable direction.** Provider definitions are intended to move towards SQL Server-backed administration, with secrets kept outside ordinary provider records.
+- **Open source development.** The project is structured so that other .NET developers can add, test and improve adapters.
 
-## Build
+## Current capabilities
 
-Install the .NET 10 SDK, then run:
+| Capability | Status | Notes |
+|---|---|---|
+| ASP.NET Core 10 API | Working | Minimal API host |
+| Health endpoint | Working | GET /health |
+| Unified search endpoint | Working | GET /api/search?q=... |
+| Provider contract | Working | Common query and result types |
+| Parallel provider execution | Working | Providers run concurrently |
+| Timeout and failure isolation | Working | Partial results can survive provider failures |
+| Result normalisation | Working | HTTP(S) URLs, deduplication and deterministic ordering |
+| Result limit | Working | Default 10; maximum 50 |
+| Wikipedia adapter | Working | MediaWiki search API |
+| Automated build and tests | Working | GitHub Actions / .NET 10 |
+| Major web-search adapters | Planned | Highest implementation priority |
+| First 5–10 provider adapters | Planned | Build and verify the first useful provider set |
+| SearXNG-compatible JSON API | Planned | Compatibility layer after core adapters |
+| Browser search interface | Planned | Search, provider selection and result display |
+| Administration and diagnostics | Planned | Provider configuration, health, logs and operational visibility |
+| SQL Server configuration store | Planned | Optional persistence and administration |
+| API keys, quotas and rate limiting | Planned | Required before untrusted public exposure |
 
-```powershell
-dotnet restore
-dotnet build --no-restore
-dotnet test --no-build
-```
+The status above is deliberately conservative: a provider is only marked **Working** once its adapter is implemented and tested. Planned integrations are not represented as available features.
 
-The GitHub Actions workflow runs restore, build, and tests on pushes and pull requests.
+## Search provider roadmap
 
-## API
+The implementation strategy is to work from the major general-purpose search engines down through specialist and topic-specific providers. The first target is a useful set of approximately 5–10 providers, not a long list of untested names.
 
-The initial API surface is being developed around:
+| Priority | Provider | Status | Implementation notes |
+|---:|---|---|---|
+| 1 | Bing | Planned | Validate the currently supported access route and terms before implementation |
+| 2 | Brave Search | Planned | Confirm API access and key/configuration requirements |
+| 3 | Google Search | Planned | Select a supported access method; document account, quota or billing requirements |
+| 4 | DuckDuckGo | Planned | Evaluate the current public search interface and its limitations |
+| 5 | Wikipedia | Working | First adapter; retain as a useful reference implementation |
+| 6 | Mojeek | Planned | Add after the major providers |
+| 7+ | Further SearXNG providers | Planned | Prioritise by usefulness, reliability, accessibility and maintenance cost |
 
-- `GET /api/search?q={query}` — aggregate results from enabled providers.
-- `GET /health` — process health.
+Provider ordering is a development priority, not a claim that every upstream service offers a free or unrestricted API. Each adapter must respect the provider's current access rules, terms, rate limits and attribution requirements. Where a provider requires credentials, keys will be configured as secrets and never committed to source control.
 
-Authentication, quotas, provider administration, and operational metrics will be added before recommending exposure to an untrusted public network.
+### What makes an adapter complete?
 
-## Security notes
+Each provider should have:
 
-This service makes outbound HTTP requests based on provider configuration. Any configurable endpoint feature must defend against SSRF: restrict schemes, validate destinations, block loopback/link-local/private ranges where appropriate, revalidate redirects, and avoid allowing arbitrary caller-supplied URLs. Provider configuration is trusted administrative input, not a public query parameter. Apply outbound network controls as an additional layer.
+1. A small, isolated C# implementation behind the common provider contract.
+2. Explicit request construction and response parsing.
+3. Tests for normal responses, empty results, malformed payloads, HTTP failures and cancellation/timeouts.
+4. Safe URL handling and sensible result metadata.
+5. Documented access requirements, quotas and configuration.
+6. Registration in the provider set and verification in CI.
 
-Do not expose an unauthenticated instance to the public internet until authentication, rate limiting, request limits, and SSRF protections are implemented and reviewed.
+A provider should not be counted as ported merely because its name appears in a configuration file.
 
-## Development diary
+## Architecture
 
-Every implementation increment and handover is recorded under [activity/](activity/). Read [activity/STATUS.md](activity/STATUS.md) first when resuming work.
+The intended request flow is:
 
-## License and upstream
+    Client application
+          |
+          v
+       Search API
+          |
+          v
+   Search orchestration
+          |
+          v
+     Provider registry
+       /     |     \
+      v      v      v
+   Adapter Adapter Adapter
+      |      |      |
+      v      v      v
+   Engine  Engine  Engine
+       \     |     /
+        v    v    v
+    Normalise, deduplicate
+       and rank results
+             |
+             v
+        Search API
+             |
+             v
+       Client application
 
-This project is distributed under AGPL-3.0-or-later. SearXNG is also licensed under AGPL-3.0-or-later. The relationship, attribution, and scope of the initial independent implementation are documented in [UPSTREAM.md](UPSTREAM.md). This is not legal advice; review licensing obligations before redistribution or commercial deployment.
+The first implementation uses explicit C# adapters. A later provider-definition layer is intended to support common HTTP GET/POST patterns and structured response extraction. Providers with unusual protocols or parsing requirements can continue to use dedicated C# code.
+
+SQL Server is planned as an optional configuration store, not a prerequisite for running the initial service. Secrets should be supplied through environment-specific configuration or a secret store and referenced by name; they should not be stored as plaintext in provider-definition rows.
+
+## Technology and deployment direction
+
+- **Runtime:** .NET 10 / ASP.NET Core.
+- **Language:** C#.
+- **Hosting:** Kestrel or IIS hosting; Windows Server is an important target.
+- **Configuration:** app configuration initially; optional SQL Server-backed provider configuration later.
+- **Tests:** xUnit.
+- **Automation:** GitHub Actions.
+- **External dependencies:** outbound HTTPS access to whichever providers are enabled.
+
+There is no Docker or Python dependency in the intended deployment model.
+
+## Quick start
+
+### Requirements
+
+- .NET 10 SDK.
+- Internet access for the enabled upstream search provider.
+- Git to clone the repository.
+
+### Clone and run
+
+    git clone https://github.com/fwjlh/DotNetWebSearchApi.git
+    cd DotNetWebSearchApi
+    dotnet restore
+    dotnet run --project src/DotNetWebSearchApi
+
+The application prints its local listening address when it starts. Use that address for the requests below.
+
+### Check health
+
+    GET /health
+
+Example response:
+
+    {
+      "status": "ok"
+    }
+
+### Search
+
+    GET /api/search?q=dotnet%20web%20api&limit=10
+
+The current response shape is:
+
+    {
+      "query": "dotnet web api",
+      "results": [
+        {
+          "title": "Example result",
+          "url": "https://example.com/article",
+          "snippet": "A short result description.",
+          "provider": "wikipedia",
+          "score": 1.0
+        }
+      ]
+    }
+
+The example result is illustrative; actual results depend on the upstream response. The current implementation defaults to 10 results and accepts a limit from 1 to 50. A missing or blank query, or an invalid limit, returns HTTP 400.
+
+## Build and test
+
+Run from the repository root:
+
+    dotnet restore
+    dotnet build --no-restore
+    dotnet test
+
+GitHub Actions runs restore, build and tests for pushes and pull requests. The badge at the top links to the workflow.
+
+The initial verified implementation passed its CI build with **9 tests passing**. Check the Actions history for the latest result; this README does not assume that a previous successful run proves every future commit is green.
+
+## Planned delivery sequence
+
+The work is intentionally staged so the useful search capability comes before the polish:
+
+1. **Provider foundation and major engines.** Keep the provider contract, aggregation and test structure solid; implement the major general-purpose engines first.
+2. **First 5–10 adapters.** Work down the provider priority list, testing each adapter and recording access requirements.
+3. **SearXNG-compatible JSON API.** Add a compatibility surface so existing clients can consume a familiar response format.
+4. **Browser interface and administration.** Add a practical search page, provider controls, configuration management and diagnostics.
+5. **Operational hardening.** Add SQL Server-backed configuration where useful, API-key authentication, quotas, rate limiting, metrics and deployment guidance before public exposure.
+
+The exact provider access method may affect the order within the first stage. Reliability, legality, maintainability and real-world availability take precedence over simply matching an upstream engine count.
+
+## Security and privacy
+
+This service is designed to be self-hosted, but self-hosting does not automatically make an instance safe.
+
+- Do not expose an unauthenticated instance to the public internet.
+- Authentication, rate limits, quotas and request limits must be implemented before untrusted public access.
+- Provider endpoints are administrative configuration, never arbitrary URLs supplied by search callers.
+- Configurable outbound requests must defend against SSRF: validate schemes and destinations, block loopback/link-local/private ranges where appropriate, revalidate redirects and apply outbound network controls.
+- Do not forward caller IP addresses, API keys or unrelated inbound headers to search providers.
+- Keep provider credentials out of source control and ordinary provider-definition rows.
+- Follow each upstream provider's terms, rate limits, attribution and data-use requirements.
+
+## Contributing
+
+Contributions are welcome, particularly from C# developers interested in search integrations.
+
+Good first contributions include:
+
+- Provider adapters with focused tests.
+- Test fixtures for real-world response formats (with secrets and personal data removed).
+- Improvements to result normalisation and ranking.
+- Documentation of provider access requirements and limitations.
+- Deployment and operational guidance for Windows Server and IIS.
+
+Before opening a pull request:
+
+1. Keep changes focused and source files small.
+2. Add tests for new behaviour and failure cases.
+3. Run dotnet build and dotnet test.
+4. Update the provider status and relevant documentation.
+5. Never commit API keys, tokens or private response data.
+
+See [activity/STATUS.md](activity/STATUS.md) for the current handover and [activity/LOG.md](activity/LOG.md) for the development diary.
+
+## Project diary
+
+Material implementation actions, test outcomes, decisions and handovers are recorded in the activity folder. This keeps the project history understandable even when development moves between sessions.
+
+## Relationship to SearXNG and licence
+
+DotNetWebSearchApi is an independent .NET implementation inspired by the architecture and provider ecosystem of [SearXNG](https://github.com/searxng/searxng). It is not a complete port and does not claim feature parity. Upstream provenance and attribution are described in [UPSTREAM.md](UPSTREAM.md).
+
+This repository is licensed under **GNU Affero General Public License v3.0 or later (AGPL-3.0-or-later)**. Review the licence and relevant upstream/provider terms before redistributing or deploying modified versions as a network service. This is project documentation, not legal advice.
