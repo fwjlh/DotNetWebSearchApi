@@ -428,10 +428,10 @@ Use explicit labels: **preserved**, **adapted**, **omitted**, **known divergence
 
 ## Immediate corpus work queue
 
-1. Compare the remaining priority web engines against the pinned upstream source: Google, Qwant, Yahoo, Yandex, Naver and Seznam.
-2. Record the exact upstream and C# behaviour for Wikipedia and the JSON/RSS definition adapters.
-3. Add test links and named test cases to each provider entry.
-4. After shared transport and typed outcomes exist, revisit the adapters whose current implementations hide challenge, rate-limit or session semantics.
+1. Add named test-method links and explicit fixture/live-verification status to every remaining provider entry; the major web-engine comparisons are now covered.
+2. Continue the corpus for specialist JSON providers where the Python implementation uses a dedicated engine rather than the generic `json_engine` template.
+3. Compare each RSS feed adapter with its actual upstream Python engine before claiming provenance.
+4. After shared transport and typed outcomes exist, revisit adapters whose current implementations hide challenge, rate-limit, cookie or session semantics.
 5. Re-pin upstream and record source deltas before each substantive correction.
 
 ## Legal and attribution note
