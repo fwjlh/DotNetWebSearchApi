@@ -98,7 +98,8 @@ Search/media/regional providers (batch 5): Wiby, TVmaze, Radio Browser, PeerTube
 ## Next actions
 1. Keep provider expansion frozen at 67; do not add adapters during the shared-framework milestone.
 2. Extend the locale/region traits registry with DuckDuckGo, Wikipedia and Google maps; keep each mapping provider-specific and versioned.
-3. Expand API compatibility conformance tests for GET/POST, categories, safe-search, paging, partial time ranges, unsupported engines and typed outcomes.
+3. Add Naver thumbnail metadata and review Seznam hidden-form cookie handling.
+4. Expand API compatibility conformance tests for GET/POST, categories, safe-search, paging, partial time ranges, unsupported engines and typed outcomes.
 4. Add rich result models and metadata preservation before broadening image/news/video provider coverage.
 5. Make provider health/cooldown policy configurable per engine and decide whether persistence is required for multi-instance hosting.
 6. Harden the public API before internet exposure: authentication, quotas, request limits and outbound destination policy.

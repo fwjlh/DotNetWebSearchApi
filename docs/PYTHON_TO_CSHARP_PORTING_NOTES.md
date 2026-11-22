@@ -299,19 +299,23 @@ These are translation targets, not assertions that every row is already implemen
 
 **Why the C# code has this shape**
 
-- The selected upstream category is Naver general/web search, which is HTML rather than an official API. C# calls `search.naver.com/search.naver` with `where=web` and parses the current web result card family `fds-web-normal-doc-root`.
-- The parser reads the headline span and body span, rejects Naver's `keep.naver.com` save links as result destinations, and only emits absolute HTTP(S) links.
-- This is intentionally a small web-only provider/parser split; the HTML fixture can be tested independently of Naver's live page.
+- The selected upstream category is Naver general/web search, which is HTML rather than an official API. C# calls search.naver.com/search.naver with where=web and parses the current web result card family fds-web-normal-doc-root.
+- The parser reads the headline span and body span, rejects Naver's keep.naver.com save links as result destinations, and only emits absolute HTTP(S) links.
+- Naver cannot set an arbitrary result count per page. Python uses a fixed category-specific page size; for general web it is 15, so page N starts at (N-1)*15+1. C# now maps SearchQuery.Page using that exact offset.
+- Python maps day/week/month/year to nso=p:1d/1w/1m/1y. C# now maps all four time ranges and declares pagination/time-range support, with a conservative max page of 20.
+- Naver's Python engine language is Korean. C# does not claim locale support or alter the request language.
 
 **Known divergence / omissions**
 
 - Python supports general, images, news and videos with different parsers and result types. C# implements only general web.
-- Python calculates page offsets using category-specific page sizes (15 for general, 50 images, 10 news, 48 videos) and maps time ranges into the `nso` parameter. C# hardcodes `start=1` and does not use page or time range.
 - Python emits thumbnails for general results. C# currently drops the thumbnail even though the source card may contain one.
-- Python declares Korean as its language. C# does not map `SearchQuery.Language` or a region into the request.
-- The C# request uses the same broad endpoint and selectors, but its fixed first-page URL does not preserve the original query-state semantics.
+- Python has no safe-search flag in this engine; C# likewise does not advertise safe-search.
+- The maximum page 20 is a C# operational cap; the Python module declares paging without this same explicit cap.
 
-**Interpretation:** web-card extraction only. It is not a port of Naver's multi-vertical engine, pagination or time-range support.
+**Verification:** Naver tests cover page offset, time-range parameter, capabilities and the current web result parser. GitHub Actions [run 45030669036](https://github.com/fwjlh/DotNetWebSearchApi/actions/runs/45030669036) passed: 236 tests, 0 failed, 0 skipped. No live Naver requests were made.
+
+**Interpretation:** a closer general-web request port, now preserving pagination and date filtering. It is still not a port of Naver's images/news/videos verticals or thumbnail result metadata.
+
 
 ### Seznam Web
 

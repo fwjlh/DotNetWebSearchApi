@@ -973,3 +973,13 @@ Every material repository action is recorded here with its reason, result, verif
 - **Tests:** Added region/page/time/safe cookie assertions, YBV expiry checks and partial-time-range capability tests. GitHub Actions [run 45030498602](https://github.com/fwjlh/DotNetWebSearchApi/actions/runs/45030498602) passed: build 0 warnings/errors; 234 tests passed, 0 failed, 0 skipped. No live Yahoo requests.
 - **Documentation:** Updated Yahoo rationale, locale-traits notes, porting audit and handover.
 - **Next:** Audit Yandex's deliberate API substitution and improve its request capabilities; then revisit remaining major engines. Provider count remains frozen at 67.
+
+
+### 106. Port Naver page offsets and time-range filters
+- **Reason:** Naver's C# adapter already used the current HTML result selector but always requested the first page and ignored date filters.
+- **Python evidence:** Pinned naver.py uses a fixed 15-result general-web page size because Naver cannot set arbitrary page size. It computes start=(pageno-1)*15+1, where=web, and maps day/week/month/year to nso=p:1d/1w/1m/1y.
+- **Action:** Naver now builds request parameters from SearchQuery.Page and TimeRange, declares general/web, paging and time-range capabilities, and remains conservative about unsupported safe-search and locale. The operational maximum page is 20.
+- **Tests:** Added page-3 offset and monthly filter assertions plus capability tests. GitHub Actions [run 45030669036](https://github.com/fwjlh/DotNetWebSearchApi/actions/runs/45030669036) passed: build 0 warnings/errors; 236 tests passed, 0 failed, 0 skipped. No live Naver requests.
+- **Known omissions:** Naver Python supports images/news/videos and emits thumbnail metadata; C# remains general web only and drops thumbnails.
+- **Documentation:** Updated Naver rationale, porting audit, README and handover.
+- **Next:** Add Naver thumbnail metadata and review Seznam hidden-form cookie handling. Provider count remains frozen at 67.
