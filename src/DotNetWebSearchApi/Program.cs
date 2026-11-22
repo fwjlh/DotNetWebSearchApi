@@ -6,12 +6,21 @@ builder.Services.AddHttpClient<BingSearchProvider>(client =>
     client.DefaultRequestHeaders.UserAgent.ParseAdd(
         "DotNetWebSearchApi/0.1 (+https://github.com/fwjlh/DotNetWebSearchApi)");
 });
+builder.Services.AddHttpClient<GoogleSearchProvider>(client =>
+{
+    client.DefaultRequestHeaders.UserAgent.ParseAdd(
+        "DotNetWebSearchApi/0.1 (+https://github.com/fwjlh/DotNetWebSearchApi)");
+    client.DefaultRequestHeaders.Accept.ParseAdd("text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8");
+    client.DefaultRequestHeaders.AcceptLanguage.ParseAdd("en-GB,en;q=0.9");
+    client.DefaultRequestHeaders.Add("Cookie", "CONSENT=YES+");
+});
 builder.Services.AddHttpClient<WikipediaSearchProvider>(client =>
 {
     client.DefaultRequestHeaders.UserAgent.ParseAdd(
         "DotNetWebSearchApi/0.1 (+https://github.com/fwjlh/DotNetWebSearchApi)");
 });
 builder.Services.AddSingleton<ISearchProvider>(serviceProvider => serviceProvider.GetRequiredService<BingSearchProvider>());
+builder.Services.AddSingleton<ISearchProvider>(serviceProvider => serviceProvider.GetRequiredService<GoogleSearchProvider>());
 builder.Services.AddSingleton<ISearchProvider>(serviceProvider => serviceProvider.GetRequiredService<WikipediaSearchProvider>());
 
 string? braveApiKey = builder.Configuration["BRAVE_SEARCH_API_KEY"];

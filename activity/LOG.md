@@ -152,3 +152,20 @@ Every material repository action is recorded here with its reason, result, verif
 - **Correction verified:** The malformed-JSON test now accepts JsonReaderException as a JsonException subtype.
 - **Verification:** Workflow run https://github.com/fwjlh/DotNetWebSearchApi/actions/runs/45008067698. The Brave tests use fixture JSON and a fake HTTP handler; they do not make billable/live API requests.
 - **Next:** Record Brave as implemented but optional/key-required. Proceed to Google web search (the official Custom Search JSON API is closed to new customers) and DuckDuckGo HTML search (documented bot protection is a risk).
+
+
+## 2026-11-22 — Google Web HTML adapter
+
+### 19. Validate Google search route
+- **Reason:** The official Custom Search JSON API is closed to new customers, so evaluate the current SearXNG web-search implementation as the practical route.
+- **Action:** Reviewed Google's Custom Search JSON API lifecycle note and current SearXNG Google engine source, including request parameters, result selectors and CAPTCHA detection.
+- **Result:** New customers cannot sign up for Custom Search JSON API; existing customers must transition by 1 January 2027. Current SearXNG Google Web uses the Google HTML search page, HTML result cards and explicit CAPTCHA detection. The .NET adapter will follow that web route and treat blocking pages as provider failures.
+- **Verification:** Google developer documentation and SearXNG current source reviewed. No claim of live Google availability is made.
+- **Next:** Add a testable HTML parser, request adapter and CAPTCHA handling.
+
+### 20. Implement Google Web adapter
+- **Reason:** Continue the agreed major-engine-first sequence with a no-key web adapter rather than a closed API.
+- **Action:** Added GoogleSearchProvider and GoogleSearchResultParser, registered the provider, and added seven fixture/fake-handler tests for parsing, URL unwrapping, malformed cards, query construction, CAPTCHA handling and HTTP failures.
+- **Result:** Implementation and tests prepared for commit. The adapter uses the public Google HTML page, not Custom Search JSON API. Automated tests do not contact Google.
+- **Verification:** Pending GitHub Actions.
+- **Next:** Inspect CI and record the result. If green, assess DuckDuckGo's HTML request flow and bot-protection constraints.
