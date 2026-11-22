@@ -35,7 +35,8 @@ DotNetWebSearchApi puts that work behind one service:
 |---|---|---|
 | ASP.NET Core 10 API | Working | Minimal API host |
 | Health endpoint | Working | GET /health |
-| Unified search endpoint | Working | GET /api/search?q=... |\n| SearXNG-shaped JSON endpoint | Working (initial compatibility) | GET /search, POST /search and GET /; JSON response with provider status |
+| Unified search endpoint | Working | GET /api/search?q=... |
+| SearXNG-shaped JSON endpoint | Working (initial compatibility) | GET /search, POST /search and GET /; JSON response with provider status |
 | Provider contract | Working | Common query and result types |
 | Parallel provider execution | Working | Providers run concurrently |
 | Timeout and failure isolation | Working | Partial results can survive provider failures |

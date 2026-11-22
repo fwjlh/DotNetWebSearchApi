@@ -387,3 +387,11 @@ Every material repository action is recorded here with its reason, result, verif
 - **Verification:** Successful workflow https://github.com/fwjlh/DotNetWebSearchApi/actions/runs/45009659712. Initial failure https://github.com/fwjlh/DotNetWebSearchApi/actions/runs/45009580290.
 - **Scope:** GET /search, GET / and form POST /search return the initial SearXNG-shaped JSON response. Engine filtering and unresponsive_engines are supported. Pagination, HTML output, time range, language overrides and non-default safe-search are explicitly unsupported.
 - **Next:** Update README/status, then proceed to the browser search interface, provider selection, administration and diagnostics as agreed.
+
+
+### 47. Correct README compatibility endpoint table line break
+- **Reason:** The new JSON API capability row was inserted with a literal newline escape.
+- **Action:** Replaced the escape with a real Markdown table row break.
+- **Result:** Current capabilities table now renders the legacy and SearXNG-shaped endpoints separately.
+- **Verification:** Fetched README.md from GitHub and checked the rendered Markdown source.
+- **Next:** Continue with browser search, provider selection and diagnostics.
