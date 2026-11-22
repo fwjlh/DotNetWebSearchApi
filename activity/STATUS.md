@@ -5,10 +5,11 @@ Updated: 2026-11-22
 ## Repository
 - Public repository: https://github.com/fwjlh/DotNetWebSearchApi
 - Default branch: main
-- Latest verified provider-code commit: 819595d1bf1fcde3361b25dafabcaaeeec2d87cc
+- Latest code commit: 265a2aaa1efbddb0ac6639975795283364c27275 (request-context/capability foundation; CI verification pending).
 - Current provider catalogue: **67 adapters, frozen** pending shared-framework refactoring.
-- Last verified CI baseline: build 0 warnings/errors; 156 tests passed (0 failed, 0 skipped), run [45020266512](https://github.com/fwjlh/DotNetWebSearchApi/actions/runs/45020266512).
+- Last fully verified CI baseline before the new code changes: build 0 warnings/errors; 156 tests passed (0 failed, 0 skipped), run [45020266512](https://github.com/fwjlh/DotNetWebSearchApi/actions/runs/45020266512). Do not treat this as verification of the newer commits.
 - Current direction and consumer boundary: [docs/ARCHITECTURE_DECISIONS.md](../docs/ARCHITECTURE_DECISIONS.md).
+- First P0 code slice added `SearchQuery` request fields, `EngineCapabilities` and optional `ISearchProviderCapabilities`; `SearchAggregator` now skips unsupported providers and reports them separately. Focused test added; CI pending.
 - Project overview and roadmap: [README.md](../README.md)
 
 ## Working application
