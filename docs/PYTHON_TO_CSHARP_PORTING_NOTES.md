@@ -142,6 +142,238 @@ These are translation targets, not assertions that every row is already implemen
 
 **Interpretation:** this is the closest of these four examples to a protocol-level port, but it still covers only the general web path and has request/trait differences that matter.
 
+
+
+### Google Web
+
+**Python source:** [searx/engines/google.py](https://github.com/searxng/searxng/blob/c6ee3e9fd0235004a694e63720efc869bb1e3594/searx/engines/google.py)
+
+**C# source:**
+- [GoogleSearchProvider.cs](../src/DotNetWebSearchApi/Search/GoogleSearchProvider.cs)
+- [GoogleSearchResultParser.cs](../src/DotNetWebSearchApi/Search/GoogleSearchResultParser.cs)
+- [GoogleSearchProviderTests.cs](../tests/DotNetWebSearchApi.Tests/GoogleSearchProviderTests.cs)
+
+**Why the C# code has this shape**
+
+- The upstream engine explicitly uses Google's HTML web page, not the Custom Search API. It does not require an API key. C# therefore makes a GET request to `www.google.com/search` and parses HTML with HtmlAgilityPack.
+- Python's `google_request` composes common query parameters for several Google verticals. The web path appends the unusual `adtest` parameters and Samsung user-agent marker to obtain direct HTTPS result URLs. C# preserves those web request parameters rather than replacing the route with an unrelated API.
+- Both implementations identify result cards by the `zMzFAb` / `fuLhoc` classes, read the `CVA68e` title and `FrIlee` / `fYyStc` snippet, exclude the `YVIcad` sub-element and unwrap the `/url?q=...` destination.
+- The provider and parser are separate because the provider owns HTTP status/challenge handling while the parser can be tested against captured HTML without network access.
+- The C# CAPTCHA check follows the same signals as Python: redirect to `sorry.google.com`, a `/sorry` path, redirect status, or a short body containing `/sorry/`.
+
+**Known divergence / omissions**
+
+- Python advertises paging to page 50, time-range filtering, locale traits, safe-search levels and suggestion extraction. C# currently hardcodes `hl=en`, `lr=lang_en`, `adlt=off` and does not use `SearchQuery.Page`, `TimeRange`, `Language` or `SafeSearch`.
+- Python maps a SearXNG locale through Google's fetched language and region traits, and sends a consent cookie. C# does not implement those traits or the consent cookie.
+- Python emits suggestion result types from a separate XPath. C# only emits ordinary web links.
+- The C# CAPTCHA is currently represented by a generic `HttpRequestException`; it does not preserve Python's typed CAPTCHA/suspension signal. A broad HTTP redirect check may also classify non-CAPTCHA redirects as a block. Typed outcomes should replace this.
+- The parser's CSS class selectors are inherently subject to Google's markup changes. Passing fixture tests demonstrates parser behaviour for the fixture, not that Google currently serves this DOM or accepts the request profile.
+
+**Interpretation:** a close HTML extraction/request-shape port for the web vertical, but not a port of Google's locale, paging, time-range, safe-search or suggestion behaviour.
+
+### Qwant Web
+
+**Python source:** [searx/engines/qwant.py](https://github.com/searxng/searxng/blob/c6ee3e9fd0235004a694e63720efc869bb1e3594/searx/engines/qwant.py)
+
+**C# source:**
+- [QwantSearchProvider.cs](../src/DotNetWebSearchApi/Search/QwantSearchProvider.cs)
+- [QwantSearchResultParser.cs](../src/DotNetWebSearchApi/Search/QwantSearchResultParser.cs)
+- [QwantSearchProviderTests.cs](../tests/DotNetWebSearchApi.Tests/QwantSearchProviderTests.cs)
+
+**Why the C# code has this shape**
+
+- SearXNG uses Qwant's undocumented v3 JSON API, reverse-engineered from the browser's network requests. C# uses the same `/v3/search/web` endpoint and JSON response family rather than scraping the visible page.
+- The web response is not a flat list. Results live below `data.result.items.mainline`; each row has a `type` and nested `items`. C# deliberately traverses those layers and accepts only rows typed `web`, so advertisements and other result types do not leak into ordinary web results.
+- `System.Text.Json` is used because the response is JSON and the C# parser can validate object/array/string shapes explicitly without a third-party dynamic object model.
+
+**Known divergence / omissions**
+
+- Python supports up to five pages, uses 10 results per web page, derives locale from region traits, forwards the requested safe-search level and uses a variable test-group value. C# hardcodes count 10, locale `en_GB`, offset 0, `tgp=1` and `safesearch=1`; the current query model fields are ignored.
+- Python caches the rotating DataDome cookie and sends browser-like CORS/fetch headers in a defined order. C# does not acquire/cache DataDome state or reproduce that header profile.
+- Python distinguishes error code 24 as rate limiting, a challenge URL as CAPTCHA (15-second suspension), HTTP 403 as access denied, and other API errors separately. C# maps 403 to a generic `HttpRequestException` and treats other non-success HTTP statuses generically; it does not preserve those distinctions.
+- Python also supports news, images and videos through different response shapes and result types. C# implements web only.
+- The C# parser returns empty results when the expected mainline structure is absent. That can hide a changed upstream response shape as an empty search rather than a parser/schema failure.
+
+**Interpretation:** same undocumented JSON endpoint and broad web-result mapping, but the C# adapter is a fixed first-page, fixed-locale implementation without the upstream DataDome/session and typed failure workflow.
+
+### Yahoo Web
+
+**Python source:** [searx/engines/yahoo.py](https://github.com/searxng/searxng/blob/c6ee3e9fd0235004a694e63720efc869bb1e3594/searx/engines/yahoo.py)
+
+**C# source:**
+- [YahooSearchProvider.cs](../src/DotNetWebSearchApi/Search/YahooSearchProvider.cs)
+- [YahooSearchResultParser.cs](../src/DotNetWebSearchApi/Search/YahooSearchResultParser.cs)
+- [YahooSearchProviderTests.cs](../tests/DotNetWebSearchApi.Tests/YahooSearchProviderTests.cs)
+
+**Why the C# code has this shape**
+
+- Both implementations use Yahoo's HTML web search, not an API-key service. The `algo-sr` result card, `compTitle` link, title and `compText` description are structural DOM data, so C# uses HtmlAgilityPack.
+- Yahoo wraps result URLs in tracking paths containing `/RU=...` and suffix markers such as `/RS` and `/RK`. The C# parser extracts and URL-decodes the embedded destination, matching Python's `parse_url` intent.
+- Yahoo uses a cookie to shape search behaviour. C# injects a `CookieContainer` and sets the `sB` cookie before the search. The explicit redirect loop bounds the tracking/geo redirect chain rather than allowing an unbounded sequence.
+- The fixture test checks both redirect following and result URL unwrapping; these are separate behaviours and should remain separate tests.
+
+**Known divergence / omissions**
+
+- Python documents a YBV bot-detection cookie cached for 24 hours. It captures YBV during redirect hops and reuses it on subsequent requests. C# does not implement YBV acquisition/cache; it only supplies the `sB` preference cookie.
+- Python derives the regional Yahoo host from locale, maps language, maps safe-search values and maps time ranges. It also implements page offsets. C# always calls `search.yahoo.com`, hardcodes the `sB` cookie values, and ignores page, language, safe-search and time range.
+- Python follows at most four redirect hops and explicitly carries cookies/headers into each manual request. C# also caps redirects at four, but cookie persistence depends on the injected `HttpClient` handler's CookieContainer configuration. That lifetime and isolation need to be verified in DI.
+- Python extracts `AlsoTry` suggestions. C# only returns web results.
+- Python treats both 302 and 307 as redirect hops. C# recognises 302 and 307; any other redirect status is left to normal HTTP error handling.
+
+**Interpretation:** useful HTML/parser port with tracking URL handling and a bounded redirect loop, but the Yahoo session cookie and locale/paging/safe-search behaviour are not equivalent yet.
+
+### Yandex Web
+
+**Python source:** [searx/engines/yandex.py](https://github.com/searxng/searxng/blob/c6ee3e9fd0235004a694e63720efc869bb1e3594/searx/engines/yandex.py)
+
+**C# source:**
+- [YandexSearchProvider.cs](../src/DotNetWebSearchApi/Search/YandexSearchProvider.cs)
+- [YandexSearchResultParser.cs](../src/DotNetWebSearchApi/Search/YandexSearchResultParser.cs)
+- [YandexSearchOptions.cs](../src/DotNetWebSearchApi/Search/YandexSearchOptions.cs)
+- [YandexSearchProviderTests.cs](../tests/DotNetWebSearchApi.Tests/YandexSearchProviderTests.cs)
+
+**Important: this is a protocol substitution, not a direct port.**
+
+- SearXNG's Python implementation uses the public Yandex HTML web page at `yandex.com/search/site/`, does not require an API key, and parses `li.serp-item` cards. It also checks the `x-yandex-captcha` response header and raises a CAPTCHA-specific exception.
+- The C# implementation instead calls Yandex Cloud Search API v2 at `searchapi.api.cloud.yandex.net/v2/web/search`. It sends a POST JSON request with an API key and folder ID, requests XML output, receives that XML encoded in the JSON `rawData` field, Base64-decodes it and parses the XML with LINQ to XML.
+- This API route has a different authentication, account, quota and deployment model. The C# parser's XML handling is a response to that API contract; it is not a translation of Python's HTML XPath selectors.
+- The C# parser extracts `doc` elements, prefers `headline` and falls back to joined `passage` elements. It treats Yandex XML error code 15 as no results and other XML errors as failures.
+
+**Known divergence / omissions**
+
+- Python's public HTML route supports paging, language selection and time-range date windows without a Cloud API key. C# requires configured API key and folder ID, requests page `0`, fixes localization to English and uses moderate family mode.
+- C# returns an empty list for queries over 400 characters without making a request. Python source does not use that same API-specific validation rule.
+- Python can detect the `x-yandex-captcha` header and supports an images vertical with image result metadata. The Cloud API implementation has no equivalent CAPTCHA classification and only maps web documents to ordinary `SearchResult`.
+- C# caps page size at 100 but does not use `SearchQuery.Page`; the request body fixes page to `0`.
+- A fixture test confirms the API-key header, folder ID, JSON body, Base64 XML decoding and XML parsing. It does not establish that a configured Cloud account has permission/quota or that the public HTML route is interchangeable.
+
+**Interpretation:** document this as a separate authenticated Yandex Cloud adapter. Do not describe it as a faithful port of SearXNG's no-key Yandex HTML engine.
+
+### Naver Web
+
+**Python source:** [searx/engines/naver.py](https://github.com/searxng/searxng/blob/c6ee3e9fd0235004a694e63720efc869bb1e3594/searx/engines/naver.py)
+
+**C# source:**
+- [NaverSearchProvider.cs](../src/DotNetWebSearchApi/Search/NaverSearchProvider.cs)
+- [NaverSearchResultParser.cs](../src/DotNetWebSearchApi/Search/NaverSearchResultParser.cs)
+- [NaverSearchProviderTests.cs](../tests/DotNetWebSearchApi.Tests/NaverSearchProviderTests.cs)
+
+**Why the C# code has this shape**
+
+- The selected upstream category is Naver general/web search, which is HTML rather than an official API. C# calls `search.naver.com/search.naver` with `where=web` and parses the current web result card family `fds-web-normal-doc-root`.
+- The parser reads the headline span and body span, rejects Naver's `keep.naver.com` save links as result destinations, and only emits absolute HTTP(S) links.
+- This is intentionally a small web-only provider/parser split; the HTML fixture can be tested independently of Naver's live page.
+
+**Known divergence / omissions**
+
+- Python supports general, images, news and videos with different parsers and result types. C# implements only general web.
+- Python calculates page offsets using category-specific page sizes (15 for general, 50 images, 10 news, 48 videos) and maps time ranges into the `nso` parameter. C# hardcodes `start=1` and does not use page or time range.
+- Python emits thumbnails for general results. C# currently drops the thumbnail even though the source card may contain one.
+- Python declares Korean as its language. C# does not map `SearchQuery.Language` or a region into the request.
+- The C# request uses the same broad endpoint and selectors, but its fixed first-page URL does not preserve the original query-state semantics.
+
+**Interpretation:** web-card extraction only. It is not a port of Naver's multi-vertical engine, pagination or time-range support.
+
+### Seznam Web
+
+**Python source:** [searx/engines/seznam.py](https://github.com/searxng/searxng/blob/c6ee3e9fd0235004a694e63720efc869bb1e3594/searx/engines/seznam.py)
+
+**C# source:**
+- [SeznamSearchProvider.cs](../src/DotNetWebSearchApi/Search/SeznamSearchProvider.cs)
+- [SeznamSearchResultParser.cs](../src/DotNetWebSearchApi/Search/SeznamSearchResultParser.cs)
+- [SeznamSearchProviderTests.cs](../tests/DotNetWebSearchApi.Tests/SeznamSearchProviderTests.cs)
+
+**Why the C# code has this shape**
+
+- Seznam's search request is preceded by a homepage request. Python extracts all hidden input fields from that page, includes them with `q`, `oq` and `noredirect=1`, and forwards the homepage response cookies into the search request.
+- C# preserves the two-step flow: read the homepage, parse hidden inputs, merge them with the search query parameters, then request the result page.
+- The result parser follows the same nested result container under `searchpage-root`, `Layout--left` and `f2c528`, then reads the title link and description block.
+- The verification redirect is treated as an access/verification condition rather than parsed as if it were an empty result page.
+
+**Known divergence / omissions**
+
+- Python explicitly passes the homepage cookies into the search request. C# relies on the configured `HttpClient` handler's cookie processing; the provider does not itself capture and forward the homepage response cookie collection. Verify that the registered handler uses one cookie container across both requests and that the container is isolated to the intended provider/session.
+- Python raises an access-denied exception when the response path starts with `/verify`. C# detects the path but currently reports a generic `HttpRequestException`; typed verification/challenge outcomes are still required.
+- The C# provider does not map any language, paging, time range or safe-search options. The Python engine declares Czech as its language and only advertises general/web categories; it does not declare paging/time-range support in this module.
+- If the homepage has no hidden inputs, C# proceeds with the three fixed query fields. This is resilient, but it may conceal a changed session/bootstrap contract; tests should include a missing/rotated hidden token case.
+
+**Interpretation:** the two-request bootstrap and DOM shape are preserved, but cookie transfer and typed verification handling are important unresolved differences.
+
+### Wikipedia
+
+**Python source:** [searx/engines/wikipedia.py](https://github.com/searxng/searxng/blob/c6ee3e9fd0235004a694e63720efc869bb1e3594/searx/engines/wikipedia.py)
+
+**C# source:** [WikipediaSearchProvider.cs](../src/DotNetWebSearchApi/Search/WikipediaSearchProvider.cs)
+
+**Important: the two implementations do different jobs.**
+
+- SearXNG's Python engine is a page-summary lookup, not a search-results query. It calls the Wikimedia REST summary endpoint for a title, chooses the language-specific Wikipedia host using fetched language/region traits, and supports language-converter variants through the `Accept-Language` header.
+- Python's result is richer than a normal link: depending on display configuration and page type, it can return a list result and/or an infobox containing extract text, thumbnail and links. It treats 404 and a specific invalid-title 400 as empty results.
+- The C# implementation calls the English Wikipedia Action API `w/api.php?action=query&list=search`. It therefore performs a genuine text search and maps each hit's `pageid` to a `?curid=` URL. It parses HTML markup embedded in the API snippet and strips the tags.
+- This is a deliberate change in product semantics: C# offers a search provider where Python's SearXNG module offers a single-page summary/infobox lookup. The two should not be compared as equivalent ports.
+
+**Known divergence / omissions**
+
+- C# is fixed to English and does not fetch or map Wikimedia language traits, non-standard language codes or Chinese script/region variants.
+- It does not call the REST summary API, does not return an infobox, thumbnail or the canonical desktop page URL, and does not implement Python's invalid-title status handling.
+- The C# search API request has no explicit limit parameter, so it uses the Action API default result count rather than `SearchQuery.Limit`.
+- The repository tree contains no dedicated `WikipediaSearchProviderTests.cs` at this review point. This adapter needs fixture tests for valid search JSON, missing properties, HTML snippets, HTTP 404 and query encoding before it should be treated as covered.
+
+**Interpretation:** retain the C# implementation as an English Wikipedia search adapter, but document the semantic difference and do not call it a port of SearXNG's summary engine.
+
+### Generic JSON API adapters
+
+**Python source:** [searx/engines/json_engine.py](https://github.com/searxng/searxng/blob/c6ee3e9fd0235004a694e63720efc869bb1e3594/searx/engines/json_engine.py)
+
+**C# source:**
+- [JsonApiSearchProvider.cs](../src/DotNetWebSearchApi/Search/JsonApiSearchProvider.cs)
+- [JsonApiProviderCatalog.cs](../src/DotNetWebSearchApi/Search/JsonApiProviderCatalog.cs)
+- [JsonApiProviderCatalog.Wave7.cs](../src/DotNetWebSearchApi/Search/JsonApiProviderCatalog.Wave7.cs)
+- [JsonApiSearchProviderTests.cs](../tests/DotNetWebSearchApi.Tests/JsonApiSearchProviderTests.cs)
+
+**Why the C# code has this shape**
+
+- Python's `json_engine` is a configurable engine template: a provider is described by URL, method, optional request body, headers/cookies, query parameter mappings, response paths, URL prefix, text cleanup rules and optional suggestion/thumbnail paths.
+- C# makes that metadata explicit in immutable-ish `JsonApiSearchDefinition` records and registers each definition through one shared `JsonApiSearchProvider`. The catalog is data; the provider owns request construction, rate spacing, JSON traversal, URL validation and result mapping.
+- The C# path reader accepts dot-separated object paths and numeric array indexes. It is deliberately simpler than Python's recursive `query/do_query` traversal, which can search recursively through nested mappings and iterables when a key appears at multiple levels.
+- C# supports GET query parameters and JSON POST bodies, fixed parameters, configured headers/API-key headers, optional per-provider minimum request intervals, URL prefixes and a common title/URL/snippet result contract.
+- The test suite uses parameterised fixture cases across many definitions to verify endpoint/query mapping and JSON response extraction without making live API calls.
+
+**Known divergence / omissions**
+
+- Python supports paging with configurable first-page number/page size, time-range substitutions, safe-search maps, language placeholders, cookies, soft redirect limits, status codes treated as empty, optional HTML-to-text handling, thumbnails and suggestions. The current C# definition/provider model does not implement most of those features.
+- Python supports arbitrary method/body formatting with placeholders. C# POST support builds a JSON object from fixed body values plus query/limit fields; it is not a general template engine.
+- Python's recursive JSON query semantics are more flexible than C#'s direct path traversal. C# also expects the configured results path to resolve to an array; it does not implement Python's result-query fallback behaviour for every possible shape.
+- C# clamps result limits to 50, and definitions with no limit parameter simply do not send one. It does not currently propagate `SearchQuery.Page`, language, safe-search or time-range.
+- The current test suite proves fixture mapping for the listed definitions. It does not prove remote API availability, authentication entitlements, quota or rate policy correctness. Some providers need per-provider error mapping and retry/cooldown rather than the shared generic `EnsureSuccessStatusCode`.
+
+**Interpretation:** the C# generic provider is a practical typed catalogue framework inspired by Python's configurable engine, not a feature-complete implementation of every Python `json_engine` setting.
+
+### RSS / Atom feed adapters
+
+**C# source:**
+- [RssSearchProvider.cs](../src/DotNetWebSearchApi/Search/RssSearchProvider.cs)
+- [RssSearchProviderTests.cs](../tests/DotNetWebSearchApi.Tests/RssSearchProviderTests.cs)
+
+**Relationship to Python:** this is currently a C#-native feed adapter, not a demonstrated translation of a single SearXNG RSS engine module. The upstream SearXNG catalogue contains individual feed-based engines and generic JSON/XML templates, but the C# code here should be documented as its own shared implementation until each feed source is compared with its actual Python engine.
+
+**Why the C# code has this shape**
+
+- RSS and Atom are XML formats, so the provider uses `XmlReader` and LINQ to XML rather than HTML parsing or JSON traversal.
+- The reader explicitly prohibits DTD processing and sets `XmlResolver = null`, avoiding external entity resolution while reading untrusted feed responses.
+- It handles RSS `channel/item` and Atom `entry` structures, including Atom's namespace and `link href` form. It normalises title/summary/content text and validates destination URLs as HTTP(S).
+- The feed definition is small: endpoint, query parameter and fixed parameters. This keeps feed-specific configuration separate from the common XML parser.
+- The Bing News feed redirect is unwrapped from the `url` query parameter so consumers receive the destination article URL rather than the Bing tracking URL.
+
+**Known divergence / omissions**
+
+- The current feed definition does not include locale, pagination, time-range, authentication, custom headers, alternate feed namespaces or per-feed date/author/category metadata.
+- The parser currently returns the common web-result shape, not a richer article/news type with publication timestamp, author, thumbnail or feed category.
+- The current tests are fixture tests. They do not establish feed endpoint availability or publisher-specific query compatibility.
+- Do not claim that this is a direct port of SearXNG's generic RSS engine until the precise upstream feed adapter(s) are linked and compared.
+
+**Interpretation:** a useful secure RSS/Atom foundation, but presently a C#-native abstraction whose upstream provenance is not one-to-one.
+
 ## How to add the next corpus entry
 
 Copy this outline for every provider or shared framework concept:
