@@ -200,8 +200,10 @@ public sealed class ProviderHealthRegistry
 
         int exponent = Math.Clamp(consecutiveFailures - _policy.FailureThreshold, 0, 10);
         double multiplier = Math.Pow(2, exponent);
-        TimeSpan cooldown = TimeSpan.FromMilliseconds(_policy.BaseCooldown.TotalMilliseconds * multiplier);
-        return ClampCooldown(cooldown);
+        double milliseconds = Math.Min(
+            _policy.BaseCooldown.TotalMilliseconds * multiplier,
+            _policy.MaximumCooldown.TotalMilliseconds);
+        return TimeSpan.FromMilliseconds(milliseconds);
     }
 
     private TimeSpan ClampCooldown(TimeSpan cooldown)
