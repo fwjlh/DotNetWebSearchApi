@@ -5,7 +5,7 @@ Updated: 2026-11-22
 ## Repository
 - Public repository: https://github.com/fwjlh/DotNetWebSearchApi
 - Default branch: main
-- Latest code commit: `0f1a01c9956409b5b61a9efe95dc50be9e73a38a` (provider health registry, cooldown/half-open recovery, diagnostics and API reporting; build-and-test passed with 174 tests, 0 skipped in [run 45025031994](https://github.com/fwjlh/DotNetWebSearchApi/actions/runs/45025031994)). Latest repository changes are documentation commits expanding the Python-to-C# health rationale and porting audit.
+- Latest code commit: `9d590ce6a46a4c5b969b4a4e3c55d0adefe84fd9` (main provider paths migrated to shared HTTP transport; build-and-test passed with 182 tests, 0 skipped in [run 45026001326](https://github.com/fwjlh/DotNetWebSearchApi/actions/runs/45026001326)). Latest repository changes are documentation commits reconciling the porting corpus, audit and README.
 - Current provider catalogue: **67 adapters, frozen** pending shared-framework refactoring.
 - Previous provider-catalogue baseline: build 0 warnings/errors; 156 tests passed (0 failed, 0 skipped), run [45020266512](https://github.com/fwjlh/DotNetWebSearchApi/actions/runs/45020266512). The subsequent request-context/capability code has now passed its GitHub Actions build-and-test job in [run 45022944719](https://github.com/fwjlh/DotNetWebSearchApi/actions/runs/45022944719); the workflow job reports success.
 - Current direction and consumer boundary: [docs/ARCHITECTURE_DECISIONS.md](../docs/ARCHITECTURE_DECISIONS.md).
@@ -13,6 +13,7 @@ Updated: 2026-11-22
 - P0 request context now flows from `/api/search` and SearXNG-shaped `/search` into `SearchQuery`: categories, page, language, safe-search and time range. Invalid values are rejected; unsupported providers are skipped and reported separately (`unsupportedProviders` / `unsupported_engines`), not marked unresponsive. Conservative legacy-provider capabilities remain general/first-page/default-locale. Integration tests added; CI passed with 160 tests in run 45024120851.
 - Typed provider outcomes distinguish success, failure and skipped; failure kinds include timeout, rate limit, transient HTTP, invalid response, authentication, access denied, challenge, configuration and unknown. Explicit provider failures can carry RetryAfter. Caller cancellation still propagates.
 - ProviderHealthRegistry now adds process-local Closed/Open/HalfOpen states, failure thresholds, failure-kind cooldowns, capped exponential backoff and one half-open recovery probe. Cooling-down providers are skipped and reported separately; diagnostics expose health snapshots. CI passed with 174 tests in run 45025031994. Policy is global and resets on process restart.
+- Shared HTTP transport now covers Bing, Brave, DuckDuckGo, Google, Mojeek, Naver, Qwant, Seznam, Yahoo, Yandex Cloud, Wikipedia, arXiv, generic JSON and RSS/Atom paths. It enforces a 4 MiB response limit, per-host concurrency, response-header capture and Retry-After. CI passed with 182 tests in run 45026001326.
 - Project overview and roadmap: [README.md](../README.md)
 
 ## Working application
