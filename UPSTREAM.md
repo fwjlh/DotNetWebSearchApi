@@ -32,3 +32,7 @@ Before adding a package, provider adapter, copied snippet, or other third-party 
 ## Attribution boundary
 
 SearXNG and its contributors retain their own names, marks, copyrights, and project identity. This repository is not affiliated with or endorsed by the SearXNG project.
+
+
+## Porting audit reference
+A comparative architecture audit is maintained in [docs/PORTING_AUDIT.md](docs/PORTING_AUDIT.md). It compares the current C# implementation with SearXNG's engine processor, query model, result container, traits and network layer. It records which shared behaviours are implemented, partial or missing and the recommended order for porting them.

@@ -682,3 +682,15 @@ Every material repository action is recorded here with its reason, result, verif
 - **Verification:** https://github.com/fwjlh/DotNetWebSearchApi/actions/runs/45020266512. All eight new provider fixtures passed.
 - **Live status:** No live API requests were made; this is fixture-level CI verification.
 - **Next:** Continue from 67 toward 100. The original major-engine priorities through Mojeek are now represented; Startpage remains deferred because of its CPU-intensive Anubis challenge.
+
+
+## 2026-11-22 — Python-to-C# architecture audit
+
+### 79. Pause provider expansion and compare the shared SearXNG framework
+- **Reason:** At 67 adapters, review whether provider ports are duplicating the upstream Python behaviour or missing common patterns that would make subsequent ports faster.
+- **Action:** Compared the current C# request/provider/aggregator/transport/response code with SearXNG's upstream engine processor, SearchQuery model, ResultContainer/scoring, EngineTraits, network layer and Bing, Brave, DuckDuckGo and Wikipedia engine implementations.
+- **Finding:** The project has a useful provider adapter layer but is not yet a faithful port of the shared SearXNG engine framework. Important reusable concepts not yet represented consistently include a full request context, engine capability gating, shared request transport, provider suspension/backoff, locale/region traits, result merging with source positions and weighted scoring, and richer result types.
+- **Action:** Added docs/PORTING_AUDIT.md with concrete differences, upstream references and a staged refactoring plan.
+- **Result:** Provider count remains 67. No provider implementation was added in this audit.
+- **Verification:** Source comparison only; no code behaviour changed, so the existing 156-test CI baseline remains the last verified build.
+- **Next:** Implement the request-context and engine-capability foundation first, with backwards-compatible defaults and focused tests. Then shared transport/health, result aggregation and traits before resuming provider expansion.
