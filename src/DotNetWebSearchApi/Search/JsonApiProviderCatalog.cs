@@ -538,6 +538,27 @@ public static partial class JsonApiProviderCatalog
         },
         new JsonApiSearchDefinition
         {
+            Name = "exa",
+            Endpoint = "https://api.exa.ai/search",
+            QueryParameter = string.Empty,
+            LimitParameter = string.Empty,
+            ResultsPath = "results",
+            TitlePath = "title",
+            UrlPath = "url",
+            SnippetPath = "highlights.0",
+            RequestMethod = "POST",
+            BodyQueryParameter = "query",
+            BodyLimitParameter = "numResults",
+            BodyFixedParameters = new Dictionary<string, object>
+            {
+                ["type"] = "auto",
+                ["contents"] = new Dictionary<string, object> { ["highlights"] = true }
+            },
+            ApiKeyConfigurationKey = "EXA_API_KEY",
+            ApiKeyHeader = "x-api-key"
+        },
+        new JsonApiSearchDefinition
+        {
             Name = "wiktionary",
             Endpoint = "https://en.wiktionary.org/w/api.php",
             QueryParameter = "srsearch",
