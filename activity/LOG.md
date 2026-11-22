@@ -344,3 +344,11 @@ Every material repository action is recorded here with its reason, result, verif
 - **Result:** **CI passed.** Restore and build succeeded; all 76 tests passed (0 failed, 0 skipped). Seven tests cover Seznam parsing, hidden fields, verification URI detection and the two-request bootstrap flow.
 - **Verification:** Workflow run https://github.com/fwjlh/DotNetWebSearchApi/actions/runs/45009221825. Tests use fixture HTML and fake HTTP handlers; they do not contact Seznam.
 - **Next:** Mark the first ten-provider milestone complete. Move to the agreed SearXNG-compatible JSON API, then the browser search/admin/diagnostics experience. Keep additional regional/specialist providers as follow-on work rather than delaying the API milestone.
+
+
+### 42. Correct README Seznam capability row line break
+- **Reason:** The Seznam adapter row was inserted with a literal newline escape in the capability table.
+- **Action:** Replaced the literal escape with an actual Markdown newline and marked the first major-engine wave complete.
+- **Result:** Provider capability table now renders Naver and Seznam as separate rows.
+- **Verification:** Re-fetched README.md from GitHub and inspected the current capabilities table.
+- **Next:** Begin SearXNG-compatible JSON API work.

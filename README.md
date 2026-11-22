@@ -49,9 +49,10 @@ DotNetWebSearchApi puts that work behind one service:
 | Qwant Web adapter | Working (experimental) | Undocumented JSON API; DataDome may deny requests |
 | Yahoo Web adapter | Working (experimental) | HTML parser, sB preferences and bounded YBV redirect handling; live availability not tested |
 | Yandex Search API adapter | Working (optional, paid) | Requires YANDEX_SEARCH_API_KEY and YANDEX_FOLDER_ID |
-| Naver Web adapter | Working (regional) | Korean general-web HTML results; first page only |\n| Seznam Web adapter | Working (regional) | Homepage bootstrap, hidden fields and cookie reuse; live availability not tested |
+| Naver Web adapter | Working (regional) | Korean general-web HTML results; first page only |
+| Seznam Web adapter | Working (regional) | Homepage bootstrap, hidden fields and cookie reuse; live availability not tested |
 | Automated build and tests | Working | GitHub Actions / .NET 10 |
-| Major web-search adapters | In progress | Bing, Brave, Google and DuckDuckGo adapters are implemented |
+| Major web-search adapters | Initial wave complete | Bing, Brave, Google, DuckDuckGo and other priority providers are implemented |
 | First 5–10 provider adapters | Initial target met | Ten provider adapters are implemented and CI-tested |
 | SearXNG-compatible JSON API | Planned | Compatibility layer after core adapters |
 | Browser search interface | Planned | Search, provider selection and result display |
