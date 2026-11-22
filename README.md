@@ -39,7 +39,8 @@ DotNetWebSearchApi puts that work behind one service:
 | SearXNG-shaped JSON endpoint | Working (initial compatibility) | GET /search, POST /search and GET /; JSON response with provider status |
 | Provider contract | Working | Common query and result types |
 | Parallel provider execution | Working | Providers run concurrently |
-| Timeout and failure isolation | Working | Partial results can survive provider failures |
+| Timeout and failure isolation | Working | Partial results can survive provider failures; typed outcomes distinguish failure classes |
+| Provider health | Initial implementation | Cooldown/backoff and one half-open recovery probe; process-local state |
 | Result normalisation | Working | HTTP(S) URLs, deduplication and deterministic ordering |
 | Result limit | Working | Default 10; maximum 50 |
 | Wikipedia adapter | Working | MediaWiki search API |
@@ -179,9 +180,9 @@ The initial compatibility surface is available at:
 
 The `format` parameter defaults to JSON; `format=html` is not supported. The `engines` parameter accepts a comma-separated list of configured provider names, for example `engines=bing,google`. Unknown engines return HTTP 400. Both `/search` and `/api/search` accept request context: `categories`, `pageno` (1–50), `language`, `safesearch` (0–2) and `time_range` (`day`, `week`, `month`, `year`). Invalid values return HTTP 400. Providers are pre-filtered against declared capabilities; unsupported providers are skipped rather than silently ignoring requested options. The SearXNG-shaped response reports these separately in `unsupported_engines`; `/api/search` reports `unsupportedProviders`. At this stage, providers without explicit capability declarations receive a conservative general-category, first-page, default-locale profile, so non-default request options may legitimately produce no eligible providers. The query model and API now carry these values; provider-specific request builders still need to implement them before those capabilities can be advertised.
 
-Provider discovery and read-only diagnostics are also available at GET /api/providers and GET /api/diagnostics. The /admin page displays provider status, success/failure counts, last duration and last error type. These are process-local counters and reset when the service restarts.
+Provider discovery and read-only diagnostics are also available at GET /api/providers and GET /api/diagnostics. Diagnostics include provider health state (`Closed`, `Open`, `HalfOpen`), consecutive failures and cooldown expiry alongside success/failure counters. The /admin page displays provider status, success/failure counts, last duration and last error type. These are process-local counters/state and reset when the service restarts.
 
-The response uses the familiar SearXNG field names: `query`, `number_of_results`, `results`, `answers`, `corrections`, `infoboxes`, `suggestions` and `unresponsive_engines` plus the additive `unsupported_engines` list. Result entries include `url`, `title`, `content`, `engine`, `engines`, `positions`, `score`, `category`, `template`, `parsed_url` and `publishedDate`. Empty answer/infobox/suggestion arrays are returned until those result types are implemented. `positions` is currently inferred from the adapter score, and duplicate URLs retain the highest-scoring provider rather than combining every engine position. This is response-shape compatibility, not full SearXNG feature parity.
+The response uses the familiar SearXNG field names: `query`, `number_of_results`, `results`, `answers`, `corrections`, `infoboxes`, `suggestions` and `unresponsive_engines`, plus additive `unsupported_engines` and `cooling_down_engines` lists. Result entries include `url`, `title`, `content`, `engine`, `engines`, `positions`, `score`, `category`, `template`, `parsed_url` and `publishedDate`. Empty answer/infobox/suggestion arrays are returned until those result types are implemented. `positions` is currently inferred from the adapter score, and duplicate URLs retain the highest-scoring provider rather than combining every engine position. This is response-shape compatibility, not full SearXNG feature parity.
 
 Example:
 
