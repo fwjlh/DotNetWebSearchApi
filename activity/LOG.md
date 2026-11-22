@@ -718,3 +718,10 @@ Every material repository action is recorded here with its reason, result, verif
 - **Next:** Verify CI. Then expose supported request-context fields through API parsing and compatibility responses, add capability declarations to representative providers, and implement typed provider outcomes/health state.
 
 - **Final implementation commit for this slice:** `ab52977e1fed0fa3407651da90daea98effe045a`. Unsupported-provider outcomes are non-null in every SearchExecutionResult, including empty-query returns.
+
+
+### 82. Reconcile remaining README roadmap and verification claims
+- **Reason:** A second pass found older roadmap text and a stale 138-test/ten-provider verification statement below the README's main status section.
+- **Action:** Replaced the old 100-provider/continued-expansion delivery sequence with the agreed shared-framework milestones, recorded the 156-test historical baseline accurately, and explicitly stated that it predates the new request-context/capability code.
+- **Result:** README no longer presents provider expansion as active or the old 138-test/ten-provider snapshot as current.
+- **Verification:** Documentation review only; no runtime changes. Latest code remains `ab52977e1fed0fa3407651da90daea98effe045a`; CI verification for that code slice is still not confirmed through the available GitHub Actions status view.
