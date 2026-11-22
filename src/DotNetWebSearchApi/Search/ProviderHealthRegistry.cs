@@ -83,6 +83,22 @@ public sealed class ProviderHealthRegistry
         }
     }
 
+    public void ReleaseProbe(string providerName)
+    {
+        if (!_states.TryGetValue(providerName, out ProviderState? state))
+        {
+            return;
+        }
+
+        lock (state.SyncRoot)
+        {
+            if (state.Status == ProviderHealthStatus.HalfOpen)
+            {
+                state.ProbeInProgress = false;
+            }
+        }
+    }
+
     public void RecordSuccess(string providerName)
     {
         ProviderState state = GetState(providerName);
@@ -162,29 +178,34 @@ public sealed class ProviderHealthRegistry
 
         if (failureKind == ProviderFailureKind.RateLimited)
         {
-            return _policy.RateLimitCooldown;
+            return ClampCooldown(_policy.RateLimitCooldown);
         }
 
         if (failureKind == ProviderFailureKind.Challenge)
         {
-            return _policy.ChallengeCooldown;
+            return ClampCooldown(_policy.ChallengeCooldown);
         }
 
         if (failureKind is ProviderFailureKind.Authentication
             or ProviderFailureKind.AccessDenied
             or ProviderFailureKind.Configuration)
         {
-            return _policy.PermanentFailureCooldown;
+            return ClampCooldown(_policy.PermanentFailureCooldown);
         }
 
         if (failureKind == ProviderFailureKind.InvalidResponse)
         {
-            return _policy.InvalidResponseCooldown;
+            return ClampCooldown(_policy.InvalidResponseCooldown);
         }
 
         int exponent = Math.Clamp(consecutiveFailures - _policy.FailureThreshold, 0, 10);
         double multiplier = Math.Pow(2, exponent);
         TimeSpan cooldown = TimeSpan.FromMilliseconds(_policy.BaseCooldown.TotalMilliseconds * multiplier);
+        return ClampCooldown(cooldown);
+    }
+
+    private TimeSpan ClampCooldown(TimeSpan cooldown)
+    {
         return cooldown > _policy.MaximumCooldown ? _policy.MaximumCooldown : cooldown;
     }
 
