@@ -61,6 +61,38 @@ public sealed class NaverSearchProviderTests
     }
 
     [Fact]
+    public async Task SearchAsync_MapsPageAndTimeRange()
+    {
+        Uri? requestedUri = null;
+        using HttpClient client = new(new StubHttpMessageHandler(request =>
+        {
+            requestedUri = request.RequestUri;
+            return HtmlResponse(ResultPage);
+        }));
+        NaverSearchProvider provider = new(client);
+
+        await provider.SearchAsync(new SearchQuery("cats", 10)
+        {
+            Page = 3,
+            TimeRange = SearchTimeRange.Month
+        }, CancellationToken.None);
+
+        Assert.Contains("start=31", requestedUri?.Query);
+        Assert.Contains("where=web", requestedUri?.Query);
+        Assert.Contains("nso=p%3A1m", requestedUri?.Query);
+    }
+
+    [Fact]
+    public void Capabilities_DeclareNaverPagingAndTimeRangeOnly()
+    {
+        NaverSearchProvider provider = new(new HttpClient());
+        Assert.True(provider.Capabilities.SupportsPagination);
+        Assert.True(provider.Capabilities.SupportsTimeRange);
+        Assert.False(provider.Capabilities.SupportsSafeSearch);
+        Assert.False(provider.Capabilities.SupportsLocale);
+    }
+
+    [Fact]
     public async Task SearchAsync_ThrowsWhenNaverReturnsAnHttpError()
     {
         using HttpClient client = new(new StubHttpMessageHandler(_ =>
