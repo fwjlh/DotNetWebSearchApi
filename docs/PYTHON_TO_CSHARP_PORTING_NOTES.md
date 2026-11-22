@@ -495,13 +495,13 @@ These are translation targets, not assertions that every row is already implemen
 - The transport sends with `ResponseHeadersRead`, applies a bounded response body (4 MiB by default), decodes the declared response charset, and returns status, final request URI, headers and parsed Retry-After metadata.
 - A per-host semaphore caps concurrent requests (four by default), so separate adapters hitting the same host share a concurrency limit when they use the singleton transport.
 - `SearchHttpResponse.EnsureSuccessStatusCode` maps 401, 403, 429, 408, 425 and 5xx to typed provider failures. Qwant can inspect a 403 body first and distinguish a challenge from ordinary access denial.
-- Bing and Qwant are the first adapters moved onto this transport. Their parsers remain provider-specific and continue to receive text/JSON rather than transport internals.
+- The transport is now used by Bing, Brave, DuckDuckGo, Google, Mojeek, Naver, Qwant, Seznam, Yahoo, Yandex Cloud, Wikipedia, arXiv, the generic JSON API adapter and RSS/Atom. Their parsers remain provider-specific and continue to receive text/JSON/XML rather than transport internals.
 - Retry-After is captured while the response headers are available and carried in `ProviderFailureException`; the health registry can then apply the bounded cooldown.
 - The response object copies headers for provider-specific protocols, but cookies and tokens must never be logged or exposed in API responses.
 
 **Current limits**
 
-- Only Bing and Qwant use the shared transport at this point. Other providers still call HttpClient directly.
+- The main provider implementations now use the shared transport. Future adapters must use it rather than calling HttpClient directly; verify any new provider source before assuming it follows this path.
 - Redirect behaviour remains configured per HttpClient handler or implemented in the provider (Yahoo's bounded manual redirect loop); the transport does not yet own a redirect policy.
 - Cookie/session ownership remains provider-specific. The transport does not create, persist or share a cookie jar.
 - No automatic retries are performed. This is deliberate until retry safety can be decided per request and challenge/access-denied conditions are excluded.
