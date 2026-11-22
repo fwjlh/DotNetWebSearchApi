@@ -70,6 +70,22 @@ public sealed class QwantSearchProviderTests
     }
 
     [Fact]
+    public async Task SearchAsync_ClassifiesDataDomeForbiddenPageAsChallenge()
+    {
+        using HttpClient client = new(new StubHttpMessageHandler(_ =>
+            new HttpResponseMessage(HttpStatusCode.Forbidden)
+            {
+                Content = new StringContent("DataDome captcha verification")
+            }));
+        QwantSearchProvider provider = new(client);
+
+        ProviderFailureException exception = await Assert.ThrowsAsync<ProviderFailureException>(
+            () => provider.SearchAsync(new SearchQuery("test", 10), CancellationToken.None));
+
+        Assert.Equal(ProviderFailureKind.Challenge, exception.FailureKind);
+    }
+
+    [Fact]
     public async Task SearchAsync_ThrowsWhenQwantReturnsAnHttpError()
     {
         using HttpClient client = new(new StubHttpMessageHandler(_ => new HttpResponseMessage(HttpStatusCode.ServiceUnavailable)));
