@@ -9,7 +9,7 @@ Updated: 2026-11-22
 - Current provider catalogue: **67 adapters, frozen** pending shared-framework refactoring.
 - Previous provider-catalogue baseline: build 0 warnings/errors; 156 tests passed (0 failed, 0 skipped), run [45020266512](https://github.com/fwjlh/DotNetWebSearchApi/actions/runs/45020266512). The subsequent request-context/capability code has now passed its GitHub Actions build-and-test job in [run 45022944719](https://github.com/fwjlh/DotNetWebSearchApi/actions/runs/45022944719); the workflow job reports success.
 - Current direction and consumer boundary: [docs/ARCHITECTURE_DECISIONS.md](../docs/ARCHITECTURE_DECISIONS.md).
-- Python-to-C# rationale corpus started: [docs/PYTHON_TO_CSHARP_PORTING_NOTES.md](../docs/PYTHON_TO_CSHARP_PORTING_NOTES.md). Four initial entries cover Bing, DuckDuckGo, Brave and Mojeek against pinned SearXNG source revision `c6ee3e9fd0235004a694e63720efc869bb1e3594`.
+- Python-to-C# rationale corpus started: [docs/PYTHON_TO_CSHARP_PORTING_NOTES.md](../docs/PYTHON_TO_CSHARP_PORTING_NOTES.md). The corpus now covers Bing, DuckDuckGo, Brave, Mojeek, Google, Qwant, Yahoo, Yandex, Naver, Seznam, Wikipedia, generic JSON APIs and RSS/Atom against pinned SearXNG source revision `c6ee3e9fd0235004a694e63720efc869bb1e3594` where a direct upstream engine exists. It explicitly marks protocol substitutions and missing test coverage.
 - First P0 code slice added `SearchQuery` request fields, `EngineCapabilities` and optional `ISearchProviderCapabilities`; `SearchAggregator` now skips unsupported providers and reports them separately. Focused test added; CI build-and-test job passed.
 - Project overview and roadmap: [README.md](../README.md)
 
@@ -35,7 +35,7 @@ Updated: 2026-11-22
 - Architecture audit added at [docs/PORTING_AUDIT.md](../docs/PORTING_AUDIT.md). No code changed in the audit.
 - Rationale corpus records preserved behaviour, deliberate alternatives, omissions and known divergences; it explicitly avoids claiming full Python feature parity. Its documentation commits also passed CI in runs [45023354409](https://github.com/fwjlh/DotNetWebSearchApi/actions/runs/45023354409) and [45023360277](https://github.com/fwjlh/DotNetWebSearchApi/actions/runs/45023360277).
 - Batch 7 adds eight scholarly and open-knowledge providers with eight fixtures. CI passed: build 0 warnings/errors; 156 tests passed (0 failed, 0 skipped).
-- Mojeek is implemented with bounded Altcha proof-of-work and two fixture tests; CI pending.
+- Mojeek is implemented with bounded Altcha proof-of-work; fixture tests do not establish live challenge acceptance.
 - Batch 6 adds eight adapters and eight fixture tests. CI passed: build 0 warnings/errors; 146 tests passed (0 failed, 0 skipped).
 - Batch 5 adds Wiby, TVmaze, Radio Browser, PeerTube, Wikimedia Commons, Wikinews, Spanish Wikipedia and Openverse. All eight fixture cases passed in CI.
 - No new live upstream API requests have been run. Fixture tests verify request construction and response mapping only.
@@ -87,8 +87,7 @@ Search/media/regional providers (batch 5): Wiby, TVmaze, Radio Browser, PeerTube
 
 ## Next actions
 1. Keep provider expansion frozen at 67; do not add adapters during the shared-framework milestone.
-2. Expand the Python-to-C# rationale corpus across the remaining priority web engines and shared framework concepts; attach concrete C# source and fixture-test references.
-2. Add immutable search request context and explicit engine capabilities with backwards-compatible defaults.
+2. Complete request-context API parsing and map the current C# providers' actual capabilities; do not advertise upstream Python features that the C# request builder does not yet implement.
 3. Add typed provider outcomes, health/cooldown and half-open recovery tests.
 4. Introduce shared HTTP request/transport/session policies, retaining provider-specific strategies where necessary.
 5. Add challenge classification and safe handling; distinguish rate limits, temporary blocks, browser verification, proof-of-work and interactive CAPTCHA. No automatic CAPTCHA bypass.
