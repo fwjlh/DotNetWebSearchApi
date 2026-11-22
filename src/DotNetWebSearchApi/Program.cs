@@ -1,6 +1,5 @@
 using System.Net;
 using DotNetWebSearchApi.Search;
-using DotNetWebSearchApi.Search;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 builder.Services.AddHttpClient<BingSearchProvider>(client => client.DefaultRequestHeaders.UserAgent.ParseAdd("DotNetWebSearchApi/0.1 (+https://github.com/fwjlh/DotNetWebSearchApi)"));

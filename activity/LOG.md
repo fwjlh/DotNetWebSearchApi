@@ -279,3 +279,11 @@ Every material repository action is recorded here with its reason, result, verif
 - **Result:** Implementation and tests prepared for commit. Without both environment variables the provider is not registered. Tests use fixture XML/JSON and fake HTTP handlers; they do not make paid Yandex requests.
 - **Verification:** Pending GitHub Actions.
 - **Next:** Inspect CI. If green, record Yandex as optional/paid and document pricing. Then decide whether to add regional engines such as Naver or Seznam to reach the first ten providers.
+
+
+### 34. Remove duplicate Program namespace import
+- **Reason:** Final source inspection found the Yandex registration edit had duplicated the existing search namespace using directive.
+- **Action:** Removed the duplicate import before running CI.
+- **Result:** No runtime behaviour changed; source remains otherwise unchanged.
+- **Verification:** Re-fetched Program.cs from GitHub and checked the top-level imports.
+- **Next:** Run GitHub Actions for the Yandex adapter and correct any compiler/test failures before marking it complete.
