@@ -725,3 +725,15 @@ Every material repository action is recorded here with its reason, result, verif
 - **Action:** Replaced the old 100-provider/continued-expansion delivery sequence with the agreed shared-framework milestones, recorded the 156-test historical baseline accurately, and explicitly stated that it predates the new request-context/capability code.
 - **Result:** README no longer presents provider expansion as active or the old 138-test/ten-provider snapshot as current.
 - **Verification:** Documentation review only; no runtime changes. Latest code remains `ab52977e1fed0fa3407651da90daea98effe045a`; CI verification for that code slice is still not confirmed through the available GitHub Actions status view.
+
+
+## 2026-11-22 — Python-to-C# porting rationale corpus
+
+### 83. Establish the porting rationale corpus and record four priority engines
+- **Reason:** Preserve not only what each C# provider does, but why its implementation has that shape relative to the original Python/SearXNG source. Future contributors need to distinguish faithful behaviour preservation from simplification, deliberate protocol substitution and missing features.
+- **Action:** Added [docs/PYTHON_TO_CSHARP_PORTING_NOTES.md](../docs/PYTHON_TO_CSHARP_PORTING_NOTES.md), with a reusable evidence-based entry template and pinned upstream SearXNG revision `c6ee3e9fd0235004a694e63720efc869bb1e3594` (2026-11-21).
+- **Entries:** Bing (HTML request/parser shape and redirect decoding; locale/safe-search gaps), DuckDuckGo (no-JS form POST and result parsing; VQD/paging/cookie/locale gaps), Brave (explicitly records that C# uses the official JSON API rather than translating SearXNG's embedded-HTML scraper), and Mojeek (Altcha proof-of-work/cookie sequence plus fixed-time, locale, paging and category differences).
+- **Method:** Each entry labels preserved, adapted, omitted and unverified behaviour. It links both Python source and C# implementation and warns that fixture coverage does not establish live upstream acceptance.
+- **Action:** Linked the corpus from README and added it to the handover status. Provider catalogue remains frozen at 67; no provider code changed.
+- **Verification:** Documentation-only. The GitHub combined status lookup for `ab52977e1fed0fa3407651da90daea98effe045a` returned no status entries, and the workflow-run lookup returned no runs (that connector view filters to PR-triggered runs). Therefore CI for the capability slice remains unconfirmed; the last verified baseline is still run 45020266512 (156 tests, 0 failures, 0 skipped, 0 warnings/errors). No live provider calls were made.
+- **Next:** Continue shared request-context/API integration and typed outcomes/health; expand this corpus for Google, Qwant, Yahoo, Yandex, Naver, Seznam and the generic JSON/RSS adapter patterns. Do not resume provider expansion yet.
