@@ -1,0 +1,13 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Diagnostics · DotNetWebSearchApi</title><link rel="stylesheet" href="/app.css"><script src="/admin.js" defer></script></head>
+<body>
+<header class="topbar"><a class="brand" href="/">DotNetWebSearchApi</a><nav><a href="/">Search</a><a href="https://github.com/fwjlh/DotNetWebSearchApi">GitHub</a></nav></header>
+<main class="page">
+<section class="intro compact"><p class="eyebrow">OPERATIONS</p><h1>Provider diagnostics</h1><p>Read-only view of active providers and their recent search outcomes. Secrets are never displayed.</p></section>
+<section class="panel"><div class="diagnostic-heading"><div><h2>Service status</h2><p id="diagnostic-summary" class="muted">Loading diagnostics…</p></div><button id="refresh-diagnostics" type="button" class="secondary-button">Refresh</button></div><div id="provider-diagnostics" class="diagnostic-list"></div></section>
+<p class="footnote">Provider status is updated when searches run. “Not run” means no search has used that provider since this process started.</p>
+</main>
+<footer class="footer"><a href="/">Back to search</a></footer>
+</body>
+</html>

@@ -115,6 +115,77 @@ public sealed class SearxngApiIntegrationTests
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
     }
 
+    [Fact]
+    public async Task ProvidersEndpoint_ReturnsConfiguredProviders()
+    {
+        using WebApplicationFactory<Program> factory = CreateFactory(
+            Provider("beta", Result("B", "https://example.com/b")),
+            Provider("alpha", Result("A", "https://example.com/a")));
+        using HttpClient client = factory.CreateClient();
+        using HttpResponseMessage response = await client.GetAsync("/api/providers");
+        using JsonDocument document = await JsonDocument.ParseAsync(await response.Content.ReadAsStreamAsync());
+
+        Assert.Equal(2, document.RootElement.GetProperty("provider_count").GetInt32());
+        Assert.Equal(new[] { "alpha", "beta" }, document.RootElement.GetProperty("providers").EnumerateArray().Select(item => item.GetString()));
+    }
+
+    [Fact]
+    public async Task DiagnosticsEndpoint_TracksSuccessfulSearch()
+    {
+        using WebApplicationFactory<Program> factory = CreateFactory(Provider("alpha", Result("A", "https://example.com/a")));
+        using HttpClient client = factory.CreateClient();
+        using HttpResponseMessage searchResponse = await client.GetAsync("/search?q=test");
+        searchResponse.EnsureSuccessStatusCode();
+        using HttpResponseMessage response = await client.GetAsync("/api/diagnostics");
+        using JsonDocument document = await JsonDocument.ParseAsync(await response.Content.ReadAsStreamAsync());
+        JsonElement provider = document.RootElement.GetProperty("providers")[0];
+
+        Assert.Equal("ok", document.RootElement.GetProperty("status").GetString());
+        Assert.Equal("healthy", provider.GetProperty("status").GetString());
+        Assert.Equal(1, provider.GetProperty("successfulSearches").GetInt64());
+    }
+
+    [Fact]
+    public async Task DiagnosticsEndpoint_TracksProviderFailure()
+    {
+        using WebApplicationFactory<Program> factory = CreateFactory(
+            new TestProvider("broken", (_, _) => throw new InvalidOperationException("failure")));
+        using HttpClient client = factory.CreateClient();
+        using HttpResponseMessage searchResponse = await client.GetAsync("/search?q=test");
+        searchResponse.EnsureSuccessStatusCode();
+        using HttpResponseMessage response = await client.GetAsync("/api/diagnostics");
+        using JsonDocument document = await JsonDocument.ParseAsync(await response.Content.ReadAsStreamAsync());
+        JsonElement provider = document.RootElement.GetProperty("providers")[0];
+
+        Assert.Equal("degraded", document.RootElement.GetProperty("status").GetString());
+        Assert.Equal("unresponsive", provider.GetProperty("status").GetString());
+        Assert.Equal(1, provider.GetProperty("failedSearches").GetInt64());
+    }
+
+    [Fact]
+    public async Task RootEndpoint_ServesSearchPage()
+    {
+        using WebApplicationFactory<Program> factory = CreateFactory(Provider("alpha", Result("A", "https://example.com/a")));
+        using HttpClient client = factory.CreateClient();
+        using HttpResponseMessage response = await client.GetAsync("/");
+        string html = await response.Content.ReadAsStringAsync();
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        Assert.Contains("Search across the web", html);
+    }
+
+    [Fact]
+    public async Task AdminEndpoint_ServesDiagnosticsPage()
+    {
+        using WebApplicationFactory<Program> factory = CreateFactory(Provider("alpha", Result("A", "https://example.com/a")));
+        using HttpClient client = factory.CreateClient();
+        using HttpResponseMessage response = await client.GetAsync("/admin");
+        string html = await response.Content.ReadAsStringAsync();
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        Assert.Contains("Provider diagnostics", html);
+    }
+
     private static WebApplicationFactory<Program> CreateFactory(params ISearchProvider[] providers)
     {
         return new WebApplicationFactory<Program>().WithWebHostBuilder(builder =>

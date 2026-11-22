@@ -89,16 +89,54 @@ if (!string.IsNullOrWhiteSpace(braveApiKey))
     builder.Services.AddSingleton<ISearchProvider>(sp => sp.GetRequiredService<BraveSearchProvider>());
 }
 
+builder.Services.AddSingleton<SearchDiagnostics>();
 builder.Services.AddSingleton<SearchAggregator>();
 WebApplication app = builder.Build();
+app.UseStaticFiles();
 app.MapGet("/health", HealthEndpoint);
+app.MapGet("/api/providers", ProvidersEndpoint);
+app.MapGet("/api/diagnostics", DiagnosticsEndpoint);
+app.MapGet("/admin", AdminEndpoint);
 app.MapGet("/api/search", SearchEndpoint);
 app.MapGet("/search", SearxngSearchEndpoint);
-app.MapGet("/", SearxngSearchEndpoint);
+app.MapGet("/", RootEndpoint);
 app.MapPost("/search", SearxngSearchEndpoint);
 app.Run();
 
 static IResult HealthEndpoint() => Results.Ok(new { status = "ok" });
+
+static IResult ProvidersEndpoint(SearchAggregator aggregator)
+{
+    string[] providers = aggregator.ProviderNames.OrderBy(name => name, StringComparer.OrdinalIgnoreCase).ToArray();
+    return Results.Ok(new { provider_count = providers.Length, providers });
+}
+
+static IResult DiagnosticsEndpoint(SearchAggregator aggregator, SearchDiagnostics diagnostics)
+{
+    IReadOnlyList<ProviderDiagnosticsSnapshot> providers = diagnostics.GetSnapshot(aggregator.ProviderNames);
+    string status = providers.Any(provider => provider.Status == "unresponsive") ? "degraded" : "ok";
+    return Results.Ok(new
+    {
+        status,
+        active_provider_count = providers.Count,
+        providers,
+        features = new
+        {
+            search_ui = true,
+            provider_configuration = false,
+            sql_configuration = false,
+            api_authentication = false
+        }
+    });
+}
+
+static IResult AdminEndpoint() => Results.Redirect("/admin.html");
+
+static Task<IResult> RootEndpoint(HttpRequest request, SearchAggregator aggregator, CancellationToken cancellationToken)
+{
+    if (!request.Query.ContainsKey("q")) return Task.FromResult<IResult>(Results.Redirect("/index.html"));
+    return SearxngSearchEndpoint(request, aggregator, cancellationToken);
+}
 
 static async Task<IResult> SearchEndpoint(string? q, int? limit, SearchAggregator aggregator, CancellationToken cancellationToken)
 {

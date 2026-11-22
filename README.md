@@ -56,8 +56,8 @@ DotNetWebSearchApi puts that work behind one service:
 | Major web-search adapters | Initial wave complete | Bing, Brave, Google, DuckDuckGo and other priority providers are implemented |
 | First 5–10 provider adapters | Initial target met | Ten provider adapters are implemented and CI-tested |
 | SearXNG-compatible JSON API | Initial surface working | JSON response and engine selection; unsupported features return explicit status codes |
-| Browser search interface | Planned | Search, provider selection and result display |
-| Administration and diagnostics | Planned | Provider configuration, health, logs and operational visibility |
+| Browser search interface | Working (initial) | Search page at / with selectable providers and result cards |
+| Read-only administration and diagnostics | Working (initial) | /admin, provider health counters, last outcome and active provider list |
 | SQL Server configuration store | Planned | Optional persistence and administration |
 | API keys, quotas and rate limiting | Planned | Required before untrusted public exposure |
 
@@ -142,6 +142,8 @@ The initial compatibility surface is available at:
 - `POST /search` with `application/x-www-form-urlencoded` fields
 
 The `format` parameter defaults to JSON; `format=html` is not supported. The `engines` parameter accepts a comma-separated list of configured provider names, for example `engines=bing,google`. Unknown engines return HTTP 400. The initial implementation supports the `general` category and first page only. `pageno` values other than 1, non-default language/safesearch and `time_range` currently return HTTP 501 rather than being silently ignored.
+
+Provider discovery and read-only diagnostics are also available at GET /api/providers and GET /api/diagnostics. The /admin page displays provider status, success/failure counts, last duration and last error type. These are process-local counters and reset when the service restarts.
 
 The response uses the familiar SearXNG field names: `query`, `number_of_results`, `results`, `answers`, `corrections`, `infoboxes`, `suggestions` and `unresponsive_engines`. Result entries include `url`, `title`, `content`, `engine`, `engines`, `positions`, `score`, `category`, `template`, `parsed_url` and `publishedDate`. Empty answer/infobox/suggestion arrays are returned until those result types are implemented. `positions` is currently inferred from the adapter score, and duplicate URLs retain the highest-scoring provider rather than combining every engine position. This is response-shape compatibility, not full SearXNG feature parity.
 
@@ -265,7 +267,7 @@ Run from the repository root:
 
 GitHub Actions runs restore, build and tests for pushes and pull requests. The badge at the top links to the workflow.
 
-The current verified implementation passes CI with **86 tests passing** across the aggregation layer, ten provider adapters and the JSON API integration tests. Check the Actions history for the latest result; this README does not assume that a previous successful run proves every future commit is green.
+The current verified implementation passes CI with **95 tests passing** across the aggregation layer, ten provider adapters, JSON API integration tests and provider diagnostics. Check the Actions history for the latest result; this README does not assume that a previous successful run proves every future commit is green.
 
 ## Planned delivery sequence
 
@@ -274,7 +276,7 @@ The work is intentionally staged so the useful search capability comes before th
 1. **Provider foundation and major engines.** Keep the provider contract, aggregation and test structure solid; implement the major general-purpose engines first.
 2. **First 5–10 adapters.** Initial target met: ten adapters are implemented and tested. Continue expanding only where a provider adds real value.
 3. **SearXNG-compatible JSON API.** Initial response-compatible GET/POST surface is working; expand compatibility only where the provider model supports it.
-4. **Browser interface and administration.** Next priority: add a practical search page, provider selection, configuration management and diagnostics.
+4. **Browser interface and administration.** Initial search and read-only diagnostics pages are working. Next, add safe provider configuration management and richer operational diagnostics.
 5. **Operational hardening.** Add SQL Server-backed configuration where useful, API-key authentication, quotas, rate limiting, metrics and deployment guidance before public exposure.
 
 The exact provider access method may affect the order within the first stage. Reliability, legality, maintainability and real-world availability take precedence over simply matching an upstream engine count.

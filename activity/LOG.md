@@ -395,3 +395,14 @@ Every material repository action is recorded here with its reason, result, verif
 - **Result:** Current capabilities table now renders the legacy and SearXNG-shaped endpoints separately.
 - **Verification:** Fetched README.md from GitHub and checked the rendered Markdown source.
 - **Next:** Continue with browser search, provider selection and diagnostics.
+
+
+## 2026-11-22 — Browser search and read-only diagnostics
+
+### 48. Implement initial search UI and provider diagnostics
+- **Reason:** Continue milestone 6 after the first JSON API surface: make the service usable from a browser and expose operational provider health without revealing secrets.
+- **Action:** Added static search and admin pages, responsive CSS, vanilla JavaScript provider selection/result rendering, /api/providers, /api/diagnostics, /admin, root redirect to the search page, and static-file hosting. Added SearchDiagnostics counters for success/failure totals, last duration, result count, last checked time and exception type. Added four diagnostics unit tests and five integration tests for provider discovery, health reporting and UI routes.
+- **Result:** Initial browser search and read-only admin diagnostics are implemented. Admin counters are in-memory and reset on process restart. No configuration editing or secret display is provided.
+- **Security:** UI renders upstream text with textContent and only links HTTP(S) URLs. Diagnostics exposes provider names and exception type only, not messages, keys or folder IDs. Public exposure still requires authentication/rate limiting.
+- **Verification:** Pending GitHub Actions.
+- **Next:** Inspect build/tests; if green, document the initial UI and plan provider configuration management separately.

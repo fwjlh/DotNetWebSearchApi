@@ -1,0 +1,55 @@
+:root { color-scheme: light; font-family: Inter, "Segoe UI", Arial, sans-serif; color: #182333; background: #f3f6fa; font-synthesis: none; }
+* { box-sizing: border-box; }
+body { margin: 0; min-height: 100vh; background: #f3f6fa; }
+a { color: #175fc2; }
+.topbar { display: flex; align-items: center; justify-content: space-between; padding: 16px max(24px, calc((100% - 1040px) / 2)); background: #15243a; color: #fff; }
+.brand { color: #fff; font-weight: 700; text-decoration: none; letter-spacing: .2px; }
+.topbar nav { display: flex; gap: 22px; }
+.topbar nav a { color: #dbe7f8; text-decoration: none; font-size: 14px; }
+.page { width: min(100% - 32px, 920px); margin: 48px auto 64px; }
+.intro { margin: 0 0 28px; }
+.intro h1 { margin: 6px 0 10px; font-size: clamp(30px, 5vw, 42px); letter-spacing: -1.3px; }
+.intro p:not(.eyebrow) { max-width: 650px; color: #5c6a7d; line-height: 1.6; }
+.intro.compact { margin-bottom: 24px; }
+.eyebrow { color: #326fbd; font-size: 11px; font-weight: 800; letter-spacing: 1.5px; }
+.panel, .result-card, .diagnostic-card { background: #fff; border: 1px solid #dce4ee; border-radius: 12px; box-shadow: 0 4px 16px rgba(25, 45, 75, .04); }
+.panel { padding: 24px; }
+.field-label { display: block; margin-bottom: 9px; font-size: 14px; font-weight: 700; }
+.query-row { display: flex; gap: 10px; }
+input[type="search"] { min-width: 0; flex: 1; padding: 13px 14px; border: 1px solid #cbd5e1; border-radius: 8px; font: inherit; font-size: 16px; background: #fff; }
+input:focus { outline: 3px solid rgba(48, 119, 207, .18); border-color: #397bc8; }
+button { border: 0; border-radius: 8px; padding: 12px 20px; font: inherit; font-weight: 700; cursor: pointer; }
+button:disabled { opacity: .55; cursor: not-allowed; }
+#search-button { background: #1766c5; color: #fff; min-width: 112px; }
+.secondary-button { background: #e8eef6; color: #24364c; }
+.provider-heading, .diagnostic-heading { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.provider-heading { margin-top: 22px; }
+.small-actions { display: flex; gap: 14px; }
+.link-button { padding: 0; background: transparent; color: #1766c5; font-size: 13px; }
+.provider-list { display: flex; flex-wrap: wrap; gap: 9px; }
+.provider-option { display: inline-flex; align-items: center; gap: 7px; padding: 8px 11px; border: 1px solid #dce4ee; border-radius: 7px; background: #f8fafc; font-size: 13px; }
+.provider-option input { accent-color: #1766c5; }
+.feedback { min-height: 28px; margin: 20px 0 8px; color: #58677a; font-size: 14px; }
+.feedback.warning { color: #9a5b12; }
+.results { display: grid; gap: 12px; }
+.result-card { padding: 18px 20px; }
+.result-card h2 { margin: 0 0 8px; font-size: 18px; font-weight: 650; }
+.result-card h2 a { text-decoration: none; }
+.result-card h2 a:hover { text-decoration: underline; }
+.result-card p { margin: 0 0 10px; color: #4f5d70; line-height: 1.55; font-size: 14px; }
+.result-meta { color: #748195; font-size: 12px; }
+.muted, .footnote { color: #748195; font-size: 13px; }
+.diagnostic-heading h2 { margin: 0 0 6px; font-size: 20px; }
+.diagnostic-heading p { margin: 0; }
+.diagnostic-list { display: grid; gap: 10px; margin-top: 20px; }
+.diagnostic-card { padding: 16px; box-shadow: none; }
+.diagnostic-top { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 8px; }
+.diagnostic-name { font-weight: 700; }
+.status-pill { padding: 4px 9px; border-radius: 20px; background: #edf1f6; color: #5c6877; font-size: 11px; font-weight: 700; text-transform: uppercase; }
+.status-healthy { background: #e3f5e9; color: #176b3a; }
+.status-unresponsive { background: #fff0e8; color: #a64b1a; }
+.diagnostic-details { display: flex; flex-wrap: wrap; gap: 8px 18px; color: #667589; font-size: 12px; }
+.footnote { margin-top: 18px; line-height: 1.5; }
+.footer { padding: 22px; text-align: center; color: #7b8797; font-size: 12px; }
+.footer a { text-decoration: none; }
+@media (max-width: 620px) { .topbar { padding: 15px 18px; } .page { margin-top: 30px; } .panel { padding: 18px; } .query-row { flex-direction: column; } #search-button { width: 100%; } }

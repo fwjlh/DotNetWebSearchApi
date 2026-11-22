@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using Microsoft.Extensions.Logging;
 
 namespace DotNetWebSearchApi.Search;
@@ -6,11 +7,16 @@ public sealed class SearchAggregator
 {
     private readonly IReadOnlyList<ISearchProvider> _providers;
     private readonly ILogger<SearchAggregator> _logger;
+    private readonly SearchDiagnostics _diagnostics;
 
-    public SearchAggregator(IEnumerable<ISearchProvider> providers, ILogger<SearchAggregator> logger)
+    public SearchAggregator(
+        IEnumerable<ISearchProvider> providers,
+        ILogger<SearchAggregator> logger,
+        SearchDiagnostics? diagnostics = null)
     {
         _providers = providers.ToArray();
         _logger = logger;
+        _diagnostics = diagnostics ?? new SearchDiagnostics();
     }
 
     public IReadOnlyList<string> ProviderNames => _providers.Select(provider => provider.Name).ToArray();
@@ -47,9 +53,11 @@ public sealed class SearchAggregator
     {
         using CancellationTokenSource timeoutSource = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
         timeoutSource.CancelAfter(provider.Timeout);
+        Stopwatch stopwatch = Stopwatch.StartNew();
         try
         {
             IReadOnlyList<SearchResult> results = await provider.SearchAsync(query, timeoutSource.Token);
+            _diagnostics.RecordSuccess(provider.Name, stopwatch.Elapsed, results.Count);
             return new ProviderExecutionResult(provider.Name, results, false);
         }
         catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
@@ -59,6 +67,7 @@ public sealed class SearchAggregator
         catch (Exception exception)
         {
             _logger.LogWarning(exception, "Search provider {Provider} failed.", provider.Name);
+            _diagnostics.RecordFailure(provider.Name, stopwatch.Elapsed, exception.GetType().Name);
             return new ProviderExecutionResult(provider.Name, Array.Empty<SearchResult>(), true);
         }
     }
