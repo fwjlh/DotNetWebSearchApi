@@ -12,6 +12,7 @@ Updated: 2026-11-22
 - Python-to-C# rationale corpus: [docs/PYTHON_TO_CSHARP_PORTING_NOTES.md](../docs/PYTHON_TO_CSHARP_PORTING_NOTES.md). It covers Bing, DuckDuckGo, Brave, Mojeek, Google, Qwant, Yahoo, Yandex, Naver, Seznam, Wikipedia, generic JSON APIs, RSS/Atom, shared request-context/capability translation and typed exception/outcome mapping against pinned SearXNG source revision `c6ee3e9fd0235004a694e63720efc869bb1e3594` where a direct upstream engine exists.
 - P0 request context now flows from `/api/search` and SearXNG-shaped `/search` into `SearchQuery`: categories, page, language, safe-search and time range. Invalid values are rejected; unsupported providers are skipped and reported separately (`unsupportedProviders` / `unsupported_engines`), not marked unresponsive. Conservative legacy-provider capabilities remain general/first-page/default-locale. Integration tests added; CI passed with 160 tests in run 45024120851.
 - Typed provider outcomes distinguish success, failure and skipped; failure kinds include timeout, rate limit, transient HTTP, invalid response, authentication, access denied, challenge, configuration and unknown. Explicit provider failures can carry RetryAfter. Caller cancellation still propagates.
+- Challenge subtypes distinguish temporary block, browser verification, proof-of-work, interactive CAPTCHA, interactive verification, login-required and unknown. Current detectors map Google/DuckDuckGo/Yandex CAPTCHA, Qwant DataDome, Seznam verification and Mojeek Altcha/fallback CAPTCHA. `/api/search` and `/search` expose typed outcomes; health snapshots retain the last challenge subtype. CI passed in [run 45028609771](https://github.com/fwjlh/DotNetWebSearchApi/actions/runs/45028609771). This does not automate CAPTCHA solving or bypass.
 - ProviderHealthRegistry now adds process-local Closed/Open/HalfOpen states, failure thresholds, failure-kind cooldowns, capped exponential backoff and one half-open recovery probe. Cooling-down providers are skipped and reported separately; diagnostics expose health snapshots. CI passed with 174 tests in run 45025031994. Policy is global and resets on process restart.
 - Shared HTTP transport now covers Bing, Brave, DuckDuckGo, Google, Mojeek, Naver, Qwant, Seznam, Yahoo, Yandex Cloud, Wikipedia, arXiv, generic JSON and RSS/Atom paths. It enforces a 4 MiB response limit, per-host concurrency, response-header capture and Retry-After. CI passed with 182 tests in run 45026001326.
 - Mojeek and Yahoo now have separate keyed CookieContainers; Seznam retains its own typed-client handler jar. These are provider-process sessions, not per-user sessions. Added DI/integration coverage and Qwant DataDome challenge classification. CI passed with 184 tests in run 45026298077.
@@ -95,11 +96,10 @@ Search/media/regional providers (batch 5): Wiby, TVmaze, Radio Browser, PeerTube
 
 ## Next actions
 1. Keep provider expansion frozen at 67; do not add adapters during the shared-framework milestone.
-2. Complete request-context API parsing and map the current C# providers' actual capabilities; do not advertise upstream Python features that the C# request builder does not yet implement.
-3. Add typed provider outcomes, health/cooldown and half-open recovery tests.
-4. Introduce shared HTTP request/transport/session policies, retaining provider-specific strategies where necessary.
-5. Add challenge classification and safe handling; distinguish rate limits, temporary blocks, browser verification, proof-of-work and interactive CAPTCHA. No automatic CAPTCHA bypass.
-6. Improve duplicate merging, source-engine/position retention and weighted ranking.
-7. Record locale/region traits and API compatibility conformance tests.
-8. Reconcile README, status and activity log after each milestone; resume provider ports only when the architecture definition of done is met.
-9. Keep CoderInBox as an independent HTTP consumer; do not move provider code into that repository.
+2. Build the locale/region traits registry and map provider-specific language/market codes from request context.
+3. Expand API compatibility conformance tests for GET/POST, categories, safe-search, paging, time ranges, unsupported engines and typed outcomes.
+4. Add rich result models and metadata preservation before broadening image/news/video provider coverage.
+5. Make provider health/cooldown policy configurable per engine and decide whether persistence is required for multi-instance hosting.
+6. Harden the public API before internet exposure: authentication, quotas, request limits and outbound destination policy.
+7. Keep CoderInBox as an independent HTTP consumer; do not move provider code into that repository.
+8. Resume provider additions only when the shared-framework definition of done is met.

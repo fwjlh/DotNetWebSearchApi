@@ -40,7 +40,7 @@ All upstream source links in the entries below are pinned to that revision. When
 | `EngineCache` and provider session state | Explicit cache/session state with bounded lifetime | Make state ownership, expiry and secret handling visible. |
 | Engine exceptions and suspension metadata | Typed provider outcomes and health/cooldown | Distinguish a timeout, a CAPTCHA, a rate limit and a configuration failure. |
 
-These are translation targets, not assertions that every row is already implemented. See [PORTING_AUDIT.md](PORTING_AUDIT.md) for the shared-framework gap analysis.
+These are translation targets, not assertions that every row is already implemented. See [PORTING_AUDIT.md](PORTING_AUDIT.md) for the shared-framework gap analysis and [challenge classification notes](PORTING/CHALLENGE_CLASSIFICATION.md) for the challenge taxonomy and safety boundary.
 
 ## Provider notes
 

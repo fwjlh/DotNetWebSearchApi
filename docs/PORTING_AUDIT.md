@@ -148,6 +148,10 @@ Each provider should then be implemented by composing existing strategies, addin
 7. Revisit the existing major-engine adapters against the pinned upstream rationale corpus.
 8. Resume provider additions once the common patterns are in place.
 
+## Challenge classification
+
+The C# outcome model separates operational failure kind from challenge subtype. It distinguishes browser verification, proof-of-work, interactive CAPTCHA, interactive verification and login requirements, while keeping rate limiting and generic access denial separate. Current detectors map Google/DuckDuckGo/Yandex to interactive CAPTCHA, Qwant/Seznam to browser verification, and Mojeek Altcha to bounded proof-of-work. The public `/api/search` and SearXNG-shaped `/search` responses expose typed provider outcomes; diagnostics retain the last challenge subtype. See [challenge classification notes](PORTING/CHALLENGE_CLASSIFICATION.md). Classification is not bypass: AI may explain a challenge, but must not automatically solve CAPTCHA or human verification.
+
 ## Important distinction
 
 The objective should be **behavioural compatibility with selected SearXNG engines and architecture**, not a mechanical translation of every Python file. SearXNG is a mature search metasearch application with settings, categories, network/session behaviour, result types, ranking and engine lifecycle. Our project is currently a .NET search-provider API with a growing set of adapters. Porting the shared contracts first is the shortest route to making the latter behave more like the former.
