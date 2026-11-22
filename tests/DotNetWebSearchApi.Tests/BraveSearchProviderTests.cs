@@ -101,8 +101,9 @@ public sealed class BraveSearchProviderTests
             new HttpResponseMessage(HttpStatusCode.TooManyRequests)));
         BraveSearchProvider provider = new(client);
 
-        await Assert.ThrowsAsync<HttpRequestException>(() =>
+        ProviderFailureException exception = await Assert.ThrowsAsync<ProviderFailureException>(() =>
             provider.SearchAsync(new SearchQuery("test", 10), CancellationToken.None));
+        Assert.Equal(ProviderFailureKind.RateLimited, exception.FailureKind);
     }
 
     [Fact]
