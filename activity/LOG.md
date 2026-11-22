@@ -254,3 +254,11 @@ Every material repository action is recorded here with its reason, result, verif
 - **Result:** Implementation and tests prepared for commit. The provider uses Yahoo HTML search, sB preferences and automatic YBV cookie storage through HttpClientHandler. Tests do not contact Yahoo.
 - **Verification:** Pending GitHub Actions.
 - **Next:** Inspect CI. If green, document Yahoo as experimental and assess Yandex Search API credential/cost requirements.
+
+
+### 31. Verify Yahoo Web adapter in GitHub Actions
+- **Reason:** Confirm Yahoo HTML parsing, preference-cookie setup and bounded redirect handling with executable tests.
+- **Action:** Inspected workflow run 45008790126 for commit 3b127e3b67c63849abf54a52ca54e9635cc8b6c4 and fetched the job log.
+- **Result:** **CI passed.** Restore and build succeeded; all 56 tests passed (0 failed, 0 skipped). Seven tests cover Yahoo result parsing, redirect unwrapping, query construction, cookie creation, bounded redirect flow and HTTP errors.
+- **Verification:** Workflow run https://github.com/fwjlh/DotNetWebSearchApi/actions/runs/45008790126. Tests use fixture HTML and a fake HTTP handler; they do not contact Yahoo or prove live acceptance of the cookie/redirect flow.
+- **Next:** Record Yahoo as experimental/implemented. Assess Yandex Search API credential and pricing requirements, then decide whether an optional paid adapter is worth including.

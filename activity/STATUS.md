@@ -6,7 +6,7 @@ Updated: 2026-11-22
 
 - Public repository: https://github.com/fwjlh/DotNetWebSearchApi
 - Default branch: main
-- Latest verified code commit: 1374fd11e331a7b32b9e0a73a560b7fab2f58551 (Yahoo adapter pending CI)
+- Latest verified code commit: 3b127e3b67c63849abf54a52ca54e9635cc8b6c4
 - Full project overview and roadmap: [README.md](../README.md)
 
 ## Working vertical slice
@@ -17,17 +17,17 @@ Updated: 2026-11-22
 - Parallel provider aggregation with per-provider timeout and provider-failure isolation.
 - Caller cancellation is propagated.
 - HTTP(S)-only result URL validation, duplicate removal, deterministic score/title ordering, and result limit.
-- Six adapters: Bing Web HTML, Brave Search API (optional key), Google Web HTML, DuckDuckGo Web HTML (first page), Qwant JSON API, and Wikipedia MediaWiki search API.
+- Seven adapters: Bing Web HTML, Brave Search API (optional key), Google Web HTML, DuckDuckGo Web HTML (first page), Qwant JSON API, Yahoo Web HTML, and Wikipedia MediaWiki search API.
 - Brave is registered only when BRAVE_SEARCH_API_KEY is configured.
 - xUnit test project and GitHub Actions .NET 10 CI.
 
 ## Verification
 
-- CI run: https://github.com/fwjlh/DotNetWebSearchApi/actions/runs/45008612843
-- Commit tested: 1374fd11e331a7b32b9e0a73a560b7fab2f58551
+- CI run: https://github.com/fwjlh/DotNetWebSearchApi/actions/runs/45008790126
+- Commit tested: 3b127e3b67c63849abf54a52ca54e9635cc8b6c4
 - Restore: passed.
 - Build: passed.
-- Tests: 49 passed, 0 failed, 0 skipped.
+- Tests: 56 passed, 0 failed, 0 skipped.
 - Local .NET SDK is not installed in the orchestration environment; verification was performed by GitHub Actions.
 - Tests use deterministic fixtures and fake HTTP handlers. They verify parsing/request behaviour, not live acceptance by upstream providers.
 
@@ -41,8 +41,9 @@ The agreed approach is major general-purpose search engines first, then work dow
 4. DuckDuckGo Web — implemented and CI-verified for first page; CAPTCHA/bot-blocking risk, no pagination/VQD.
 5. Wikipedia — implemented and CI-verified; reference JSON/API adapter.
 6. Qwant — implemented and CI-verified experimentally; undocumented API and DataDome access risk.
-7. Mojeek — deferred; current SearXNG settings mark it inactive due to proof-of-work CAPTCHA.
-8. Startpage — deferred; current SearXNG settings mark it inactive due to Anubis proof-of-work.
+7. Yahoo Web — implemented and CI-verified experimentally; HTML, sB cookie and bounded YBV redirect handling; live access unverified.
+8. Mojeek — deferred; current SearXNG settings mark it inactive due to proof-of-work CAPTCHA.
+9. Startpage — deferred; current SearXNG settings mark it inactive due to Anubis proof-of-work.
 
 Target: first 5–10 genuinely implemented and tested providers. A provider is not counted as ported merely because its name appears in configuration.
 
@@ -58,7 +59,7 @@ Do not divert into the admin UI or compatibility layer before the core provider 
 
 ## Important limitations
 
-Bing Web, Brave Search API, Google Web, DuckDuckGo Web (first page), Qwant and Wikipedia are wired in. Fixture-based CI tests pass; live upstream acceptance is not verified. Brave requires a key and is not registered when BRAVE_SEARCH_API_KEY is absent. DuckDuckGo pagination is not implemented. Qwant's API is undocumented and may return DataDome challenges. Mojeek and Startpage are not wired in because of upstream proof-of-work challenges.
+Bing Web, Brave Search API, Google Web, DuckDuckGo Web (first page), Qwant, Yahoo and Wikipedia are wired in. Fixture-based CI tests pass; live upstream acceptance is not verified. Brave requires a key and is not registered when BRAVE_SEARCH_API_KEY is absent. DuckDuckGo pagination is not implemented. Qwant's API is undocumented and may return DataDome challenges. Yahoo's cookie and redirect flow is only fixture-tested. Mojeek and Startpage are not wired in because of upstream proof-of-work challenges.
 
 There is no SQL Server provider store, general configurable HTTP provider, API-key authentication, quotas, admin UI or SearXNG-compatible JSON API yet. Do not expose this endpoint as a public unrestricted search service before authentication, rate limiting and outbound request policy are implemented.
 
@@ -75,10 +76,11 @@ There is no SQL Server provider store, general configurable HTTP provider, API-k
 
 ## Next actions
 
-1. Evaluate Yahoo, Yandex and other SearXNG general-web providers for current access methods and maintenance costs.
-2. Add the next suitable provider with fixture tests and clear notes on access restrictions.
-3. Review Mojeek and Startpage proof-of-work challenges; defer if no sustainable route is available.
-4. Continue until the target of 5–10 useful adapters is reached.
-5. Add SearXNG-compatible JSON API after provider coverage is useful.
-6. Build browser search, administration and diagnostics after the compatibility API.
-7. Keep SearchBox.NET.Forge as a separate follow-on project for upstream monitoring and AI-assisted porting proposals; require tests and human review, never auto-merge.
+1. Assess Yandex Search API credentials, paid-plan requirements, folder ID and response format.
+2. Implement Yandex only as an optional provider if the access cost is acceptable.
+3. Evaluate further general-web providers (Yahoo is now covered; regional providers such as Naver/Seznam are lower priority).
+4. Review Mojeek and Startpage proof-of-work challenges; defer if no sustainable route is available.
+5. Continue until the target of 5–10 useful adapters is reached.
+6. Add SearXNG-compatible JSON API after provider coverage is useful.
+7. Build browser search, administration and diagnostics after the compatibility API.
+8. Keep SearchBox.NET.Forge as a separate follow-on project for upstream monitoring and AI-assisted porting proposals; require tests and human review, never auto-merge.
