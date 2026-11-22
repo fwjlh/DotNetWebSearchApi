@@ -374,6 +374,39 @@ These are translation targets, not assertions that every row is already implemen
 
 **Interpretation:** a useful secure RSS/Atom foundation, but presently a C#-native abstraction whose upstream provenance is not one-to-one.
 
+
+
+### Shared request context and capability gate
+
+**Python source:** SearXNG's engine contract and per-engine flags are distributed across each module's `request()`, `categories`, `paging`, `max_page`, `time_range_support`, `safesearch`, `language_support` and `EngineTraits` declarations. See the pinned [Bing](https://github.com/searxng/searxng/blob/c6ee3e9fd0235004a694e63720efc869bb1e3594/searx/engines/bing.py), [Google](https://github.com/searxng/searxng/blob/c6ee3e9fd0235004a694e63720efc869bb1e3594/searx/engines/google.py) and [Qwant](https://github.com/searxng/searxng/blob/c6ee3e9fd0235004a694e63720efc869bb1e3594/searx/engines/qwant.py) examples.
+
+**C# source:**
+- [SearchQuery.cs](../src/DotNetWebSearchApi/Search/SearchQuery.cs)
+- [EngineCapabilities.cs](../src/DotNetWebSearchApi/Search/EngineCapabilities.cs)
+- [SearchAggregator.cs](../src/DotNetWebSearchApi/Search/SearchAggregator.cs)
+- [Program.cs](../src/DotNetWebSearchApi/Program.cs)
+- [SearchAggregatorTests.cs](../tests/DotNetWebSearchApi.Tests/SearchAggregatorTests.cs)
+- [SearxngApiIntegrationTests.cs](../tests/DotNetWebSearchApi.Tests/SearxngApiIntegrationTests.cs)
+
+**Why the C# code has this shape**
+
+- Python engine support is declared through module-level flags and interpreted by SearXNG's engine processor. C# uses a typed `SearchQuery` request object and an optional `ISearchProviderCapabilities` interface so the core aggregator does not need provider-specific reflection or string-key configuration.
+- The original `SearchQuery(string Text, int Limit, IReadOnlySet<string>? ProviderNames = null)` constructor is retained. New context is init-only: categories, language, safe-search level, page and time range. Existing call sites can continue constructing the original query.
+- `EngineCapabilities.Supports` performs pre-flight eligibility. A provider that cannot honour a requested option is skipped and named in `UnsupportedProviders`; it is not called and is not falsely labelled as unresponsive.
+- Providers that have not declared capabilities receive a conservative `BasicWeb` profile: general category, first page, no non-default locale, no time-range and no enabled safe-search. This prevents old adapters from accidentally claiming support because a query field exists.
+- The HTTP endpoints parse the same context and carry it into the query model. Invalid values are rejected as client errors; valid-but-unsupported requests remain successful API responses with a separate unsupported-provider list.
+- The SearXNG-shaped response adds `unsupported_engines` without conflating it with `unresponsive_engines`. The native API exposes `unsupportedProviders`.
+
+**Current boundary / important caveat**
+
+- The request context is now parsed and transported, but that does not mean the existing provider request builders honour it. No provider should advertise paging, locale, safe-search or time-range until its actual outbound request uses the corresponding value and a fixture test proves it.
+- The current conservative fallback means many non-default requests can legitimately produce zero eligible providers. This is safer than silently returning first-page English results for a French or time-filtered request.
+- The first capability interface is intentionally small. Future work should add provider-specific category mappings and locale traits without putting Python's mutable module globals or `EngineTraits` object model directly into C#.
+
+**Verification:** [SearchAggregatorTests.cs](../tests/DotNetWebSearchApi.Tests/SearchAggregatorTests.cs) verifies that a provider lacking page support is not called and is reported separately. [SearxngApiIntegrationTests.cs](../tests/DotNetWebSearchApi.Tests/SearxngApiIntegrationTests.cs) verifies request-context parsing, invalid values and unsupported-provider response mapping. The API integration suite passes as part of CI run [45024120851](https://github.com/fwjlh/DotNetWebSearchApi/actions/runs/45024120851).
+
+**Interpretation:** this is a deliberate translation of SearXNG's declarative engine metadata into explicit C# contracts and pre-flight checks. It is the foundation for accurate support declarations, not a claim that the providers have already gained all upstream features.
+
 ## How to add the next corpus entry
 
 Copy this outline for every provider or shared framework concept:
