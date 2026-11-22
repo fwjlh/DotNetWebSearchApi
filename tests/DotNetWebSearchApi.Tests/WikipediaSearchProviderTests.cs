@@ -25,8 +25,9 @@ public sealed class WikipediaSearchProviderTests
             CancellationToken.None);
 
         Assert.Equal("zh.wikipedia.org", requestedUri?.Host);
+        Assert.Contains("srlimit=10", requestedUri?.Query);
         Assert.Contains("zh-TW", acceptLanguage);
-        Assert.Contains("zh;q=0.9", acceptLanguage);
+        Assert.Contains("zh; q=0.9", acceptLanguage);
         Assert.Equal("https://zh.wikipedia.org/?curid=52", Assert.Single(results).Url);
     }
 

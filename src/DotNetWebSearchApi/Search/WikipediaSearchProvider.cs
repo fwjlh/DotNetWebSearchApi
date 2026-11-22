@@ -32,7 +32,7 @@ public sealed partial class WikipediaSearchProvider : ISearchProvider, ISearchPr
         CancellationToken cancellationToken)
     {
         string wikiHost = GetWikiHost(query.Language);
-        using HttpRequestMessage request = new(HttpMethod.Get, BuildRequestUrl(query.Text, wikiHost));
+        using HttpRequestMessage request = new(HttpMethod.Get, BuildRequestUrl(query.Text, wikiHost, query.Limit));
         AddLanguagePreferences(request, query.Language);
         SearchHttpResponse response = await _transport.SendAsync(_httpClient, request, cancellationToken);
         response.EnsureSuccessStatusCode(Name);
@@ -53,10 +53,10 @@ public sealed partial class WikipediaSearchProvider : ISearchProvider, ISearchPr
             "en.wikipedia.org")!;
     }
 
-    private static string BuildRequestUrl(string query, string wikiHost)
+    private static string BuildRequestUrl(string query, string wikiHost, int limit)
     {
         string encodedQuery = Uri.EscapeDataString(query);
-        return $"https://{wikiHost}/w/api.php?action=query&list=search&format=json&utf8=1&srsearch={encodedQuery}";
+        return $"https://{wikiHost}/w/api.php?action=query&list=search&format=json&utf8=1&srlimit={Math.Clamp(limit, 1, 50)}&srsearch={encodedQuery}";
     }
 
     private static void AddLanguagePreferences(HttpRequestMessage request, string language)
