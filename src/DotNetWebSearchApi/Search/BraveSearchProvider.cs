@@ -7,10 +7,12 @@ public sealed class BraveSearchProvider : ISearchProvider
     private const string SearchEndpoint = "https://api.search.brave.com/res/v1/web/search";
     private const int MaximumPageSize = 20;
     private readonly HttpClient _httpClient;
+    private readonly SearchHttpTransport _transport;
 
-    public BraveSearchProvider(HttpClient httpClient)
+    public BraveSearchProvider(HttpClient httpClient, SearchHttpTransport? transport = null)
     {
         _httpClient = httpClient;
+        _transport = transport ?? new SearchHttpTransport();
     }
 
     public string Name => "brave";
@@ -21,14 +23,10 @@ public sealed class BraveSearchProvider : ISearchProvider
         SearchQuery query,
         CancellationToken cancellationToken)
     {
-        string requestUrl = BuildRequestUrl(query);
-        using HttpResponseMessage response = await _httpClient.GetAsync(requestUrl, cancellationToken);
-        response.EnsureSuccessStatusCode();
-
-        await using Stream responseStream = await response.Content.ReadAsStreamAsync(cancellationToken);
-        using JsonDocument document = await JsonDocument.ParseAsync(
-            responseStream,
-            cancellationToken: cancellationToken);
+        using HttpRequestMessage request = new(HttpMethod.Get, BuildRequestUrl(query));
+        SearchHttpResponse response = await _transport.SendAsync(_httpClient, request, cancellationToken);
+        response.EnsureSuccessStatusCode(Name);
+        using JsonDocument document = JsonDocument.Parse(response.Content);
 
         return BraveSearchResultParser.Parse(document.RootElement);
     }
