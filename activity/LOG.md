@@ -836,3 +836,13 @@ Every material repository action is recorded here with its reason, result, verif
 - **Corpus/audit:** Updated the porting rationale and audit to show that Python's per-engine request spacing is now represented by a provider-keyed shared transport gate, rather than logic inside the JSON adapter.
 - **Limits:** The rate interval is currently supplied only by JSON definitions. Future HTML/API adapters can use the same argument where their upstream protocol requires minimum spacing. There is still no adaptive quota policy or response-driven rate-limit window beyond RetryAfter/cooldown.
 - **Next:** Add common request-header profiles and transport diagnostics without logging query strings, cookies or tokens. Review redirect semantics and safe retries provider by provider. Keep provider count frozen at 67.
+
+
+### 92. Add default request headers and privacy-safe transport diagnostics
+- **Reason:** Provider-specific header profiles are not yet fully unified, but providers without an explicit User-Agent/Accept should not send an empty or accidental profile. Transport diagnostics must also help diagnose upstream behaviour without leaking search terms or session secrets.
+- **Action:** SearchHttpTransport now applies a conservative default User-Agent and Accept only when neither HttpRequestMessage nor HttpClient.DefaultRequestHeaders already supplies them. Existing provider-specific headers are preserved.
+- **Action:** Added optional structured debug/warning logs for HTTP method, host, status code, response byte count, elapsed milliseconds and exception type. The transport deliberately omits URL paths/query strings, response bodies, cookies and tokens.
+- **Tests:** Added tests proving default headers are supplied and explicit provider headers are not overwritten. Commit `c1356c732402ac27381885175811e6e7c435bcd1` passed [CI run 45026662957](https://github.com/fwjlh/DotNetWebSearchApi/actions/runs/45026662957): build succeeded, 187 passed, 0 failed, 0 skipped.
+- **Corpus/audit:** Updated the Python-to-C# rationale and porting audit to describe fallback headers, provider-specific overrides and privacy-safe logging. README roadmap now distinguishes implemented defaults/diagnostics from the remaining full provider header profiles.
+- **Limits:** Provider-specific User-Agent, Accept-Language, fetch metadata, referrer and other protocol headers are still authored in provider/client configuration. The transport does not yet centralise proxy/TLS policy, full header profiles or safe retries. No query/cookie/token logging.
+- **Next:** Review redirects and cookie/session lifecycle provider by provider; then define safe retry rules and timeout ownership. Keep provider challenge protocols intact and provider catalogue frozen at 67.
