@@ -163,6 +163,38 @@ public sealed class SearchAggregatorTests
     }
 
     [Fact]
+    public async Task SearchDetailedAsync_SkipsProvidersThatDoNotSupportRequestedPage()
+    {
+        int capableCalls = 0;
+        int legacyCalls = 0;
+        SearchAggregator aggregator = CreateAggregator(
+            new CapabilityProvider("paged", new EngineCapabilities(
+                new HashSet<string>(StringComparer.OrdinalIgnoreCase) { "general" },
+                true, 3, false, false, false),
+                (_, _) =>
+                {
+                    capableCalls++;
+                    return Task.FromResult<IReadOnlyList<SearchResult>>(
+                        new[] { Result("Paged", "https://example.com/paged") });
+                }),
+            new TestProvider("legacy", (_, _) =>
+            {
+                legacyCalls++;
+                return Task.FromResult<IReadOnlyList<SearchResult>>(Array.Empty<SearchResult>());
+            }));
+
+        SearchExecutionResult execution = await aggregator.SearchDetailedAsync(
+            new SearchQuery("test", 10) { Page = 2 },
+            CancellationToken.None);
+
+        Assert.Equal(1, capableCalls);
+        Assert.Equal(0, legacyCalls);
+        Assert.Equal("Paged", Assert.Single(execution.Results).Title);
+        Assert.Equal("legacy", Assert.Single(execution.UnsupportedProviders!));
+        Assert.Empty(execution.UnresponsiveProviders);
+    }
+
+    [Fact]
     public async Task SearchAsync_ReturnsEmptyForBlankQuery()
     {
         SearchAggregator aggregator = CreateAggregator(Provider("one", Result("One", "https://example.com/1")));
@@ -200,6 +232,26 @@ public sealed class SearchAggregatorTests
     private static SearchResult Result(string title, string url, double score = 0.5)
     {
         return new SearchResult(title, url, title, "test", score);
+    }
+
+    private sealed class CapabilityProvider(
+        string name,
+        EngineCapabilities capabilities,
+        Func<SearchQuery, CancellationToken, Task<IReadOnlyList<SearchResult>>> search)
+        : ISearchProvider, ISearchProviderCapabilities
+    {
+        public string Name => name;
+
+        public TimeSpan Timeout => TimeSpan.FromSeconds(2);
+
+        public EngineCapabilities Capabilities => capabilities;
+
+        public Task<IReadOnlyList<SearchResult>> SearchAsync(
+            SearchQuery query,
+            CancellationToken cancellationToken)
+        {
+            return search(query, cancellationToken);
+        }
     }
 
     private sealed class TestProvider(
