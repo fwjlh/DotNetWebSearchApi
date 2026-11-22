@@ -716,3 +716,5 @@ Every material repository action is recorded here with its reason, result, verif
 - **Result:** First P0 architecture slice committed. Provider catalogue remains frozen at 67.
 - **Verification:** CI has not yet been retrieved for this code change. The last verified baseline remains 156 tests passed on run 45020266512; that result does not verify these commits. No live upstream requests were made.
 - **Next:** Verify CI. Then expose supported request-context fields through API parsing and compatibility responses, add capability declarations to representative providers, and implement typed provider outcomes/health state.
+
+- **Final implementation commit for this slice:** `ab52977e1fed0fa3407651da90daea98effe045a`. Unsupported-provider outcomes are non-null in every SearchExecutionResult, including empty-query returns.
