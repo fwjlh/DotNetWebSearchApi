@@ -1,5 +1,6 @@
 using System.Buffers.Binary;
 using System.Net;
+using Microsoft.Extensions.DependencyInjection;
 using System.Security.Cryptography;
 using System.Text.Json;
 using HtmlAgilityPack;
@@ -16,7 +17,7 @@ public sealed class MojeekSearchProvider : ISearchProvider
 
     public MojeekSearchProvider(
         HttpClient httpClient,
-        CookieContainer cookies,
+        [FromKeyedServices("mojeek")] CookieContainer cookies,
         SearchHttpTransport? transport = null)
     {
         _httpClient = httpClient;
