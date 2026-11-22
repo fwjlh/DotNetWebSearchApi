@@ -194,3 +194,12 @@ Every material repository action is recorded here with its reason, result, verif
 - **Result:** Implementation and tests prepared for commit. No attempt is made to solve CAPTCHAs or fetch later pages without a vqd token. Tests use fixture HTML and a fake handler; no live DuckDuckGo requests are made.
 - **Verification:** Pending GitHub Actions.
 - **Next:** Inspect CI. If green, update provider roadmap and evaluate next providers (Mojeek, Qwant, Startpage and other useful SearXNG engines).
+
+
+### 24. Verify DuckDuckGo first-page adapter in GitHub Actions
+- **Reason:** Confirm form submission, result parsing, redirect unwrapping, query-length handling and CAPTCHA detection with executable tests.
+- **Action:** Inspected workflow run 45008393329 for commit 93bb6aea3338b0848d119691701c4cca680caf19 and fetched the job log.
+- **Result:** **CI passed.** Restore and build succeeded; all 41 tests passed (0 failed, 0 skipped). Eleven tests cover DuckDuckGo parsing and request behaviour.
+- **Verification:** Workflow run https://github.com/fwjlh/DotNetWebSearchApi/actions/runs/45008393329. Tests use fixture HTML and a fake HTTP handler; they do not contact DuckDuckGo or establish that its bot blocker will accept this server's traffic.
+- **Provider scope:** Only the first HTML results page is implemented. No vqd token caching or pagination is attempted. CAPTCHA pages are treated as provider failures, not bypassed.
+- **Next:** Update the README and handover with the five verified adapters. Evaluate Qwant next; current SearXNG uses its undocumented JSON API and handles DataDome cookies. Defer Mojeek and Startpage until their proof-of-work challenge costs and access constraints are understood.

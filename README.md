@@ -42,9 +42,13 @@ DotNetWebSearchApi puts that work behind one service:
 | Result normalisation | Working | HTTP(S) URLs, deduplication and deterministic ordering |
 | Result limit | Working | Default 10; maximum 50 |
 | Wikipedia adapter | Working | MediaWiki search API |
+| Bing Web adapter | Working | HTML result parsing; live availability not tested in CI |
+| Brave Search API adapter | Working (optional) | Requires BRAVE_SEARCH_API_KEY |
+| Google Web adapter | Working (HTML) | CAPTCHA/blocking remains an upstream risk |
+| DuckDuckGo Web adapter | Working (first page) | HTML POST; CAPTCHA detection; no pagination/VQD |
 | Automated build and tests | Working | GitHub Actions / .NET 10 |
-| Major web-search adapters | Planned | Highest implementation priority |
-| First 5–10 provider adapters | Planned | Build and verify the first useful provider set |
+| Major web-search adapters | In progress | Bing, Brave, Google and DuckDuckGo adapters are implemented |
+| First 5–10 provider adapters | In progress | Five providers are implemented; extend the useful provider set next |
 | SearXNG-compatible JSON API | Planned | Compatibility layer after core adapters |
 | Browser search interface | Planned | Search, provider selection and result display |
 | Administration and diagnostics | Planned | Provider configuration, health, logs and operational visibility |
@@ -62,12 +66,14 @@ The implementation strategy is to work from the major general-purpose search eng
 | 1 | Bing Web | Working | SearXNG-style HTML adapter; parser and request tests pass; live availability not tested in CI |
 | 2 | Brave Search API | Working (optional) | Official JSON API; requires BRAVE_SEARCH_API_KEY; not enabled without a key |
 | 3 | Google Web | Working (HTML) | SearXNG-style HTML adapter; no API key; CAPTCHA/blocking remains an upstream risk |
-| 4 | DuckDuckGo | Planned | Evaluate the current public search interface and its limitations |
+| 4 | DuckDuckGo Web | Working (first page) | HTML POST adapter; CAPTCHA detection; pagination/VQD not implemented |
 | 5 | Wikipedia | Working | First adapter; retain as a useful reference implementation |
-| 6 | Mojeek | Planned | Add after the major providers |
-| 7+ | Further SearXNG providers | Planned | Prioritise by usefulness, reliability, accessibility and maintenance cost |
+| 6 | Qwant | Planned | SearXNG uses an undocumented JSON API; DataDome/cookie handling needs evaluation |
+| 7 | Mojeek | Deferred | Current SearXNG settings mark it inactive due to proof-of-work CAPTCHA |
+| 8 | Startpage | Deferred | Current SearXNG settings mark it inactive due to Anubis proof-of-work |
+| 9+ | Further SearXNG providers | Planned | Prioritise by usefulness, reliability, accessibility and maintenance cost |
 
-Provider ordering is a development priority, not a claim that every upstream service offers a free or unrestricted API. Brave's current Search plan is listed at $5 per 1,000 requests with $5 in monthly credits; activating a plan requires payment-card details. Check the [current Brave plans](https://brave.com/search/api/) before use. Each adapter must respect the provider's current access rules, terms, rate limits and attribution requirements. Where a provider requires credentials, keys will be configured as secrets and never committed to source control.
+Provider ordering is a development priority, not a claim that every upstream service offers a free or unrestricted API. Current SearXNG settings mark Mojeek inactive because of its proof-of-work CAPTCHA and Startpage inactive because of its Anubis proof-of-work challenge; those are deferred until their CPU and access implications are understood. Brave's current Search plan is listed at $5 per 1,000 requests with $5 in monthly credits; activating a plan requires payment-card details. Check the [current Brave plans](https://brave.com/search/api/) before use. Each adapter must respect the provider's current access rules, terms, rate limits and attribution requirements. Where a provider requires credentials, keys will be configured as secrets and never committed to source control.
 
 ### What makes an adapter complete?
 
@@ -196,7 +202,7 @@ Run from the repository root:
 
 GitHub Actions runs restore, build and tests for pushes and pull requests. The badge at the top links to the workflow.
 
-The current verified implementation passes CI with **30 tests passing** (9 foundation tests, 6 Bing adapter tests, 8 Brave adapter tests and 7 Google adapter tests). Check the Actions history for the latest result; this README does not assume that a previous successful run proves every future commit is green.
+The current verified implementation passes CI with **41 tests passing** (9 foundation tests, 6 Bing adapter tests, 8 Brave adapter tests, 7 Google adapter tests and 11 DuckDuckGo adapter tests). Check the Actions history for the latest result; this README does not assume that a previous successful run proves every future commit is green.
 
 ## Planned delivery sequence
 

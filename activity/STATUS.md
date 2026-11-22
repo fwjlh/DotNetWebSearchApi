@@ -6,8 +6,7 @@ Updated: 2026-11-22
 
 - Public repository: https://github.com/fwjlh/DotNetWebSearchApi
 - Default branch: main
-- Latest verified code commit: 5386354d644eeca5d89941ab01e1752b4c4c09eb (DuckDuckGo adapter pending CI)
-- Documentation refresh is being committed separately.
+- Latest verified code commit: 93bb6aea3338b0848d119691701c4cca680caf19
 - Full project overview and roadmap: [README.md](../README.md)
 
 ## Working vertical slice
@@ -18,34 +17,34 @@ Updated: 2026-11-22
 - Parallel provider aggregation with per-provider timeout and provider-failure isolation.
 - Caller cancellation is propagated.
 - HTTP(S)-only result URL validation, duplicate removal, deterministic score/title ordering, and result limit.
-- Three adapters in the current branch: Bing Web HTML, Brave Search API (optional key), and Wikipedia MediaWiki search API.
+- Five concrete adapters: Bing Web HTML, Brave Search API (optional key), Google Web HTML, DuckDuckGo Web HTML (first page), and Wikipedia MediaWiki search API.
+- Brave is registered only when BRAVE_SEARCH_API_KEY is configured.
 - xUnit test project and GitHub Actions .NET 10 CI.
 
 ## Verification
 
-- CI run: https://github.com/fwjlh/DotNetWebSearchApi/actions/runs/45008244135
-- Brave adapter run: https://github.com/fwjlh/DotNetWebSearchApi/actions/runs/45008067698
-- Bing adapter run: https://github.com/fwjlh/DotNetWebSearchApi/actions/runs/45007833897\n- Previous foundation-only run: https://github.com/fwjlh/DotNetWebSearchApi/actions/runs/44942530782
-- Commit tested: 7e088b4112c0424fad411f42ddf9f4861ddff103
+- CI run: https://github.com/fwjlh/DotNetWebSearchApi/actions/runs/45008393329
+- Commit tested: 93bb6aea3338b0848d119691701c4cca680caf19
 - Restore: passed.
 - Build: passed.
-- Tests: 30 passed, 0 failed, 0 skipped.
+- Tests: 41 passed, 0 failed, 0 skipped.
 - Local .NET SDK is not installed in the orchestration environment; verification was performed by GitHub Actions.
-- The first two CI runs exposed compiler and test-import errors. Both were corrected; the third run passed. See [LOG.md](LOG.md).
+- Tests use deterministic fixtures and fake HTTP handlers. They verify parsing/request behaviour, not live acceptance by Bing, Brave, Google or DuckDuckGo.
 
 ## Provider implementation priorities
 
 The agreed approach is major general-purpose search engines first, then work down the list:
 
-1. Bing Web — implemented using the current SearXNG HTML route; live upstream availability remains to be exercised.
-2. Brave Search API — implemented and CI-verified; optional, requires BRAVE_SEARCH_API_KEY. The provider is not registered when no key is configured.
-3. Google Search — select a supported access method and document quotas/costs.
-4. DuckDuckGo — validate current public interface and limitations.
-5. Wikipedia — already implemented; retain as the reference adapter.
-6. Mojeek — next tier.
-7. Further SearXNG engines, selected by usefulness, reliability and maintainability.
+1. Bing Web — implemented and CI-verified; live upstream availability not tested.
+2. Brave Search API — implemented and CI-verified; optional, requires BRAVE_SEARCH_API_KEY.
+3. Google Web — implemented and CI-verified via HTML; CAPTCHA/blocking risk.
+4. DuckDuckGo Web — implemented and CI-verified for first page; CAPTCHA/bot-blocking risk, no pagination/VQD.
+5. Wikipedia — implemented and CI-verified; reference JSON/API adapter.
+6. Qwant — next candidate; SearXNG uses an undocumented JSON API and DataDome cookie handling.
+7. Mojeek — deferred; current SearXNG settings mark it inactive due to proof-of-work CAPTCHA.
+8. Startpage — deferred; current SearXNG settings mark it inactive due to Anubis proof-of-work.
 
-Target: first 5–10 genuinely implemented and tested providers. A provider is not counted as ported until its adapter and tests are present and CI verifies them.
+Target: first 5–10 genuinely implemented and tested providers. A provider is not counted as ported merely because its name appears in configuration.
 
 ## Agreed delivery sequence
 
@@ -59,9 +58,9 @@ Do not divert into the admin UI or compatibility layer before the core provider 
 
 ## Important limitations
 
-Wikipedia is wired in. The Bing HTML adapter has been added but is pending CI verification. There is no SQL Server provider store, general configurable HTTP provider, API-key authentication, quotas, admin UI or SearXNG-compatible JSON API yet. Do not expose this endpoint as a public unrestricted search service before authentication, rate limiting and outbound request policy are implemented.
+Bing Web, Brave Search API, Google Web, DuckDuckGo Web (first page) and Wikipedia are wired in. Fixture-based CI tests pass; live upstream acceptance is not verified. Brave requires a key and is not registered when BRAVE_SEARCH_API_KEY is absent. DuckDuckGo pagination is not implemented. Qwant, Mojeek and Startpage are not wired in.
 
-Some major search providers may require credentials or have changed/retired access routes. Validate provider terms, access, quotas and cost before implementation; do not promise free or unrestricted access.
+There is no SQL Server provider store, general configurable HTTP provider, API-key authentication, quotas, admin UI or SearXNG-compatible JSON API yet. Do not expose this endpoint as a public unrestricted search service before authentication, rate limiting and outbound request policy are implemented.
 
 ## Working rules
 
@@ -76,10 +75,10 @@ Some major search providers may require credentials or have changed/retired acce
 
 ## Next actions
 
-1. Investigate current supported access routes and terms for Bing, Brave Search, Google Search and DuckDuckGo; record key/quota/cost requirements.
-2. Add isolated adapter tests before or alongside the first provider implementation.
-3. Implement the first viable major-engine adapter and register it with the aggregator.
-4. Repeat provider-by-provider until the first 5–10 adapters are real and tested.
+1. Evaluate Qwant's undocumented JSON API, result schema, rate limits and DataDome cookie flow.
+2. Implement and test Qwant if its access route is maintainable and acceptable.
+3. Review Mojeek and Startpage proof-of-work challenges before deciding whether to port them.
+4. Continue adding useful SearXNG providers until the target of 5–10 adapters is reached.
 5. Add SearXNG-compatible JSON API after provider coverage is useful.
 6. Build browser search, administration and diagnostics after the compatibility API.
 7. Keep SearchBox.NET.Forge as a separate follow-on project for upstream monitoring and AI-assisted porting proposals; require tests and human review, never auto-merge.
