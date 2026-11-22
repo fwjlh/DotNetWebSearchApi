@@ -134,7 +134,7 @@ public sealed class MojeekSearchProvider : ISearchProvider
 
     private void StoreResponseCookies(SearchHttpResponse response)
     {
-        if (!response.TryGetHeader("Set-Cookie", out IReadOnlyList<string>? values))
+        if (!response.TryGetHeader("Set-Cookie", out IReadOnlyList<string>? values) || values is null)
         {
             return;
         }
