@@ -45,7 +45,8 @@ DotNetWebSearchApi puts that work behind one service:
 | Bing Web adapter | Working | HTML result parsing; live availability not tested in CI |
 | Brave Search API adapter | Working (optional) | Requires BRAVE_SEARCH_API_KEY |
 | Google Web adapter | Working (HTML) | CAPTCHA/blocking remains an upstream risk |
-| DuckDuckGo Web adapter | Working (first page) | HTML POST; CAPTCHA detection; no pagination/VQD |\n| Qwant Web adapter | Working (experimental) | Undocumented JSON API; DataDome may deny requests |
+| DuckDuckGo Web adapter | Working (first page) | HTML POST; CAPTCHA detection; no pagination/VQD |
+| Qwant Web adapter | Working (experimental) | Undocumented JSON API; DataDome may deny requests |
 | Automated build and tests | Working | GitHub Actions / .NET 10 |
 | Major web-search adapters | In progress | Bing, Brave, Google and DuckDuckGo adapters are implemented |
 | First 5–10 provider adapters | In progress | Five providers are implemented; extend the useful provider set next |

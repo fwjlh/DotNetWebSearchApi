@@ -229,3 +229,11 @@ Every material repository action is recorded here with its reason, result, verif
 - **Verification:** Workflow run https://github.com/fwjlh/DotNetWebSearchApi/actions/runs/45008612843. Tests use fixture JSON and a fake HTTP handler; no live Qwant request was made.
 - **Limitation:** Qwant's API is undocumented and DataDome may deny requests. HttpClient cookie handling is enabled through the typed client handler; this has not been verified against live Qwant.
 - **Next:** Mark Qwant experimental/implemented, then evaluate the next general-web providers. Mojeek and Startpage are currently inactive upstream due to proof-of-work challenges; avoid bypassing CAPTCHA/proof-of-work protections without an explicit, sustainable access path.
+
+
+### 28. Correct README table line break
+- **Reason:** A literal newline escape was emitted into the Qwant capability row during the documentation update.
+- **Action:** Replaced the literal escape with a real Markdown line break and renumbered the later-provider roadmap after inserting Qwant, Mojeek and Startpage.
+- **Result:** README provider tables render as separate rows; no application source changed.
+- **Verification:** Fetched the updated README from GitHub and checked the provider table rows.
+- **Next:** Continue with the next general-web provider evaluation.
