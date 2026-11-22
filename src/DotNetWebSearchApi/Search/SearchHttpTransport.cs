@@ -1,6 +1,8 @@
 using System.Collections.Concurrent;
+using System.Diagnostics;
 using System.Net;
 using System.Text;
+using Microsoft.Extensions.Logging;
 
 namespace DotNetWebSearchApi.Search;
 
@@ -8,6 +10,8 @@ public sealed record SearchHttpTransportOptions
 {
     public int MaximumResponseBytes { get; init; } = 4 * 1024 * 1024;
     public int MaximumConcurrentRequestsPerHost { get; init; } = 4;
+    public string DefaultUserAgent { get; init; } =
+        "DotNetWebSearchApi/0.1 (+https://github.com/fwjlh/DotNetWebSearchApi)";
 }
 
 public sealed class SearchHttpResponse
@@ -76,14 +80,19 @@ public sealed class SearchHttpTransport
         new(StringComparer.OrdinalIgnoreCase);
     private readonly SearchHttpTransportOptions _options;
     private readonly TimeProvider _timeProvider;
+    private readonly ILogger<SearchHttpTransport>? _logger;
 
     public SearchHttpTransport(
         SearchHttpTransportOptions? options = null,
-        TimeProvider? timeProvider = null)
+        TimeProvider? timeProvider = null,
+        ILogger<SearchHttpTransport>? logger = null)
     {
         _options = options ?? new SearchHttpTransportOptions();
         _timeProvider = timeProvider ?? TimeProvider.System;
-        if (_options.MaximumResponseBytes < 1 || _options.MaximumConcurrentRequestsPerHost < 1)
+        _logger = logger;
+        if (_options.MaximumResponseBytes < 1
+            || _options.MaximumConcurrentRequestsPerHost < 1
+            || string.IsNullOrWhiteSpace(_options.DefaultUserAgent))
         {
             throw new ArgumentOutOfRangeException(nameof(options));
         }
@@ -98,11 +107,13 @@ public sealed class SearchHttpTransport
     {
         Uri requestUri = request.RequestUri
             ?? throw new ArgumentException("The request URI is required.", nameof(request));
+        ApplyDefaultHeaders(client, request);
         await WaitForProviderSlotAsync(providerName, minimumInterval, cancellationToken);
         SemaphoreSlim gate = _hostGates.GetOrAdd(
             requestUri.IdnHost,
             _ => new SemaphoreSlim(_options.MaximumConcurrentRequestsPerHost));
         await gate.WaitAsync(cancellationToken);
+        Stopwatch stopwatch = Stopwatch.StartNew();
         try
         {
             using HttpResponseMessage response = await client.SendAsync(
@@ -111,6 +122,13 @@ public sealed class SearchHttpTransport
                 cancellationToken);
             byte[] content = await ReadContentAsync(response.Content, cancellationToken);
             string body = DecodeContent(content, response.Content.Headers.ContentType?.CharSet);
+            _logger?.LogDebug(
+                "Search HTTP {Method} to {Host} returned {StatusCode} with {ResponseBytes} bytes in {ElapsedMilliseconds} ms.",
+                request.Method.Method,
+                requestUri.IdnHost,
+                (int)response.StatusCode,
+                content.Length,
+                stopwatch.Elapsed.TotalMilliseconds);
             return new SearchHttpResponse(
                 response.StatusCode,
                 body,
@@ -118,9 +136,32 @@ public sealed class SearchHttpTransport
                 GetRetryAfter(response.Headers.RetryAfter),
                 CopyHeaders(response));
         }
+        catch (Exception exception) when (exception is not OperationCanceledException)
+        {
+            _logger?.LogWarning(
+                "Search HTTP {Method} to {Host} failed with {ExceptionType} after {ElapsedMilliseconds} ms.",
+                request.Method.Method,
+                requestUri.IdnHost,
+                exception.GetType().Name,
+                stopwatch.Elapsed.TotalMilliseconds);
+            throw;
+        }
         finally
         {
             gate.Release();
+        }
+    }
+
+    private void ApplyDefaultHeaders(HttpClient client, HttpRequestMessage request)
+    {
+        if (request.Headers.UserAgent.Count == 0 && client.DefaultRequestHeaders.UserAgent.Count == 0)
+        {
+            request.Headers.UserAgent.ParseAdd(_options.DefaultUserAgent);
+        }
+
+        if (request.Headers.Accept.Count == 0 && client.DefaultRequestHeaders.Accept.Count == 0)
+        {
+            request.Headers.Accept.ParseAdd("*/*");
         }
     }
 
