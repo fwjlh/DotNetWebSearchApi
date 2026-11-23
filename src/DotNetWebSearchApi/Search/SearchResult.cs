@@ -19,6 +19,8 @@ public sealed record SearchResult(
 
     public ImageResultMetadata? ImageMetadata { get; init; }
 
+    public VideoResultMetadata? VideoMetadata { get; init; }
+
     [JsonIgnore]
     public double? ProviderScore { get; init; }
 
