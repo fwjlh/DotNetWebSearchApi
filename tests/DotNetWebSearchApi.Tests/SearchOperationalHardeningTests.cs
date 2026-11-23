@@ -1,4 +1,3 @@
-using Microsoft.AspNetCore.Hosting;
 using System.Net;
 using System.Net.Http.Headers;
 using Microsoft.AspNetCore.Mvc.Testing;
@@ -13,9 +12,12 @@ public sealed partial class SearxngApiIntegrationTests
     public void NonDevelopmentHost_RefusesToStartWithoutApiKey()
     {
         using EnvironmentVariableScope environment = EnvironmentVariableScope.Apply(
-            new Dictionary<string, string?> { ["SEARCH_API_KEYS"] = null });
-        using WebApplicationFactory<Program> factory = new WebApplicationFactory<Program>()
-            .WithWebHostBuilder(builder => builder.UseEnvironment("Staging"));
+            new Dictionary<string, string?>
+            {
+                ["SEARCH_API_KEYS"] = null,
+                ["ASPNETCORE_ENVIRONMENT"] = "Staging"
+            });
+        using WebApplicationFactory<Program> factory = new();
 
         InvalidOperationException exception = Assert.Throws<InvalidOperationException>(
             () => factory.CreateClient());
