@@ -289,6 +289,7 @@ public static partial class JsonApiProviderCatalog
         new JsonApiSearchDefinition
         {
             Name = "bilibili",
+            Categories = new HashSet<string>(StringComparer.OrdinalIgnoreCase) { "videos" },
             Endpoint = "https://api.bilibili.com/x/web-interface/search/type",
             QueryParameter = "keyword",
             LimitParameter = "page_size",
@@ -301,6 +302,7 @@ public static partial class JsonApiProviderCatalog
         new JsonApiSearchDefinition
         {
             Name = "dailymotion",
+            Categories = new HashSet<string>(StringComparer.OrdinalIgnoreCase) { "videos" },
             Endpoint = "https://api.dailymotion.com/videos",
             QueryParameter = "search",
             LimitParameter = "limit",
@@ -313,6 +315,7 @@ public static partial class JsonApiProviderCatalog
         new JsonApiSearchDefinition
         {
             Name = "deezer",
+            Categories = new HashSet<string>(StringComparer.OrdinalIgnoreCase) { "music" },
             Endpoint = "https://api.deezer.com/search",
             QueryParameter = "q",
             LimitParameter = "limit",
@@ -336,6 +339,7 @@ public static partial class JsonApiProviderCatalog
         new JsonApiSearchDefinition
         {
             Name = "musicbrainz",
+            Categories = new HashSet<string>(StringComparer.OrdinalIgnoreCase) { "music" },
             Endpoint = "https://musicbrainz.org/ws/2/artist/",
             QueryParameter = "query",
             LimitParameter = "limit",
@@ -406,6 +410,7 @@ public static partial class JsonApiProviderCatalog
         new JsonApiSearchDefinition
         {
             Name = "radiobrowser",
+            Categories = new HashSet<string>(StringComparer.OrdinalIgnoreCase) { "music" },
             Endpoint = "https://de1.api.radio-browser.info/json/stations/search",
             QueryParameter = "name",
             LimitParameter = "limit",
@@ -423,6 +428,7 @@ public static partial class JsonApiProviderCatalog
         new JsonApiSearchDefinition
         {
             Name = "peertube",
+            Categories = new HashSet<string>(StringComparer.OrdinalIgnoreCase) { "videos" },
             Endpoint = "https://peertube.cpy.re/api/v1/search/videos",
             QueryParameter = "search",
             LimitParameter = "count",
@@ -435,6 +441,7 @@ public static partial class JsonApiProviderCatalog
         new JsonApiSearchDefinition
         {
             Name = "wikimedia_commons",
+            Categories = new HashSet<string>(StringComparer.OrdinalIgnoreCase) { "images" },
             Endpoint = "https://commons.wikimedia.org/w/api.php",
             QueryParameter = "srsearch",
             LimitParameter = "srlimit",
@@ -455,6 +462,7 @@ public static partial class JsonApiProviderCatalog
         new JsonApiSearchDefinition
         {
             Name = "wikinews",
+            Categories = new HashSet<string>(StringComparer.OrdinalIgnoreCase) { "news" },
             Endpoint = "https://en.wikinews.org/w/api.php",
             QueryParameter = "srsearch",
             LimitParameter = "srlimit",

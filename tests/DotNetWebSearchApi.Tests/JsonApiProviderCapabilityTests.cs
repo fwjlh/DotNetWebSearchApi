@@ -8,6 +8,33 @@ namespace DotNetWebSearchApi.Tests;
 
 public sealed class JsonApiProviderCapabilityTests
 {
+    [Theory]
+    [InlineData("openverse", "images")]
+    [InlineData("wikimedia_commons", "images")]
+    [InlineData("wikinews", "news")]
+    [InlineData("bilibili", "videos")]
+    [InlineData("dailymotion", "videos")]
+    [InlineData("peertube", "videos")]
+    [InlineData("deezer", "music")]
+    [InlineData("musicbrainz", "music")]
+    [InlineData("radiobrowser", "music")]
+    public void Capabilities_RestrictVerticalProviderToItsDeclaredCategory(
+        string providerName,
+        string category)
+    {
+        using HttpClient client = new();
+        JsonApiSearchProvider provider = new(
+            client,
+            JsonApiProviderCatalog.Definitions.Single(item => item.Name == providerName));
+
+        Assert.False(provider.Capabilities.Supports(new SearchQuery("test", 10)));
+        Assert.True(provider.Capabilities.Supports(
+            new SearchQuery("test", 10)
+            {
+                Categories = new HashSet<string>(StringComparer.OrdinalIgnoreCase) { category }
+            }));
+    }
+
     [Fact]
     public async Task SearchDetailedAsync_SkipsOpenverseForGeneralSearch()
     {
