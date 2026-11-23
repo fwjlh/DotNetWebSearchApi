@@ -1498,3 +1498,14 @@ Every material repository action is recorded here with its reason, result, verif
 - **Commit:** Pending activity update.
 - **Validation:** Source-level diagnosis from the test factory and `Program.cs` registration path. No .NET execution performed here. No GitHub Actions or live provider calls.
 - **Next:** Pull `main` and rerun the Release suite; expect this test to return 200 with an empty result list and `openverse` in `unsupported_engines`.
+
+## 2026-11-23 — Release regression suite green
+
+### 160. Verify the complete regression suite after the Openverse correction
+- **Reason:** Confirm the final remaining failure was resolved and establish a clean baseline before the next quality increment.
+- **Action:** User pulled the latest `main` and ran the Release solution build and complete xUnit suite locally.
+- **Result:** **Build succeeded. 319 tests passed, 0 failed, 0 skipped.** Test duration 2.2 seconds; build duration 4.6 seconds.
+- **Verification:** Result supplied directly by the user from the local PowerShell session. This is user-run verification; no local .NET SDK or GitHub Actions execution was available to the assistant.
+- **Correction covered:** Openverse category filtering now runs against the production provider catalogue rather than an empty test provider collection.
+- **Next:** Add measured coverage reporting, inspect coverage by production class/branch, then target the highest-risk uncovered logic. Focus first on request validation, capability filtering, aggregation/ranking, provider-health transitions, shared transport and response mapping. Keep workflows disabled.
+
