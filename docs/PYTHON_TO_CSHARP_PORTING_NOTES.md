@@ -288,6 +288,34 @@ These are translation targets, not assertions that every row is already implemen
 
 **Interpretation:** document this as a separate authenticated Yandex Cloud adapter. Do not describe it as a faithful port of SearXNG's no-key Yandex HTML engine.
 
+### Wikipedia
+
+**Python source:** [searx/engines/wikipedia.py](https://github.com/searxng/searxng/blob/c6ee3e9fd0235004a694e63720efc869bb1e3594/searx/engines/wikipedia.py)
+
+**C# source:**
+- [WikipediaSearchProvider.cs](../src/DotNetWebSearchApi/Search/WikipediaSearchProvider.cs)
+- [EngineLocaleRegistry.cs](../src/DotNetWebSearchApi/Search/EngineLocaleRegistry.cs)
+- [WikipediaSearchProviderTests.cs](../tests/DotNetWebSearchApi.Tests/WikipediaSearchProviderTests.cs)
+
+**Important: this is an API and result-shape substitution, not a direct endpoint port.**
+
+- Python calls the Wikimedia REST page-summary endpoint for a title, with the language-specific wiki host selected from dynamically fetched Wikimedia traits. It can return a list result, an infobox, or both according to `display_type`; the standard summary includes an extract and optional thumbnail.
+- C# instead calls the MediaWiki Action API `action=query&list=search` endpoint. This returns multiple matching pages for a search phrase, which fits the common multi-result `ISearchProvider` contract better than treating the whole query as one page title.
+- Both routes are official Wikimedia APIs and need no API key, but their semantics differ: REST summary resolves a page title, while Action API search finds candidate pages. The C# result URL uses the returned page ID (`?curid=`) rather than the REST summary's canonical desktop page URL.
+- C# chooses the wiki host from `EngineLocaleRegistry`, then sends the requested locale and base language in `Accept-Language`. This is important for Chinese LanguageConverter variants: the host remains `zh.wikipedia.org`, while the header communicates the desired script/region variant.
+- The provider declares locale support but not paging, time-range or safe-search. Its request limit is mapped to `srlimit`; it does not claim that this is SearXNG's page-summary behaviour.
+
+**Known divergence / omissions**
+
+- Python's locale traits are dynamically fetched from Wikimedia's sortable list and include non-standard language aliases and script variants. C# currently uses a static, deliberately smaller mapping in `EngineLocaleRegistry`; unsupported languages fall back to English.
+- Python's standard summary result can include an infobox extract and thumbnail. C# currently emits ordinary search results only and does not request page summaries, thumbnails, infoboxes or page descriptions.
+- Python can treat 404 and the specific invalid-title 400 response as empty results. C# uses the Action API search response shape and does not reproduce those REST-summary status rules.
+- The C# parser strips HTML tags from the Action API snippet and returns the page ID URL. It does not reproduce the full Wikimedia REST response's `titles.display`, `content_urls` or summary fields.
+
+**Verification:** tests cover language-specific host selection, `Accept-Language` (including `zh-TW`), automatic English fallback and declared capabilities. These fixture tests verify the Action API request and response mapping, not live Wikimedia availability or full dynamic language-trait parity.
+
+**Interpretation:** the C# implementation is a multi-result MediaWiki search adapter, while the Python implementation is a page-summary/infobox adapter. Keep this distinction explicit; do not claim the REST summary result types have been ported.
+
 ### Naver Web
 
 **Python source:** [searx/engines/naver.py](https://github.com/searxng/searxng/blob/c6ee3e9fd0235004a694e63720efc869bb1e3594/searx/engines/naver.py)
