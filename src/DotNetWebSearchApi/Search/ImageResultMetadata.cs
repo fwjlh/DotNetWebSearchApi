@@ -20,6 +20,11 @@ public sealed record ImageResultMetadata
     public string License { get; init; } = string.Empty;
     public string LicenseUrl { get; init; } = string.Empty;
     public string Creator { get; init; } = string.Empty;
+    public string CreatorUrl { get; init; } = string.Empty;
+    public string Provider { get; init; } = string.Empty;
+    public string LicenseVersion { get; init; } = string.Empty;
+    public string Attribution { get; init; } = string.Empty;
+    public string MediaCategory { get; init; } = string.Empty;
     public IReadOnlyList<ImageFormatReference> Formats { get; init; } =
         Array.Empty<ImageFormatReference>();
 }
