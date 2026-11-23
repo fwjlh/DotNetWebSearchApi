@@ -1261,3 +1261,12 @@ Every material repository action is recorded here with its reason, result, verif
 - **Validation:** Reviewed provider paths, parser, SearXNG fields and fixtures. Tests remain unexecuted because the .NET SDK is unavailable. No GitHub Actions or live scholarly API calls were used.
 - **Known limits:** Crossref publication date is not inferred from record creation; OpenAlex inverted-index abstracts are not reconstructed. Additional scholarly providers (DataCite, Zenodo, OpenAIRE, PLOS) remain to be mapped.
 - **Next:** Extend typed paper mapping to DataCite, Zenodo, OpenAIRE and PLOS using fixtures, then run a final category audit.
+
+
+### 135. Preserve paper publication-date fallback
+- **Reason:** The pinned SearXNG Paper type copies the common `publishedDate` into `date_of_publication` when the paper-specific date is absent. The C# mapper previously left the paper date empty in that case.
+- **Action:** `PaperDateOfPublication` now falls back to `SearchResult.PublishedDate` when `PaperResultMetadata.DateOfPublication` is unavailable.
+- **Tests:** Added a mapper regression with paper metadata but no paper-specific date and a populated common publication date.
+- **Commit:** `5965ac58e1037ab618bef3e85567d0f0d1cf9b9b`.
+- **Validation:** Reviewed mapper and serialization test source. Execution remains unavailable because the .NET SDK is not installed; no GitHub Actions or live upstream calls were used.
+- **Next:** Extend typed paper mapping to DataCite, Zenodo, OpenAIRE and PLOS using fixtures.
