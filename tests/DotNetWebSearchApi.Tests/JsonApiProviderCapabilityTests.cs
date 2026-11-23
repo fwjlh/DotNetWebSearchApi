@@ -1,6 +1,8 @@
 using System.Net;
 using System.Text;
 using DotNetWebSearchApi.Search;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging.Abstractions;
 using Xunit;
 
@@ -44,6 +46,32 @@ public sealed class JsonApiProviderCapabilityTests
             {
                 Categories = new HashSet<string>(StringComparer.OrdinalIgnoreCase) { category }
             }));
+    }
+
+    [Fact]
+    public void Register_RegistersAllDefinitionsAndAppliesProviderHeaders()
+    {
+        IConfiguration configuration = new ConfigurationBuilder()
+            .AddInMemoryCollection(new Dictionary<string, string?>
+            {
+                ["EXA_API_KEY"] = "test-api-key"
+            })
+            .Build();
+        ServiceCollection services = new();
+        services.AddHttpClient();
+        services.AddSingleton<SearchHttpTransport>();
+        JsonApiProviderCatalog.Register(services, configuration);
+        using ServiceProvider provider = services.BuildServiceProvider();
+
+        ISearchProvider[] registered = provider.GetServices<ISearchProvider>().ToArray();
+        HttpClient bilibiliClient = provider.GetRequiredService<IHttpClientFactory>()
+            .CreateClient("bilibili");
+
+        Assert.Equal(52, registered.Length);
+        Assert.Contains(registered, item => item.Name == "exa");
+        Assert.Contains(
+            bilibiliClient.DefaultRequestHeaders.GetValues("Referer"),
+            value => value == "https://search.bilibili.com");
     }
 
     [Fact]
