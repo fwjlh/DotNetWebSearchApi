@@ -1378,3 +1378,20 @@ Every material repository action is recorded here with its reason, result, verif
 - **Commit:** `a81416bc8b69fd3c0a48e00aac27ad3e1396dcc6`.
 - **Validation:** Source-level correction only. No .NET SDK is available in this environment, so build/tests have not been executed. No GitHub Actions used.
 - **Next:** Pull this commit and run the local Release build/tests. If any further compiler errors remain, capture their full file/line diagnostics and fix the next root cause.
+
+
+## 2026-11-23 — Repair JSON API provider brace structure
+
+### 147. Close the provider class before its definition record
+- **Reason:** Local build reported CS1513 at the end of `JsonApiSearchProvider.cs`.
+- **Finding:** `JsonApiSearchDefinition` had accidentally been placed inside the provider class because the provider class was missing its closing brace. The metadata file also declared the provider as `partial`, while the main declaration was not partial.
+- **Correction:** Marked the main provider declaration `partial` and closed the class before the top-level `JsonApiSearchDefinition` record.
+- **Commit:** `7af858f951ce5a1d949aa4cb549ada91137cf51c`.
+
+### 148. Remove the extra metadata-file closing brace
+- **Reason:** Local build reported CS1022 at the end of `JsonApiSearchProvider.Metadata.cs`.
+- **Finding:** An extra closing brace followed the provider partial class, before the metadata path records.
+- **Correction:** Removed the redundant brace so the metadata path records remain in the file-scoped namespace.
+- **Commit:** `290574e51997fb185ba0858ec2f999a7d05809e1`.
+- **Validation:** Reviewed the resulting brace/class boundaries. No .NET SDK/build execution is available in this environment; local build/tests remain required. No GitHub Actions used.
+- **Next:** Pull `main` and rebuild. Address any newly surfaced diagnostics from their actual file and line locations.
