@@ -1038,3 +1038,11 @@ Every material repository action is recorded here with its reason, result, verif
 - **Test:** Strengthened `SearchAsync_PropagatesCallerCancellation` to inspect the health registry after cancellation and assert the provider remains Closed with zero consecutive failures. GitHub Actions [run 45145286054](https://github.com/fwjlh/DotNetWebSearchApi/actions/runs/45145286054) passed build and test.
 - **Result:** The distinction between caller cancellation and provider-owned timeout now has direct health-state regression coverage.
 - **Next:** Continue auditing typed outcomes and request semantics in small increments; keep the provider catalogue frozen at 67.
+
+
+### 114. Reconcile the architecture audit with current implementation
+- **Reason:** The previous `PORTING_AUDIT.md` still described provider health/cooldown, shared HTTP transport and locale traits as future work, contradicting later code and the current handover.
+- **Action:** Rewrote the audit to describe the implemented request/capability model, transport, provider health and challenge lifecycle, locale registry, result provenance/ranking, SearXNG API subset and operational limits.
+- **Explicit remaining gaps:** process-local health state; process-scoped provider cookies; curated static locale traits; incomplete rich result types; fixed SearXNG route limit and empty answer/infobox/suggestion collections; no API authentication, per-client quotas or outbound request policy.
+- **Verification:** Documentation-only reconciliation. GitHub Actions [run 45145666616](https://github.com/fwjlh/DotNetWebSearchApi/actions/runs/45145666616) passed build and test.
+- **Next:** Continue auditing the provider request/capability surface and rich result model; keep the catalogue frozen at 67.
