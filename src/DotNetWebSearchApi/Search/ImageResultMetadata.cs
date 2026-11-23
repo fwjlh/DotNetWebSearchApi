@@ -1,10 +1,12 @@
+using System.Text.Json.Serialization;
+
 namespace DotNetWebSearchApi.Search;
 
 public sealed record ImageFormatReference(
     string Url,
     string Subtype,
     string Label,
-    string MediaType = "image");
+    [property: JsonPropertyName("mtype")] string MediaType = "image");
 
 public sealed record ImageResultMetadata
 {
