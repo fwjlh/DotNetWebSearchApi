@@ -1,8 +1,24 @@
 using System.Net;
+using System.Threading.RateLimiting;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.AspNetCore.Http.Features;
 using DotNetWebSearchApi.Search;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
+builder.Services.AddRateLimiter(options =>
+{
+    options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+    options.AddPolicy("search", context =>
+        RateLimitPartition.GetFixedWindowLimiter(
+            context.Connection.RemoteIpAddress?.ToString() ?? "unknown",
+            _ => new FixedWindowRateLimiterOptions
+            {
+                AutoReplenishment = true,
+                PermitLimit = 60,
+                QueueLimit = 0,
+                Window = TimeSpan.FromMinutes(1)
+            }));
+});
 builder.Services.Configure<FormOptions>(options =>
 {
     options.BufferBodyLengthLimit = 16 * 1024;
@@ -127,15 +143,16 @@ builder.Services.AddSingleton<SearchHttpTransport>();
 builder.Services.AddSingleton<ProviderHealthRegistry>();
 builder.Services.AddSingleton<SearchAggregator>();
 WebApplication app = builder.Build();
+app.UseRateLimiter();
 app.UseStaticFiles();
 app.MapGet("/health", HealthEndpoint);
 app.MapGet("/api/providers", ProvidersEndpoint);
 app.MapGet("/api/diagnostics", DiagnosticsEndpoint);
 app.MapGet("/admin", AdminEndpoint);
-app.MapGet("/api/search", SearchEndpoint);
-app.MapGet("/search", SearxngSearchEndpoint);
-app.MapGet("/", RootEndpoint);
-app.MapPost("/search", SearxngSearchEndpoint);
+app.MapGet("/api/search", SearchEndpoint).RequireRateLimiting("search");
+app.MapGet("/search", SearxngSearchEndpoint).RequireRateLimiting("search");
+app.MapGet("/", RootEndpoint).RequireRateLimiting("search");
+app.MapPost("/search", SearxngSearchEndpoint).RequireRateLimiting("search");
 app.Run();
 
 static IResult HealthEndpoint() => Results.Ok(new { status = "ok" });
