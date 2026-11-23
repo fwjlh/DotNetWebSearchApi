@@ -1,10 +1,22 @@
 using System.Net;
+using System.Security.Cryptography;
+using System.Text;
 using System.Threading.RateLimiting;
 using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.AspNetCore.Http.Features;
 using DotNetWebSearchApi.Search;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
+string[] searchApiKeys = (builder.Configuration["SEARCH_API_KEYS"] ?? string.Empty)
+    .Split(';', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+if (searchApiKeys.Any(key => Encoding.UTF8.GetByteCount(key) < 32))
+{
+    throw new InvalidOperationException("Every SEARCH_API_KEYS entry must contain at least 32 UTF-8 bytes.");
+}
+if (builder.Environment.IsProduction() && searchApiKeys.Length == 0)
+{
+    throw new InvalidOperationException("SEARCH_API_KEYS must be configured before running in Production.");
+}
 builder.Services.AddRateLimiter(options =>
 {
     options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
@@ -145,6 +157,37 @@ builder.Services.AddSingleton<SearchAggregator>();
 WebApplication app = builder.Build();
 app.UseRateLimiter();
 app.UseStaticFiles();
+app.Use(async (context, next) =>
+{
+    bool isSearchRequest =
+        (context.Request.Path.Equals("/search", StringComparison.OrdinalIgnoreCase)
+            && (HttpMethods.IsGet(context.Request.Method) || HttpMethods.IsPost(context.Request.Method)))
+        || (context.Request.Path.Equals("/api/search", StringComparison.OrdinalIgnoreCase)
+            && HttpMethods.IsGet(context.Request.Method))
+        || (context.Request.Path.Equals("/", StringComparison.OrdinalIgnoreCase)
+            && context.Request.Query.ContainsKey("q"));
+
+    if (isSearchRequest && searchApiKeys.Length > 0)
+    {
+        string? suppliedKey = context.Request.Headers.Authorization
+            .FirstOrDefault(value => value is not null && value.StartsWith("Bearer ", StringComparison.OrdinalIgnoreCase))?
+            .Substring(7);
+        byte[] suppliedBytes = Encoding.UTF8.GetBytes(suppliedKey ?? string.Empty);
+        bool authorized = searchApiKeys.Any(configuredKey =>
+            CryptographicOperations.FixedTimeEquals(
+                Encoding.UTF8.GetBytes(configuredKey),
+                suppliedBytes));
+        if (!authorized)
+        {
+            context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+            context.Response.Headers.WWWAuthenticate = "Bearer";
+            await context.Response.WriteAsJsonAsync(new { error = "A valid API key is required." });
+            return;
+        }
+    }
+
+    await next();
+});
 app.MapGet("/health", HealthEndpoint);
 app.MapGet("/api/providers", ProvidersEndpoint);
 app.MapGet("/api/diagnostics", DiagnosticsEndpoint);
@@ -182,7 +225,7 @@ static IResult DiagnosticsEndpoint(
             search_ui = true,
             provider_configuration = false,
             sql_configuration = false,
-            api_authentication = false
+            api_authentication = searchApiKeys.Length > 0
         }
     });
 }
