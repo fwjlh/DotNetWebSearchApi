@@ -322,3 +322,16 @@ Search/media/regional providers (batch 5): Wiby, TVmaze, Radio Browser, PeerTube
 - Commit: `ef0cdb3cbdab7f1b42cbed7a79d2ba2d08c8c6df`.
 - Activity rationale: [LOG.md](LOG.md), entry 123.
 - Tests are committed but unexecuted because no .NET SDK is available. No GitHub Actions were used.
+
+## Dedicated provider registration audit
+- Reviewed the 13 dedicated adapters plus RSS against their capability declarations and actual request parameters.
+- Added a no-network DI test proving all 52 JSON definitions register when Exa's key is supplied and that Bilibili's Referer is applied to its named client.
+- Corrected Bilibili's test to expect `default.html` when no usable embed URL exists; specialist templates now require typed media URLs.
+- Logged as entry 124 in [LOG.md](LOG.md).
+- Tests remain unexecuted because `dotnet` is not installed. No GitHub Actions used.
+
+## Next
+1. Review music/audio and news result metadata against the pinned SearXNG result types.
+2. Add typed music metadata only where upstream payloads support it; do not assign audio templates to ordinary links.
+3. Add news date/category mapping for JSON news providers where timestamp fields are available.
+4. Keep the 67-provider inventory frozen and commit directly to `main`; no workflows.
