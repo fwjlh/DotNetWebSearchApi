@@ -283,8 +283,8 @@ These are translation targets, not assertions that every row is already implemen
 - Python's public HTML route supports paging, language selection and time-range date windows without a Cloud API key. C# requires configured API key and folder ID, requests page `0`, fixes localization to English and uses moderate family mode.
 - C# returns an empty list for queries over 400 characters without making a request. Python source does not use that same API-specific validation rule.
 - Python can detect the `x-yandex-captcha` header and supports an images vertical with image result metadata. The Cloud API implementation has no equivalent CAPTCHA classification and only maps web documents to ordinary `SearchResult`.
-- C# caps page size at 100 but does not use `SearchQuery.Page`; the request body fixes page to `0`.
-- A fixture test confirms the API-key header, folder ID, JSON body, Base64 XML decoding and XML parsing. It does not establish that a configured Cloud account has permission/quota or that the public HTML route is interchangeable.
+- C# caps page size at 100 but does not use `SearchQuery.Page`; the request body fixes page to `0`. The provider now declares its actual capability profile: general/web only, first page only, no request-level locale, time-range or safe-search support. The aggregator therefore rejects those non-default options before making an API call rather than silently discarding them.
+- Fixture tests confirm the API-key header, folder ID, JSON body, Base64 XML decoding, XML parsing and capability pre-flight rejection for page, locale, safe-search and time-range requests. They do not establish that a configured Cloud account has permission/quota or that the public HTML route is interchangeable.
 
 **Interpretation:** document this as a separate authenticated Yandex Cloud adapter. Do not describe it as a faithful port of SearXNG's no-key Yandex HTML engine.
 
