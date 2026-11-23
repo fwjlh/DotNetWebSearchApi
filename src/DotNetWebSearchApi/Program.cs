@@ -327,4 +327,4 @@ public sealed record SearchResponse(
 {
     public IReadOnlyList<ProviderOutcome> ProviderOutcomes { get; init; } = Array.Empty<ProviderOutcome>();
 }
-public partial class Program;
+public partial class Program { }
