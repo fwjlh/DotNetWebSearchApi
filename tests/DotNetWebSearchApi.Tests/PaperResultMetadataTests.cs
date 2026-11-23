@@ -56,7 +56,8 @@ public sealed class PaperResultMetadataTests
                     "issue": "2",
                     "DOI": "10.1234/sample",
                     "ISSN": ["1234-5678"],
-                    "type": "journal-article"
+                    "type": "journal-article",
+                    "published": { "date-parts": [[2024, 6, 1]] }
                   }
                 ]
               }
@@ -72,6 +73,7 @@ public sealed class PaperResultMetadataTests
         Assert.Equal(new[] { "Ada Lovelace", "Grace Hopper" }, paper.Authors);
         Assert.Equal("Journal of Examples", paper.Journal);
         Assert.Equal("10.1234/sample", paper.Doi);
+        Assert.Equal("2024", paper.PublicationYear);
         Assert.Equal("paper.html", mapped.Template);
         Assert.Equal("Ada Lovelace", mapped.Author);
         Assert.Equal("Journal of Examples", mapped.PaperJournal);
