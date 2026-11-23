@@ -17,6 +17,8 @@ public sealed record SearchResult(
 
     public DateTimeOffset? PublishedDate { get; init; }
 
+    public ImageResultMetadata? ImageMetadata { get; init; }
+
     [JsonIgnore]
     public double? ProviderScore { get; init; }
 
