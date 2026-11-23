@@ -67,7 +67,15 @@ public static partial class JsonApiProviderCatalog
             ResultsPath = "data",
             TitlePath = "title",
             UrlPath = "link",
-            SnippetPath = "artist.name"
+            SnippetPath = "artist.name",
+            MusicMetadata = new JsonApiMusicMetadataPaths
+            {
+                AudioUrl = "preview",
+                ThumbnailUrl = "album.cover_medium",
+                Artist = "artist.name",
+                Album = "album.title",
+                DurationSeconds = "duration"
+            }
         },
         new JsonApiSearchDefinition
         {
@@ -168,6 +176,15 @@ public static partial class JsonApiProviderCatalog
                 ["order"] = "votes",
                 ["reverse"] = "true",
                 ["hidebroken"] = "true"
+            },
+            MusicMetadata = new JsonApiMusicMetadataPaths
+            {
+                AudioUrl = "url_resolved",
+                ThumbnailUrl = "favicon",
+                Country = "country",
+                Tags = "tags",
+                Codec = "codec",
+                Bitrate = "bitrate"
             }
         },
         new JsonApiSearchDefinition
