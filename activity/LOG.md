@@ -1292,3 +1292,12 @@ Every material repository action is recorded here with its reason, result, verif
 - **Commits:** `7e29aad2`, `24b91100`, `704348cb`, `2a7e82dd`, `5c44fa77`.
 - **Validation:** Reviewed JSON field mapping and fixture source. Tests remain unexecuted because the .NET SDK is unavailable; no GitHub Actions or live scholarly requests were used.
 - **Next:** Final science category/template audit and source-size/provider-count check.
+
+
+### 136. Complete scholarly fixtures for DataCite, Zenodo, OpenAIRE and PLOS
+- **Reason:** The four providers had paper metadata paths but lacked fixture coverage. PLOS returns author names as a string array, which the shared author parser previously ignored; Zenodo exposes a PDF link that was not mapped.
+- **Action:** The paper author parser now accepts both object arrays and scalar string arrays. Zenodo now maps `links.pdf` into the typed PDF URL field.
+- **Tests:** Added isolated fixtures for DataCite creators/publication year, Zenodo journal/PDF metadata, OpenAIRE authors/publication/journal details, and PLOS author strings/article fields.
+- **Commits:** `a2c2b249`, `039a57d9`, `a20768cc`, `d05b1ad7`.
+- **Validation:** Source and fixtures reviewed; all test cases use local fixture JSON and make no upstream calls. Tests remain unexecuted because the .NET SDK is unavailable. No GitHub Actions used.
+- **Next:** Audit the scholarly path mappings and finish the remaining provider category/result-type checks; run the full suite locally when .NET 10 is available.
