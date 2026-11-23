@@ -23,7 +23,12 @@ public static class SearxngSearchResponseMapper
             uri.Scheme, uri.Authority, uri.AbsolutePath, string.Empty,
             uri.Query.TrimStart('?'), uri.Fragment.TrimStart('#')
         };
-        string template = result.ImageMetadata is null ? "default.html" : "images.html";
+        string template = result.Category switch
+        {
+            "images" => "images.html",
+            "videos" => "videos.html",
+            _ => "default.html"
+        };
         return new SearxngSearchResult(
             result.Url, result.Title, result.Snippet, result.Provider, engines,
             result.Positions, result.Score, result.Category, template, parsedUrl, result.PublishedDate)
@@ -36,7 +41,12 @@ public static class SearxngSearchResponseMapper
             ImageSource = result.ImageMetadata?.Source,
             ImageFileSize = result.ImageMetadata?.FileSize,
             ImageFormats = result.ImageMetadata?.Formats ?? Array.Empty<ImageFormatReference>(),
-            ImageMetadata = result.ImageMetadata
+            ImageMetadata = result.ImageMetadata,
+            VideoEmbedUrl = result.VideoMetadata?.EmbedUrl,
+            VideoDurationSeconds = result.VideoMetadata?.DurationSeconds,
+            VideoAuthor = result.VideoMetadata?.Author,
+            VideoViews = result.VideoMetadata?.Views,
+            VideoMetadata = result.VideoMetadata
         };
     }
 }
