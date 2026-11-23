@@ -1131,7 +1131,7 @@ Every material repository action is recorded here with its reason, result, verif
 - **Next:** Continue the dedicated provider registration/capability audit in this repository. Keep all future changes on `fwjlh/DotNetWebSearchApi:main`.
 
 
-### 123. Verify production provider registration and category pre-flight without network
+### 137. Verify production provider registration and category pre-flight without network
 - **Reason:** Unit tests covered category filtering and the JSON catalogue split, but did not verify that the real application registers the complete 67-provider set when optional credentials are configured.
 - **Tests added:** A production-host integration test supplies dummy Exa, Yandex, Kagi and Brave credentials, calls `/api/providers`, and asserts 67 unique registered providers.
 - **Tests added:** A second production-host test requests Openverse in the general category and asserts it is reported unsupported with no result, exercising pre-flight category filtering without an upstream request.
@@ -1172,7 +1172,7 @@ Every material repository action is recorded here with its reason, result, verif
 - **Next:** Audit remaining news providers for timestamp fields, then review image/video/music/news capability coverage as a whole. Keep provider count frozen at 67.
 
 
-### 124. Classify arXiv as science-only
+### 138. Classify arXiv as science-only
 - **Reason:** The pinned SearXNG arXiv engine declares `science` / `scientific publications`; the C# adapter inherited BasicWeb and was therefore included in general searches while being excluded from science searches.
 - **Action:** Added explicit capabilities for the `science` category, first-page only, with no unsupported locale, safe-search or time-range claims.
 - **Tests:** Added an aggregator regression proving general searches skip arXiv without a request and science searches select it.
@@ -1250,7 +1250,7 @@ Every material repository action is recorded here with its reason, result, verif
 - **Next:** Complete the final tree and provider registration audit; the next full build/test run must be local when the .NET 10 SDK is available.
 
 
-### 134. Add typed scholarly paper results
+### 139. Add typed scholarly paper results
 - **Reason:** The pinned SearXNG result model includes a dedicated Paper type with publication date, abstract, comments, tags, authors, publisher, journal, volume/pages/issue, DOI, ISSN/ISBN and PDF/HTML URLs. Scholarly providers were still ordinary links.
 - **Action:** Added `PaperResultMetadata`, generic JSON paper metadata paths and a dedicated partial parser. PDF/HTML links are restricted to absolute HTTP(S); DOI resolver URLs are normalized to DOI identifiers; JATS abstract markup is cleaned.
 - **Action:** arXiv Atom parsing now retains publication date, authors, categories, journal reference, DOI, abstract and safe PDF link; results are explicitly categorized as science.
@@ -1272,7 +1272,7 @@ Every material repository action is recorded here with its reason, result, verif
 - **Next:** Extend typed paper mapping to DataCite, Zenodo, OpenAIRE and PLOS using fixtures.
 
 
-### 135. Extend paper metadata to DataCite, Zenodo, OpenAIRE and PLOS
+### 140. Extend paper metadata to DataCite, Zenodo, OpenAIRE and PLOS
 - **Reason:** The first paper pass covered the major citation/search APIs but left four scholarly catalogue providers returning ordinary links.
 - **Action:** Added publication-year support without fabricating a full publication date; SearXNG exposes the year as a typed extension.
 - **Action:** DataCite maps creators, publisher, resource type, year and DOI. Zenodo maps publication date, creators, publisher, journal fields, DOI and HTML landing page. OpenAIRE maps authors, publication date, publisher, journal, type and web link. PLOS maps authors, publication date, journal/volume/issue/pages, eISSN and DOI.
@@ -1294,10 +1294,17 @@ Every material repository action is recorded here with its reason, result, verif
 - **Next:** Final science category/template audit and source-size/provider-count check.
 
 
-### 136. Complete scholarly fixtures for DataCite, Zenodo, OpenAIRE and PLOS
+### undefined. Complete scholarly fixtures for DataCite, Zenodo, OpenAIRE and PLOS
 - **Reason:** The four providers had paper metadata paths but lacked fixture coverage. PLOS returns author names as a string array, which the shared author parser previously ignored; Zenodo exposes a PDF link that was not mapped.
 - **Action:** The paper author parser now accepts both object arrays and scalar string arrays. Zenodo now maps `links.pdf` into the typed PDF URL field.
 - **Tests:** Added isolated fixtures for DataCite creators/publication year, Zenodo journal/PDF metadata, OpenAIRE authors/publication/journal details, and PLOS author strings/article fields.
 - **Commits:** `a2c2b249`, `039a57d9`, `a20768cc`, `d05b1ad7`.
 - **Validation:** Source and fixtures reviewed; all test cases use local fixture JSON and make no upstream calls. Tests remain unexecuted because the .NET SDK is unavailable. No GitHub Actions used.
 - **Next:** Audit the scholarly path mappings and finish the remaining provider category/result-type checks; run the full suite locally when .NET 10 is available.
+
+
+### 141. Normalize handover log numbering
+- **Reason:** Concurrent development entries introduced duplicate heading numbers, making the chronological handover harder to follow.
+- **Action:** Preserved all log content and commit references while assigning unique heading numbers to the four later duplicate entries (137–140).
+- **Validation:** Rechecked the heading list; every numbered entry is now unique. The canonical current state and next action are maintained in `activity/STATUS.md`.
+- **Next:** Read the final status summary, then run the local .NET 10 build/test session when the SDK is available.
