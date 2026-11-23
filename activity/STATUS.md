@@ -134,3 +134,20 @@ Search/media/regional providers (batch 5): Wiby, TVmaze, Radio Browser, PeerTube
 3. Add a focused aggregator regression test with each capability change.
 4. Keep the 67-provider catalogue frozen until the shared-framework definition of done is met.
 5. Do not recreate or run GitHub Actions. Run `dotnet test` locally when an SDK-equipped environment is available.
+
+
+## Latest development — specialist provider categories
+- Openverse and Wikimedia Commons declare `images`.
+- Bilibili, Dailymotion and PeerTube declare `videos`.
+- Deezer, MusicBrainz and RadioBrowser declare `music`.
+- Wikinews declares `news`.
+- Generic JSON definitions without an explicit vertical remain `general`.
+- Added a nine-case capability theory covering these declarations.
+- Commit: `c1f81202bde134ba51dba961d3ebd006dec63cba`.
+- Tests remain unexecuted because this environment has no .NET SDK. GitHub Actions remains disabled.
+- Full rationale and validation limits are recorded in [LOG.md](LOG.md), entry 117.
+
+## Next
+1. Continue auditing specialist endpoints and their category semantics; do not infer ambiguous classifications.
+2. Check whether the API's response model and SearXNG mapper preserve the requested category rather than labelling every result as general.
+3. Keep the 67-provider catalogue frozen and the work on `main`.
