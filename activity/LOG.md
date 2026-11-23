@@ -1550,3 +1550,27 @@ Every material repository action is recorded here with its reason, result, verif
 - **Commits:** `6676c99d274fc36d555cdf0870a4450ede3055a9` (validation), `a0eb16ab21ef0c12802bf44c1dd03e4d6ff78c63` (tests).
 - **Verification:** Reviewed validation and tests. Neither this increment nor the preceding query-length tests have been executed here because the .NET 10 SDK is unavailable. No GitHub Actions or live provider requests were used.
 - **Next:** Bound selected-provider count and POST form-body size, then add API-level request throttling/authentication design. Preserve offline deterministic tests and keep all workflows disabled.
+
+
+## 2026-11-23 — Request-boundary, authentication and throttling hardening
+
+### 165. Bound provider selection and form input
+- **Reason:** Query and category limits were in place, but a caller could still supply an arbitrarily large engine list or POST form body.
+- **Action:** Explicit engine selection is limited to 20 distinct names, each no longer than 64 characters. POST /search rejects a declared body larger than 16 KiB with HTTP 413. ASP.NET form parsing is also configured with 16 KiB buffering/multipart limits, 32 form values, 128-character keys and 4 KiB values.
+- **Tests added:** Two endpoint tests reject 21 selected engines; one rejects a 65-character engine name; one rejects a 16 KiB + 1 form body.
+- **Commits:** `1a97326417c34ad1766517de0c848a84fbc6d0b9` (limits), `7be08ccef582bfb2bc49e182a9153da273e21a57` (tests).
+
+### 166. Add optional bearer API-key enforcement
+- **Reason:** A self-hosted API needs a way to prevent anonymous callers from consuming provider quotas and server resources before public exposure.
+- **Action:** Added semicolon-separated `SEARCH_API_KEYS` configuration. Every configured key must be at least 32 UTF-8 bytes. Search routes accept the key only through `Authorization: Bearer`; comparisons use `CryptographicOperations.FixedTimeEquals`. When running in Production, startup fails if no API key is configured. The browser search page has a password field and sends the bearer header without persisting it.
+- **Tests added:** Valid, missing and incorrect bearer-key cases.
+- **Commits:** `f4d5385dc453dd7da0a110d8e3ba8e036e75479e` (middleware), `f94a403fbd39dc38106ca1f823ea9fe3a43669d9` (UI input), `ef2ade31ef55a4c826dd0174e1ddd7edd787fab7` (UI header), `580684a18dd7a3e8c0a09cfbff2e059eea0c8c12` (tests), `7ea3ce502c5430cb86c7ffde70f80961fb94a832` (routing/syntax correction).
+
+### 167. Add per-client search rate limiting
+- **Reason:** API keys alone do not prevent one client from exhausting provider quotas or monopolising request capacity.
+- **Action:** Added a fixed-window limiter of 60 search requests per minute per remote IP address, with no queue and HTTP 429 on rejection. Applied to /search GET/POST, /api/search and root search requests. Endpoint routing is explicitly enabled before the limiter.
+- **Tests added:** A deterministic in-memory integration test sends 61 requests and expects the final request to receive HTTP 429.
+- **Commit:** `b3f8590da824991f449ab01b646ba7c5294c1424`.
+- **Verification:** Source and test files reviewed. No .NET 10 SDK is available in this environment, so none of the new tests have been executed. The user's earlier 319-test pass predates these changes. No GitHub Actions and no live provider requests.
+- **Security caveats:** IP-based throttling requires correct trusted-proxy configuration when deployed behind a reverse proxy; do not trust arbitrary forwarded headers. API keys must be supplied via environment/secret configuration and requests must use HTTPS outside localhost. Chunked request bodies and response redirects still require focused adversarial verification; do not claim complete SSRF or request-body protection yet.
+- **Next:** Harden streamed/chunked POST bodies and outbound redirect/SSRF policy; add a trusted-proxy-aware client identity strategy; run the complete Release suite and Coverlet locally. Then implement the general HTTP consumer client in CoderInBox without merging provider code.
