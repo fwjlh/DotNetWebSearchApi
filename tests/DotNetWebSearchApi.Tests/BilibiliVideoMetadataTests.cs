@@ -50,7 +50,7 @@ public sealed class BilibiliVideoMetadataTests
         Assert.Equal("Example creator", video.Author);
         Assert.Equal("12000", video.Views);
         Assert.Equal(new DateTimeOffset(2026, 11, 23, 12, 40, 0, TimeSpan.Zero), result.PublishedDate);
-        Assert.Equal("videos.html", mapped.GetProperty("template").GetString());
+        Assert.Equal("default.html", mapped.GetProperty("template").GetString());
         Assert.Equal("Example creator", mapped.GetProperty("author").GetString());
         Assert.Equal("12000", mapped.GetProperty("views").GetString());
     }
