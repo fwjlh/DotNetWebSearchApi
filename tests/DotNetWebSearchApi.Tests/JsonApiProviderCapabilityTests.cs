@@ -36,6 +36,35 @@ public sealed class JsonApiProviderCapabilityTests
     }
 
     [Fact]
+    public async Task SearchAsync_PreservesSpecialistCategoryThroughSearxngMapping()
+    {
+        using HttpClient client = new(new StubHttpMessageHandler(_ =>
+            new HttpResponseMessage(HttpStatusCode.OK)
+            {
+                Content = new StringContent(
+                    "{\\"data\\":{\\"result\\":[{\\"title\\":\\"Video result\\",\\"arcurl\\":\\"https://example.org/video\\",\\"description\\":\\"A video\\}]}}",
+                    Encoding.UTF8,
+                    "application/json")
+            }));
+        JsonApiSearchProvider provider = new(
+            client,
+            JsonApiProviderCatalog.Definitions.Single(item => item.Name == "bilibili"));
+
+        IReadOnlyList<SearchResult> results = await provider.SearchAsync(
+            new SearchQuery("video", 10)
+            {
+                Categories = new HashSet<string>(StringComparer.OrdinalIgnoreCase) { "videos" }
+            },
+            CancellationToken.None);
+        SearxngSearchResponse response = SearxngSearchResponseMapper.Map(
+            "video",
+            new SearchExecutionResult(results, Array.Empty<string>(), Array.Empty<string>()));
+
+        Assert.Equal("videos", Assert.Single(results).Category);
+        Assert.Equal("videos", Assert.Single(response.Results).Category);
+    }
+
+    [Fact]
     public async Task SearchDetailedAsync_SkipsOpenverseForGeneralSearch()
     {
         int requestCount = 0;
