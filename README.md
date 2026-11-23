@@ -361,7 +361,7 @@ This service is designed to be self-hosted, but self-hosting does not automatica
 - Search routes are limited to 60 requests per minute per remote IP and return HTTP 429 after the limit. This is an initial process-local IP limit, not a per-key quota. Behind a reverse proxy, configure trusted forwarded headers at the host; never trust arbitrary client-supplied forwarded headers.
 - POST `/search` rejects declared bodies above 16 KiB and applies ASP.NET form key/value/count limits. Kestrel/IIS hosting limits should also be configured at the edge.
 - Provider endpoints are administrative configuration, never arbitrary URLs supplied by search callers.
-- Configurable outbound requests must defend against SSRF: validate schemes and destinations, block loopback/link-local/private ranges where appropriate, revalidate redirects and apply outbound network controls.
+- Provider HttpClientFactory clients use a shared `SocketsHttpHandler` connection callback: DNS is resolved at connection time, every resolved address must be public, and the same check applies when automatic redirects open a new connection. Loopback, private, link-local, carrier-grade NAT, reserved and documentation ranges are blocked; non-HTTP(S), localhost/local/internal names and embedded URI credentials are rejected before sending. The handler disables ambient proxies so the connection policy cannot be bypassed by an untrusted proxy setting. This is defence in depth, not a replacement for outbound firewall rules.
 - Do not forward caller IP addresses, API keys or unrelated inbound headers to search providers.
 - Keep provider credentials out of source control and ordinary provider-definition rows.
 - Follow each upstream provider's terms, rate limits, attribution and data-use requirements.
