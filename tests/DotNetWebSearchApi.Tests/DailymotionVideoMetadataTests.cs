@@ -53,7 +53,7 @@ public sealed class DailymotionVideoMetadataTests
             result.PublishedDate);
         Assert.Equal("videos.html", mapped.GetProperty("template").GetString());
         Assert.Equal(video.EmbedUrl, mapped.GetProperty("iframe_src").GetString());
-        Assert.Equal(423, mapped.GetProperty("length").GetDouble());
+        Assert.Equal(423d, mapped.GetProperty("length").GetDouble());
     }
 
     [Fact]
