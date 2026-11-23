@@ -1,6 +1,6 @@
 namespace DotNetWebSearchApi.Search;
 
-public sealed class SeznamSearchProvider : ISearchProvider
+public sealed class SeznamSearchProvider : ISearchProvider, ISearchProviderCapabilities
 {
     private const string SearchEndpoint = "https://search.seznam.cz/";
     private readonly HttpClient _httpClient;
@@ -13,6 +13,14 @@ public sealed class SeznamSearchProvider : ISearchProvider
     }
 
     public string Name => "seznam";
+
+    public EngineCapabilities Capabilities { get; } = new(
+        new HashSet<string>(StringComparer.OrdinalIgnoreCase) { "general", "web" },
+        false,
+        1,
+        false,
+        false,
+        false);
 
     public TimeSpan Timeout => TimeSpan.FromSeconds(8);
 
