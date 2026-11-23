@@ -33,8 +33,9 @@
 
 - Fixed the missing class-closing brace in `JsonApiSearchProvider.cs`, made its declaration `partial` to match the metadata partial declaration, and moved `JsonApiSearchDefinition` back to namespace scope.
 - Removed the redundant closing brace in `JsonApiSearchProvider.Metadata.cs` before the metadata path records.
-- Commits: `7af858f951ce5a1d949aa4cb549ada91137cf51c` and `290574e51997fb185ba0858ec2f999a7d05809e1`.
-- Source structure reviewed; build/test verification still needs to be run locally.
+- Added file-local imports for `System.Net` and `System.Text.RegularExpressions` because `CleanText` in the metadata file uses `WebUtility` and `Regex`; imports in another partial source file are not shared.
+- Commits: `7af858f951ce5a1d949aa4cb549ada91137cf51c`, `290574e51997fb185ba0858ec2f999a7d05809e1`, and `cdf4157c6963fbe7eae45087a0c16a9aee615e24`.
+- Source structure and imports reviewed; build/test verification still needs to be run locally.
 
 ## Previous compile correction
 
