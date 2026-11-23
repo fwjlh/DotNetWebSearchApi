@@ -7,7 +7,7 @@ using HtmlAgilityPack;
 
 namespace DotNetWebSearchApi.Search;
 
-public sealed class MojeekSearchProvider : ISearchProvider
+public sealed class MojeekSearchProvider : ISearchProvider, ISearchProviderCapabilities
 {
     private static readonly Uri BaseUri = new("https://www.mojeek.com/");
     private readonly HttpClient _httpClient;
@@ -27,6 +27,14 @@ public sealed class MojeekSearchProvider : ISearchProvider
 
     public string Name => "mojeek";
 
+    public EngineCapabilities Capabilities { get; } = new(
+        new HashSet<string>(StringComparer.OrdinalIgnoreCase) { "general", "web" },
+        false,
+        1,
+        false,
+        true,
+        false);
+
     public TimeSpan Timeout => TimeSpan.FromSeconds(20);
 
     public async Task<IReadOnlyList<SearchResult>> SearchAsync(
@@ -34,7 +42,7 @@ public sealed class MojeekSearchProvider : ISearchProvider
         CancellationToken cancellationToken)
     {
         await EnsureChallengeCookieAsync(cancellationToken);
-        using HttpRequestMessage request = new(HttpMethod.Get, BuildSearchUri(query.Text));
+        using HttpRequestMessage request = new(HttpMethod.Get, BuildSearchUri(query));
         string cookieHeader = _cookies.GetCookieHeader(BaseUri);
         if (!string.IsNullOrWhiteSpace(cookieHeader))
         {
@@ -186,10 +194,11 @@ public sealed class MojeekSearchProvider : ISearchProvider
         };
     }
 
-    private static Uri BuildSearchUri(string query)
+    private static Uri BuildSearchUri(SearchQuery query)
     {
-        string encoded = Uri.EscapeDataString(query);
-        return new Uri(BaseUri, $"search?q={encoded}&safe=1");
+        string encoded = Uri.EscapeDataString(query.Text);
+        int safeSearch = Math.Min(query.SafeSearch, 1);
+        return new Uri(BaseUri, $"search?q={encoded}&safe={safeSearch}");
     }
 
     private static IReadOnlyList<SearchResult> ParseResults(string html, int limit)

@@ -51,6 +51,58 @@ public sealed class MojeekSearchProviderTests
         Assert.Equal(new[] { "/captcha/challenge", "/captcha/verify", "/search" }, paths);
     }
 
+    [Theory]
+    [InlineData(0, "safe=0")]
+    [InlineData(1, "safe=1")]
+    [InlineData(2, "safe=1")]
+    public async Task SearchAsync_MapsSafeSearchToMojeekValues(int safeSearch, string expectedParameter)
+    {
+        Uri? requestedUri = null;
+        CookieContainer cookies = new();
+        cookies.Add(new Uri("https://www.mojeek.com/"), new Cookie("chllg", "verified"));
+        using HttpClient client = new(new StubHttpMessageHandler(request =>
+        {
+            requestedUri = request.RequestUri;
+            return Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK)
+            {
+                Content = new StringContent(
+                    "<ul class=\"results-standard\"><li><a class=\"ob\" href=\"https://example.org/result\">Open</a><h2><a>Result</a></h2></li></ul>",
+                    Encoding.UTF8,
+                    "text/html")
+            });
+        }));
+        MojeekSearchProvider provider = new(client, cookies);
+
+        await provider.SearchAsync(
+            new SearchQuery("safe search", 5) { SafeSearch = safeSearch },
+            CancellationToken.None);
+
+        Assert.Contains(expectedParameter, requestedUri!.Query);
+    }
+
+    [Fact]
+    public void Capabilities_DeclareGeneralWebAndSafeSearchOnly()
+    {
+        using HttpClient client = new();
+        MojeekSearchProvider provider = new(client, new CookieContainer());
+
+        Assert.True(provider.Capabilities.Supports(new SearchQuery("test", 5)
+        {
+            Categories = new HashSet<string>(StringComparer.OrdinalIgnoreCase) { "web" },
+            SafeSearch = 2
+        }));
+        Assert.False(provider.Capabilities.Supports(new SearchQuery("test", 5)
+        {
+            Categories = new HashSet<string>(StringComparer.OrdinalIgnoreCase) { "images" }
+        }));
+        Assert.False(provider.Capabilities.Supports(new SearchQuery("test", 5) { Page = 2 }));
+        Assert.False(provider.Capabilities.Supports(new SearchQuery("test", 5)
+        {
+            TimeRange = SearchTimeRange.Day
+        }));
+        Assert.False(provider.Capabilities.Supports(new SearchQuery("test", 5) { Language = "en" }));
+    }
+
     [Fact]
     public async Task SearchAsync_RejectsChallengeWhenProofCannotBeSolved()
     {
