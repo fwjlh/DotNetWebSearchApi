@@ -123,3 +123,16 @@ Keep this file and `LOG.md` current so the next session can resume without chat 
 - **Verification:** Code and tests have been reviewed in GitHub. No .NET 10 SDK is available here; none of these latest tests has been executed. The 319-test user-reported baseline predates this increment. No GitHub Actions were used.
 - **Security still outstanding:** enforce streamed/chunked body bounds at the server layer; validate outbound redirect destinations and DNS/IP policy; define trusted proxy handling before relying on remote IP for rate limits. Use HTTPS for all non-localhost API-key traffic.
 - **Next:** Finish outbound request/redirect policy and tests, inspect actual Coverlet output from a local run, then add the independent HTTP client to CoderInBox.
+
+
+## Security and request hardening — 2026-11-23
+
+- Provider selection: max 20 distinct engines, max 64 characters per engine.
+- POST form: declared content length and host request-body feature capped at 16 KiB; parser limits keys to 128 chars, values to 4 KiB and 32 fields.
+- API keys: `SEARCH_API_KEYS` (semicolon-separated; minimum 32 UTF-8 bytes per key); bearer authentication on all search routes. Every non-Development environment fails startup if no key is configured. Browser UI accepts a manually entered key without persisting it.
+- Rate limit: 60 requests/minute per remote IP, HTTP 429; no per-key quota and no trusted-proxy configuration yet.
+- Outbound transport: rejects non-HTTP(S), embedded URI credentials, localhost/local/internal names and non-public IP literals. DNS-resolved private addresses and automatic redirects remain unprotected; do not describe SSRF protection as complete.
+- New tests committed for provider-selection limits, oversized form input, API key success/failure, rate limiting and outbound destination validation.
+- Latest commits include `f57123cb`, `972ee56c`, `d8563cf4`, `374ba70c`, `20366be5`, and activity record `f15d1f95`.
+- **Test status:** all new source and tests reviewed only. No .NET 10 SDK is available in this session, so no post-change build or test execution is verified. The 319-test baseline is older. GitHub Actions remain unused.
+- **Next:** complete redirect/DNS safeguards with provider compatibility fixtures; then analyse actual Coverlet output and add the independent HTTP client in CoderInBox. Do not expose publicly until these remaining controls and a fresh full Release test run are complete.
