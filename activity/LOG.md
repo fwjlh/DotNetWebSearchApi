@@ -1199,19 +1199,25 @@ Every material repository action is recorded here with its reason, result, verif
 - **Next:** Run the full test suite when a local .NET 10 SDK is available; continue with small source files and keep all GitHub Actions workflows unused.
 
 
-### 125. Make Mojeek category and safe-search capabilities explicit
-- **Reason:** The pinned SearXNG Mojeek engine supports general/web categories and safe search, but the C# adapter inherited BasicWeb and hard-coded `safe=1`, so an explicit safe-search-off request was silently changed to moderate.
-- **Action:** Declared general/web support, first-page-only, safe-search support, and no locale/time-range support.
-- **Action:** Mojeek now maps safe-search 0 to off and 1/2 to the upstream-supported moderate value.
-- **Tests:** Added request assertions for all three safe-search values and capability boundary checks for categories, paging, time range and locale.
-- **Commit:** `e2e2b46f3b9a777dba5f97fcbcbd7f11737e84eb`.
-- **Validation:** Compared behaviour with the pinned SearXNG Mojeek engine and reviewed fixture tests. Tests remain unexecuted because the .NET SDK is unavailable; no GitHub Actions or live Mojeek requests were used.
-- **Next:** Apply the same conservative capability audit to Seznam and Brave.
-
-
 ### 129. Preserve xUnit attributes across the request-context test split
 - **Reason:** The first pass split the SearXNG integration tests at the method signature, leaving the first `[Fact]` in the original file and moving the final `[Fact]` for the next test. The new partial file therefore needed its first attribute restored and the duplicate trailing attribute removed.
 - **Action:** Restored `[Fact]` on all four moved request-context tests and verified the remaining integration tests retain their own attributes.
 - **Validation:** Re-read both partial files and enumerated their `[Fact]` methods. No test body or helper behaviour changed.
 - **Commit:** `46a931fe`.
 - **Next:** Continue final test-source and registration audit; full compilation still awaits a local .NET 10 SDK.
+
+
+### 130. Make Mojeek category and safe-search capabilities explicit
+- **Reason:** The Mojeek adapter inherited BasicWeb and hard-coded `safe=1`, silently overriding an explicit safe-search-off request.
+- **Action:** Declared general/web support, first-page-only, safe-search support, and no locale/time-range support. Mojeek maps safe-search 0 to off and 1/2 to moderate.
+- **Tests:** Added request assertions for all safe-search values and capability boundary checks for categories, paging, time range and locale.
+- **Commit:** `e2e2b46f3b9a777dba5f97fcbcbd7f11737e84eb`.
+- **Validation:** Reviewed the provider and fixture tests. Tests remain unexecuted because the .NET SDK is unavailable; no GitHub Actions or live Mojeek requests were used.
+
+### 131. Make Brave safe-search capability match its request
+- **Reason:** Brave always sent `safesearch=moderate` while its default BasicWeb capability caused the aggregator to skip it for safe-search-on requests and silently moderated safe-search-off requests.
+- **Action:** Declared general/web, first-page-only, safe-search support, and no locale/time-range support. Brave now maps 0/1/2 to off/moderate/strict.
+- **Tests:** Added all three safe-search request values and capability boundary assertions; updated the default request URL expectation.
+- **Commit:** `8427e9902a1a0b29beda4a39a46316ab25b86522` (provider), `60cdb6eb38a9a823e0949bf07bade8b9978c178e` (tests).
+- **Validation:** Source and fixture review only; .NET SDK unavailable. No GitHub Actions or live Brave requests were used.
+- **Next:** Complete the final provider capability and tree audit; run tests when the .NET 10 SDK is available.
