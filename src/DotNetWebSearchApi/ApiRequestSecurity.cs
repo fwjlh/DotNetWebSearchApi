@@ -15,6 +15,7 @@ internal sealed record ApiRequestSecurityOptions(IReadOnlyList<string> ApiKeys);
 
 internal static class ApiRequestSecurity
 {
+    private const int MaximumFormBodyBytes = 16 * 1024;
     public static ApiRequestSecurityOptions Configure(
         IServiceCollection services,
         IConfiguration configuration,
@@ -63,6 +64,24 @@ internal static class ApiRequestSecurity
     {
         app.Use(async (context, next) =>
         {
+            bool isFormSearchPost = context.Request.Path.Equals("/search", StringComparison.OrdinalIgnoreCase)
+                && HttpMethods.IsPost(context.Request.Method);
+            if (isFormSearchPost)
+            {
+                if (context.Request.ContentLength > MaximumFormBodyBytes)
+                {
+                    context.Response.StatusCode = StatusCodes.Status413PayloadTooLarge;
+                    return;
+                }
+
+                IHttpMaxRequestBodySizeFeature? bodySizeFeature =
+                    context.Features.Get<IHttpMaxRequestBodySizeFeature>();
+                if (bodySizeFeature is { IsReadOnly: false })
+                {
+                    bodySizeFeature.MaxRequestBodySize = MaximumFormBodyBytes;
+                }
+            }
+
             bool isSearchRequest =
                 (context.Request.Path.Equals("/search", StringComparison.OrdinalIgnoreCase)
                     && (HttpMethods.IsGet(context.Request.Method) || HttpMethods.IsPost(context.Request.Method)))
