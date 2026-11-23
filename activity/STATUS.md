@@ -91,3 +91,13 @@ Keep this file and `LOG.md` current so the next session can resume without chat 
 - The test was accidentally using the parameterless `CreateFactory()` overload, which removes all production `ISearchProvider` registrations and adds none. As a result, Openverse was treated as an unknown engine and the endpoint correctly returned 400 before category filtering.
 - The test now uses a plain `new WebApplicationFactory<Program>()`, preserving production registrations while temporary environment variables enable the optional providers. Openverse should then be recognized and filtered as unsupported for `general` category without network access.
 - Activity entry 159 records the diagnosis. Source change is on `main`; test execution remains pending.
+
+
+## Latest incremental change — 2026-11-23
+
+- Added a shared 512-character query limit in `TryBuildSearchQuery`; both `/search` and `/api/search` reject longer input with HTTP 400 before provider execution.
+- Added four boundary test cases: 512 characters accepted and 513 rejected on each endpoint.
+- Commits: `c51022e7076621e89fd037940548ff8ddbe553fd`, `eb08ce39a07d16a6f41d7c02bbd01bbea91ef9bd`, and activity record `d12f103d69125fa07fccb1d844ce5e6a01defda5`.
+- Verification: source and test changes reviewed, but the four new cases have not been executed here. The user's earlier 319-test Release pass is the pre-change baseline; do not describe the latest HEAD as tested.
+- No GitHub Actions were invoked or recreated.
+- Next: bound category/provider selection and POST form inputs; then design authentication, per-client quotas and request rate limiting before public exposure. Run the full Release suite and coverage collection locally when the .NET 10 SDK is available.
