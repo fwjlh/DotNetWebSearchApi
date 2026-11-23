@@ -136,3 +136,15 @@ Keep this file and `LOG.md` current so the next session can resume without chat 
 - Latest commits include `f57123cb`, `972ee56c`, `d8563cf4`, `374ba70c`, `20366be5`, and activity record `f15d1f95`.
 - **Test status:** all new source and tests reviewed only. No .NET 10 SDK is available in this session, so no post-change build or test execution is verified. The 319-test baseline is older. GitHub Actions remain unused.
 - **Next:** complete redirect/DNS safeguards with provider compatibility fixtures; then analyse actual Coverlet output and add the independent HTTP client in CoderInBox. Do not expose publicly until these remaining controls and a fresh full Release test run are complete.
+
+
+## Latest security, coverage and consumer progress — 2026-11-23
+
+- Outbound provider clients now use `PublicNetworkSocketsHandler`: DNS is resolved at connection time, all returned IPs must be public, redirects use the same connection callback, and ambient proxies are disabled. Mojeek/Yahoo keep separate cookie containers.
+- Address classification tests cover private/reserved IPv4 and IPv6 plus public address acceptance. Initial URI tests reject unsafe schemes, localhost/internal hosts, embedded credentials and private IP literals.
+- Coverage tooling now includes Coverlet plus `scripts/Show-CoverageSummary.ps1` and `docs/COVERAGE.md`. Actual coverage numbers are not yet available; the script has not been run.
+- Consumer integration is underway in the separate `fwjlh/CoderInBox` repository. It now has an HTTP-only client, an optional WebResearch-first path, environment configuration and offline tests. No provider implementation code is shared or copied.
+- Commits for the latest DNS/redirect policy: `69bc77cc`, `df9900c3`, `3cf99a49`, `6eba3ea6`, `67b3b489`, `99b71d3b`, `2f01cb58`. Coverage commits: `e47185eb`, `7614faeb`, `4541d271`. Activity record: `fba6bda5`.
+- **Verification remains pending:** no .NET 10 build/test execution has occurred here. The earlier 319-test pass predates the latest changes. No GitHub Actions have been invoked.
+- **Operational note:** the safe outbound handler makes direct connections and disables ambient proxies. A deployment that requires a proxy needs an explicitly trusted proxy integration. Egress firewall restrictions are still recommended.
+- **Next:** review and compile both repositories on the operator machine; run the DotNetWebSearchApi Release suite plus Coverlet summary, then run the focused CoderInBox client/WebResearch tests. Fix the first concrete compiler/test diagnostics before expanding the integration.
