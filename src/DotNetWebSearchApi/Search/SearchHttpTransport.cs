@@ -107,6 +107,7 @@ public sealed class SearchHttpTransport
     {
         Uri requestUri = request.RequestUri
             ?? throw new ArgumentException("The request URI is required.", nameof(request));
+        ValidateRequestUri(requestUri);
         ApplyDefaultHeaders(client, request);
         await WaitForProviderSlotAsync(providerName, minimumInterval, cancellationToken);
         SemaphoreSlim gate = _hostGates.GetOrAdd(
@@ -150,6 +151,75 @@ public sealed class SearchHttpTransport
         {
             gate.Release();
         }
+    }
+
+
+    private static void ValidateRequestUri(Uri uri)
+    {
+        if (!uri.IsAbsoluteUri
+            || (uri.Scheme != Uri.UriSchemeHttp && uri.Scheme != Uri.UriSchemeHttps)
+            || string.IsNullOrWhiteSpace(uri.Host)
+            || !string.IsNullOrEmpty(uri.UserInfo))
+        {
+            throw new ProviderFailureException(
+                ProviderFailureKind.InvalidResponse,
+                "Provider request URI must be an absolute HTTP(S) URI without embedded credentials.");
+        }
+
+        string host = uri.IdnHost.TrimEnd('.');
+        if (host.Equals("localhost", StringComparison.OrdinalIgnoreCase)
+            || host.EndsWith(".localhost", StringComparison.OrdinalIgnoreCase)
+            || host.EndsWith(".local", StringComparison.OrdinalIgnoreCase)
+            || host.EndsWith(".internal", StringComparison.OrdinalIgnoreCase))
+        {
+            throw new ProviderFailureException(
+                ProviderFailureKind.InvalidResponse,
+                "Provider request URI targets a local or internal host.");
+        }
+
+        if (IPAddress.TryParse(host, out IPAddress? address) && IsNonPublicAddress(address))
+        {
+            throw new ProviderFailureException(
+                ProviderFailureKind.InvalidResponse,
+                "Provider request URI targets a non-public IP address.");
+        }
+    }
+
+    private static bool IsNonPublicAddress(IPAddress address)
+    {
+        if (address.IsIPv4MappedToIPv6)
+        {
+            return IsNonPublicAddress(address.MapToIPv4());
+        }
+
+        if (IPAddress.IsLoopback(address)
+            || address.Equals(IPAddress.Any)
+            || address.Equals(IPAddress.IPv6Any)
+            || address.IsIPv6LinkLocal
+            || address.IsIPv6SiteLocal
+            || address.IsIPv6Multicast)
+        {
+            return true;
+        }
+
+        byte[] bytes = address.GetAddressBytes();
+        if (address.AddressFamily == System.Net.Sockets.AddressFamily.InterNetworkV6)
+        {
+            return (bytes[0] & 0xFE) == 0xFC
+                || (bytes[0] == 0x20 && bytes[1] == 0x01 && bytes[2] == 0x0D && bytes[3] == 0xB8);
+        }
+
+        return bytes[0] == 0
+            || bytes[0] == 10
+            || bytes[0] == 100 && bytes[1] is >= 64 and <= 127
+            || bytes[0] == 127
+            || bytes[0] == 169 && bytes[1] == 254
+            || bytes[0] == 172 && bytes[1] is >= 16 and <= 31
+            || bytes[0] == 192 && (bytes[1] == 0 || bytes[1] == 168)
+            || bytes[0] == 192 && bytes[1] == 0 && bytes[2] == 2
+            || bytes[0] == 198 && (bytes[1] == 18 || bytes[1] == 19 || bytes[1] == 51)
+            || bytes[0] == 203 && bytes[1] == 0 && bytes[2] == 113
+            || bytes[0] >= 224;
     }
 
     private void ApplyDefaultHeaders(HttpClient client, HttpRequestMessage request)
