@@ -1046,3 +1046,12 @@ Every material repository action is recorded here with its reason, result, verif
 - **Explicit remaining gaps:** process-local health state; process-scoped provider cookies; curated static locale traits; incomplete rich result types; fixed SearXNG route limit and empty answer/infobox/suggestion collections; no API authentication, per-client quotas or outbound request policy.
 - **Verification:** Documentation-only reconciliation. GitHub Actions [run 45145666616](https://github.com/fwjlh/DotNetWebSearchApi/actions/runs/45145666616) passed build and test.
 - **Next:** Continue auditing the provider request/capability surface and rich result model; keep the catalogue frozen at 67.
+
+
+### 115. Record repository rules and disable GitHub Actions
+- **Reason:** The repository owner confirmed that no GitHub Actions workflow minutes remain and requested direct-to-main development without workflows. They also supplied the mandatory coding, file-size, design and test rules for all future work.
+- **Action:** Added root `_LookAtMe.MD` containing the supplied working rules.
+- **Action:** Deleted `.github/workflows/ci.yml` from `main`. The repository now has no GitHub Actions workflow definitions. No workflow was run or triggered as part of this work.
+- **Action:** Continued using `activity/LOG.md` and `activity/STATUS.md` as the durable handover; this entry records the change and updates the next actions.
+- **Validation:** Verified the file and workflow changes through the GitHub repository tree. These were documentation/configuration changes only; no application code changed. Local test execution is currently unavailable because this environment has no .NET SDK (`dotnet: command not found`). No CI fallback was used.
+- **Next:** Keep the 67-provider catalogue frozen. Continue the remaining provider capability/request-context audit and shared-framework work in small changes. For every code change, add focused tests and run `dotnet test` locally when a .NET SDK is available; do not use GitHub Actions.
