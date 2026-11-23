@@ -9,23 +9,57 @@ public static partial class JsonApiProviderCatalog
         new JsonApiSearchDefinition
         {
             Name = "crossref",
+            Categories = new HashSet<string>(StringComparer.OrdinalIgnoreCase) { "science" },
             Endpoint = "https://api.crossref.org/works",
             QueryParameter = "query",
             LimitParameter = "rows",
             ResultsPath = "message.items",
             TitlePath = "title.0",
             UrlPath = "URL",
-            SnippetPath = "abstract"
+            SnippetPath = "abstract",
+            PaperMetadata = new JsonApiPaperMetadataPaths
+            {
+                Content = "abstract",
+                Authors = "author",
+                AuthorGiven = "given",
+                AuthorFamily = "family",
+                Publisher = "publisher",
+                Journal = "container-title.0",
+                Volume = "volume",
+                Pages = "page",
+                Number = "issue",
+                Doi = "DOI",
+                Issn = "ISSN",
+                Isbn = "ISBN",
+                Type = "type",
+                HtmlUrl = "URL"
+            }
         },
         new JsonApiSearchDefinition
         {
             Name = "openalex",
+            Categories = new HashSet<string>(StringComparer.OrdinalIgnoreCase) { "science" },
             Endpoint = "https://api.openalex.org/works",
             QueryParameter = "search",
             LimitParameter = "per-page",
             ResultsPath = "results",
             TitlePath = "title",
-            UrlPath = "id"
+            UrlPath = "id",
+            PaperMetadata = new JsonApiPaperMetadataPaths
+            {
+                PublishedDate = "publication_date",
+                Authors = "authorships",
+                AuthorName = "author.display_name",
+                Publisher = "primary_location.source.host_organization_name",
+                Journal = "primary_location.source.display_name",
+                Volume = "biblio.volume",
+                Number = "biblio.issue",
+                Pages = "biblio.first_page",
+                Doi = "doi",
+                PdfUrl = "best_oa_location.pdf_url",
+                HtmlUrl = "primary_location.landing_page_url",
+                Type = "type"
+            }
         },
         new JsonApiSearchDefinition
         {
@@ -100,6 +134,7 @@ public static partial class JsonApiProviderCatalog
         new JsonApiSearchDefinition
         {
             Name = "europepmc",
+            Categories = new HashSet<string>(StringComparer.OrdinalIgnoreCase) { "science" },
             Endpoint = "https://www.ebi.ac.uk/europepmc/webservices/rest/search",
             QueryParameter = "query",
             LimitParameter = "pageSize",
@@ -107,11 +142,24 @@ public static partial class JsonApiProviderCatalog
             TitlePath = "title",
             UrlPath = "id",
             SnippetPath = "authorString",
-            UrlPrefix = "https://europepmc.org/article/MED/"
+            UrlPrefix = "https://europepmc.org/article/MED/",
+            FixedParameters = new Dictionary<string, string> { ["format"] = "json", ["resultType"] = "core" },
+            PaperMetadata = new JsonApiPaperMetadataPaths
+            {
+                PublishedDate = "firstPublicationDate",
+                Author = "authorString",
+                Journal = "journalTitle",
+                Volume = "journalVolume",
+                Pages = "pageInfo",
+                Doi = "doi",
+                Type = "pubType",
+                HtmlUrl = "fullTextUrlList.fullTextUrl.0.url"
+            }
         },
         new JsonApiSearchDefinition
         {
             Name = "semanticscholar",
+            Categories = new HashSet<string>(StringComparer.OrdinalIgnoreCase) { "science" },
             Endpoint = "https://api.semanticscholar.org/graph/v1/paper/search",
             QueryParameter = "query",
             LimitParameter = "limit",
@@ -119,7 +167,22 @@ public static partial class JsonApiProviderCatalog
             TitlePath = "title",
             UrlPath = "url",
             SnippetPath = "abstract",
-            FixedParameters = new Dictionary<string, string> { ["fields"] = "title,url,abstract" }
+            FixedParameters = new Dictionary<string, string>
+            {
+                ["fields"] = "title,url,abstract,authors,publicationDate,venue,externalIds,openAccessPdf,publicationTypes"
+            },
+            PaperMetadata = new JsonApiPaperMetadataPaths
+            {
+                PublishedDate = "publicationDate",
+                Content = "abstract",
+                Authors = "authors",
+                AuthorName = "name",
+                Journal = "venue",
+                Doi = "externalIds.DOI",
+                PdfUrl = "openAccessPdf.url",
+                Type = "publicationTypes.0",
+                HtmlUrl = "url"
+            }
         },
         new JsonApiSearchDefinition
         {
