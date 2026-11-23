@@ -148,3 +148,12 @@ Keep this file and `LOG.md` current so the next session can resume without chat 
 - **Verification remains pending:** no .NET 10 build/test execution has occurred here. The earlier 319-test pass predates the latest changes. No GitHub Actions have been invoked.
 - **Operational note:** the safe outbound handler makes direct connections and disables ambient proxies. A deployment that requires a proxy needs an explicitly trusted proxy integration. Egress firewall restrictions are still recommended.
 - **Next:** review and compile both repositories on the operator machine; run the DotNetWebSearchApi Release suite plus Coverlet summary, then run the focused CoderInBox client/WebResearch tests. Fix the first concrete compiler/test diagnostics before expanding the integration.
+
+
+## Source-size and middleware follow-up
+
+- Extracted API-key validation, bearer authentication, rate-limiter registration and form parsing limits into `ApiRequestSecurity.cs`. `Program.cs` is now approximately 18 KB, below the preferred 20 KB limit.
+- Authentication middleware now runs before rate limiting so invalid credentials cannot consume an authenticated client's IP quota.
+- Added tests for Staging startup without keys and 61 unauthorized calls followed by a valid call.
+- Commits: `aa18e8e6`, `29e1fbdc`, `a0f55af1`, `cae91224`, `4a61202c`, `84b9aa2f`, `cbb29832`, `52d3cdc0`, `0b41a286`, activity record `13ea6774`.
+- No new build/test execution has occurred; the latest code remains unverified until the operator runs Release locally.
