@@ -14,6 +14,29 @@ public static class SearxngSearchResponseMapper
         };
     }
 
+    private static string ResolveTemplate(SearchResult result)
+    {
+        if (string.Equals(result.Category, "images", StringComparison.OrdinalIgnoreCase)
+            && IsAbsoluteHttpUrl(result.ImageMetadata?.ImageUrl))
+        {
+            return "images.html";
+        }
+
+        if (string.Equals(result.Category, "videos", StringComparison.OrdinalIgnoreCase)
+            && IsAbsoluteHttpUrl(result.VideoMetadata?.EmbedUrl))
+        {
+            return "videos.html";
+        }
+
+        return "default.html";
+    }
+
+    private static bool IsAbsoluteHttpUrl(string? value)
+    {
+        return Uri.TryCreate(value, UriKind.Absolute, out Uri? uri)
+            && (uri.Scheme == Uri.UriSchemeHttp || uri.Scheme == Uri.UriSchemeHttps);
+    }
+
     private static SearxngSearchResult MapResult(SearchResult result)
     {
         Uri uri = new(result.Url);
@@ -23,12 +46,7 @@ public static class SearxngSearchResponseMapper
             uri.Scheme, uri.Authority, uri.AbsolutePath, string.Empty,
             uri.Query.TrimStart('?'), uri.Fragment.TrimStart('#')
         };
-        string template = result.Category switch
-        {
-            "images" => "images.html",
-            "videos" => "videos.html",
-            _ => "default.html"
-        };
+        string template = ResolveTemplate(result);
         return new SearxngSearchResult(
             result.Url, result.Title, result.Snippet, result.Provider, engines,
             result.Positions, result.Score, result.Category, template, parsedUrl, result.PublishedDate)

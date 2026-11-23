@@ -23,6 +23,53 @@ public sealed class ImageResultMetadataTests
         Assert.Equal("default.html", Assert.Single(response.Results).Template);
     }
 
+    [Theory]
+    [InlineData("images")]
+    [InlineData("videos")]
+    public void Map_UsesDefaultTemplateWhenVerticalMetadataIsMissing(string category)
+    {
+        SearchResult result = CreateResult("Vertical result", "https://example.org/result") with
+        {
+            Category = category
+        };
+
+        SearxngSearchResponse response = Map(result);
+
+        Assert.Equal("default.html", Assert.Single(response.Results).Template);
+    }
+
+    [Theory]
+    [InlineData("javascript:alert(1)")]
+    [InlineData("/relative/image.jpg")]
+    public void Map_UsesDefaultTemplateWhenImageSourceIsNotAbsoluteHttp(string imageUrl)
+    {
+        SearchResult result = CreateResult("Image result", "https://example.org/result") with
+        {
+            Category = "images",
+            ImageMetadata = new ImageResultMetadata { ImageUrl = imageUrl }
+        };
+
+        SearxngSearchResponse response = Map(result);
+
+        Assert.Equal("default.html", Assert.Single(response.Results).Template);
+    }
+
+    [Theory]
+    [InlineData("javascript:alert(1)")]
+    [InlineData("//evil.example/embed")]
+    public void Map_UsesDefaultTemplateWhenVideoEmbedIsNotAbsoluteHttp(string embedUrl)
+    {
+        SearchResult result = CreateResult("Video result", "https://example.org/result") with
+        {
+            Category = "videos",
+            VideoMetadata = new VideoResultMetadata { EmbedUrl = embedUrl }
+        };
+
+        SearxngSearchResponse response = Map(result);
+
+        Assert.Equal("default.html", Assert.Single(response.Results).Template);
+    }
+
     [Fact]
     public void Map_PreservesTypedImageMetadataInSearxngFields()
     {
@@ -66,7 +113,6 @@ public sealed class ImageResultMetadataTests
 
         Assert.Equal("images", mapped.GetProperty("category").GetString());
         Assert.Equal("images.html", mapped.GetProperty("template").GetString());
-        Assert.Equal("images.html", mapped.GetProperty("template").GetString());
         Assert.Equal(image.ImageUrl, mapped.GetProperty("img_src").GetString());
         Assert.Equal(image.ThumbnailUrl, mapped.GetProperty("thumbnail_src").GetString());
         Assert.Equal(image.Resolution, mapped.GetProperty("resolution").GetString());
@@ -78,4 +124,16 @@ public sealed class ImageResultMetadataTests
         Assert.Equal(image.License, mapped.GetProperty("image_metadata").GetProperty("license").GetString());
         Assert.Equal(image.Creator, mapped.GetProperty("image_metadata").GetProperty("creator").GetString());
     }
+    private static SearchResult CreateResult(string title, string url)
+    {
+        return new SearchResult(title, url, title, "fixture", 1.0);
+    }
+
+    private static SearxngSearchResponse Map(SearchResult result)
+    {
+        return SearxngSearchResponseMapper.Map(
+            "test",
+            new SearchExecutionResult(new[] { result }, Array.Empty<string>(), Array.Empty<string>()));
+    }
+
 }
