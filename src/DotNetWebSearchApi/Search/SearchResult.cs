@@ -23,6 +23,8 @@ public sealed record SearchResult(
 
     public MusicResultMetadata? MusicMetadata { get; init; }
 
+    public PaperResultMetadata? PaperMetadata { get; init; }
+
     [JsonIgnore]
     public double? ProviderScore { get; init; }
 
