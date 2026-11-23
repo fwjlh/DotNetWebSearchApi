@@ -3,7 +3,7 @@ using System.Xml.Linq;
 
 namespace DotNetWebSearchApi.Search;
 
-public sealed class ArxivSearchProvider : ISearchProvider
+public sealed class ArxivSearchProvider : ISearchProvider, ISearchProviderCapabilities
 {
     private static readonly XNamespace AtomNamespace = "http://www.w3.org/2005/Atom";
     private readonly HttpClient _httpClient;
@@ -16,6 +16,14 @@ public sealed class ArxivSearchProvider : ISearchProvider
     }
 
     public string Name => "arxiv";
+
+    public EngineCapabilities Capabilities { get; } = new(
+        new HashSet<string>(StringComparer.OrdinalIgnoreCase) { "science" },
+        false,
+        1,
+        false,
+        false,
+        false);
 
     public TimeSpan Timeout => TimeSpan.FromSeconds(10);
 

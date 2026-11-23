@@ -1,5 +1,6 @@
 using System.Net;
 using System.Text;
+using Microsoft.Extensions.Logging.Abstractions;
 using DotNetWebSearchApi.Search;
 using Xunit;
 
@@ -31,6 +32,43 @@ public sealed class ArxivSearchProviderTests
         Assert.Equal("A research summary.", result.Snippet);
         Assert.Contains("all%3Amachine%20learning%20%26%20graphs", requestUri!.Query);
         Assert.Contains("max_results=8", requestUri.Query);
+    }
+
+    [Fact]
+    public async Task SearchDetailedAsync_SelectsArxivOnlyForScienceCategory()
+    {
+        int requestCount = 0;
+        using HttpClient client = new(new StubHttpMessageHandler(_ =>
+        {
+            requestCount++;
+            return new HttpResponseMessage(HttpStatusCode.OK)
+            {
+                Content = new StringContent(AtomFixture, Encoding.UTF8, "application/atom+xml")
+            };
+        }));
+        ArxivSearchProvider provider = new(client);
+        SearchAggregator aggregator = new(
+            new[] { provider },
+            NullLogger<SearchAggregator>.Instance);
+
+        SearchExecutionResult generalResult = await aggregator.SearchDetailedAsync(
+            new SearchQuery("machine learning", 5),
+            CancellationToken.None);
+
+        Assert.Empty(generalResult.Results);
+        Assert.Equal("arxiv", Assert.Single(generalResult.UnsupportedProviders));
+        Assert.Equal(0, requestCount);
+
+        SearchExecutionResult scienceResult = await aggregator.SearchDetailedAsync(
+            new SearchQuery("machine learning", 5)
+            {
+                Categories = new HashSet<string>(StringComparer.OrdinalIgnoreCase) { "science" }
+            },
+            CancellationToken.None);
+
+        Assert.Equal("arxiv", Assert.Single(scienceResult.Results).Provider);
+        Assert.Empty(scienceResult.UnsupportedProviders);
+        Assert.Equal(1, requestCount);
     }
 
     [Fact]
