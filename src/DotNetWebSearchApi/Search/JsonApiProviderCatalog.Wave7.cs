@@ -24,6 +24,8 @@ public static partial class JsonApiProviderCatalog
             },
             PaperMetadata = new JsonApiPaperMetadataPaths
             {
+                Tags = "attributes.subjects",
+                TagName = "subject",
                 Content = "attributes.descriptions.0.description",
                 Authors = "attributes.creators",
                 AuthorName = "name",
@@ -49,6 +51,8 @@ public static partial class JsonApiProviderCatalog
             PaperMetadata = new JsonApiPaperMetadataPaths
             {
                 PublishedDate = "metadata.publication_date",
+                Tags = "metadata.subjects",
+                TagName = "subject",
                 Content = "metadata.description",
                 Authors = "metadata.creators",
                 AuthorName = "name",
@@ -107,11 +111,12 @@ public static partial class JsonApiProviderCatalog
             FixedParameters = new Dictionary<string, string>
             {
                 ["wt"] = "json",
-                ["fl"] = "id,title_display,abstract,author_display,publication_date,journal,volume,issue,page,eissn,article_type"
+                ["fl"] = "id,title_display,abstract,author_display,publication_date,journal,volume,issue,page,eissn,article_type,subject"
             },
             PaperMetadata = new JsonApiPaperMetadataPaths
             {
                 PublishedDate = "publication_date",
+                Tags = "subject",
                 Content = "abstract",
                 Authors = "author_display",
                 Journal = "journal",

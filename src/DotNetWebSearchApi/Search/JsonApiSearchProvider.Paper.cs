@@ -23,7 +23,7 @@ public sealed partial class JsonApiSearchProvider
 
         string content = CleanText(ReadOptionalText(item, paths.Content));
         string comments = CleanText(ReadOptionalText(item, paths.Comments));
-        IReadOnlyList<string> tags = ReadTextArray(item, paths.Tags);
+        IReadOnlyList<string> tags = ReadPaperTags(item, paths);
         string type = ReadOptionalText(item, paths.Type);
         string publicationYear = ReadOptionalText(item, paths.PublicationYear);
         string editor = ReadOptionalText(item, paths.Editor);
@@ -129,6 +129,35 @@ public sealed partial class JsonApiSearchProvider
         return authors;
     }
 
+    private static IReadOnlyList<string> ReadPaperTags(
+        JsonElement item,
+        JsonApiPaperMetadataPaths paths)
+    {
+        if (string.IsNullOrWhiteSpace(paths.Tags) || !TryReadPath(item, paths.Tags, out JsonElement tags))
+        {
+            return Array.Empty<string>();
+        }
+
+        if (tags.ValueKind != JsonValueKind.Array)
+        {
+            return ReadTextArray(item, paths.Tags);
+        }
+
+        List<string> values = new();
+        foreach (JsonElement tag in tags.EnumerateArray())
+        {
+            string value = tag.ValueKind == JsonValueKind.String
+                ? tag.GetString()?.Trim() ?? string.Empty
+                : ReadOptionalText(tag, paths.TagName);
+            if (value.Length > 0)
+            {
+                values.Add(value);
+            }
+        }
+
+        return values.Distinct(StringComparer.OrdinalIgnoreCase).ToArray();
+    }
+
     private static IReadOnlyList<string> ReadTextArray(JsonElement item, string path)
     {
         if (string.IsNullOrWhiteSpace(path) || !TryReadPath(item, path, out JsonElement value))
@@ -159,6 +188,7 @@ public sealed record JsonApiPaperMetadataPaths
     public string Content { get; init; } = string.Empty;
     public string Comments { get; init; } = string.Empty;
     public string Tags { get; init; } = string.Empty;
+    public string TagName { get; init; } = string.Empty;
     public string Type { get; init; } = string.Empty;
     public string PublicationYear { get; init; } = string.Empty;
     public string Author { get; init; } = string.Empty;

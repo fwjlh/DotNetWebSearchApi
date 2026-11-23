@@ -24,7 +24,8 @@ public sealed partial class PaperResultMetadataTests
                     "publisher": "Example Data Press",
                     "publicationYear": 2024,
                     "types": { "resourceTypeGeneral": "Dataset" },
-                    "doi": "10.1234/datacite"
+                    "doi": "10.1234/datacite",
+                    "subjects": [{ "subject": "Computer Science" }, { "subject": "Machine Learning" }]
                   }
                 }
               ]
@@ -40,6 +41,7 @@ public sealed partial class PaperResultMetadataTests
         Assert.Equal("2024", paper.PublicationYear);
         Assert.Equal("10.1234/datacite", paper.Doi);
         Assert.Equal("https://example.org/datacite", paper.HtmlUrl);
+        Assert.Equal(new[] { "Computer Science", "Machine Learning" }, paper.Tags);
     }
 
     [Fact]
@@ -68,7 +70,8 @@ public sealed partial class PaperResultMetadataTests
                         "pages": "12-18"
                       },
                       "doi": "10.9999/zenodo",
-                      "resource_type": { "title": "Publication" }
+                      "resource_type": { "title": "Publication" },
+                      "subjects": [{ "subject": "Physics" }, { "subject": "Data Science" }]
                     }
                   }
                 ]
@@ -85,6 +88,7 @@ public sealed partial class PaperResultMetadataTests
         Assert.Equal("12-18", paper.Pages);
         Assert.Equal("10.9999/zenodo", paper.Doi);
         Assert.Equal("https://zenodo.org/records/123/files/paper.pdf", paper.PdfUrl);
+        Assert.Equal(new[] { "Physics", "Data Science" }, paper.Tags);
         Assert.Equal("paper.html", MapSingle(result).Template);
     }
 
@@ -137,7 +141,8 @@ public sealed partial class PaperResultMetadataTests
                     "issue": "11",
                     "page": "e1234567",
                     "eissn": "1932-6203",
-                    "article_type": "Research Article"
+                    "article_type": "Research Article",
+                    "subject": ["Computer Science", "Genetics"]
                   }
                 ]
               }
@@ -155,5 +160,6 @@ public sealed partial class PaperResultMetadataTests
         Assert.Equal("1932-6203", Assert.Single(paper.Issn));
         Assert.Equal("10.1371/journal.pone.1234567", paper.Doi);
         Assert.Equal(new DateTimeOffset(2026, 11, 18, 0, 0, 0, TimeSpan.Zero), paper.DateOfPublication);
+        Assert.Equal(new[] { "Computer Science", "Genetics" }, paper.Tags);
     }
 }
