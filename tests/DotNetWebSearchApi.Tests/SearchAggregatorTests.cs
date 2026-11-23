@@ -219,11 +219,19 @@ public sealed class SearchAggregatorTests
                 await Task.Delay(System.Threading.Timeout.Infinite, cancellationToken);
                 return Array.Empty<SearchResult>();
             });
-        SearchAggregator aggregator = CreateAggregator(waitingProvider);
+        ProviderHealthRegistry health = new();
+        SearchAggregator aggregator = new(
+            new[] { waitingProvider },
+            NullLogger<SearchAggregator>.Instance,
+            health: health);
         cancellation.CancelAfter(TimeSpan.FromMilliseconds(20));
 
         await Assert.ThrowsAnyAsync<OperationCanceledException>(() =>
             aggregator.SearchAsync(new SearchQuery("test", 10), cancellation.Token));
+
+        ProviderHealthSnapshot snapshot = Assert.Single(health.GetSnapshot(new[] { "waiting" }));
+        Assert.Equal(ProviderHealthStatus.Closed, snapshot.Status);
+        Assert.Equal(0, snapshot.ConsecutiveFailures);
     }
 
     [Fact]
