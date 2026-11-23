@@ -1607,3 +1607,11 @@ Every material repository action is recorded here with its reason, result, verif
 - **Action:** Added `scripts/Show-CoverageSummary.ps1` to select the newest Cobertura report, print aggregate line/branch coverage and list the 25 lowest line-coverage classes. Added `docs/COVERAGE.md` and linked the workflow from README.
 - **Commits:** `e47185eb9c1bd9b8de6cf448a0f8bf69182ef8d2` (script), `7614faeb250fa99837b2e043a5cfb43e21423f11` (guide), `4541d27151ac70f6d841a52cfb339a241855609b` (README).
 - **Verification:** Script reviewed but not run; no local PowerShell/.NET test environment is available in this session. Actual line/branch percentages remain pending the operator's local run.
+
+
+### 172. Authenticate before consuming the search rate quota
+- **Reason:** With the rate limiter ordered before authentication, unauthenticated requests from a shared address could consume the same quota used by legitimate authenticated clients.
+- **Action:** Moved endpoint rate-limiting middleware after the bearer-key middleware. Authentication failures now return 401 before they reach the search quota. Added a startup guard test proving a non-Development host refuses to start without `SEARCH_API_KEYS`.
+- **Tests added:** 61 invalid-key requests must not consume the authenticated client's quota; a subsequent valid request succeeds. Added Staging startup-without-key coverage.
+- **Commits:** `cae912240792c1b0db80926f493c0711747d3cc5` (middleware order), `cbb29832af035fc5424c62baae6a3d363247ce42` and `52d3cdc0d0c95274562319fb12fed92d41fdc0a4` (tests).
+- **Verification:** Source/test review only; no .NET 10 SDK available here. No Actions used.
