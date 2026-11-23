@@ -51,9 +51,13 @@
 - Tests must use local fixtures; no live provider calls in tests.
 - Fixture and integration tests have been added, but **the suite has not been executed** because the .NET 10 SDK is unavailable in this environment. Do not claim tests have passed.
 
-## Exact next step
+## Latest test compile correction
 
-At the planned local build/test session:
+- Removed a duplicate `SearchAsync_MapsDataCiteCreatorsAndPublicationYear` declaration from `PaperResultMetadataTests.cs`. The richer version remains in `PaperResultMetadataAdditionalTests.cs` and additionally asserts authors, tags and landing-page metadata.
+- Commit: `1bc2f934084a47d8e3d32bd50ab1aee6beb3ca7f`.
+- The application project now compiles in the user's local Debug build; the test project exposed this duplicate declaration. The duplicate was source-reviewed and removed; the test project has not yet been rebuilt.
+
+## Exact next step
 
 1. Pull the latest `main` commit and run `dotnet build .\\DotNetWebSearchApi.sln -c Debug --no-incremental`.
 2. If the build succeeds, run `dotnet test .\\DotNetWebSearchApi.sln -c Release`.
