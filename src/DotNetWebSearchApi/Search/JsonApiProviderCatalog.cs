@@ -326,7 +326,11 @@ public static partial class JsonApiProviderCatalog
                 EmbedUrl = "embed_url",
                 ThumbnailUrl = "thumbnail_360_url",
                 DurationSeconds = "duration",
-                PublishedDate = "uploaded_time"
+                PublishedDate = "uploaded_time",
+                AllowedEmbedHosts = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+                {
+                    "geo.dailymotion.com"
+                }
             }
         },
         new JsonApiSearchDefinition
