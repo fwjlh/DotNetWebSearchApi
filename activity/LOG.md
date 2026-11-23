@@ -1072,3 +1072,13 @@ Every material repository action is recorded here with its reason, result, verif
 - **Tests added:** Added a nine-case capability theory covering Openverse and all eight newly classified adapters. Each case asserts the provider rejects the default/general category and accepts its declared vertical.
 - **Validation:** Code and tests pushed together in commit `c1f81202bde134ba51dba961d3ebd006dec63cba`. The modified catalog remains below the 25 KB hard limit (23,886 bytes); the new capability test file is 3,910 bytes. Tests are not executed because no .NET SDK is installed. No GitHub Actions workflow exists or was used.
 - **Next:** Continue checking specialist definitions against their actual upstream endpoint semantics. Do not infer categories for ambiguous providers; record uncertain cases for the richer result-model design. Keep the provider catalogue frozen at 67.
+
+
+### 118. Preserve specialist categories through the result model and SearXNG mapping
+- **Reason:** Provider capability filtering separated image/video/music/news adapters from general search, but the compatibility mapper still hard-coded every result category as `general`.
+- **Action:** Added `SearchResult.Category` with a backwards-compatible `general` default; generic JSON results take the configured category; SearXNG mapping preserves that category.
+- **Tests:** Added a Bilibili fixture test covering JSON provider parsing through SearXNG response mapping. The prior category boundary tests remain in place.
+- **Commits:** `2f822c38`, `e19be5fa`, `9dacb6a1`, `d6de9de0`, `b8ba727a`.
+- **Follow-up:** Corrected an extra escaping layer in the Bilibili JSON fixture in `982c14c4d7e0a70a450ff367d7fb00b21f6616ee`; documented the correction in `activity/2026-11-23-specialist-category-response-mapping.md`.
+- **Validation:** Reviewed the model, provider, mapper and test source. Local execution is unavailable (`dotnet` is not installed). No GitHub Actions workflows were run or recreated; no live provider request was made.
+- **Next:** Design typed image/news/video metadata before adding provider-specific fields. Keep the catalogue frozen at 67.
