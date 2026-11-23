@@ -163,3 +163,6 @@ Keep this file and `LOG.md` current so the next session can resume without chat 
 
 
 - POST /search body limits now run in the security middleware before authentication, including Kestrel's streamed-body feature where supported. An offline test asserts an oversized unauthenticated POST returns 413 before the bearer-key challenge. Commits `0246903d`, `7683d587`; activity record `bff3b447`.
+
+
+- The non-Development startup test now sets both `ASPNETCORE_ENVIRONMENT` and `DOTNET_ENVIRONMENT` to Staging before host creation, avoiding minimal-host environment precedence ambiguity. Commit `92b279c4`; activity entry `7c993b2b`.
