@@ -38,7 +38,10 @@
 - Latest user run: 3 failures remain — Bilibili expectation, Crossref publication year, and 63 vs 67 production-host registrations. The Bilibili assertion is now corrected on `main`.
 - The provider-count test now checks Exa, Yandex, Kagi and Brave before the aggregate count, so the next run identifies which optional registration is missing.
 - Crossref discrepancy needs local revision verification: current `main` defines `PublicationYear` as a non-nullable string defaulting to empty and assigns a string in the mapper, so the reported actual `null` is inconsistent with the currently fetched source.
-- No .NET build/tests were executed here. Do not claim verification; user must pull and rerun locally.
+- Fixed the Crossref publication-year response omission: source metadata already contained `2024`, but the SearXNG mapper did not assign `PaperPublicationYear`. Commit: `47369b59`.
+- Fixed the optional-provider test configuration timing: the test now injects Exa/Yandex/Kagi/Brave keys via host configuration before minimal-host top-level registration. Commit: `2787902b`.
+- Activity entries 156–157 record both fixes and their validation limits.
+- No .NET build/tests were executed here. These two changes require the user's next local Release test run.
 
 ## Latest compile corrections
 
