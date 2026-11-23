@@ -1282,3 +1282,13 @@ Every material repository action is recorded here with its reason, result, verif
 - **Commits:** `8744bfd8`, `9ccd91dd`, `7555c36b`, `a4554449`, `b7f25c47`, `b1fb04b8`, `ff96ec26`, `ad3975d6`, `42d4cb03`, `77566686`, `e57892fd`, `67e04f86`.
 - **Validation:** Reviewed definitions, field paths and fixtures. Tests remain unexecuted because the .NET SDK is unavailable. No GitHub Actions or live scholarly API calls were used.
 - **Next:** Audit remaining science-category definitions and check SearXNG Paper serialization for all mapped fields. Keep provider count frozen at 67.
+
+
+### 136. Complete scholarly serialization and year-only date checks
+- **Reason:** Publication years must not be converted into invented full dates, and the SearXNG paper response needs to preserve its field names exactly.
+- **Action:** Crossref now retains `published.date-parts[0][0]` as `publication_year`; it does not create a fake January 1 publication date.
+- **Action:** Added SearXNG serialization assertions for DOI, publication year and author list.
+- **Action:** Updated the rationale and audit to distinguish full dates from year-only values.
+- **Commits:** `7e29aad2`, `24b91100`, `704348cb`, `2a7e82dd`, `5c44fa77`.
+- **Validation:** Reviewed JSON field mapping and fixture source. Tests remain unexecuted because the .NET SDK is unavailable; no GitHub Actions or live scholarly requests were used.
+- **Next:** Final science category/template audit and source-size/provider-count check.
