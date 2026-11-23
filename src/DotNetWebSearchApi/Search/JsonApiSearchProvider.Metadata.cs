@@ -258,9 +258,17 @@ public sealed partial class JsonApiSearchProvider
         return TryReadText(item, path, out string value) ? value : string.Empty;
     }
 
-    private string ResolveResultCategory()
+    private string ResolveResultCategory(SearchQuery query)
     {
-        return _definition.Categories.FirstOrDefault() ?? "general";
+        if (_definition.Categories.Contains("general")
+            && (query.Categories is null || query.Categories.Contains("general")))
+        {
+            return "general";
+        }
+
+        return query.Categories?.FirstOrDefault(_definition.Categories.Contains)
+            ?? _definition.Categories.FirstOrDefault()
+            ?? "general";
     }
 
     private string AppendAttribution(string snippet)
