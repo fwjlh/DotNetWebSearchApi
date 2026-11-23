@@ -458,3 +458,11 @@ At the planned local build/test session, install/use the .NET 10 SDK, run the fu
 2. Add fixture tests for each provider and URL validation.
 3. Re-audit all science/news/music/image/video categories and result templates.
 4. Keep provider count at 67 and all commits on `main`; no workflows.
+
+
+## Latest scholarly mapping correction
+- Paper publication date now falls back to the common `publishedDate` when `date_of_publication` is absent, matching the pinned SearXNG Paper behaviour.
+- Added a focused mapper regression.
+- Commit: `5965ac58e1037ab618bef3e85567d0f0d1cf9b9b`.
+- Logged as entry 135. Tests remain unexecuted because the .NET SDK is unavailable.
+- Next: map DataCite, Zenodo, OpenAIRE and PLOS paper metadata from fixtures, without live API calls.
