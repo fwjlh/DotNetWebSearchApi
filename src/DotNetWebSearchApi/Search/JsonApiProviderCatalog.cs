@@ -506,9 +506,26 @@ public static partial class JsonApiProviderCatalog
             ResultsPath = "results",
             TitlePath = "title",
             UrlPath = "foreign_landing_url",
-            SnippetPath = "attribution"
-        }
-        ,
+            SnippetPath = "attribution",
+            ImageMetadata = new JsonApiImageMetadataPaths
+            {
+                ImageUrl = "url",
+                ThumbnailUrl = "thumbnail",
+                Width = "width",
+                Height = "height",
+                Format = "filetype",
+                Source = "source",
+                FileSizeBytes = "filesize",
+                License = "license",
+                LicenseUrl = "license_url",
+                Creator = "creator",
+                CreatorUrl = "creator_url",
+                Provider = "provider",
+                LicenseVersion = "license_version",
+                Attribution = "attribution",
+                MediaCategory = "category"
+            }
+        },
         new JsonApiSearchDefinition
         {
             Name = "mwmbl",
