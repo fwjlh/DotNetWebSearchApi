@@ -7,6 +7,33 @@ namespace DotNetWebSearchApi.Tests;
 public sealed class SeznamSearchProviderTests
 {
     [Fact]
+    public void Capabilities_DeclareGeneralWebOnly()
+    {
+        using HttpClient client = new();
+        SeznamSearchProvider provider = new(client);
+
+        Assert.True(provider.Capabilities.Supports(new SearchQuery("test", 5)
+        {
+            Categories = new HashSet<string>(StringComparer.OrdinalIgnoreCase) { "general" }
+        }));
+        Assert.True(provider.Capabilities.Supports(new SearchQuery("test", 5)
+        {
+            Categories = new HashSet<string>(StringComparer.OrdinalIgnoreCase) { "web" }
+        }));
+        Assert.False(provider.Capabilities.Supports(new SearchQuery("test", 5)
+        {
+            Categories = new HashSet<string>(StringComparer.OrdinalIgnoreCase) { "images" }
+        }));
+        Assert.False(provider.Capabilities.Supports(new SearchQuery("test", 5) { Page = 2 }));
+        Assert.False(provider.Capabilities.Supports(new SearchQuery("test", 5)
+        {
+            TimeRange = SearchTimeRange.Day
+        }));
+        Assert.False(provider.Capabilities.Supports(new SearchQuery("test", 5) { SafeSearch = 1 }));
+        Assert.False(provider.Capabilities.Supports(new SearchQuery("test", 5) { Language = "en" }));
+    }
+
+    [Fact]
     public void Parse_ReadsResultTitleUrlAndContent()
     {
         SearchResult result = Assert.Single(SeznamSearchResultParser.Parse(ResultPage));
