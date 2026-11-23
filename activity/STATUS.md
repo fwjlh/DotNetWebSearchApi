@@ -178,3 +178,10 @@ Search/media/regional providers (batch 5): Wiby, TVmaze, Radio Browser, PeerTube
 2. Define compatibility behaviour for fields absent from ordinary web results.
 3. Add model and API serialization tests before changing provider-specific parsers.
 4. Keep the catalogue at 67 and continue direct commits to `main`; no workflows.
+
+
+## Follow-up — category fixture correction
+- Corrected the Bilibili JSON fixture's C# escaping in commit `982c14c4d7e0a70a450ff367d7fb00b21f6616ee`.
+- Updated the detailed activity record and appended LOG entry 118.
+- The test remains unexecuted: no .NET SDK is available. Do not use GitHub Actions.
+- Next remains typed rich-result metadata design for images, news and videos; keep the 67-provider catalogue frozen.
