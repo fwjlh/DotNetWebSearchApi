@@ -83,6 +83,9 @@ public sealed record SearxngSearchResult(
     [JsonPropertyName("date_of_publication")]
     public DateTimeOffset? PaperDateOfPublication { get; init; }
 
+    [JsonPropertyName("publication_year")]
+    public string? PaperPublicationYear { get; init; }
+
     [JsonPropertyName("content")]
     public string? PaperContent { get; init; }
 
