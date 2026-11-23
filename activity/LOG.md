@@ -1534,7 +1534,7 @@ Every material repository action is recorded here with its reason, result, verif
 
 ## 2026-11-23 — Bound inbound search query size
 
-### 160. Reject oversized search queries before provider execution
+### 163. Reject oversized search queries before provider execution
 - **Reason:** Both public search routes accepted unbounded query strings. Excessively large queries waste request-processing resources and are forwarded to every eligible provider.
 - **Action:** Added a shared 512-character maximum in `TryBuildSearchQuery`, so both `/search` and `/api/search` apply the same rule before aggregation/provider execution. Requests above the limit return HTTP 400 with a clear validation message.
 - **Tests added:** Added four boundary cases covering both endpoints: exactly 512 characters is accepted; 513 characters is rejected. The tests use the existing in-memory provider fixture and make no upstream network calls.
@@ -1543,7 +1543,7 @@ Every material repository action is recorded here with its reason, result, verif
 - **Next:** Add explicit maximum category/provider selection counts and form-body bounds, with tests, then review rate limiting and authentication design before public exposure. Measure line/branch coverage when the local SDK is available.
 
 
-### 161. Bound search category input
+### 164. Bound search category input
 - **Reason:** Category parsing previously accepted an unbounded number of arbitrarily long category names. This adds avoidable parsing/allocation work and allows meaningless values to be forwarded into capability filtering.
 - **Action:** Added shared validation for both search endpoints: at most 10 categories, with each category name limited to 32 characters. The existing empty-category validation remains unchanged.
 - **Tests added:** Four endpoint boundary cases cover too many categories and an overlong category name on both `/search` and `/api/search`.
