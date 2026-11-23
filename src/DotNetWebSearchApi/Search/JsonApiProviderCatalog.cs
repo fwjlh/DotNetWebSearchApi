@@ -491,6 +491,7 @@ public static partial class JsonApiProviderCatalog
         new JsonApiSearchDefinition
         {
             Name = "openverse",
+            Categories = new HashSet<string>(StringComparer.OrdinalIgnoreCase) { "images" },
             Endpoint = "https://api.openverse.org/v1/images/",
             QueryParameter = "q",
             LimitParameter = "page_size",

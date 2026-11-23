@@ -4,7 +4,7 @@ using System.Text.RegularExpressions;
 
 namespace DotNetWebSearchApi.Search;
 
-public sealed class JsonApiSearchProvider : ISearchProvider
+public sealed class JsonApiSearchProvider : ISearchProvider, ISearchProviderCapabilities
 {
     private readonly HttpClient _httpClient;
     private readonly JsonApiSearchDefinition _definition;
@@ -21,6 +21,14 @@ public sealed class JsonApiSearchProvider : ISearchProvider
     }
 
     public string Name => _definition.Name;
+
+    public EngineCapabilities Capabilities => new(
+        _definition.Categories,
+        false,
+        1,
+        false,
+        false,
+        false);
 
     public TimeSpan Timeout => TimeSpan.FromSeconds(8);
 
@@ -249,4 +257,6 @@ public sealed record JsonApiSearchDefinition
     public int MinimumIntervalMilliseconds { get; init; }
     public IReadOnlyDictionary<string, string> FixedParameters { get; init; } =
         new Dictionary<string, string>();
+    public IReadOnlySet<string> Categories { get; init; } =
+        new HashSet<string>(StringComparer.OrdinalIgnoreCase) { "general" };
 }
