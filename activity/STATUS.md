@@ -3,7 +3,6 @@
 **Repository:** `fwjlh/DotNetWebSearchApi`  
 **Branch:** `main`  
 **Last updated:** 2026-11-23  
-**Current head before this handover update:** `7f2042f8550c0eff7ae7577dc91789ebfa992d38`
 
 ## Working contract
 
@@ -41,7 +40,7 @@ Read root [`_LookAtMe.MD`](../_LookAtMe.MD) before changing code. Keep changes s
 - JSON catalogue files: base 15.6 KB, media 14.2 KB, Wave7 7.8 KB.
 - 35 test source files, including provider fixtures, category selection, media safety, paper metadata and API integration.
 - `_LookAtMe.MD`, `activity/LOG.md` and this file are present.
-- No `.github/workflows/` files exist. No GitHub Actions have been used during this work.
+- No `.github/workflows/` files exist. No GitHub Actions have been invoked since the instruction to stop; no workflow files currently exist.
 
 ## Test status and known limits
 
