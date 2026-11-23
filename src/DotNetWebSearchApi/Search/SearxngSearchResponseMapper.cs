@@ -16,6 +16,11 @@ public static class SearxngSearchResponseMapper
 
     private static string ResolveTemplate(SearchResult result)
     {
+        if (result.PaperMetadata is not null)
+        {
+            return "paper.html";
+        }
+
         if (string.Equals(result.Category, "images", StringComparison.OrdinalIgnoreCase)
             && IsAbsoluteHttpUrl(result.ImageMetadata?.ImageUrl))
         {
@@ -44,9 +49,14 @@ public static class SearxngSearchResponseMapper
             return result.VideoMetadata.Author;
         }
 
-        return string.IsNullOrWhiteSpace(result.MusicMetadata?.Artist)
+        if (!string.IsNullOrWhiteSpace(result.MusicMetadata?.Artist))
+        {
+            return result.MusicMetadata.Artist;
+        }
+
+        return string.IsNullOrWhiteSpace(result.PaperMetadata?.Author)
             ? null
-            : result.MusicMetadata.Artist;
+            : result.PaperMetadata.Author;
     }
 
     private static SearxngSearchResult MapResult(SearchResult result)
@@ -78,7 +88,25 @@ public static class SearxngSearchResponseMapper
             VideoViews = result.VideoMetadata?.Views,
             VideoMetadata = result.VideoMetadata,
             AudioUrl = result.MusicMetadata?.AudioUrl,
-            MusicMetadata = result.MusicMetadata
+            MusicMetadata = result.MusicMetadata,
+            PaperDateOfPublication = result.PaperMetadata?.DateOfPublication,
+            PaperContent = result.PaperMetadata?.Content,
+            PaperComments = result.PaperMetadata?.Comments,
+            PaperTags = result.PaperMetadata?.Tags,
+            PaperType = result.PaperMetadata?.Type,
+            PaperAuthors = result.PaperMetadata?.Authors,
+            PaperEditor = result.PaperMetadata?.Editor,
+            PaperPublisher = result.PaperMetadata?.Publisher,
+            PaperJournal = result.PaperMetadata?.Journal,
+            PaperVolume = result.PaperMetadata?.Volume,
+            PaperPages = result.PaperMetadata?.Pages,
+            PaperNumber = result.PaperMetadata?.Number,
+            PaperDoi = result.PaperMetadata?.Doi,
+            PaperIssn = result.PaperMetadata?.Issn,
+            PaperIsbn = result.PaperMetadata?.Isbn,
+            PdfUrl = result.PaperMetadata?.PdfUrl,
+            HtmlUrl = result.PaperMetadata?.HtmlUrl,
+            PaperMetadata = result.PaperMetadata
         };
     }
 }
