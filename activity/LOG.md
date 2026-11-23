@@ -1623,3 +1623,15 @@ Every material repository action is recorded here with its reason, result, verif
 - **Commits:** `aa18e8e66a8d390b772610712ffb12276a59a128` (Program extraction), `29e1fbdce3da2228b160573d9fb859b9e6b3e85e` (security policy), `a0f55af1aa778805c1c60976755db7eea38d3356` (namespace/import correction).
 - **Result:** Program source is approximately 18 KB, below the 20 KB target.
 - **Verification:** Source reviewed only; no .NET SDK/build/test run. No GitHub Actions.
+
+
+### 174. Preserve request-size feature import after Program split
+- **Reason:** The POST endpoint still uses `IHttpMaxRequestBodySizeFeature` after the broader form/security configuration moved to its own file.
+- **Correction:** Restored the explicit `Microsoft.AspNetCore.Http.Features` import in Program.
+- **Commit:** `1395ad3e3f37ebf3dd7726d5a24ce6ebacaeb854`.
+
+### 175. Dispose sockets when a connection family cannot be opened
+- **Reason:** Socket construction itself can fail for an address family before the connect operation; the previous loop constructed the socket outside its try block and would stop before trying later public addresses.
+- **Correction:** Moved socket creation inside the guarded block and dispose any created socket on both connection and unexpected failures. A SocketException now allows the loop to try the next already-validated address.
+- **Commit:** `3ea73e68aded8f6b8f83d77dc97a75e581b924d5`.
+- **Verification:** Source-reviewed only; compile/test remains pending local .NET 10.
