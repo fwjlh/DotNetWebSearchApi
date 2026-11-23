@@ -991,3 +991,19 @@ Every material repository action is recorded here with its reason, result, verif
 - **Action:** Reconciled the corpus and audit with the current C# implementation. The typed HttpClient uses its default cookie-enabled handler across the two requests; the provider does not manually serialize cookies. A /verify route is now Challenge + BrowserVerification.
 - **Verification:** Documentation-only reconciliation. Existing provider fixture tests remain part of the verified 236-test suite in [run 45030669036](https://github.com/fwjlh/DotNetWebSearchApi/actions/runs/45030669036). No live Seznam requests.
 - **Next:** Naver thumbnail metadata, then operational API conformance/security hardening. Provider count remains frozen at 67.
+
+
+### 108. Preserve Naver general-result thumbnail metadata
+- **Reason:** The pinned Naver Python engine's general parser extracts the first non-circular result image; the C# parser previously discarded it.
+- **Action:** Added optional `SearchResult.ThumbnailUrl`, extracted the non-circular image source in `NaverSearchResultParser`, and accepted only absolute HTTP(S) thumbnail URLs. The SearXNG response record/mapper now emits the field as `thumbnail`; the regular API retains the optional `thumbnailUrl` property.
+- **Tests:** Added fixture assertions for extraction, exclusion of circular avatars, rejection of a javascript: source, and SearXNG JSON mapping. The model/parser/test commits passed in [run 45143993872](https://github.com/fwjlh/DotNetWebSearchApi/actions/runs/45143993872); response mapping and integration test passed in [run 45144068228](https://github.com/fwjlh/DotNetWebSearchApi/actions/runs/45144068228). No live Naver requests.
+- **Documentation:** Updated the Naver corpus entry to distinguish the preserved general thumbnail from still-omitted images/news/videos verticals.
+- **Next:** Continue explicit capability declarations for adapters whose request shape intentionally differs from SearXNG; keep the 67-provider catalogue frozen.
+
+### 109. Declare Yandex Cloud adapter capability boundaries
+- **Reason:** The C# Yandex provider is an authenticated Cloud Search API integration, not a direct port of SearXNG's public HTML engine. Without a capability declaration, the aggregator applied only the generic BasicWeb profile and could not accurately explain this adapter's supported request shape.
+- **Python evidence:** Pinned `yandex.py` uses `yandex.com/search/site/`, supports page offsets, locale, date windows and an images vertical, and classifies the `x-yandex-captcha` response header.
+- **Action:** C# now explicitly declares general/web, first page only, and no request-level locale, time-range or safe-search support. The aggregator rejects these unsupported non-default options before the Cloud API request rather than silently ignoring them. No claim of parity with the Python HTML engine is made.
+- **Tests:** Added capability tests for the default request and rejection of page 2, a locale, safe-search and time range. GitHub Actions [run 45144264756](https://github.com/fwjlh/DotNetWebSearchApi/actions/runs/45144264756) passed the build-and-test job. No live Yandex Cloud requests.
+- **Documentation:** Updated the Yandex corpus entry with the capability boundary and protocol-substitution caveat.
+- **Next:** Continue auditing the remaining providers for unadvertised request-field omissions, then move to API compatibility/security hardening. Provider count remains frozen at 67.
