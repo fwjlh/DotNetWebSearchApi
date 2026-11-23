@@ -1509,3 +1509,13 @@ Every material repository action is recorded here with its reason, result, verif
 - **Correction covered:** Openverse category filtering now runs against the production provider catalogue rather than an empty test provider collection.
 - **Next:** Add measured coverage reporting, inspect coverage by production class/branch, then target the highest-risk uncovered logic. Focus first on request validation, capability filtering, aggregation/ranking, provider-health transitions, shared transport and response mapping. Keep workflows disabled.
 
+## 2026-11-23 — Add measurable test coverage reporting
+
+### 161. Add Coverlet collector for local coverage measurement
+- **Reason:** A green test count confirms regressions are absent but does not show which production branches remain untested. The project rules require logic and meaningful edge-case coverage, so coverage must be measured before deciding where to add tests.
+- **Action:** Added the Coverlet collector to the xUnit test project. It supports the standard `dotnet test --collect:"XPlat Code Coverage"` workflow and emits Cobertura coverage data without requiring GitHub Actions.
+- **Result:** Package reference added; no production logic changed.
+- **Verification:** Not run in this environment. The user should restore and run the documented coverage command locally; the next increment will use the resulting report to target uncovered high-risk logic.
+- **Audit note:** The existing result score calculation intentionally matches SearXNG's current `calculate_score` algorithm: multiply contributing engine weights, multiply by the number of positions, then sum weighted reciprocal positions. Do not simplify this into a sum/average of per-engine weights; that would break compatibility. Source: https://github.com/searxng/searxng/blob/master/searx/results.py.
+- **Next:** Run coverage locally and share the Cobertura summary or file. Prioritise uncovered branches in request validation, capability gating, aggregation, provider health, shared transport and response mapping. Workflows remain disabled.
+
