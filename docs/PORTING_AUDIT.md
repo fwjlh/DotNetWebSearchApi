@@ -1,158 +1,141 @@
 # Python-to-C# Porting Audit
 
-Date: 2026-11-22
+Date: 2026-11-23
 
 ## Executive summary
 
-The project currently contains 67 provider adapters and a working .NET 10 aggregation/API layer. This is meaningful provider coverage, but it is **not yet a faithful port of the SearXNG engine framework**. We have ported selected provider request/response behaviour and built our own smaller execution model around it.
+The repository contains **67 provider adapters**, and provider expansion is frozen while the shared architecture is consolidated. This is meaningful provider coverage, but it is **not a complete or behaviourally equivalent port of the SearXNG Python framework**.
 
-The best next move is to pause provider-count expansion and port the reusable framework patterns first. That should make later provider additions faster, more consistent and more faithful.
+The current .NET 10 service now has a substantial shared foundation: typed request context and capability pre-flight, shared bounded HTTP transport, typed provider outcomes and challenge subtypes, process-local provider health/cooldown, locale traits for the major engines, result provenance and weighted ranking, and a SearXNG-shaped JSON endpoint.
 
-The audit compares the current C# source with the upstream SearXNG Python implementation, principally:
+The remaining work is primarily about fidelity, richer result types, session isolation, operational hardening and systematic provider-by-provider audit. Fixture tests prove request construction and parsing against captured examples; they do not prove live upstream acceptance.
 
+## Source baseline and scope
+
+The provider rationale is compared against SearXNG revision [c6ee3e9fd0235004a694e63720efc869bb1e3594](https://github.com/searxng/searxng/commit/c6ee3e9fd0235004a694e63720efc869bb1e3594), unless an entry explicitly says otherwise.
+
+Shared framework references:
 - [Engine processor](https://github.com/searxng/searxng/blob/c6ee3e9fd0235004a694e63720efc869bb1e3594/searx/search/processors/abstract.py)
 - [Search query model](https://github.com/searxng/searxng/blob/c6ee3e9fd0235004a694e63720efc869bb1e3594/searx/search/models.py)
 - [Result container and ranking](https://github.com/searxng/searxng/blob/c6ee3e9fd0235004a694e63720efc869bb1e3594/searx/results.py)
 - [Engine traits](https://github.com/searxng/searxng/blob/c6ee3e9fd0235004a694e63720efc869bb1e3594/searx/enginelib/traits.py)
 - [Network layer](https://github.com/searxng/searxng/tree/c6ee3e9fd0235004a694e63720efc869bb1e3594/searx/network)
-- [Bing engine](https://github.com/searxng/searxng/blob/c6ee3e9fd0235004a694e63720efc869bb1e3594/searx/engines/bing.py)
-- [Brave engine](https://github.com/searxng/searxng/blob/c6ee3e9fd0235004a694e63720efc869bb1e3594/searx/engines/brave.py)
-- [DuckDuckGo engine](https://github.com/searxng/searxng/blob/c6ee3e9fd0235004a694e63720efc869bb1e3594/searx/engines/duckduckgo.py)
-- [Wikipedia engine](https://github.com/searxng/searxng/blob/c6ee3e9fd0235004a694e63720efc869bb1e3594/searx/engines/wikipedia.py)
 
-This is an architectural comparison, not a line-by-line port certification. SearXNG changes over time; future port work should pin an upstream commit and record the exact source revision for each engine.
+Per-provider translation decisions are recorded in [PYTHON_TO_CSHARP_PORTING_NOTES.md](PYTHON_TO_CSHARP_PORTING_NOTES.md). Focused challenge and locale design notes are in [docs/PORTING](PORTING/).
 
-## What we already have
+## Implemented shared foundations
 
 - A common `ISearchProvider` contract and parallel `SearchAggregator`.
-- Per-provider timeouts, cancellation propagation, failure isolation and basic diagnostics.
-- URL validation, deduplication and result limiting.
-- A declarative JSON API adapter with endpoint, query/limit parameters, JSON paths, URL prefixes, headers, API-key configuration, POST bodies and minimum request intervals.
-- A separate RSS/Atom adapter and dedicated HTML/XML implementations where a generic JSON mapping is insufficient.
-- Provider fixture tests and GitHub Actions CI.
-- A SearXNG-shaped `/search` response mapper and provider-selection parameter.
-- Search request context and capability pre-flight, with unsupported providers reported separately.
-- Typed provider outcomes and a process-local Closed/Open/HalfOpen health registry with cooldown, backoff, one recovery probe and caller-cancellation release.
-- Initial shared HTTP transport used by Bing and Qwant: bounded response reads, per-host concurrency, response-header capture and Retry-After extraction.
+- Per-provider timeouts, caller cancellation propagation and failure isolation.
+- `SearchQuery` request context: text, result limit, optional provider selection, categories, language, safe-search, page and time range.
+- `EngineCapabilities` and optional `ISearchProviderCapabilities`; unsupported providers are skipped before execution and reported separately from failures.
+- `SearchHttpTransport` used by the major HTML/API providers, Wikipedia, arXiv, generic JSON and RSS/Atom. It uses bounded response reads (4 MiB default), per-host concurrency, response-header capture, Retry-After extraction, fallback User-Agent/Accept headers and privacy-safe transport diagnostics.
+- Provider-keyed minimum-interval gates in the shared transport.
+- Typed provider outcomes for success, failure and skipped/cooling-down states. Failure kinds include timeout, rate limit, transient HTTP, invalid response, authentication, access denied, challenge, configuration and unknown. Caller cancellation is not converted into provider failure.
+- Challenge subtypes for temporary block, browser verification, proof-of-work, interactive CAPTCHA, interactive verification, login-required and unknown. Current provider detectors include Google/DuckDuckGo/Yandex CAPTCHA, Qwant DataDome, Seznam verification and Mojeek Altcha.
+- `ProviderHealthRegistry` with process-local Closed/Open/HalfOpen states, failure thresholds, failure-kind cooldowns, capped exponential backoff, Retry-After handling and a single half-open recovery probe. Cooling-down providers are skipped and reported separately.
+- `EngineLocaleRegistry` with curated static locale/region mappings for Bing, DuckDuckGo, Google, Qwant, Yahoo and Wikipedia.
+- Result deduplication, one-based per-provider positions, contributing engine names, per-engine positions and SearXNG-style weighted-position scoring. Engine weights are configurable through capabilities; current providers use the default weight unless explicitly changed.
+- Optional `SearchResult.ThumbnailUrl` metadata, currently populated for Naver general-web results and mapped to the SearXNG `thumbnail` field.
+- GET/POST SearXNG-shaped `/search`, GET `/api/search`, provider listing and diagnostics endpoints.
+- Provider fixture tests and GitHub Actions build/test workflow.
 
-These are good foundations. The JSON definition approach is especially useful for providers whose request and response shapes are genuinely simple.
+## Current architecture assessment
 
-## Main framework patterns: completed foundations and remaining gaps
+### 1. Request context and capability pre-flight
 
-### 1. A complete search request context
+Both `/api/search` and SearXNG-shaped `/search` parse and validate categories, page, language, safe-search and time range. A capable provider receives those values through `SearchQuery`; an incapable provider is skipped and listed under unsupported providers rather than being labelled unresponsive.
 
-Upstream `SearchQuery` and `RequestParams` carry more than the search text. The engine receives the query, locale, safe-search level, page number, time range, category and engine-specific continuation data.
+Explicit capability declarations exist for the main providers whose request builders now consume relevant fields, including Bing, DuckDuckGo, Google, Kagi, Naver, Qwant, Wikipedia, Yahoo and Yandex. Providers without a declaration receive a conservative general/first-page/default-locale profile. That fallback is intentional: do not copy Python capability flags into C# until the C# request builder actually honours the feature.
 
-Our `SearchQuery` now carries text, result limit, optional provider filter, categories, language, safe-search, page and time range. The original constructor remains compatible. Both `/api/search` and `/search` parse these values and validate their ranges. Provider-specific continuation state and region are not yet represented.
+The end-to-end request-context integration test proves that categories, page, language, safe-search and time range reach a provider that declares support. The Yandex Cloud test proves that page, locale, safe-search and time-range requests are rejected by its capability profile.
 
-**Remaining:** add provider-specific continuation/session state only where an upstream protocol requires it. Do not mistake parsed request context for provider support: request builders still need to consume the values before capabilities can advertise them.
+**Remaining:** provider-specific continuation tokens and richer region/session context are not yet part of the common request model. Continue auditing undeclared providers and add capabilities only with request-builder and fixture evidence.
 
-### 2. Engine capabilities and pre-flight eligibility
+### 2. Shared transport, sessions and rate control
 
-SearXNG checks engine capabilities before calling an engine. It skips unsupported page numbers, pages beyond an engine's maximum, and time ranges the engine cannot honour. It also has engine configuration for categories, paging, maximum page and weight.
+Providers build their own method, URI, headers and body; `SearchHttpTransport` owns common send/read behaviour and returns bounded content plus status/header metadata. Provider-specific response logic still decides how to interpret challenges and parse results.
 
-An `EngineCapabilities` record and optional `ISearchProviderCapabilities` interface now describe categories, paging/max page, time-range, safe-search, locale and weight. `SearchAggregator` performs pre-flight eligibility and returns unsupported providers separately. Legacy adapters receive a conservative general/first-page/default-locale profile. The API accepts valid request context and the aggregator decides which providers can participate.
+The transport currently enforces the response-size bound, per-host concurrency, provider-keyed minimum intervals and Retry-After capture. It adds fallback User-Agent and Accept headers only when neither the request nor configured HttpClient supplies them. Diagnostics record method, host, status, byte count, duration and exception type without logging URL query strings, response bodies, cookies or tokens.
 
-**Remaining:** add provider declarations only after each C# request builder genuinely honours the feature and fixture tests prove it. No provider should inherit SearXNG's Python capability flags automatically.
+Cookie/session state is not yet a universal per-user abstraction. Mojeek and Yahoo have separate keyed CookieContainers; Seznam uses its typed client's handler-managed cookie jar. These are process-scoped provider sessions, not isolated per caller or tenant. Handler lifetime and cross-request session semantics therefore remain operational concerns.
 
-### 3. Shared transport and request construction
+**Remaining:** deliberate per-caller/per-tenant session isolation, configurable redirect/decompression/proxy policy, timeout ownership and safe retry policy. Do not centralise provider-specific multi-step flows in a way that breaks their semantics. Never retry CAPTCHA, access-denied or permanent configuration failures.
 
-SearXNG separates an engine's request-building function from its response parser, then sends the request through a common network layer. That common layer owns consistent transport behaviour and engine-specific request parameters can adjust headers, cookies, proxy/impersonation, redirects and request body.
+### 3. Provider failure, challenge and health lifecycle
 
-The main provider paths now use `SearchHttpTransport`: HTML adapters (Bing, DuckDuckGo, Google, Naver, Qwant, Seznam, Yahoo, Mojeek), Brave and Yandex API adapters, Wikipedia and arXiv JSON/XML adapters, plus the generic JSON and RSS/Atom providers. The transport uses `ResponseHeadersRead`, enforces a 4 MiB response limit by default, caps concurrency per host, preserves response headers and captures Retry-After. It maps common HTTP statuses to typed provider failures, applies fallback User-Agent/Accept headers only when a provider has not supplied them, and emits privacy-safe method/host/status/size/duration diagnostics without URL queries or secrets. Provider minimum intervals are handled by the shared transport's provider-keyed rate gate; the JSON definition supplies its configured interval. Common provider-specific header profiles are still configured in `Program.cs`; cookies and redirect handling remain provider-specific.
+Provider exceptions are classified into typed outcomes. Challenge subtype is separate from the general failure kind, so a browser-verification page is not confused with a rate limit or a generic access denial. Mojeek's bounded Altcha proof-of-work remains a provider-specific protocol implementation; this is not an automated CAPTCHA solver.
 
-**Port:** continue the small pipeline:
-1. provider builds a request (method, URI, provider-specific headers/body and session requirements);
-2. shared `SearchHttpTransport` executes it and returns bounded content plus status/header metadata;
-3. provider-specific challenge/status logic and parser convert the response into typed outcomes/results.
+The health registry uses a global default policy and process-local memory. It distinguishes Closed, Open and HalfOpen, opens after configured failure conditions, applies failure-kind cooldowns and allows one recovery probe. Retry-After is capped by the configured maximum. Caller cancellation releases a half-open probe and is not recorded as provider failure; a regression test asserts that provider health remains Closed with zero consecutive failures after caller cancellation.
 
-Provider-specific cookie stores are now isolated for Mojeek and Yahoo; Seznam retains its own typed-client handler-managed cookie jar. These sessions are still process-scoped, not per-caller or per-tenant. The transport still needs a deliberate policy for timeout ownership, decompression, redirects, per-caller cookie/session isolation, proxy support, richer request-header profiles and safe retries. Do not retry CAPTCHA, access-denied or other permanent failures. Do not move all cookie and redirect behaviour into a single handler where it would break provider-specific flows.
+**Remaining:** per-provider policy configuration, persistence/shared state for multiple API instances, and operationally tuned cooldown values based on observed upstream limits. The current policy resets when the process restarts.
 
-### 4. Failure classification and provider suspension
+### 4. Locale and region traits
 
-SearXNG tracks consecutive errors and can suspend an engine for a configured period. CAPTCHA, access-denied, network failures and ordinary HTTP errors are not all treated alike. An engine that is suspended is skipped rather than repeatedly contacted on every query.
+`EngineLocaleRegistry` now has static mappings for Bing, DuckDuckGo, Google, Qwant, Yahoo and Wikipedia. The mappings are consumed by their corresponding request builders:
+- Bing maps locale to `setlang`/`cc` and safe-search to off/moderate/strict.
+- DuckDuckGo maps locale to `kl` and time range to `df`, including the related cookie values.
+- Google maps locale, country, page, time range and safe-search.
+- Qwant maps locale and its supported page/safe-search fields.
+- Yahoo maps language/region and regional search domains, and handles its YBV session cookie.
+- Wikipedia maps locale to a wiki host and sends Accept-Language for language variants such as zh-TW.
 
-The first typed outcome layer now distinguishes timeout, rate limit, transient HTTP, invalid response, authentication, access denied, challenge, configuration and unknown failures. Provider-specific adapters can throw `ProviderFailureException` with an optional retry duration. Caller cancellation is propagated rather than classified as provider failure; empty success is distinct from failure.
+This is a curated static subset, not a full replacement for SearXNG's dynamically fetched and persisted EngineTraits. Unknown locales use provider-defined fallback behaviour; they are not assigned guessed country codes.
 
-**Remaining:** no persistent health state, consecutive-failure policy, suspension window, cooldown/backoff or half-open probe exists yet. The generic classifier cannot recover `Retry-After` from a bare `HttpRequestException`; shared transport must preserve response headers and produce a typed failure.
+**Remaining:** broader language/region coverage, aliases and dynamic trait refresh/persistence. Extend only where the upstream source and provider request behaviour justify it.
 
-### 5. Real result merging and ranking
+### 5. Result model, aggregation and ranking
 
-SearXNG's `ResultContainer` merges duplicate results from multiple engines and retains the engines and positions that contributed them. Its score calculation considers engine weight, number of contributing engines and each engine's result position. It also handles answers, infoboxes, suggestions, corrections and other result types.
+The aggregator normalises HTTP(S) destinations, deduplicates results, retains contributing engines and their one-based positions, and calculates a weighted-position score. `EngineCapabilities.Weight` is the provider weight input; current weights remain mostly at the default 1.0. The SearXNG mapper emits actual engine positions rather than reconstructing them from score.
 
-Our aggregator now assigns one-based positions from each provider's returned order and preserves the contributing engine names plus per-engine positions when duplicate URLs merge. It calculates the SearXNG-style weighted position score: multiply contributing engine weights by the number of positions, then sum weight divided by each position. Adapter score is retained internally to choose the primary display record. The SearXNG response mapper emits recorded positions instead of fabricating them by inverting a score. Current providers all use the default weight 1.0; no provider-specific weights or high/low priority modes are configured. Rich metadata merge and answer/infobox/suggestion models remain unimplemented.
+The result model now has optional thumbnail metadata, used by Naver general-web parsing. It remains a predominantly ordinary-web-result model. Published dates, categories/templates, multiple thumbnail/image fields, video duration, licence/author metadata and structured provider-specific result types are not consistently represented. The SearXNG response currently returns empty answers, corrections, infoboxes and suggestions because those features are not yet implemented.
 
-**Remaining:** declare provider-specific engine weights from evidence/configuration, implement high/low priority modes if they are part of the compatibility target, and merge published date/category/template/rich metadata. Keep deterministic tie-breaks and tests where the same URL appears in two or more providers.
+**Remaining:** introduce a richer typed result model before broadening image/news/video verticals. Preserve provider-specific metadata rather than flattening it into title/URL/snippet. Define merge rules for metadata when multiple providers return the same URL.
 
-### 6. Engine traits: locale, language and region mappings
+### 6. Provider adapters and translation fidelity
 
-SearXNG has an `EngineTraits` model and persisted trait maps. Providers translate SearXNG locales into each upstream service's language and region codes. The C# request model now carries `SearchQuery.Language`, and `EngineLocaleRegistry` provides curated static provider-specific mappings for Bing, DuckDuckGo, Qwant, Google and Wikipedia. Bing consumes locale/safe-search; DDG locale/time-range; Qwant locale/paging/safe-search; Google locale/paging/time-range/safe-search; Wikipedia language-to-host. Bing consumes that mapping for `setlang`/`cc` and maps safe-search 0/1/2 to off/moderate/strict. Its declared capabilities now reflect the implemented request builder: general/web categories, locale and safe-search, but no paging or time range.
+The provider catalogue contains 67 adapters and remains frozen. The corpus records major engine differences and C#-only adapter families. Important examples:
+- Brave uses the documented JSON API in C#, rather than reproducing SearXNG's HTML/embedded-SvelteKit scraper; this introduces API-key/quota constraints and is explicitly labelled a protocol substitution.
+- Yandex C# uses the authenticated Yandex Cloud Search API, rather than Python's public HTML endpoint. It now declares general/web and first-page-only capability and pre-flight rejects unsupported locale, time-range and safe-search requests.
+- Wikipedia C# uses MediaWiki Action API multi-result search, rather than Python's REST page-summary/infobox workflow.
+- Generic JSON definitions and RSS/Atom adapters are C# shared abstractions, not one-to-one Python base-class ports.
+- Naver general-web now preserves non-circular thumbnails; images/news/videos verticals remain unimplemented.
+- Mojeek's Altcha protocol is provider-specific and bounded; it must not be generalized into CAPTCHA bypass.
 
-This is a deliberately small first port, not a full `EngineTraits` replacement. The registry has no dynamic refresh or persistence and only curated Bing and DuckDuckGo region subsets are populated. Unknown locales resolve to each provider's upstream all-market value rather than a guessed country.
+Every provider entry should distinguish preserved, adapted, omitted, known divergence and unverified behaviour. Fixture tests do not establish live upstream acceptance. See the [porting rationale corpus](PYTHON_TO_CSHARP_PORTING_NOTES.md).
 
-**Next:** add Wikipedia's language-to-host/LanguageConverter rules and Google locale/region maps after their request builders consume them. Expand DDG's language-region subset from pinned source evidence. Keep traits versioned and static until refresh/persistence provides clear value. See [locale traits notes](PORTING/LOCALE_TRAITS.md).
+### 7. SearXNG API compatibility
 
-### 7. Provider definitions are more than URL + JSON paths
+The `/search` endpoint supports GET and form-encoded POST, JSON format selection, engine selection, page, categories, language, safe-search and time range. Unknown engine names and invalid request values are rejected. Unsupported providers and cooling-down providers are reported separately from unresponsive providers.
 
-The generic JSON definition already covers several useful dimensions, but real SearXNG engines demonstrate further reusable patterns:
-- request parameters derived from locale, region, safe search and time range;
-- cookie values and state carried between pages;
-- multi-step token acquisition (DuckDuckGo's VQD is an example);
-- multiple categories/parsers sharing one upstream engine (Brave search/news/images/videos; Bing variants);
-- redirect decoding and response-specific error handling;
-- pagination and continuation tokens;
-- published dates, thumbnails and rich result fields.
+The current compatibility route still uses a fixed result limit of 10. `number_of_results` reflects results returned by this service, not an upstream total. Answers, corrections, infoboxes and suggestions are currently empty. The API is therefore a useful compatibility subset, not a full SearXNG API implementation.
 
-**Port:** evolve the definition model in layers. Keep the simple JSON/RSS definition path for simple sources. Add named request strategies, parser strategies and state handlers for complex sources. Do not try to express every provider in one giant collection of nullable properties, and do not force HTML or challenge-based providers into the JSON adapter.
+**Remaining:** define and version the compatibility target, decide how the SearXNG route should accept result limits, and add conformance tests for unsupported categories, engine selection, typed outcomes, paging and result metadata.
 
-### 8. SearXNG API compatibility is currently partial
+## Operational gaps before public exposure
 
-The current `/search` endpoint is a useful compatibility starting point, but it is not a complete SearXNG API implementation. It now parses category, page, language, safe-search and time-range context and reports `unsupported_engines` separately from `unresponsive_engines`. Providers without matching capabilities are skipped. The result shape still omits real suggestions, answers, corrections and infoboxes; `number_of_results` is the number returned by this API, not an upstream total. Result limit is still fixed on this compatibility route.
+- API authentication is not implemented.
+- Per-client quotas and API-level rate limiting are not implemented.
+- Request/query/body size limits need a deliberate public contract.
+- Outbound request destination policy and provider endpoint configuration need review before allowing user-managed providers.
+- Provider health and cookie/session state are process-local and not tenant-isolated.
+- Live upstream smoke tests have not been run as part of this work; fixture success must not be described as live availability.
 
-**Remaining:** define an explicit compatibility target and version it. Implement provider request fields only when the underlying adapter can honour them. Return honest unsupported/empty semantics rather than silently pretending a feature is supported.
+## Recommended next work
 
-## Recommended implementation order
+1. Keep provider expansion frozen at 67.
+2. Continue the adapter audit: identify fields that are ignored, declare conservative capabilities, and add one focused test per change.
+3. Expand rich result metadata and merge rules before implementing more image/news/video verticals.
+4. Improve locale trait coverage where source evidence and tests support it.
+5. Decide whether provider health and cookie/session state need per-provider configuration, persistence or tenant isolation for the intended hosting model.
+6. Complete SearXNG compatibility conformance and result-limit behaviour.
+7. Harden authentication, quotas, API rate limits, request bounds and outbound request policy before internet exposure.
+8. Keep CoderInBox as an independent HTTP consumer; do not move provider implementations into that repository.
 
-| Priority | Shared component | Why it comes first |
-|---|---|---|
-| P0 | Provider capability declarations | Advertises only options the current C# request builders genuinely honour |
-| P0 | Persistent/provider-specific health policy | Extends the initial process-local cooldown and half-open registry with persistence and per-engine policy |
-| P1 | Shared HTTP transport and request model | Removes repeated headers/cookie/timeout/rate-limit plumbing |
-| P1 | Result container, source positions and scoring | Makes multi-provider aggregation meaningfully SearXNG-like |
-| P1 | Engine traits registry | Allows the same provider to serve different regions/languages correctly |
-| P2 | Request/parser/state strategies | Makes more complex providers declarative without over-generalising |
-| P2 | API compatibility conformance tests | Measures actual compatibility rather than only response shape |
+## Challenge safety boundary
 
-## How this should accelerate future ports
-
-For each upstream Python engine, classify its implementation into these reusable pieces:
-
-1. **Configuration:** categories, paging, max page, weight, safe search, time range, locale and credentials.
-2. **Request strategy:** GET/POST, query parameters, headers, cookies, locale mapping, tokens and continuation state.
-3. **Transport requirements:** timeout, redirects, proxy/impersonation, rate limit, retries and challenge behaviour.
-4. **Response strategy:** JSON, HTML/XPath-like DOM, RSS/Atom, XML, embedded JSON or multi-step parser.
-5. **Normalisation:** title, URL, content, published date, thumbnail, category, template and rich-result type.
-6. **Failure semantics:** CAPTCHA, rate limit, access denied, unsupported query, transient failure and permanent configuration error.
-7. **Tests:** captured fixtures, request assertions, malformed response cases, paging/state tests and live smoke tests where permitted.
-
-Each provider should then be implemented by composing existing strategies, adding a new shared strategy only when the upstream source demonstrates a genuinely new pattern.
-
-## Suggested next work
-
-1. Keep provider count at 67 while the shared framework is improved.
-2. Declare capabilities only where provider request builders and fixture tests substantiate them.
-3. Add provider health/suspension, cooldown/backoff and half-open recovery using the typed outcomes.
-4. Introduce shared HTTP transport and session policies while preserving provider-specific challenge flows.
-5. Implement proper result merging/scoring and compare it with SearXNG's algorithm.
-6. Add locale/traits for Bing, Brave, DuckDuckGo and Wikipedia.
-7. Revisit the existing major-engine adapters against the pinned upstream rationale corpus.
-8. Resume provider additions once the common patterns are in place.
-
-## Challenge classification
-
-The C# outcome model separates operational failure kind from challenge subtype. It distinguishes browser verification, proof-of-work, interactive CAPTCHA, interactive verification and login requirements, while keeping rate limiting and generic access denial separate. Current detectors map Google/DuckDuckGo/Yandex to interactive CAPTCHA, Qwant/Seznam to browser verification, and Mojeek Altcha to bounded proof-of-work. The public `/api/search` and SearXNG-shaped `/search` responses expose typed provider outcomes; diagnostics retain the last challenge subtype. See [challenge classification notes](PORTING/CHALLENGE_CLASSIFICATION.md). Classification is not bypass: AI may explain a challenge, but must not automatically solve CAPTCHA or human verification.
+Challenge classification is not challenge bypass. AI vision may classify or explain a challenge for a human operator, but must not automatically solve CAPTCHA or human-verification workflows. Permitted provider-specific protocols such as Mojeek Altcha may be implemented with bounded work and explicit resource limits. See [challenge classification notes](PORTING/CHALLENGE_CLASSIFICATION.md).
 
 ## Important distinction
 
-The objective should be **behavioural compatibility with selected SearXNG engines and architecture**, not a mechanical translation of every Python file. SearXNG is a mature search metasearch application with settings, categories, network/session behaviour, result types, ranking and engine lifecycle. Our project is currently a .NET search-provider API with a growing set of adapters. Porting the shared contracts first is the shortest route to making the latter behave more like the former.
-
+The objective is **behavioural compatibility with selected SearXNG engines and architecture**, not a mechanical translation of every Python file. SearXNG is a mature metasearch application with settings, categories, network/session behaviour, result types, ranking and engine lifecycle. This repository is a .NET search-provider API with its own service boundary. The shortest path is to preserve the upstream behaviour that matters, explain deliberate differences, and keep the shared .NET abstractions small and testable.
