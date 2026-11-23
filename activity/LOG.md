@@ -1352,3 +1352,10 @@ Every material repository action is recorded here with its reason, result, verif
 - **Validation:** Rechecked 83 C# files, 35 test files, largest C# file 19,463 bytes, 67 unique providers and zero workflow files.
 - **Commit:** `0cebcec6383718cde3404d5ba97cb1e79dbdcfbf`.
 - **Next:** Local .NET 10 build/test session; no GitHub Actions.
+
+
+### 144. Complete the media, paper and news category/template audit
+- **Reason:** Final review needed to ensure vertical categories did not imply result templates or media fields that their adapters cannot safely populate.
+- **Action:** Verified image/video/paper templates require their corresponding typed metadata and safe source/embed URLs. Music results retain audio fields only where a playable URL exists; MusicBrainz remains a metadata-only result. Wikinews maps its timestamp; RSS/Atom results preserve publication dates. Wikimedia Commons remains general until a direct image URL is implemented and validated.
+- **Validation:** Rechecked 52 unique JSON definitions + 2 RSS/Atom + 13 dedicated providers = 67; 83 C# files, 35 test files, largest 19,463 bytes; no workflow files.
+- **Next:** The remaining required validation is the local .NET 10 build/test run and coverage measurement. No further claims of passing tests until that happens.
