@@ -3,13 +3,13 @@ using System.Text.Json;
 using DotNetWebSearchApi.Search;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Xunit;
 
 namespace DotNetWebSearchApi.Tests;
 
+[Collection("Production provider configuration")]
 public sealed partial class SearxngApiIntegrationTests
 {
     [Fact]
@@ -207,7 +207,8 @@ public sealed partial class SearxngApiIntegrationTests
     [Fact]
     public async Task ProvidersEndpoint_RegistersAllSixtySevenProvidersWhenOptionalKeysAreConfigured()
     {
-        using WebApplicationFactory<Program> factory = CreateProductionFactory();
+        using EnvironmentVariableScope environment = ConfigureProductionProviderEnvironment();
+        using WebApplicationFactory<Program> factory = CreateFactory();
         using HttpClient client = factory.CreateClient();
 
         using HttpResponseMessage response = await client.GetAsync("/api/providers");
@@ -233,7 +234,8 @@ public sealed partial class SearxngApiIntegrationTests
     [Fact]
     public async Task Search_SkipsRegisteredOpenverseForGeneralSearchWithoutNetwork()
     {
-        using WebApplicationFactory<Program> factory = CreateProductionFactory();
+        using EnvironmentVariableScope environment = ConfigureProductionProviderEnvironment();
+        using WebApplicationFactory<Program> factory = CreateFactory();
         using HttpClient client = factory.CreateClient();
 
         using HttpResponseMessage response = await client.GetAsync(
@@ -320,18 +322,22 @@ public sealed partial class SearxngApiIntegrationTests
         Assert.Contains("Provider diagnostics", html);
     }
 
-    private static WebApplicationFactory<Program> CreateProductionFactory()
+
+    private static EnvironmentVariableScope ConfigureProductionProviderEnvironment()
     {
-        return new WebApplicationFactory<Program>().WithWebHostBuilder(builder =>
-            builder.ConfigureHostConfiguration(configuration =>
-                configuration.AddInMemoryCollection(new Dictionary<string, string?>
-                {
-                    ["EXA_API_KEY"] = "test-key",
-                    ["YANDEX_SEARCH_API_KEY"] = "test-key",
-                    ["YANDEX_FOLDER_ID"] = "test-folder",
-                    ["KAGI_API_KEY"] = "test-key",
-                    ["BRAVE_SEARCH_API_KEY"] = "test-key"
-                })));
+        return EnvironmentVariableScope.Apply(new Dictionary<string, string?>
+        {
+            ["EXA_API_KEY"] = "test-key",
+            ["YANDEX_SEARCH_API_KEY"] = "test-key",
+            ["YANDEX_FOLDER_ID"] = "test-folder",
+            ["KAGI_API_KEY"] = "test-key",
+            ["BRAVE_SEARCH_API_KEY"] = "test-key"
+        });
+    }
+
+    private static WebApplicationFactory<Program> CreateFactory()
+    {
+        return new WebApplicationFactory<Program>();
     }
 
     private static WebApplicationFactory<Program> CreateFactory(params ISearchProvider[] providers)
@@ -358,6 +364,38 @@ public sealed partial class SearxngApiIntegrationTests
     private static SearchResult Result(string title, string url)
     {
         return new SearchResult(title, url, title + " description", "fixture", 1.0);
+    }
+
+    private sealed class EnvironmentVariableScope : IDisposable
+    {
+        private readonly IReadOnlyDictionary<string, string?> _previousValues;
+
+        private EnvironmentVariableScope(IReadOnlyDictionary<string, string?> previousValues)
+        {
+            _previousValues = previousValues;
+        }
+
+        public static EnvironmentVariableScope Apply(IReadOnlyDictionary<string, string?> values)
+        {
+            Dictionary<string, string?> previousValues = values.Keys.ToDictionary(
+                key => key,
+                Environment.GetEnvironmentVariable,
+                StringComparer.Ordinal);
+            foreach (KeyValuePair<string, string?> value in values)
+            {
+                Environment.SetEnvironmentVariable(value.Key, value.Value);
+            }
+
+            return new EnvironmentVariableScope(previousValues);
+        }
+
+        public void Dispose()
+        {
+            foreach (KeyValuePair<string, string?> value in _previousValues)
+            {
+                Environment.SetEnvironmentVariable(value.Key, value.Value);
+            }
+        }
     }
 
     private sealed class CapturingProvider : ISearchProvider, ISearchProviderCapabilities
