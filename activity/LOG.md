@@ -1129,3 +1129,12 @@ Every material repository action is recorded here with its reason, result, verif
 - **Action:** Removed the two accidental rules/activity files previously created in `fwjlh/sqlDiffAi`; they were not part of the requested target. Follow-up tree verification confirmed both paths are absent there.
 - **Validation:** Verified DotNetWebSearchApi `main` has no `.github/workflows/` files, no source files over 25 KB, and the 52 generic JSON definitions remain intact. No workflow was run.
 - **Next:** Continue the dedicated provider registration/capability audit in this repository. Keep all future changes on `fwjlh/DotNetWebSearchApi:main`.
+
+
+### 123. Verify production provider registration and category pre-flight without network
+- **Reason:** Unit tests covered category filtering and the JSON catalogue split, but did not verify that the real application registers the complete 67-provider set when optional credentials are configured.
+- **Tests added:** A production-host integration test supplies dummy Exa, Yandex, Kagi and Brave credentials, calls `/api/providers`, and asserts 67 unique registered providers.
+- **Tests added:** A second production-host test requests Openverse in the general category and asserts it is reported unsupported with no result, exercising pre-flight category filtering without an upstream request.
+- **Commit:** `ef0cdb3cbdab7f1b42cbed7a79d2ba2d08c8c6df`.
+- **Validation:** Test source reviewed; no network call is made by either test. Execution remains unavailable because the .NET SDK is not installed. No GitHub Actions were used.
+- **Next:** Continue auditing all provider capability declarations and template/result-type consistency. Keep the provider count at 67.
