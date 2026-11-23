@@ -37,6 +37,18 @@ public static class SearxngSearchResponseMapper
             && (uri.Scheme == Uri.UriSchemeHttp || uri.Scheme == Uri.UriSchemeHttps);
     }
 
+    private static string? ResolveAuthor(SearchResult result)
+    {
+        if (!string.IsNullOrWhiteSpace(result.VideoMetadata?.Author))
+        {
+            return result.VideoMetadata.Author;
+        }
+
+        return string.IsNullOrWhiteSpace(result.MusicMetadata?.Artist)
+            ? null
+            : result.MusicMetadata.Artist;
+    }
+
     private static SearxngSearchResult MapResult(SearchResult result)
     {
         Uri uri = new(result.Url);
@@ -61,8 +73,8 @@ public static class SearxngSearchResponseMapper
             ImageFormats = result.ImageMetadata?.Formats ?? Array.Empty<ImageFormatReference>(),
             ImageMetadata = result.ImageMetadata,
             VideoEmbedUrl = result.VideoMetadata?.EmbedUrl,
-            VideoDurationSeconds = result.VideoMetadata?.DurationSeconds,
-            VideoAuthor = result.VideoMetadata?.Author,
+            LengthSeconds = result.VideoMetadata?.DurationSeconds ?? result.MusicMetadata?.DurationSeconds,
+            Author = ResolveAuthor(result),
             VideoViews = result.VideoMetadata?.Views,
             VideoMetadata = result.VideoMetadata,
             AudioUrl = result.MusicMetadata?.AudioUrl,
