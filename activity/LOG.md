@@ -1031,3 +1031,10 @@ Every material repository action is recorded here with its reason, result, verif
 - **Tests:** Added an Atom feed fixture verifying alternate-link, title and summary extraction. Added a remote external-DTD fixture and asserted the XML reader rejects it. GitHub Actions [run 45145077265](https://github.com/fwjlh/DotNetWebSearchApi/actions/runs/45145077265) passed build and test.
 - **Documentation:** Updated the RSS/Atom rationale to cite the new test coverage and distinguish fixture verification from live feed availability.
 - **Next:** Continue small parity and conformance slices. Provider catalogue remains frozen at 67; no live RSS requests were made.
+
+
+### 113. Assert caller cancellation leaves provider health untouched
+- **Reason:** The aggregator must propagate caller cancellation without classifying it as a provider timeout/failure or opening a cooldown.
+- **Test:** Strengthened `SearchAsync_PropagatesCallerCancellation` to inspect the health registry after cancellation and assert the provider remains Closed with zero consecutive failures. GitHub Actions [run 45145286054](https://github.com/fwjlh/DotNetWebSearchApi/actions/runs/45145286054) passed build and test.
+- **Result:** The distinction between caller cancellation and provider-owned timeout now has direct health-state regression coverage.
+- **Next:** Continue auditing typed outcomes and request semantics in small increments; keep the provider catalogue frozen at 67.
