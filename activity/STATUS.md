@@ -185,3 +185,17 @@ Search/media/regional providers (batch 5): Wiby, TVmaze, Radio Browser, PeerTube
 - Updated the detailed activity record and appended LOG entry 118.
 - The test remains unexecuted: no .NET SDK is available. Do not use GitHub Actions.
 - Next remains typed rich-result metadata design for images, news and videos; keep the 67-provider catalogue frozen.
+
+## Latest development — RSS news metadata
+- RSS/Atom providers now declare `news` capability and no longer inherit general-web capability.
+- RSS `pubDate` and Atom `published` / `updated` are parsed into `SearchResult.PublishedDate`; SearXNG output preserves `publishedDate` and the `news` category.
+- Added tests for news-only capability, RSS and Atom date parsing, and SearXNG mapping.
+- Updated [porting audit](../docs/PORTING_AUDIT.md) and [RSS/Atom rationale](../docs/PYTHON_TO_CSHARP_PORTING_NOTES.md).
+- Activity record: [news result metadata](2026-11-23-news-result-metadata.md).
+- Tests are committed but unexecuted: `dotnet` is unavailable in this environment. No GitHub Actions were used.
+
+## Next
+1. Continue the typed result model using the pinned SearXNG result types as evidence.
+2. Implement image-specific metadata first, then video embed metadata, with bounded HTTP(S) URL validation.
+3. Add provider fixture and SearXNG serialization tests before changing adapters.
+4. Keep the provider catalogue frozen at 67 and continue direct commits to `main`.
