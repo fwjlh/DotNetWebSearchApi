@@ -80,6 +80,31 @@ public sealed class JsonApiProviderCapabilityTests
         Assert.Equal(1, requestCount);
     }
 
+
+    [Fact]
+    public async Task SearchDetailedAsync_SkipsGeneralProviderForImageSearch()
+    {
+        int requestCount = 0;
+        using HttpClient client = CreateClient(() => requestCount++);
+        JsonApiSearchProvider provider = new(
+            client,
+            JsonApiProviderCatalog.Definitions.Single(item => item.Name == "crossref"));
+        SearchAggregator aggregator = new(
+            new[] { provider },
+            NullLogger<SearchAggregator>.Instance);
+
+        SearchExecutionResult result = await aggregator.SearchDetailedAsync(
+            new SearchQuery("landscape", 10)
+            {
+                Categories = new HashSet<string>(StringComparer.OrdinalIgnoreCase) { "images" }
+            },
+            CancellationToken.None);
+
+        Assert.Empty(result.Results);
+        Assert.Equal("crossref", Assert.Single(result.UnsupportedProviders));
+        Assert.Equal(0, requestCount);
+    }
+
     private static HttpClient CreateClient(Action onRequest)
     {
         return new HttpClient(new StubHttpMessageHandler(_ =>
