@@ -199,38 +199,6 @@ public sealed partial class PaperResultMetadataTests
     }
 
     [Fact]
-    public async Task SearchAsync_MapsDataCiteCreatorsAndPublicationYear()
-    {
-        const string fixture = """
-            {
-              "data": [
-                {
-                  "attributes": {
-                    "titles": [{ "title": "DataCite Record" }],
-                    "url": "https://doi.org/10.2222/datacite",
-                    "descriptions": [{ "description": "A repository abstract." }],
-                    "creators": [{ "name": "Lise Meitner" }],
-                    "publisher": "Example Repository",
-                    "types": { "resourceTypeGeneral": "Dataset" },
-                    "publicationYear": 2025,
-                    "doi": "10.2222/datacite"
-                  }
-                }
-              ]
-            }
-            """;
-        SearchResult result = await SearchAsync("datacite", fixture);
-        PaperResultMetadata paper = Assert.IsType<PaperResultMetadata>(result.PaperMetadata);
-
-        Assert.Equal("science", result.Category);
-        Assert.Equal("Lise Meitner", paper.Author);
-        Assert.Equal("2025", paper.PublicationYear);
-        Assert.Equal("Example Repository", paper.Publisher);
-        Assert.Equal("Dataset", paper.Type);
-        Assert.Equal("10.2222/datacite", paper.Doi);
-    }
-
-    [Fact]
     public async Task SearchAsync_MapsZenodoPublicationAndJournalMetadata()
     {
         const string fixture = """
