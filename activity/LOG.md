@@ -1327,3 +1327,11 @@ Every material repository action is recorded here with its reason, result, verif
 - **Commit:** `dc78019502ab62106c2d312d718363357c7298c7`.
 - **Validation:** Reviewed the new path handling and local fixtures. Tests remain unexecuted because the .NET SDK is unavailable; no GitHub Actions or live scholarly API calls were used.
 - **Next:** Finish scholarly provider path audit and final category/result-template consistency review; then wait for the local .NET 10 build/test session.
+
+
+### 138. Reconcile the provider inventory count
+- **Reason:** A final audit script initially reported 59 JSON definitions because its unanchored text pattern also matched configuration properties such as `AuthorName` and `TagName`.
+- **Action:** Recounted only actual top-level `Name =` definition properties across the three catalogue files.
+- **Verified result:** 52 JSON definitions, 52 unique names, 2 RSS/Atom adapters and 13 dedicated registrations = 67 providers. No duplicate JSON names.
+- **Validation:** The source count agrees with the 52-definition catalogue regression and the 67-provider production-host integration test. No code changed; no workflows or live calls used.
+- **Next:** Continue from the canonical status; full runtime test execution still requires the local .NET 10 SDK.
