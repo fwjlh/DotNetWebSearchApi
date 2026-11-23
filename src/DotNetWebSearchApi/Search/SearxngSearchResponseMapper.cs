@@ -25,7 +25,7 @@ public static class SearxngSearchResponseMapper
         };
         return new SearxngSearchResult(
             result.Url, result.Title, result.Snippet, result.Provider, engines,
-            result.Positions, result.Score, "general", "default.html", parsedUrl, null)
+            result.Positions, result.Score, result.Category, "default.html", parsedUrl, null)
         {
             Thumbnail = result.ThumbnailUrl
         };
