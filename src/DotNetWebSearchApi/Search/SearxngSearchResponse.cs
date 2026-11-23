@@ -33,4 +33,29 @@ public sealed record SearxngSearchResult(
 {
     [JsonPropertyName("thumbnail")]
     public string? Thumbnail { get; init; }
+
+    [JsonPropertyName("img_src")]
+    public string? ImageUrl { get; init; }
+
+    [JsonPropertyName("thumbnail_src")]
+    public string? ImageThumbnailUrl { get; init; }
+
+    [JsonPropertyName("resolution")]
+    public string? ImageResolution { get; init; }
+
+    [JsonPropertyName("img_format")]
+    public string? ImageFormat { get; init; }
+
+    [JsonPropertyName("source")]
+    public string? ImageSource { get; init; }
+
+    [JsonPropertyName("filesize")]
+    public string? ImageFileSize { get; init; }
+
+    [JsonPropertyName("formats")]
+    public IReadOnlyList<ImageFormatReference> ImageFormats { get; init; } =
+        Array.Empty<ImageFormatReference>();
+
+    [JsonPropertyName("image_metadata")]
+    public ImageResultMetadata? ImageMetadata { get; init; }
 }
