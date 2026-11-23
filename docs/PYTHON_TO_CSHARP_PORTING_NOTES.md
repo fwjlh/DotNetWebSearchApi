@@ -423,6 +423,7 @@ These are C# framework decisions rather than one-to-one translations of a single
 - The current catalogue contains Google News and Bing News only. This is not a general RSS crawler or feed-discovery service.
 - Query locale/market values are fixed to en-GB in the current definitions. The provider does not yet map `SearchQuery.Language`, paging or time range.
 - The limit is applied after parsing valid entries, with an operational maximum of 50; the feed request itself does not necessarily constrain upstream result count.
+- RSS 2.0 `pubDate` and Atom `published` / `updated` values are parsed with invariant date handling into `SearchResult.PublishedDate`; malformed or absent dates remain unset. The SearXNG mapper emits this value as `publishedDate` and preserves the `news` category.
 - Tests cover Google News RSS mapping, Atom feed parsing, Bing publisher-URL resolution and rejection of an external DTD. GitHub Actions [run 45145077265](https://github.com/fwjlh/DotNetWebSearchApi/actions/runs/45145077265) passed the build-and-test job. They do not establish live feed availability or guarantee that every publisher redirect format is decoded.
 
 **Interpretation:** RSS/Atom is a separate protocol adapter family chosen because these news endpoints return feed documents rather than HTML search pages or JSON APIs. Secure XML settings and redirect normalisation belong in the shared implementation; market-specific request settings remain per definition.
