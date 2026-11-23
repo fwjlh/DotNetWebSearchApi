@@ -382,14 +382,14 @@ public sealed class JsonApiSearchProvider : ISearchProvider, ISearchProviderCapa
                 && absoluteUri.Scheme.Equals(resultUri.Scheme, StringComparison.OrdinalIgnoreCase)
                 && absoluteUri.Port == resultUri.Port;
             bool allowedHost = paths.AllowedEmbedHosts.Contains(absoluteUri.Host);
-            return IsHttpUrl(absoluteUri) && (sameOrigin || allowedHost)
+            return IsHttpsUrl(absoluteUri) && (sameOrigin || allowedHost)
                 ? absoluteUri.AbsoluteUri
                 : string.Empty;
         }
 
         if (!value.StartsWith("/", StringComparison.Ordinal)
             || !Uri.TryCreate(resultUri, value, out Uri? relativeUri)
-            || !IsHttpUrl(relativeUri)
+            || !IsHttpsUrl(relativeUri)
             || !relativeUri.Host.Equals(resultUri.Host, StringComparison.OrdinalIgnoreCase)
             || relativeUri.Port != resultUri.Port)
         {
@@ -405,6 +405,11 @@ public sealed class JsonApiSearchProvider : ISearchProvider, ISearchProviderCapa
         return Uri.TryCreate(value, UriKind.Absolute, out Uri? uri) && IsHttpUrl(uri)
             ? uri.AbsoluteUri
             : string.Empty;
+    }
+
+    private static bool IsHttpsUrl(Uri uri)
+    {
+        return uri.Scheme == Uri.UriSchemeHttps;
     }
 
     private static bool IsHttpUrl(Uri uri)
