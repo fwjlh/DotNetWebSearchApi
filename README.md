@@ -305,6 +305,14 @@ Run from the repository root:
     dotnet build --no-restore
     dotnet test
 
+To run opt-in tests against real upstream search providers, set the opt-in variable for the current PowerShell session and run the live test class:
+
+    $env:DOTNETWEBSEARCHAPI_LIVE_TESTS = '1'
+    dotnet test .\\DotNetWebSearchApi.sln -c Release --filter FullyQualifiedName~LiveProviderIntegrationTests --logger \"console;verbosity=normal\"
+    Remove-Item Env:\\DOTNETWEBSEARCHAPI_LIVE_TESTS
+
+The live suite currently checks Wikipedia, Crossref and GitHub with one bounded request per provider. These tests require internet access and may fail when an upstream provider is unavailable, rate-limits the client or changes its response. They are excluded from ordinary test runs unless explicitly enabled. They are observational integration checks, not proof of permanent provider availability.
+
 To measure line and branch coverage locally:
 
     dotnet test .\\DotNetWebSearchApi.sln -c Release --collect:\"XPlat Code Coverage\"
