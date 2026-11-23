@@ -364,3 +364,17 @@ Search/media/regional providers (batch 5): Wiby, TVmaze, Radio Browser, PeerTube
 2. Recheck all vertical capability declarations and typed result mappings together.
 3. Add tests for any news provider whose category/date metadata does not match its payload.
 4. Keep provider count frozen at 67 and continue direct commits to `main`; no workflows.
+
+## Latest development — Hacker News vertical and dates
+- Generic JSON providers can now select the category matching the requested vertical when a definition supports multiple categories.
+- Hacker News declares both `general` and `news`; general searches remain general, news-only searches select it as news.
+- Algolia `created_at` now maps to `SearchResult.PublishedDate` and SearXNG `publishedDate`.
+- Added parser and aggregator fixture tests proving category selection and date preservation without network access.
+- Updated [provider rationale](../docs/PYTHON_TO_CSHARP_PORTING_NOTES.md) and [audit](../docs/PORTING_AUDIT.md).
+- Logged as entry 127 in [LOG.md](LOG.md). Tests remain unexecuted because `dotnet` is unavailable; no workflows/live requests used.
+
+## Next
+1. Review any remaining JSON news candidates and avoid misclassifying general discussion forums.
+2. Verify category selection is deterministic for multiple requested categories.
+3. Final source-size, registration-count and no-workflows audit.
+4. Keep 67 providers and continue direct commits to `main`; no workflows.
