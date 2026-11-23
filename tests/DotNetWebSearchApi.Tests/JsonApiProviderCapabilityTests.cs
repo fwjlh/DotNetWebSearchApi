@@ -79,7 +79,7 @@ public sealed class JsonApiProviderCapabilityTests
         Assert.Contains(registered, item => item.Name == "exa");
         Assert.Contains(
             bilibiliClient.DefaultRequestHeaders.GetValues("Referer"),
-            value => value == "https://search.bilibili.com");
+            value => value == "https://search.bilibili.com/");
     }
 
     [Fact]
