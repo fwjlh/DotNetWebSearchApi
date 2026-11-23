@@ -33,10 +33,12 @@
 
 - Removed the duplicate SearXNG JSON property collision: paper abstract now maps into the common `content` field instead of a second property with the same JSON name.
 - Corrected the Openverse file-size expectation to `875.13 KB` for 896,128 bytes using the current invariant formatter.
-- Made the Bilibili Referer URI and its test expectation consistently include the normalized trailing slash.
-- Commits: `d0fa0416`, `7220173f`, `5f734214`, `20b365d9`, `7030689d`.
-- The user's latest run had 295/319 tests passing. The remaining 24 failures included the duplicate JSON property cascade, Openverse rounding expectation, Bilibili Referer expectation, and a production-host provider count of 63 instead of 67. The count/configuration issue remains open and must be investigated after rerunning with these fixes.
-- Source edits have been reviewed but not executed in this environment; local .NET 10 test verification is required.
+- Corrected the Bilibili definition-level test to expect the normalized Referer URI `https://search.bilibili.com/`.
+- Commits: `d0fa0416`, `7220173f`, `5f734214`, `20b365d9`, `9129fb6b`, `a74679f5`.
+- Latest user run: 3 failures remain — Bilibili expectation, Crossref publication year, and 63 vs 67 production-host registrations. The Bilibili assertion is now corrected on `main`.
+- The provider-count test now checks Exa, Yandex, Kagi and Brave before the aggregate count, so the next run identifies which optional registration is missing.
+- Crossref discrepancy needs local revision verification: current `main` defines `PublicationYear` as a non-nullable string defaulting to empty and assigns a string in the mapper, so the reported actual `null` is inconsistent with the currently fetched source.
+- No .NET build/tests were executed here. Do not claim verification; user must pull and rerun locally.
 
 ## Latest compile corrections
 
@@ -70,7 +72,7 @@
 
 1. Pull the latest `main` commit and run `dotnet build .\\DotNetWebSearchApi.sln -c Debug --no-incremental`.
 2. Run `dotnet test .\\DotNetWebSearchApi.sln -c Release`.
-3. Investigate the production-host provider count (63 vs 67) and any remaining test failures from the fresh output.
+3. Pull current main, clean/rebuild, rerun. Use the first missing optional-provider assertion to diagnose configuration; compare local Crossref source if PublicationYear still reports null.
 4. Measure actual coverage for parser, capability and result-mapping logic.
 
 Keep this file and `LOG.md` current so the next session can resume without chat history. Final category/template audit is recorded in LOG entry 144.
