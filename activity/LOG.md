@@ -1024,3 +1024,10 @@ Every material repository action is recorded here with its reason, result, verif
 - **Documentation:** Added a mandatory evidence chain for new porting notes: pinned Python source, C# source, original behaviour, translation rationale, preserved/adapted/omitted behaviour, verification and follow-up. Explicitly requires C#-only adapters to be labelled as such rather than inventing a Python origin.
 - **Verification:** The corpus standard commit is documentation-only; its workflow is tracked separately. No live provider requests.
 - **Next:** Continue auditing request/capability parity for the remaining catalogue; keep commits small and provider count frozen at 67.
+
+
+### 112. Test RSS Atom parsing and remote XML DTD rejection
+- **Reason:** The RSS rationale claimed Atom support and described XML external-entity protections; both needed explicit fixture coverage.
+- **Tests:** Added an Atom feed fixture verifying alternate-link, title and summary extraction. Added a remote external-DTD fixture and asserted the XML reader rejects it. GitHub Actions [run 45145077265](https://github.com/fwjlh/DotNetWebSearchApi/actions/runs/45145077265) passed build and test.
+- **Documentation:** Updated the RSS/Atom rationale to cite the new test coverage and distinguish fixture verification from live feed availability.
+- **Next:** Continue small parity and conformance slices. Provider catalogue remains frozen at 67; no live RSS requests were made.
