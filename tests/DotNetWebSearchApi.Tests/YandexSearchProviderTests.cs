@@ -9,6 +9,20 @@ namespace DotNetWebSearchApi.Tests;
 public sealed class YandexSearchProviderTests
 {
     [Fact]
+    public void Capabilities_DeclareCloudApiAsGeneralFirstPageOnly()
+    {
+        YandexSearchProvider provider = new(
+            new HttpClient(),
+            new YandexSearchOptions("test-key", "folder-123"));
+
+        Assert.True(provider.Capabilities.Supports(new SearchQuery("test", 10)));
+        Assert.False(provider.Capabilities.Supports(new SearchQuery("test", 10) { Page = 2 }));
+        Assert.False(provider.Capabilities.Supports(new SearchQuery("test", 10) { Language = "ru-RU" }));
+        Assert.False(provider.Capabilities.Supports(new SearchQuery("test", 10) { SafeSearch = 1 }));
+        Assert.False(provider.Capabilities.Supports(new SearchQuery("test", 10) { TimeRange = SearchTimeRange.Day }));
+    }
+
+    [Fact]
     public void Parse_ReadsBase64XmlResults()
     {
         IReadOnlyList<SearchResult> results = YandexSearchResultParser.Parse(EncodeXml(ResultXml));
