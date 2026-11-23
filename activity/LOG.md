@@ -1417,3 +1417,28 @@ Every material repository action is recorded here with its reason, result, verif
 - **Commit:** `1bc2f934084a47d8e3d32bd50ab1aee6beb3ca7f`.
 - **Validation:** Confirmed the duplicate method was present once in each partial source file before the change and removed the shorter copy. No local .NET build is available here; the user must rebuild. No GitHub Actions used.
 - **Next:** Pull `main`, rebuild, then run the full Release test suite if compilation succeeds.
+
+
+## 2026-11-23 — Fix SearXNG serialization and metadata test failures
+
+### 151. Remove the duplicate paper content JSON property
+- **Reason:** The local test run exposed a System.Text.Json property-name collision on SearxngSearchResult.content. The base SearXNG Content property and PaperContent extension both serialized as `content`, causing metadata serialization and multiple API integration tests to fail with HTTP 500.
+- **Correction:** Removed the duplicate paper extension property. The mapper now places the paper abstract in the existing common `content` field, falling back to the ordinary result snippet.
+- **Commits:** `d0fa0416ba639271ce522c4203fa5db2cd3f9d19` (response model); `7220173fe99dbbfdbc010c8ffec652a892e02e9b` (mapper).
+- **Validation:** Reviewed the response model and mapper. Tests still need to be rerun locally.
+
+### 152. Align Openverse file-size assertion with formatted output
+- **Reason:** 896,128 bytes is 875.125 KiB. The current invariant numeric formatter produces `875.13 KB`; the test expected `875.12 KB`.
+- **Correction:** Updated the fixture assertion to the formatter's actual two-decimal midpoint result; retained the exact byte-count assertion.
+- **Commit:** `5f734214d18902cf713126531ad873093c42c5b7`.
+- **Validation:** Arithmetic and formatter behaviour reviewed; rerun the test suite locally.
+
+### 153. Normalize Bilibili Referer URI expectation
+- **Reason:** The capability test observed the normalized Referer value with a trailing slash, while the definition and assertion omitted it.
+- **Correction:** Made the configured Referer URI explicit with its trailing slash and updated the assertion to match the normalized absolute URI.
+- **Commits:** `20b365d901b42d979c3504ebe706a4974e59bee2` (definition); `7030689d2eaadd4ba0e66b018bf46a935be48cea` (test).
+- **Validation:** Source and assertion reviewed. Test rerun required.
+
+- **Remaining failure from this run:** The production-host integration test reported 63 providers instead of 67 despite configuring optional keys. The source configuration path needs a focused follow-up after the serialization fix is pulled and the test is rerun; do not treat the 67-provider integration test as passing.
+- **Other cascading failures:** The multiple SearXNG JSON parse errors and HTTP 500 responses in the same run are expected to be re-evaluated after the duplicate-property correction.
+- **Next:** Pull `main`, rerun the Release test suite, then investigate any remaining failures—especially production-host optional-provider configuration. No GitHub Actions or live provider calls.
