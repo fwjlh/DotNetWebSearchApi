@@ -31,6 +31,10 @@ public sealed class JsonApiProviderCapabilityTests
     [InlineData("deezer", "music")]
     [InlineData("musicbrainz", "music")]
     [InlineData("radiobrowser", "music")]
+    [InlineData("crossref", "science")]
+    [InlineData("openalex", "science")]
+    [InlineData("europepmc", "science")]
+    [InlineData("semanticscholar", "science")]
     public void Capabilities_RestrictVerticalProviderToItsDeclaredCategory(
         string providerName,
         string category)
