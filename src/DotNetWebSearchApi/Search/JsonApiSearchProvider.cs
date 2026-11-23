@@ -151,6 +151,7 @@ public sealed class JsonApiSearchProvider : ISearchProvider, ISearchProviderCapa
         TryReadText(item, _definition.SnippetPath, out string snippet);
         ImageResultMetadata? imageMetadata = ReadImageMetadata(item);
         VideoResultMetadata? videoMetadata = ReadVideoMetadata(item, resultUri);
+        MusicResultMetadata? musicMetadata = ReadMusicMetadata(item);
         result = new SearchResult(
             title,
             resultUri.AbsoluteUri,
@@ -159,10 +160,11 @@ public sealed class JsonApiSearchProvider : ISearchProvider, ISearchProviderCapa
             1.0 / (position + 1))
         {
             Category = ResolveResultCategory(),
-            ThumbnailUrl = ResolveThumbnailUrl(imageMetadata, videoMetadata),
+            ThumbnailUrl = ResolveThumbnailUrl(imageMetadata, videoMetadata, musicMetadata),
             PublishedDate = videoMetadata?.PublishedDate,
             ImageMetadata = imageMetadata,
-            VideoMetadata = videoMetadata
+            VideoMetadata = videoMetadata,
+            MusicMetadata = musicMetadata
         };
         return true;
     }
@@ -226,16 +228,22 @@ public sealed class JsonApiSearchProvider : ISearchProvider, ISearchProviderCapa
 
     private static string? ResolveThumbnailUrl(
         ImageResultMetadata? imageMetadata,
-        VideoResultMetadata? videoMetadata)
+        VideoResultMetadata? videoMetadata,
+        MusicResultMetadata? musicMetadata)
     {
         if (!string.IsNullOrWhiteSpace(imageMetadata?.ThumbnailUrl))
         {
             return imageMetadata.ThumbnailUrl;
         }
 
-        return string.IsNullOrWhiteSpace(videoMetadata?.ThumbnailUrl)
+        if (!string.IsNullOrWhiteSpace(videoMetadata?.ThumbnailUrl))
+        {
+            return videoMetadata.ThumbnailUrl;
+        }
+
+        return string.IsNullOrWhiteSpace(musicMetadata?.ThumbnailUrl)
             ? null
-            : videoMetadata.ThumbnailUrl;
+            : musicMetadata.ThumbnailUrl;
     }
 
     private ImageResultMetadata? ReadImageMetadata(JsonElement item)
@@ -290,6 +298,55 @@ public sealed class JsonApiSearchProvider : ISearchProvider, ISearchProviderCapa
             LicenseVersion = ReadOptionalText(item, paths.LicenseVersion),
             Attribution = ReadOptionalText(item, paths.Attribution),
             MediaCategory = ReadOptionalText(item, paths.MediaCategory)
+        };
+    }
+
+    private MusicResultMetadata? ReadMusicMetadata(JsonElement item)
+    {
+        JsonApiMusicMetadataPaths? paths = _definition.MusicMetadata;
+        if (paths is null)
+        {
+            return null;
+        }
+
+        string audioUrl = ReadSafeUrl(item, paths.AudioUrl);
+        string thumbnailUrl = ReadSafeUrl(item, paths.ThumbnailUrl);
+        string artist = ReadOptionalText(item, paths.Artist);
+        string album = ReadOptionalText(item, paths.Album);
+        string durationText = ReadOptionalText(item, paths.DurationSeconds);
+        string bitrateText = ReadOptionalText(item, paths.Bitrate);
+        double? duration = double.TryParse(
+            durationText,
+            NumberStyles.Float,
+            CultureInfo.InvariantCulture,
+            out double parsedDuration) && parsedDuration >= 0 ? parsedDuration : null;
+        int? bitrate = int.TryParse(
+            bitrateText,
+            NumberStyles.Integer,
+            CultureInfo.InvariantCulture,
+            out int parsedBitrate) && parsedBitrate >= 0 ? parsedBitrate : null;
+        string country = ReadOptionalText(item, paths.Country);
+        string tags = ReadOptionalText(item, paths.Tags);
+        string codec = ReadOptionalText(item, paths.Codec);
+
+        if (audioUrl.Length == 0 && thumbnailUrl.Length == 0 && artist.Length == 0
+            && album.Length == 0 && duration is null && country.Length == 0
+            && tags.Length == 0 && codec.Length == 0 && bitrate is null)
+        {
+            return null;
+        }
+
+        return new MusicResultMetadata
+        {
+            AudioUrl = audioUrl,
+            ThumbnailUrl = thumbnailUrl,
+            Artist = artist,
+            Album = album,
+            DurationSeconds = duration,
+            Country = country,
+            Tags = tags,
+            Codec = codec,
+            Bitrate = bitrate
         };
     }
 
@@ -474,6 +531,7 @@ public sealed record JsonApiSearchDefinition
         new HashSet<string>(StringComparer.OrdinalIgnoreCase) { "general" };
     public JsonApiImageMetadataPaths? ImageMetadata { get; init; }
     public JsonApiVideoMetadataPaths? VideoMetadata { get; init; }
+    public JsonApiMusicMetadataPaths? MusicMetadata { get; init; }
 }
 
 public sealed record JsonApiImageMetadataPaths
@@ -506,4 +564,18 @@ public sealed record JsonApiVideoMetadataPaths
     public string Views { get; init; } = string.Empty;
     public IReadOnlySet<string> AllowedEmbedHosts { get; init; } =
         new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+}
+
+
+public sealed record JsonApiMusicMetadataPaths
+{
+    public string AudioUrl { get; init; } = string.Empty;
+    public string ThumbnailUrl { get; init; } = string.Empty;
+    public string Artist { get; init; } = string.Empty;
+    public string Album { get; init; } = string.Empty;
+    public string DurationSeconds { get; init; } = string.Empty;
+    public string Country { get; init; } = string.Empty;
+    public string Tags { get; init; } = string.Empty;
+    public string Codec { get; init; } = string.Empty;
+    public string Bitrate { get; init; } = string.Empty;
 }
