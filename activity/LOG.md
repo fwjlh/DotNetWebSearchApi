@@ -1270,3 +1270,15 @@ Every material repository action is recorded here with its reason, result, verif
 - **Commit:** `5965ac58e1037ab618bef3e85567d0f0d1cf9b9b`.
 - **Validation:** Reviewed mapper and serialization test source. Execution remains unavailable because the .NET SDK is not installed; no GitHub Actions or live upstream calls were used.
 - **Next:** Extend typed paper mapping to DataCite, Zenodo, OpenAIRE and PLOS using fixtures.
+
+
+### 135. Extend paper metadata to DataCite, Zenodo, OpenAIRE and PLOS
+- **Reason:** The first paper pass covered the major citation/search APIs but left four scholarly catalogue providers returning ordinary links.
+- **Action:** Added publication-year support without fabricating a full publication date; SearXNG exposes the year as a typed extension.
+- **Action:** DataCite maps creators, publisher, resource type, year and DOI. Zenodo maps publication date, creators, publisher, journal fields, DOI and HTML landing page. OpenAIRE maps authors, publication date, publisher, journal, type and web link. PLOS maps authors, publication date, journal/volume/issue/pages, eISSN and DOI.
+- **Action:** Generic paper metadata now falls back to the already validated result URL for its HTML link when a provider has no separate full-text URL.
+- **Action:** Scalar and array values are both accepted for list-shaped identifiers such as ISSN.
+- **Tests:** Added fixture tests for all four providers and capability assertions that they belong to the science vertical.
+- **Commits:** `8744bfd8`, `9ccd91dd`, `7555c36b`, `a4554449`, `b7f25c47`, `b1fb04b8`, `ff96ec26`, `ad3975d6`, `42d4cb03`, `77566686`, `e57892fd`, `67e04f86`.
+- **Validation:** Reviewed definitions, field paths and fixtures. Tests remain unexecuted because the .NET SDK is unavailable. No GitHub Actions or live scholarly API calls were used.
+- **Next:** Audit remaining science-category definitions and check SearXNG Paper serialization for all mapped fields. Keep provider count frozen at 67.
