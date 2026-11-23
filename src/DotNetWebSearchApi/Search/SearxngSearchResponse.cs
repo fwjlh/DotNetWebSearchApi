@@ -79,4 +79,58 @@ public sealed record SearxngSearchResult(
 
     [JsonPropertyName("music_metadata")]
     public MusicResultMetadata? MusicMetadata { get; init; }
+
+    [JsonPropertyName("date_of_publication")]
+    public DateTimeOffset? PaperDateOfPublication { get; init; }
+
+    [JsonPropertyName("content")]
+    public string? PaperContent { get; init; }
+
+    [JsonPropertyName("comments")]
+    public string? PaperComments { get; init; }
+
+    [JsonPropertyName("tags")]
+    public IReadOnlyList<string>? PaperTags { get; init; }
+
+    [JsonPropertyName("type")]
+    public string? PaperType { get; init; }
+
+    [JsonPropertyName("authors")]
+    public IReadOnlyList<string>? PaperAuthors { get; init; }
+
+    [JsonPropertyName("editor")]
+    public string? PaperEditor { get; init; }
+
+    [JsonPropertyName("publisher")]
+    public string? PaperPublisher { get; init; }
+
+    [JsonPropertyName("journal")]
+    public string? PaperJournal { get; init; }
+
+    [JsonPropertyName("volume")]
+    public string? PaperVolume { get; init; }
+
+    [JsonPropertyName("pages")]
+    public string? PaperPages { get; init; }
+
+    [JsonPropertyName("number")]
+    public string? PaperNumber { get; init; }
+
+    [JsonPropertyName("doi")]
+    public string? PaperDoi { get; init; }
+
+    [JsonPropertyName("issn")]
+    public IReadOnlyList<string>? PaperIssn { get; init; }
+
+    [JsonPropertyName("isbn")]
+    public IReadOnlyList<string>? PaperIsbn { get; init; }
+
+    [JsonPropertyName("pdf_url")]
+    public string? PdfUrl { get; init; }
+
+    [JsonPropertyName("html_url")]
+    public string? HtmlUrl { get; init; }
+
+    [JsonPropertyName("paper_metadata")]
+    public PaperResultMetadata? PaperMetadata { get; init; }
 }
