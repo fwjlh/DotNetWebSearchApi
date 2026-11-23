@@ -260,5 +260,6 @@ public sealed record JsonApiSearchDefinition
     public JsonApiImageMetadataPaths? ImageMetadata { get; init; }
     public JsonApiVideoMetadataPaths? VideoMetadata { get; init; }
     public JsonApiMusicMetadataPaths? MusicMetadata { get; init; }
+    public JsonApiPaperMetadataPaths? PaperMetadata { get; init; }
 }
 
