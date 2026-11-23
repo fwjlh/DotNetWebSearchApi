@@ -1335,3 +1335,12 @@ Every material repository action is recorded here with its reason, result, verif
 - **Verified result:** 52 JSON definitions, 52 unique names, 2 RSS/Atom adapters and 13 dedicated registrations = 67 providers. No duplicate JSON names.
 - **Validation:** The source count agrees with the 52-definition catalogue regression and the 67-provider production-host integration test. No code changed; no workflows or live calls used.
 - **Next:** Continue from the canonical status; full runtime test execution still requires the local .NET 10 SDK.
+
+
+### 139. Preserve MusicBrainz artist metadata without inventing an audio stream
+- **Reason:** MusicBrainz returns artist records, not playable audio. The provider was categorised as music but discarded the artist and country fields.
+- **Action:** Added typed MusicMetadata paths for artist and country. No audio URL or specialist audio template is fabricated.
+- **Tests:** Added a MusicBrainz fixture asserting artist/country metadata, SearXNG author mapping and default-template behaviour when no audio source exists.
+- **Commit:** `83d36e386d18f94866dfbebd64f426142a07dfae`.
+- **Validation:** Reviewed the fixture and response mapping. Tests remain unexecuted because the .NET SDK is unavailable; no workflows or live MusicBrainz calls were used.
+- **Next:** Finish the category/template audit and prepare the local .NET 10 build/test handover.
