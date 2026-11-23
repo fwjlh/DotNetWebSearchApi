@@ -77,6 +77,12 @@ public sealed class PaperResultMetadataTests
         Assert.Equal("paper.html", mapped.Template);
         Assert.Equal("Ada Lovelace", mapped.Author);
         Assert.Equal("Journal of Examples", mapped.PaperJournal);
+        using JsonDocument serialized = JsonDocument.Parse(JsonSerializer.Serialize(
+            mapped,
+            new JsonSerializerOptions(JsonSerializerDefaults.Web)));
+        Assert.Equal("10.1234/sample", serialized.RootElement.GetProperty("doi").GetString());
+        Assert.Equal("2024", serialized.RootElement.GetProperty("publication_year").GetString());
+        Assert.Equal("Ada Lovelace", serialized.RootElement.GetProperty("authors")[0].GetString());
     }
 
     [Fact]
