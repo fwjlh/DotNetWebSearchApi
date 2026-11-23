@@ -66,6 +66,7 @@ public sealed class ImageResultMetadataTests
 
         Assert.Equal("images", mapped.GetProperty("category").GetString());
         Assert.Equal("images.html", mapped.GetProperty("template").GetString());
+        Assert.Equal("images.html", mapped.GetProperty("template").GetString());
         Assert.Equal(image.ImageUrl, mapped.GetProperty("img_src").GetString());
         Assert.Equal(image.ThumbnailUrl, mapped.GetProperty("thumbnail_src").GetString());
         Assert.Equal(image.Resolution, mapped.GetProperty("resolution").GetString());
