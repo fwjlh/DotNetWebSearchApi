@@ -22,7 +22,6 @@ public sealed class JsonApiProviderCapabilityTests
 
     [Theory]
     [InlineData("openverse", "images")]
-    [InlineData("wikimedia_commons", "images")]
     [InlineData("wikinews", "news")]
     [InlineData("bilibili", "videos")]
     [InlineData("dailymotion", "videos")]
@@ -45,6 +44,45 @@ public sealed class JsonApiProviderCapabilityTests
             {
                 Categories = new HashSet<string>(StringComparer.OrdinalIgnoreCase) { category }
             }));
+    }
+
+    [Fact]
+    public void Capabilities_KeepWikimediaCommonsGeneralUntilDirectImageUrlsExist()
+    {
+        using HttpClient client = new();
+        JsonApiSearchProvider provider = new(
+            client,
+            JsonApiProviderCatalog.Definitions.Single(item => item.Name == "wikimedia_commons"));
+
+        Assert.True(provider.Capabilities.Supports(new SearchQuery("file", 10)));
+        Assert.False(provider.Capabilities.Supports(new SearchQuery("file", 10)
+        {
+            Categories = new HashSet<string>(StringComparer.OrdinalIgnoreCase) { "images" }
+        }));
+    }
+
+    [Fact]
+    public async Task SearchDetailedAsync_SkipsWikimediaCommonsForImageSearch()
+    {
+        int requestCount = 0;
+        using HttpClient client = CreateClient(() => requestCount++);
+        JsonApiSearchProvider provider = new(
+            client,
+            JsonApiProviderCatalog.Definitions.Single(item => item.Name == "wikimedia_commons"));
+        SearchAggregator aggregator = new(
+            new[] { provider },
+            NullLogger<SearchAggregator>.Instance);
+
+        SearchExecutionResult result = await aggregator.SearchDetailedAsync(
+            new SearchQuery("landscape", 10)
+            {
+                Categories = new HashSet<string>(StringComparer.OrdinalIgnoreCase) { "images" }
+            },
+            CancellationToken.None);
+
+        Assert.Empty(result.Results);
+        Assert.Equal("wikimedia_commons", Assert.Single(result.UnsupportedProviders));
+        Assert.Equal(0, requestCount);
     }
 
     [Fact]
