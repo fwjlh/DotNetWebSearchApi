@@ -1,7 +1,16 @@
 using System.Net;
+using Microsoft.AspNetCore.Http.Features;
 using DotNetWebSearchApi.Search;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
+builder.Services.Configure<FormOptions>(options =>
+{
+    options.BufferBodyLengthLimit = 16 * 1024;
+    options.KeyLengthLimit = 128;
+    options.ValueCountLimit = 32;
+    options.ValueLengthLimit = 4096;
+    options.MultipartBodyLengthLimit = 16 * 1024;
+});
 JsonApiProviderCatalog.Register(builder.Services, builder.Configuration);
 RssProviderCatalog.Register(builder.Services);
 builder.Services.AddHttpClient<MojeekSearchProvider>(client =>
@@ -196,6 +205,7 @@ static async Task<IResult> SearxngSearchEndpoint(HttpRequest request, SearchAggr
     if (HttpMethods.IsPost(request.Method))
     {
         if (!request.HasFormContentType) return Results.StatusCode(StatusCodes.Status415UnsupportedMediaType);
+        if (request.ContentLength > 16 * 1024) return Results.StatusCode(StatusCodes.Status413PayloadTooLarge);
         form = await request.ReadFormAsync(cancellationToken);
     }
 
@@ -208,7 +218,12 @@ static async Task<IResult> SearxngSearchEndpoint(HttpRequest request, SearchAggr
     IReadOnlySet<string>? selectedProviders = ReadSelectedProviders(
         ReadParameter(request, form, "engines"),
         aggregator.ProviderNames,
-        out string[] unknownProviders);
+        out string[] unknownProviders,
+        out string? providerSelectionError);
+    if (providerSelectionError is not null)
+    {
+        return Results.BadRequest(new { error = providerSelectionError });
+    }
     if (unknownProviders.Length > 0)
     {
         return Results.BadRequest(new
@@ -319,13 +334,21 @@ static string? ReadParameter(HttpRequest request, IFormCollection? form, string 
 static IReadOnlySet<string>? ReadSelectedProviders(
     string? providerValue,
     IReadOnlyList<string> availableProviders,
-    out string[] unknownProviders)
+    out string[] unknownProviders,
+    out string? error)
 {
     unknownProviders = Array.Empty<string>();
+    error = null;
     if (string.IsNullOrWhiteSpace(providerValue)) return null;
-    HashSet<string> requested = new(
-        providerValue.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries),
-        StringComparer.OrdinalIgnoreCase);
+
+    string[] values = providerValue.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+    HashSet<string> requested = new(values, StringComparer.OrdinalIgnoreCase);
+    if (requested.Count > 20 || requested.Any(provider => provider.Length > 64))
+    {
+        error = "Select no more than 20 engines; each engine name must be 64 characters or fewer.";
+        return null;
+    }
+
     HashSet<string> available = new(availableProviders, StringComparer.OrdinalIgnoreCase);
     unknownProviders = requested.Where(provider => !available.Contains(provider)).ToArray();
     return requested;
