@@ -443,3 +443,18 @@ Search/media/regional providers (batch 5): Wiby, TVmaze, Radio Browser, PeerTube
 
 ## Exact next step
 At the planned local build/test session, install/use the .NET 10 SDK, run the full solution test suite, fix compile/test failures in small commits, then measure actual coverage for the new parser and capability logic. Until then, keep the 67-provider catalogue frozen and make no claims that tests have passed.
+
+## Latest development — scholarly paper metadata
+- Added typed `PaperResultMetadata` aligned to the pinned SearXNG Paper fields.
+- arXiv Atom, Crossref, OpenAlex, Europe PMC and Semantic Scholar now populate available publication, author, abstract, journal, DOI and full-text fields.
+- Scholarly providers are classified as `science`; paper results use `paper.html` only when typed paper metadata exists.
+- DOI URLs are normalized; PDF/HTML links require absolute HTTP(S); Crossref JATS abstracts are cleaned.
+- Added fixture tests for the five providers, DOI/date mapping and unsafe PDF URLs. Updated [porting rationale](../docs/PYTHON_TO_CSHARP_PORTING_NOTES.md) and [audit](../docs/PORTING_AUDIT.md).
+- Logged as entry 134 in [LOG.md](LOG.md). Tests remain unexecuted because `dotnet` is unavailable; no workflows/live API calls used.
+- Remaining scholarly providers: DataCite, Zenodo, OpenAIRE and PLOS.
+
+## Next
+1. Extend paper metadata mappings to DataCite, Zenodo, OpenAIRE and PLOS.
+2. Add fixture tests for each provider and URL validation.
+3. Re-audit all science/news/music/image/video categories and result templates.
+4. Keep provider count at 67 and all commits on `main`; no workflows.
