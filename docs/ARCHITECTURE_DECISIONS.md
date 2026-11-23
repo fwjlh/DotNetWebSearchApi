@@ -79,6 +79,10 @@ Provider expansion resumes only after:
 - existing provider tests remain green;
 - README, status and activity log agree on the provider count and verified CI baseline.
 
+## Live upstream smoke tests
+
+The xUnit project contains an explicitly opt-in live integration suite for Wikipedia, Crossref and GitHub. It calls the real provider adapters with one request per provider, a 20-second timeout, a 1 MiB response cap and a maximum of three results. Set `DOTNETWEBSEARCHAPI_LIVE_TESTS=1` to run it. The default fixture suite remains offline and deterministic. Live smoke tests measure current reachability and response compatibility only; they do not guarantee future availability or validate all 67 adapters.
+
 ## Current baseline
 
 - Provider adapters: 67 (frozen).
