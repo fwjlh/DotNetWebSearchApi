@@ -160,3 +160,6 @@ Keep this file and `LOG.md` current so the next session can resume without chat 
 
 
 - Latest source corrections: restored the explicit request-size feature namespace in Program (`1395ad3e`) and made socket connection attempts continue safely across address-family failures (`3ea73e68`). Activity record: `4d4cdc36`.
+
+
+- POST /search body limits now run in the security middleware before authentication, including Kestrel's streamed-body feature where supported. An offline test asserts an oversized unauthenticated POST returns 413 before the bearer-key challenge. Commits `0246903d`, `7683d587`; activity record `bff3b447`.
