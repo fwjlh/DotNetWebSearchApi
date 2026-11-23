@@ -143,6 +143,7 @@ public sealed class SearchHttpTransportTests
     [InlineData("172.16.0.1", false)]
     [InlineData("192.168.1.1", false)]
     [InlineData("198.18.0.1", false)]
+    [InlineData("192.88.99.1", false)]
     [InlineData("224.0.0.1", false)]
     [InlineData("8.8.8.8", true)]
     [InlineData("1.1.1.1", true)]
