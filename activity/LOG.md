@@ -1519,3 +1519,14 @@ Every material repository action is recorded here with its reason, result, verif
 - **Audit note:** The existing result score calculation intentionally matches SearXNG's current `calculate_score` algorithm: multiply contributing engine weights, multiply by the number of positions, then sum weighted reciprocal positions. Do not simplify this into a sum/average of per-engine weights; that would break compatibility. Source: https://github.com/searxng/searxng/blob/master/searx/results.py.
 - **Next:** Run coverage locally and share the Cobertura summary or file. Prioritise uncovered branches in request validation, capability gating, aggregation, provider health, shared transport and response mapping. Workflows remain disabled.
 
+## 2026-11-23 — Add opt-in live upstream integration tests
+
+### 162. Exercise real provider endpoints without affecting normal test runs
+- **Reason:** The existing fixture and fake-handler tests validate parsing and internal behaviour but do not prove that provider endpoints currently accept real requests or return usable responses.
+- **Action:** Added `LiveProviderIntegrationTests` for Wikipedia's live MediaWiki search API, Crossref's live works API and GitHub's live repository search API. Each test instantiates the production provider adapter and sends a genuine outbound request.
+- **Safety:** Tests are skipped unless `DOTNETWEBSEARCHAPI_LIVE_TESTS=1` is set. Each test makes one request, uses a 20-second client timeout, caps response bodies at 1 MiB and requests at most three results. No credentials are required or logged. No retries or parallel provider fan-out are introduced.
+- **Assertions:** A live response must produce at least one result with a non-empty title and an absolute HTTP(S) URL. Provider-specific outage, rate-limit, block or schema changes will surface as a failing live test and should be recorded as upstream observations rather than hidden by changing assertions.
+- **Documentation:** Added exact PowerShell commands to README. Normal test and build commands remain network-independent.
+- **Validation:** Source reviewed only. No .NET SDK or outbound network execution is available in this environment; compilation and actual endpoint behaviour must be verified by the user locally. GitHub Actions remain disabled.
+- **Next:** Run the opt-in suite locally, share the output, then decide which additional providers are worth adding to the small live smoke-test set.
+
