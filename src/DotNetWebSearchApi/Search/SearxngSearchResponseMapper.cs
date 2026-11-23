@@ -70,7 +70,7 @@ public static class SearxngSearchResponseMapper
         };
         string template = ResolveTemplate(result);
         return new SearxngSearchResult(
-            result.Url, result.Title, result.Snippet, result.Provider, engines,
+            result.Url, result.Title, result.PaperMetadata?.Content ?? result.Snippet, result.Provider, engines,
             result.Positions, result.Score, result.Category, template, parsedUrl, result.PublishedDate)
         {
             Thumbnail = result.ThumbnailUrl,
@@ -90,7 +90,6 @@ public static class SearxngSearchResponseMapper
             AudioUrl = result.MusicMetadata?.AudioUrl,
             MusicMetadata = result.MusicMetadata,
             PaperDateOfPublication = result.PaperMetadata?.DateOfPublication ?? result.PublishedDate,
-            PaperContent = result.PaperMetadata?.Content,
             PaperComments = result.PaperMetadata?.Comments,
             PaperTags = result.PaperMetadata?.Tags,
             PaperType = result.PaperMetadata?.Type,
