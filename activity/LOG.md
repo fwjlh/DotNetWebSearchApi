@@ -1615,3 +1615,11 @@ Every material repository action is recorded here with its reason, result, verif
 - **Tests added:** 61 invalid-key requests must not consume the authenticated client's quota; a subsequent valid request succeeds. Added Staging startup-without-key coverage.
 - **Commits:** `cae912240792c1b0db80926f493c0711747d3cc5` (middleware order), `cbb29832af035fc5424c62baae6a3d363247ce42` and `52d3cdc0d0c95274562319fb12fed92d41fdc0a4` (tests).
 - **Verification:** Source/test review only; no .NET 10 SDK available here. No Actions used.
+
+
+### 173. Split request-security policy out of the application entry point
+- **Reason:** Security, authentication, rate limiting and form parsing increased `Program.cs` beyond the preferred 20 KB source-file target.
+- **Action:** Extracted API-key configuration/startup validation, form limits, rate-limit policy and bearer middleware into `ApiRequestSecurity.cs`. Program now composes the security options and middleware. Diagnostics still reports whether API authentication is enabled.
+- **Commits:** `aa18e8e66a8d390b772610712ffb12276a59a128` (Program extraction), `29e1fbdce3da2228b160573d9fb859b9e6b3e85e` (security policy), `a0f55af1aa778805c1c60976755db7eea38d3356` (namespace/import correction).
+- **Result:** Program source is approximately 18 KB, below the 20 KB target.
+- **Verification:** Source reviewed only; no .NET SDK/build/test run. No GitHub Actions.
