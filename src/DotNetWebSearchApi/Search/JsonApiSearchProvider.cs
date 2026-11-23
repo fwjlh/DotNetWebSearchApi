@@ -153,7 +153,10 @@ public sealed class JsonApiSearchProvider : ISearchProvider, ISearchProviderCapa
             resultUri.AbsoluteUri,
             AppendAttribution(CleanText(snippet)),
             Name,
-            1.0 / (position + 1));
+            1.0 / (position + 1))
+        {
+            Category = ResolveResultCategory()
+        };
         return true;
     }
 
@@ -212,6 +215,11 @@ public sealed class JsonApiSearchProvider : ISearchProvider, ISearchProviderCapa
         }
 
         return false;
+    }
+
+    private string ResolveResultCategory()
+    {
+        return _definition.Categories.FirstOrDefault() ?? "general";
     }
 
     private string AppendAttribution(string snippet)
