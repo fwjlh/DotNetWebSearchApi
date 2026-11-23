@@ -191,7 +191,6 @@ public static partial class JsonApiProviderCatalog
         new JsonApiSearchDefinition
         {
             Name = "wikimedia_commons",
-            Categories = new HashSet<string>(StringComparer.OrdinalIgnoreCase) { "images" },
             Endpoint = "https://commons.wikimedia.org/w/api.php",
             QueryParameter = "srsearch",
             LimitParameter = "srlimit",
