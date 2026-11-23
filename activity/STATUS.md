@@ -199,3 +199,18 @@ Search/media/regional providers (batch 5): Wiby, TVmaze, Radio Browser, PeerTube
 2. Implement image-specific metadata first, then video embed metadata, with bounded HTTP(S) URL validation.
 3. Add provider fixture and SearXNG serialization tests before changing adapters.
 4. Keep the provider catalogue frozen at 67 and continue direct commits to `main`.
+
+## Latest development — typed image result model
+- Added typed `ImageResultMetadata` and `ImageFormatReference` records, attached them to `SearchResult`, and exposed SearXNG image fields (`img_src`, `thumbnail_src`, `resolution`, `img_format`, `source`, `filesize`, `formats`).
+- Licence, licence URL, creator and byte size are retained in the explicit `image_metadata` extension; no untyped dictionary was introduced.
+- Added a serialization/mapping test for SearXNG field names and typed metadata.
+- Updated [porting audit](../docs/PORTING_AUDIT.md).
+- Activity record: [typed image result model](2026-11-23-typed-image-result-model.md).
+- Tests are committed but unexecuted because `dotnet` is not installed. No GitHub Actions were used.
+- No provider parser populates the new model yet; URL validation is the next prerequisite.
+
+## Next
+1. Add strict absolute HTTP(S) validation for image source, thumbnail and alternate-format URLs.
+2. Wire Openverse response fields into the typed image model with fixture tests.
+3. Add a regression for rejecting javascript:, data: and relative image URLs.
+4. Keep provider count frozen at 67 and all work on `main`; no workflows.
