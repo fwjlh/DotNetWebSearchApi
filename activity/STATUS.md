@@ -479,3 +479,15 @@ At the planned local build/test session, install/use the .NET 10 SDK, run the fu
 2. Verify SearXNG Paper JSON fields with serialization tests.
 3. Recheck file sizes, provider count and workflow absence.
 4. Keep 67 providers and all changes on `main`; no workflows.
+
+## Scholarly metadata verification
+- Crossref publication year is retained as `publication_year`, not converted into a fabricated full date.
+- Added SearXNG paper JSON assertions for DOI, year and authors.
+- Updated the audit/rationale to distinguish year-only values from full publication dates.
+- Logged as entry 136 in [LOG.md](LOG.md).
+
+## Next
+1. Final audit all science providers, paper templates and mapped fields.
+2. Check all C# files remain under 20 KB and the 67-provider registration test remains current.
+3. Confirm no GitHub Actions workflow files or runs.
+4. Full test execution remains pending a local .NET 10 SDK; do not use workflows.
