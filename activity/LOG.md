@@ -1092,3 +1092,14 @@ Every material repository action is recorded here with its reason, result, verif
 - **Commits:** `5e0f5d96`, `3077eada`, `fc935b4b`, `94006ba7`, `407af21f`, `dc0f46a8`, `3a9b0e98`.
 - **Validation:** Source and fixture coverage inspected. Tests remain unexecuted because the .NET SDK is unavailable. No GitHub Actions workflows or live news feed requests were used.
 - **Next:** Use the pinned SearXNG result types to design typed image metadata first, then video embed metadata. Preserve provider-specific data without untyped extension dictionaries.
+
+
+### 120. Add typed image metadata and select the correct SearXNG template
+- **Reason:** The pinned SearXNG `Image` result type carries more than a thumbnail: image source, preview thumbnail, resolution, format, source, file size and alternate formats. Openverse also returns licence and creator details. The common C# result could not preserve these safely as ordinary text or an untyped extension bag.
+- **Action:** Added typed `ImageResultMetadata` and `ImageFormatReference` records and optional `SearchResult.ImageMetadata`.
+- **Action:** Added SearXNG-compatible image fields and a typed `image_metadata` extension for licence, licence URL, creator and byte-size data.
+- **Action:** Updated mapping to select `images.html` when image metadata is present; ordinary results retain `default.html`.
+- **Tests:** Added serialization/mapping coverage for image fields, formats, licence and creator, plus image/default template selection.
+- **Commits:** `9cf0be75`, `20eac20d`, `96d46c46`, `faeebd91`, `cb41a3b6`, `dc6decec`, `d440d4dd`, `d7d4f2b1`, `0d6fd251`, `227231fa`.
+- **Validation:** Inspected the final model, response, mapper and tests. Tests are not executed because the .NET SDK is unavailable. No GitHub Actions workflows or live image requests were used.
+- **Next:** Validate image source, thumbnail and alternate-format URLs as absolute HTTP(S) before wiring Openverse response fields. Keep the provider catalogue frozen at 67.
