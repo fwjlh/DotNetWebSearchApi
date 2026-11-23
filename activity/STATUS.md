@@ -214,3 +214,13 @@ Search/media/regional providers (batch 5): Wiby, TVmaze, Radio Browser, PeerTube
 2. Wire Openverse response fields into the typed image model with fixture tests.
 3. Add a regression for rejecting javascript:, data: and relative image URLs.
 4. Keep provider count frozen at 67 and all work on `main`; no workflows.
+
+
+## Latest development — typed image result metadata foundation
+- Added typed `ImageResultMetadata` and `ImageFormatReference` models to preserve image URL, preview, resolution, format, source, byte/display file sizes, alternate formats, licence and creator.
+- SearXNG mapping exposes the image-specific fields and selects `images.html` for image results; ordinary results keep `default.html`.
+- Added serialization/mapping tests for image metadata and both template paths.
+- Activity record: [typed image result metadata](2026-11-23-typed-image-result-model.md).
+- Commits include `9cf0be75` through `227231fa`; full details in [LOG.md](LOG.md), entry 120.
+- Tests remain unexecuted because the .NET SDK is unavailable. GitHub Actions remains disabled.
+- Next: add strict HTTP(S) validation for image source, thumbnail and alternate formats, then map Openverse response fields with fixture tests. Keep provider count frozen at 67.
