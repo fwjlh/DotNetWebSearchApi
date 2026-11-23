@@ -73,4 +73,10 @@ public sealed record SearxngSearchResult(
 
     [JsonPropertyName("video_metadata")]
     public VideoResultMetadata? VideoMetadata { get; init; }
+
+    [JsonPropertyName("audio_src")]
+    public string? AudioUrl { get; init; }
+
+    [JsonPropertyName("music_metadata")]
+    public MusicResultMetadata? MusicMetadata { get; init; }
 }
