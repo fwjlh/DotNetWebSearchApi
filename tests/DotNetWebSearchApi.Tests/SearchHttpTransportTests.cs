@@ -97,6 +97,42 @@ public sealed class SearchHttpTransportTests
         Assert.Equal(1, maximumActive);
     }
 
+
+    [Theory]
+    [InlineData("ftp://example.com/search")]
+    [InlineData("http://localhost/search")]
+    [InlineData("http://service.internal/search")]
+    [InlineData("http://127.0.0.1/search")]
+    [InlineData("http://10.0.0.1/search")]
+    [InlineData("http://169.254.169.254/latest/meta-data")]
+    [InlineData("http://[::1]/search")]
+    [InlineData("https://user:password@example.com/search")]
+    public async Task SendAsync_RejectsUnsafeRequestDestinations(string address)
+    {
+        using HttpClient client = new(new StubHttpMessageHandler(_ =>
+            throw new InvalidOperationException("The HTTP handler must not be called for an unsafe URI.")));
+        SearchHttpTransport transport = new();
+        using HttpRequestMessage request = new(HttpMethod.Get, address);
+
+        ProviderFailureException exception = await Assert.ThrowsAsync<ProviderFailureException>(
+            () => transport.SendAsync(client, request, CancellationToken.None));
+
+        Assert.Equal(ProviderFailureKind.InvalidResponse, exception.FailureKind);
+    }
+
+    [Fact]
+    public async Task SendAsync_AllowsPublicIpLiteral()
+    {
+        using HttpClient client = new(new StubHttpMessageHandler(_ =>
+            new HttpResponseMessage(HttpStatusCode.OK)));
+        SearchHttpTransport transport = new();
+        using HttpRequestMessage request = new(HttpMethod.Get, "https://8.8.8.8/search");
+
+        SearchHttpResponse response = await transport.SendAsync(client, request, CancellationToken.None);
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+    }
+
     private static async Task<SearchHttpResponse> SendAsync(
         SearchHttpTransport transport,
         HttpClient client,
