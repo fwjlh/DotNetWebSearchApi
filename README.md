@@ -104,7 +104,7 @@ DotNetWebSearchApi puts that work behind one service:
 | Google News | Implemented (RSS) | UK-edition news search feed; undocumented feed contract |
 | Bing News | Implemented (RSS) | UK-edition news search feed; publisher links are unwrapped |
 | Wiktionary | Implemented (JSON API) | English dictionary and etymology search |
-| Automated build and tests | Working | GitHub Actions / .NET 10 |
+| Automated build and tests | Locally verified | .NET 10 / xUnit; GitHub Actions disabled by repository owner |
 | Major web-search adapters | Initial wave complete | Bing, Brave, Google, DuckDuckGo and other priority providers are implemented |
 | Provider catalogue | Frozen | Sixty-seven adapters are implemented; no new ports until shared-framework work is complete |
 | SearXNG-compatible JSON API | Initial surface working | JSON response and engine selection; unsupported features return explicit status codes |
@@ -305,7 +305,7 @@ Run from the repository root:
     dotnet build --no-restore
     dotnet test
 
-GitHub Actions runs restore, build and tests for pushes and pull requests. The badge at the top links to the workflow.
+GitHub Actions workflows are intentionally disabled to conserve minutes. Run restore, build and tests locally using the commands above.
 
 The last fully verified provider-catalogue baseline passed CI with **156 tests**, 0 failures and 0 skipped, with 0 build warnings and 0 errors ([run 45020266512](https://github.com/fwjlh/DotNetWebSearchApi/actions/runs/45020266512)). This predates the current request-context/capability changes; those newer commits are awaiting CI verification. The 156-test result must not be treated as proof that the latest code is green.
 
