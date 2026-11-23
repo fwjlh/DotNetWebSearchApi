@@ -1541,3 +1541,12 @@ Every material repository action is recorded here with its reason, result, verif
 - **Commits:** `c51022e7076621e89fd037940548ff8ddbe553fd` (validation), `eb08ce39a07d16a6f41d7c02bbd01bbea91ef9bd` (boundary tests).
 - **Verification:** Reviewed the shared validation path and test source. Tests have not been executed in this environment because the .NET 10 SDK is unavailable; no GitHub Actions or live provider requests were used. The previously user-reported 319-test Release pass predates this increment.
 - **Next:** Add explicit maximum category/provider selection counts and form-body bounds, with tests, then review rate limiting and authentication design before public exposure. Measure line/branch coverage when the local SDK is available.
+
+
+### 161. Bound search category input
+- **Reason:** Category parsing previously accepted an unbounded number of arbitrarily long category names. This adds avoidable parsing/allocation work and allows meaningless values to be forwarded into capability filtering.
+- **Action:** Added shared validation for both search endpoints: at most 10 categories, with each category name limited to 32 characters. The existing empty-category validation remains unchanged.
+- **Tests added:** Four endpoint boundary cases cover too many categories and an overlong category name on both `/search` and `/api/search`.
+- **Commits:** `6676c99d274fc36d555cdf0870a4450ede3055a9` (validation), `a0eb16ab21ef0c12802bf44c1dd03e4d6ff78c63` (tests).
+- **Verification:** Reviewed validation and tests. Neither this increment nor the preceding query-length tests have been executed here because the .NET 10 SDK is unavailable. No GitHub Actions or live provider requests were used.
+- **Next:** Bound selected-provider count and POST form-body size, then add API-level request throttling/authentication design. Preserve offline deterministic tests and keep all workflows disabled.
