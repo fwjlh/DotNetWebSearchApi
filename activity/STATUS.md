@@ -403,3 +403,17 @@ Search/media/regional providers (batch 5): Wiby, TVmaze, Radio Browser, PeerTube
 - Added request and capability tests for both providers.
 - Corrected the duplicate/misnumbered Mojeek entry in [LOG.md](LOG.md); new entries are 130 (Mojeek) and 131 (Brave).
 - Tests remain unexecuted because `dotnet` is unavailable. No GitHub Actions or live upstream calls used.
+
+## Latest capability audit — safe search and category determinism
+- Mojeek and Brave now advertise safe-search support accurately and map the requested levels to their upstream parameters.
+- Generic JSON multi-vertical category selection is deterministic: general is preferred when explicitly requested; otherwise matching categories are sorted ordinal-ignore-case.
+- Added provider request/capability tests and a Hacker News multi-category regression.
+- Logged as entries 130–132 in [LOG.md](LOG.md).
+- No workflows or live upstream calls used; tests remain unexecuted because the .NET SDK is unavailable.
+
+## Final audit checklist
+1. Confirm 52 JSON definitions + 2 RSS + 13 dedicated adapters = 67 providers.
+2. Confirm every C# source/test file is below 20 KB.
+3. Confirm `_LookAtMe.MD`, `activity/LOG.md` and `activity/STATUS.md` are present.
+4. Confirm no `.github/workflows/` files exist.
+5. Leave the exact next action here for the next session.
