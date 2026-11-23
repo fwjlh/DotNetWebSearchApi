@@ -1007,3 +1007,12 @@ Every material repository action is recorded here with its reason, result, verif
 - **Tests:** Added capability tests for the default request and rejection of page 2, a locale, safe-search and time range. GitHub Actions [run 45144264756](https://github.com/fwjlh/DotNetWebSearchApi/actions/runs/45144264756) passed the build-and-test job. No live Yandex Cloud requests.
 - **Documentation:** Updated the Yandex corpus entry with the capability boundary and protocol-substitution caveat.
 - **Next:** Continue auditing the remaining providers for unadvertised request-field omissions, then move to API compatibility/security hardening. Provider count remains frozen at 67.
+
+
+### 110. Expand the rationale corpus for Wikipedia and shared adapter families
+- **Reason:** The corpus should explain when C# deliberately changes the upstream protocol or consolidates repeated provider plumbing, not just describe HTML scraper ports.
+- **Wikipedia:** Recorded that Python uses the REST page-summary endpoint with dynamic language traits and optional infobox/thumbnail output, while C# uses the MediaWiki Action API search endpoint to produce multiple results. Documented the language-host/Accept-Language handling and the missing REST summary, infobox and dynamic-trait behaviours. The focused corpus commit passed in [run 45144551755](https://github.com/fwjlh/DotNetWebSearchApi/actions/runs/45144551755).
+- **Generic JSON:** Documented why repeated simple API integrations use `JsonApiSearchDefinition` and a shared provider/parser, the supported JSON path subset, URL validation, URL-prefix mapping, attribution and shared rate gate. Recorded why Kagi remains dedicated and why generic definitions do not imply locale/paging/safe-search support.
+- **RSS/Atom:** Documented the feed-specific parser, secure XML settings (DTD prohibited, resolver disabled), fixed market settings and Bing News publisher URL extraction. Recorded the current Google News/Bing News scope and its pagination/locale limitations.
+- **Verification:** Documentation-only; no provider code changed in this entry. The JSON/RSS corpus commit's workflow is queued as [run 45144710763](https://github.com/fwjlh/DotNetWebSearchApi/actions/runs/45144710763). No live upstream requests.
+- **Next:** Continue auditing capability gaps and richer result metadata. Keep the 67-provider catalogue frozen.
