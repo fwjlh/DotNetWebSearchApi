@@ -391,3 +391,8 @@ Search/media/regional providers (batch 5): Wiby, TVmaze, Radio Browser, PeerTube
 2. Verify all 67 providers remain registered under expected optional-key conditions.
 3. Final tree check for source sizes, tests, activity handover and absence of workflows.
 4. Keep all changes on `main`; never use GitHub Actions.
+
+## Test split correction
+- Rechecked the partial-class test split and restored xUnit attributes to all four moved request-context tests.
+- Verified the original integration tests retain their own `[Fact]` attributes.
+- Logged as entry 129 in [LOG.md](LOG.md).
