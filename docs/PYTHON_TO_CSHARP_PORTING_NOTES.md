@@ -373,3 +373,56 @@ These are translation targets, not assertions that every row is already implemen
 
 
 
+
+## Shared C# adapter families
+
+These are C# framework decisions rather than one-to-one translations of a single SearXNG Python engine. Many upstream providers have their own Python modules; the C# project consolidates repeated HTTP and parsing mechanics where providers expose a sufficiently similar contract.
+
+### Generic JSON API providers
+
+**C# source:**
+- [JsonApiSearchProvider.cs](../src/DotNetWebSearchApi/Search/JsonApiSearchProvider.cs)
+- [JsonApiProviderCatalog.cs](../src/DotNetWebSearchApi/Search/JsonApiProviderCatalog.cs)
+- [JsonApiSearchProviderTests.cs](../tests/DotNetWebSearchApi.Tests/JsonApiSearchProviderTests.cs)
+- [SearchHttpTransport.cs](../src/DotNetWebSearchApi/Search/SearchHttpTransport.cs)
+
+**Why the C# code has this shape**
+
+- Rather than create a nearly identical provider class for every straightforward JSON API, provider-specific differences are stored in `JsonApiSearchDefinition`: endpoint, HTTP method, query and limit fields, fixed parameters, result/title/URL/snippet paths, URL prefix, attribution and minimum request interval.
+- `JsonApiSearchProvider` owns the shared mechanics: build GET query parameters or a JSON POST body, send through `SearchHttpTransport`, navigate configured JSON paths, validate result destinations as HTTP(S), clean snippets and map into `SearchResult`.
+- The JSON path reader is deliberately small and explicit. It supports object properties and array indices; it is not a general JSONPath engine. This bounds the configuration surface and avoids a query-language dependency for simple provider response shapes.
+- Relative identifiers are combined with a configured `UrlPrefix` for APIs such as crates.io, Open Library, Europe PMC, Docker Hub and Internet Archive. Wiby attribution is appended to the snippet to meet its attribution requirement.
+- Per-provider minimum intervals are delegated to the shared transport's provider-keyed rate gate rather than implemented as a semaphore and clock inside each provider.
+- Kagi was moved to a dedicated provider because its API has a more involved authentication/request contract and meaningful page, locale, safe-search and time-range capabilities. Exa remains a generic JSON definition because its current request/result shape fits the shared definition model.
+
+**Known limits**
+
+- These definitions currently represent a common general-result contract. They do not automatically inherit paging, locale, category, safe-search or time-range support. Providers without an explicit `ISearchProviderCapabilities` declaration receive the conservative BasicWeb profile.
+- The generic parser requires configured title and URL paths; optional snippets can be empty. Rich fields such as authors, publication dates, thumbnails, image dimensions, licence data and provider-specific facets are not represented by the current generic result mapping.
+- Different APIs have different quotas, authentication rules, terms and response semantics. A shared parser does not make their operational policies interchangeable; per-provider intervals and credentials remain explicit configuration.
+- The fixture suite exercises representative definitions and request/response mapping. It does not establish live acceptance, current quotas or account entitlement for every configured API.
+
+**Interpretation:** this is a deliberate C# abstraction over repeated API plumbing, not a literal port of a Python base class. Keep provider-specific request rules and result semantics in definitions or dedicated adapters; do not force complex APIs into the generic model.
+
+### RSS and Atom providers
+
+**C# source:**
+- [RssSearchProvider.cs](../src/DotNetWebSearchApi/Search/RssSearchProvider.cs)
+- [RssSearchProviderTests.cs](../tests/DotNetWebSearchApi.Tests/RssSearchProviderTests.cs)
+- [SearchHttpTransport.cs](../src/DotNetWebSearchApi/Search/SearchHttpTransport.cs)
+
+**Why the C# code has this shape**
+
+- Google News and Bing News are queried through their RSS endpoints. The C# provider parses RSS 2.0 `channel/item` and Atom `feed/entry` structures into the common result contract.
+- XML parsing uses `XmlReader` with DTD processing prohibited and the resolver disabled. This is a deliberate security boundary for remote XML feeds, not just a parsing preference.
+- Provider-specific locale/market values are fixed in each `RssSearchDefinition`; the generic implementation adds the query, decodes feed text and validates destination links.
+- Bing News wraps publisher destinations in an `apiclick.aspx` URL. The provider extracts the embedded `url` destination so consumers do not receive the Bing tracking wrapper when a target is available.
+
+**Known limits**
+
+- The current catalogue contains Google News and Bing News only. This is not a general RSS crawler or feed-discovery service.
+- Query locale/market values are fixed to en-GB in the current definitions. The provider does not yet map `SearchQuery.Language`, paging or time range.
+- The limit is applied after parsing valid entries, with an operational maximum of 50; the feed request itself does not necessarily constrain upstream result count.
+- Tests cover Google News RSS mapping and Bing publisher-URL resolution. They do not establish live feed availability or guarantee that every publisher redirect format is decoded.
+
+**Interpretation:** RSS/Atom is a separate protocol adapter family chosen because these news endpoints return feed documents rather than HTML search pages or JSON APIs. Secure XML settings and redirect normalisation belong in the shared implementation; market-specific request settings remain per definition.
