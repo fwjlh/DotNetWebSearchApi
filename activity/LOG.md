@@ -1248,3 +1248,16 @@ Every material repository action is recorded here with its reason, result, verif
 - **Commits:** `b38206857f6e03ca7829bf60875282c7b8ca36ee` (provider), `4a31c6c37d018077a93e874b920bec592aa21504` (tests).
 - **Validation:** Compared the category with the pinned SearXNG Seznam engine and reviewed the capability test. Tests remain unexecuted because the .NET SDK is unavailable; no GitHub Actions or live Seznam requests were used.
 - **Next:** Complete the final tree and provider registration audit; the next full build/test run must be local when the .NET 10 SDK is available.
+
+
+### 134. Add typed scholarly paper results
+- **Reason:** The pinned SearXNG result model includes a dedicated Paper type with publication date, abstract, comments, tags, authors, publisher, journal, volume/pages/issue, DOI, ISSN/ISBN and PDF/HTML URLs. Scholarly providers were still ordinary links.
+- **Action:** Added `PaperResultMetadata`, generic JSON paper metadata paths and a dedicated partial parser. PDF/HTML links are restricted to absolute HTTP(S); DOI resolver URLs are normalized to DOI identifiers; JATS abstract markup is cleaned.
+- **Action:** arXiv Atom parsing now retains publication date, authors, categories, journal reference, DOI, abstract and safe PDF link; results are explicitly categorized as science.
+- **Action:** Crossref, OpenAlex, Europe PMC and Semantic Scholar are now science-category providers with their available paper fields mapped. Europe PMC explicitly requests JSON core results.
+- **Action:** SearXNG mapping emits paper fields and selects `paper.html` only when typed paper metadata exists.
+- **Tests:** Added fixture coverage for Crossref authors/journal/DOI, OpenAlex date/PDF/DOI, Europe PMC author/journal/full text, Semantic Scholar authors/PDF/date, unsafe PDF rejection, arXiv Atom metadata and unsafe PDF rejection. Added science capability assertions.
+- **Commits:** `f6873cf5`, `56c65563`, `734cdab7`, `166fbade`, `67f46fe9`, `81389a22`, `02d932ae`, `006af991`, `1e78128d`, `c65d59dd`, `73dd9f7f`, `57af7be4`, `d8edb003`, `9f1fe364`, `f1e8fdf4`, `c2f0717b`, `d192189f`, `b6820563`.
+- **Validation:** Reviewed provider paths, parser, SearXNG fields and fixtures. Tests remain unexecuted because the .NET SDK is unavailable. No GitHub Actions or live scholarly API calls were used.
+- **Known limits:** Crossref publication date is not inferred from record creation; OpenAlex inverted-index abstracts are not reconstructed. Additional scholarly providers (DataCite, Zenodo, OpenAIRE, PLOS) remain to be mapped.
+- **Next:** Extend typed paper mapping to DataCite, Zenodo, OpenAIRE and PLOS using fixtures, then run a final category audit.
