@@ -208,7 +208,7 @@ public sealed partial class SearxngApiIntegrationTests
     public async Task ProvidersEndpoint_RegistersAllSixtySevenProvidersWhenOptionalKeysAreConfigured()
     {
         using EnvironmentVariableScope environment = ConfigureProductionProviderEnvironment();
-        using WebApplicationFactory<Program> factory = CreateFactory();
+        using WebApplicationFactory<Program> factory = new();
         using HttpClient client = factory.CreateClient();
 
         using HttpResponseMessage response = await client.GetAsync("/api/providers");
@@ -335,11 +335,6 @@ public sealed partial class SearxngApiIntegrationTests
         });
     }
 
-    private static WebApplicationFactory<Program> CreateFactory()
-    {
-        return new WebApplicationFactory<Program>();
-    }
-
     private static WebApplicationFactory<Program> CreateFactory(params ISearchProvider[] providers)
     {
         return new WebApplicationFactory<Program>().WithWebHostBuilder(builder =>
@@ -429,4 +424,9 @@ public sealed partial class SearxngApiIntegrationTests
         public Task<IReadOnlyList<SearchResult>> SearchAsync(SearchQuery query, CancellationToken cancellationToken)
             => search(query, cancellationToken);
     }
+}
+
+[CollectionDefinition("Production provider configuration", DisableParallelization = true)]
+public sealed class ProductionProviderConfigurationCollection
+{
 }
