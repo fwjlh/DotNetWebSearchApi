@@ -8,6 +8,18 @@ namespace DotNetWebSearchApi.Tests;
 
 public sealed class JsonApiProviderCapabilityTests
 {
+    [Fact]
+    public void Definitions_RemainUniqueAndCompleteAfterFileSplit()
+    {
+        string[] names = JsonApiProviderCatalog.Definitions
+            .Select(definition => definition.Name)
+            .ToArray();
+
+        Assert.Equal(52, names.Length);
+        Assert.Equal(names.Length, names.Distinct(StringComparer.OrdinalIgnoreCase).Count());
+        Assert.True(Array.IndexOf(names, "openverse") < Array.IndexOf(names, "mwmbl"));
+    }
+
     [Theory]
     [InlineData("openverse", "images")]
     [InlineData("wikimedia_commons", "images")]
