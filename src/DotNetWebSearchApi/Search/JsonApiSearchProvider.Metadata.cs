@@ -292,7 +292,6 @@ public sealed partial class JsonApiSearchProvider
         return WebUtility.HtmlDecode(Regex.Replace(value, "<[^>]+>", string.Empty)).Trim();
     }
 }
-}
 
 public sealed record JsonApiImageMetadataPaths
 {
