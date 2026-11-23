@@ -48,6 +48,8 @@ public sealed class MusicResultMetadataTests
         Assert.Equal(213d, music.DurationSeconds);
         Assert.Equal("https://cdn.example.org/cover.jpg", result.ThumbnailUrl);
         Assert.Equal("https://cdns-preview.example.org/track.mp3", mapped.GetProperty("audio_src").GetString());
+        Assert.Equal(213d, mapped.GetProperty("length").GetDouble());
+        Assert.Equal("Example artist", mapped.GetProperty("author").GetString());
         Assert.Equal("default.html", mapped.GetProperty("template").GetString());
     }
 
