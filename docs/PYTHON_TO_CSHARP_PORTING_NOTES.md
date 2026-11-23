@@ -426,3 +426,19 @@ These are C# framework decisions rather than one-to-one translations of a single
 - Tests cover Google News RSS mapping and Bing publisher-URL resolution. They do not establish live feed availability or guarantee that every publisher redirect format is decoded.
 
 **Interpretation:** RSS/Atom is a separate protocol adapter family chosen because these news endpoints return feed documents rather than HTML search pages or JSON APIs. Secure XML settings and redirect normalisation belong in the shared implementation; market-specific request settings remain per definition.
+
+## Standard for future porting entries
+
+Every new entry must contain the following evidence chain:
+
+1. **Pinned Python source:** exact upstream file URL and commit. Do not cite a moving branch as the specification.
+2. **C# source:** provider, parser, shared components and focused tests.
+3. **Original behaviour:** request method/URL/body, query parameters, locale traits, cookies/session state, pagination, result types, parser selectors and failure/challenge handling as relevant.
+4. **Translation rationale:** why the C# implementation uses its current classes, APIs and abstractions. State whether the change is a direct translation, a simplification or an alternative protocol.
+5. **Preserved / adapted / omitted:** list observable behaviour in each category. Call out known divergence rather than describing it as complete parity.
+6. **Verification:** named fixture/test coverage, CI run when available, and explicit live-test status. A passing fixture test is not evidence that an upstream site accepts the request.
+7. **Follow-up:** concrete work required to close material gaps or an explicit decision to leave the divergence.
+
+When no matching Python engine exists (for example, a new C#-only API or RSS adapter family), say so. Do not invent a Python origin story for a C# design.
+
+Keep the shared framework rationale in the relevant family entry or the focused [porting notes](PORTING/). Provider entries should explain why provider-specific rules remain local and which mechanics belong in shared transport, capability, locale, result or health abstractions.
