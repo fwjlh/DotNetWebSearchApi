@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.Net;
 using System.Text.RegularExpressions;
 using System.Xml;
@@ -22,6 +23,14 @@ public sealed class RssSearchProvider : ISearchProvider
     }
 
     public string Name => _definition.Name;
+
+    public EngineCapabilities Capabilities { get; } = new(
+        new HashSet<string>(StringComparer.OrdinalIgnoreCase) { "news" },
+        false,
+        1,
+        false,
+        false,
+        false);
 
     public TimeSpan Timeout => TimeSpan.FromSeconds(8);
 
@@ -104,8 +113,22 @@ public sealed class RssSearchProvider : ISearchProvider
             ?? item.Element(atom + "summary")?.Value
             ?? item.Element(atom + "content")?.Value
             ?? string.Empty);
-        result = new SearchResult(title, uri.AbsoluteUri, snippet, Name, 1.0 / (position + 1));
+        result = new SearchResult(title, uri.AbsoluteUri, snippet, Name, 1.0 / (position + 1))
+        {
+            Category = "news",
+            PublishedDate = ParsePublishedDate(item, atom)
+        };
         return true;
+    }
+
+    private static DateTimeOffset? ParsePublishedDate(XElement item, XNamespace atom)
+    {
+        string value = item.Element("pubDate")?.Value
+            ?? item.Element(atom + "published")?.Value
+            ?? item.Element(atom + "updated")?.Value
+            ?? string.Empty;
+        return DateTimeOffset.TryParse(value, CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal,
+            out DateTimeOffset publishedDate) ? publishedDate : null;
     }
 
     private static string ResolveArticleUrl(string link)
