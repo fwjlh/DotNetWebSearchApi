@@ -38,4 +38,36 @@ public sealed partial class SearxngApiIntegrationTests
 
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
     }
+
+    [Theory]
+    [InlineData("/search")]
+    [InlineData("/api/search")]
+    public async Task Search_RejectsMoreThanTenCategories(string endpoint)
+    {
+        using WebApplicationFactory<Program> factory = CreateFactory(
+            Provider("alpha", Result("A", "https://example.com/a")));
+        using HttpClient client = factory.CreateClient();
+        string categories = string.Join(",", Enumerable.Range(0, 11).Select(index => "category" + index));
+
+        using HttpResponseMessage response = await client.GetAsync(
+            endpoint + "?q=test&categories=" + Uri.EscapeDataString(categories));
+
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+    }
+
+    [Theory]
+    [InlineData("/search")]
+    [InlineData("/api/search")]
+    public async Task Search_RejectsCategoryLongerThanThirtyTwoCharacters(string endpoint)
+    {
+        using WebApplicationFactory<Program> factory = CreateFactory(
+            Provider("alpha", Result("A", "https://example.com/a")));
+        using HttpClient client = factory.CreateClient();
+        string category = new('x', 33);
+
+        using HttpResponseMessage response = await client.GetAsync(
+            endpoint + "?q=test&categories=" + Uri.EscapeDataString(category));
+
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+    }
 }
