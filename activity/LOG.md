@@ -1179,3 +1179,13 @@ Every material repository action is recorded here with its reason, result, verif
 - **Commit:** `668618212761ea77a4d8cb6b6dacad47005462c8`.
 - **Validation:** Compared the category with the pinned SearXNG engine source and reviewed the fixture test. Tests remain unexecuted because the .NET SDK is unavailable; no GitHub Actions or live arXiv request was used.
 - **Next:** Audit remaining legacy adapters for category and request-context mismatches, beginning with Mojeek, Seznam and Brave.
+
+
+### 127. Add Hacker News news category and publication date
+- **Reason:** Hacker News stories are relevant to both ordinary general searches and news-only searches. The generic JSON provider previously had one fixed result category and discarded Algolia's `created_at` timestamp.
+- **Action:** Generic JSON result parsing now receives the query and selects the matching category from the provider's declared category set. Providers supporting both general and news can return the requested vertical without losing general-search behaviour.
+- **Action:** Hacker News now declares `general` and `news`, and maps `created_at` through the generic publication-date path.
+- **Tests:** Added fixtures proving general queries stay general, news queries return news, timestamps are preserved, and the aggregator selects Hacker News for news-only queries without network access.
+- **Commits:** `4a48bcec`, `b19d44e8`, `6ae3fa65`, `bc7ef56c`, `5b066fc8`, `7363b5e3`.
+- **Validation:** Reviewed parser, capability and fixture source. Tests remain unexecuted because the .NET SDK is unavailable. No GitHub Actions or live Hacker News requests were used.
+- **Next:** Review the remaining generic JSON news candidates and ensure category selection remains deterministic when several categories are requested. Then run a final source-size and no-workflows audit.
