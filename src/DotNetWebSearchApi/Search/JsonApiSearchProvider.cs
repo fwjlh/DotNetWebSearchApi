@@ -249,7 +249,8 @@ public sealed class JsonApiSearchProvider : ISearchProvider, ISearchProviderCapa
             out long parsedFileSize) ? parsedFileSize : null;
 
         if (imageUrl.Length == 0 && thumbnailUrl.Length == 0 && license.Length == 0
-            && creator.Length == 0 && source.Length == 0 && format.Length == 0)
+            && creator.Length == 0 && source.Length == 0 && format.Length == 0
+            && licenseUrl.Length == 0 && creatorUrl.Length == 0 && fileSize is null)
         {
             return null;
         }
@@ -265,6 +266,7 @@ public sealed class JsonApiSearchProvider : ISearchProvider, ISearchProviderCapa
             Format = format,
             Source = source,
             FileSizeBytes = fileSize,
+            FileSize = FormatFileSize(fileSize),
             License = license,
             LicenseUrl = licenseUrl,
             Creator = creator,
@@ -274,6 +276,25 @@ public sealed class JsonApiSearchProvider : ISearchProvider, ISearchProviderCapa
             Attribution = ReadOptionalText(item, paths.Attribution),
             MediaCategory = ReadOptionalText(item, paths.MediaCategory)
         };
+    }
+
+    private static string FormatFileSize(long? fileSize)
+    {
+        if (fileSize is null || fileSize < 0)
+        {
+            return string.Empty;
+        }
+
+        string[] units = { "B", "KB", "MB", "GB", "TB" };
+        double value = fileSize.Value;
+        int unitIndex = 0;
+        while (value >= 1024 && unitIndex < units.Length - 1)
+        {
+            value /= 1024;
+            unitIndex++;
+        }
+
+        return value.ToString("0.##", CultureInfo.InvariantCulture) + " " + units[unitIndex];
     }
 
     private static string ReadSafeUrl(JsonElement item, string path)
