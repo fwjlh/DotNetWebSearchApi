@@ -305,6 +305,12 @@ Run from the repository root:
     dotnet build --no-restore
     dotnet test
 
+To measure line and branch coverage locally:
+
+    dotnet test .\\DotNetWebSearchApi.sln -c Release --collect:\"XPlat Code Coverage\"
+
+The Coverlet collector writes a Cobertura report beneath `tests/DotNetWebSearchApi.Tests/TestResults`. Use the report to target uncovered logic and branches; a passing test count alone is not a coverage measure.
+
 GitHub Actions workflows are intentionally disabled to conserve minutes. Run restore, build and tests locally using the commands above.
 
 The last fully verified provider-catalogue baseline passed CI with **156 tests**, 0 failures and 0 skipped, with 0 build warnings and 0 errors ([run 45020266512](https://github.com/fwjlh/DotNetWebSearchApi/actions/runs/45020266512)). This predates the current request-context/capability changes; those newer commits are awaiting CI verification. The 156-test result must not be treated as proof that the latest code is green.
