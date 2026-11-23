@@ -30,6 +30,14 @@ The inspected CoderInBox search path currently has a sequential fallback chain i
 
 The Tools layer defines `IBrowserSearchService`; the concrete `WebView2BrowserSearch` lives in the Harness project. `MainShell` creates it and assigns it to the static `WebResearch.BrowserSearch` property, then clears/disposes it when the host closes.
 
+### Initial consumer implementation
+
+The first consumer slice has now been committed in `fwjlh/CoderInBox`:
+- `IWebSearchService` and `DotNetWebSearchApiClient` live in CoderInBox.Tools and call the stable HTTP endpoint; no provider assemblies or project references cross the repository boundary.
+- Harness opts in through `DOTNETWEBSEARCHAPI_BASE_URL` and optional `DOTNETWEBSEARCHAPI_API_KEY`.
+- `WebResearch.SearchAsync` tries the service first, then retains the existing DuckDuckGo/SearXNG/Wikipedia/Presearch/browser fallback chain.
+- Offline fake-handler and WebResearch preference tests have been authored. Build/test execution remains pending on the operator's Windows/.NET 8 environment; this is not yet a verified integration.
+
 ### Recommended consumer boundary
 
 - Add a general `IWebSearchService` abstraction in CoderInBox.Tools for ordinary query-based search.
