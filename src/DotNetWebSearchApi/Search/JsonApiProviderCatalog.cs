@@ -30,13 +30,15 @@ public static partial class JsonApiProviderCatalog
         new JsonApiSearchDefinition
         {
             Name = "hackernews",
+            Categories = new HashSet<string>(StringComparer.OrdinalIgnoreCase) { "general", "news" },
             Endpoint = "https://hn.algolia.com/api/v1/search",
             QueryParameter = "query",
             LimitParameter = "hitsPerPage",
             ResultsPath = "hits",
             TitlePath = "title",
             UrlPath = "url",
-            SnippetPath = "story_text"
+            SnippetPath = "story_text",
+            PublishedDatePath = "created_at"
         },
         new JsonApiSearchDefinition
         {
