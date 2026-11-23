@@ -246,7 +246,7 @@ public sealed class JsonApiSearchProvider : ISearchProvider, ISearchProviderCapa
             fileSizeText,
             NumberStyles.Integer,
             CultureInfo.InvariantCulture,
-            out long parsedFileSize) ? parsedFileSize : null;
+            out long parsedFileSize) && parsedFileSize >= 0 ? parsedFileSize : null;
 
         if (imageUrl.Length == 0 && thumbnailUrl.Length == 0 && license.Length == 0
             && creator.Length == 0 && source.Length == 0 && format.Length == 0
