@@ -15,6 +15,8 @@ public sealed record SearchResult(
 
     public string Category { get; init; } = "general";
 
+    public DateTimeOffset? PublishedDate { get; init; }
+
     [JsonIgnore]
     public double? ProviderScore { get; init; }
 
