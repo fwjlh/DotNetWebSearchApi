@@ -44,6 +44,45 @@ public sealed class RssSearchProviderTests
         Assert.Equal("https://publisher.example/story/1", result.Url);
     }
 
+    [Fact]
+    public async Task SearchAsync_ParsesAtomFeed()
+    {
+        const string fixture = """
+            <feed xmlns="http://www.w3.org/2005/Atom">
+              <entry>
+                <title>Atom headline</title>
+                <link rel="alternate" href="https://publisher.example/atom-story" />
+                <summary>An Atom summary</summary>
+              </entry>
+            </feed>
+            """;
+        using HttpClient client = new(new StubHttpMessageHandler(_ => Response(fixture)));
+        RssSearchProvider provider = new(client, Definition("google_news"));
+
+        SearchResult result = Assert.Single(await provider.SearchAsync(
+            new SearchQuery("Atom", 10),
+            CancellationToken.None));
+
+        Assert.Equal("Atom headline", result.Title);
+        Assert.Equal("https://publisher.example/atom-story", result.Url);
+        Assert.Equal("An Atom summary", result.Snippet);
+    }
+
+    [Fact]
+    public async Task SearchAsync_RejectsExternalDtd()
+    {
+        const string fixture = """
+            <!DOCTYPE rss SYSTEM "https://example.invalid/external.dtd">
+            <rss><channel><item><title>Blocked DTD</title><link>https://example.com</link></item></channel></rss>
+            """;
+        using HttpClient client = new(new StubHttpMessageHandler(_ => Response(fixture)));
+        RssSearchProvider provider = new(client, Definition("google_news"));
+
+        await Assert.ThrowsAsync<System.Xml.XmlException>(() => provider.SearchAsync(
+            new SearchQuery("external entity", 10),
+            CancellationToken.None));
+    }
+
     private static RssSearchDefinition Definition(string name)
     {
         return name == "google_news"
