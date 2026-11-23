@@ -1121,3 +1121,11 @@ Every material repository action is recorded here with its reason, result, verif
 - **Commit:** `3d911356c7c59858d18ac2d679d823975820d89a`.
 - **Validation:** Reviewed the mapper and test source. Tests remain unexecuted because the .NET SDK is unavailable; no GitHub Actions or live provider requests were used.
 - **Next:** Finish the provider capability/template audit and add provider registration/query-selection tests without live network access. Keep the catalogue frozen at 67.
+
+
+### 123. Verify repository rules file and correct target repository
+- **Reason:** The owner supplied the DotNetWebSearchApi repository link alongside the durable development rules. The rules file must live in that repository, not in a neighbouring project.
+- **Action:** Verified the root `_LookAtMe.MD` already exists in `fwjlh/DotNetWebSearchApi` and exactly contains the supplied rules; no duplicate file or needless edit was made.
+- **Action:** Removed the two accidental rules/activity files previously created in `fwjlh/sqlDiffAi`; they were not part of the requested target. Follow-up tree verification confirmed both paths are absent there.
+- **Validation:** Verified DotNetWebSearchApi `main` has no `.github/workflows/` files, no source files over 25 KB, and the 52 generic JSON definitions remain intact. No workflow was run.
+- **Next:** Continue the dedicated provider registration/capability audit in this repository. Keep all future changes on `fwjlh/DotNetWebSearchApi:main`.
