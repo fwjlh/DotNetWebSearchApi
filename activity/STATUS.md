@@ -118,3 +118,19 @@ Search/media/regional providers (batch 5): Wiby, TVmaze, Radio Browser, PeerTube
 - Activity: latest policy/configuration change is recorded in [`LOG.md`](LOG.md), entry 115.
 - Verification: no application code changed in this policy update. Local tests could not be run in this environment because the .NET SDK is unavailable. Do not substitute GitHub Actions.
 - Next work: keep the 67-provider catalogue frozen; continue auditing provider request/capability gaps and the shared-framework completion plan. Each code increment must include focused tests and be locally verified when a .NET SDK is available.
+
+
+## Latest development — 2026-11-23
+- Openverse now declares `images` capability instead of inheriting the generic `general` capability. Generic JSON providers remain general-web by default.
+- `JsonApiSearchProvider` exposes definition categories through `ISearchProviderCapabilities`.
+- Added two aggregator tests: Openverse is skipped for general search and selected for image search.
+- Commit: `b2dc9fd299dfc4eb6b7ed3034e69b54262c8c2fa`.
+- Tests are committed but unexecuted: this environment has no .NET SDK. GitHub Actions is disabled and must not be used.
+- The action and rationale are recorded in [LOG.md](LOG.md), entry 116.
+
+## Next
+1. Continue the category audit of generic JSON adapters: videos, news, audio and other specialist verticals.
+2. For each provider, use its actual endpoint and response shape as evidence; do not classify based on provider name alone.
+3. Add a focused aggregator regression test with each capability change.
+4. Keep the 67-provider catalogue frozen until the shared-framework definition of done is met.
+5. Do not recreate or run GitHub Actions. Run `dotnet test` locally when an SDK-equipped environment is available.
