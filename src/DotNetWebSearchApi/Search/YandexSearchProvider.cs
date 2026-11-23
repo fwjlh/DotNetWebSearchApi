@@ -4,7 +4,7 @@ using System.Text.Json;
 
 namespace DotNetWebSearchApi.Search;
 
-public sealed class YandexSearchProvider : ISearchProvider
+public sealed class YandexSearchProvider : ISearchProvider, ISearchProviderCapabilities
 {
     private const string SearchEndpoint = "https://searchapi.api.cloud.yandex.net/v2/web/search";
     private const int MaximumQueryLength = 400;
@@ -25,6 +25,14 @@ public sealed class YandexSearchProvider : ISearchProvider
     public string Name => "yandex";
 
     public TimeSpan Timeout => TimeSpan.FromSeconds(8);
+
+    public EngineCapabilities Capabilities { get; } = new(
+        new HashSet<string>(StringComparer.OrdinalIgnoreCase) { "general", "web" },
+        false,
+        1,
+        false,
+        false,
+        false);
 
     public async Task<IReadOnlyList<SearchResult>> SearchAsync(
         SearchQuery query,
