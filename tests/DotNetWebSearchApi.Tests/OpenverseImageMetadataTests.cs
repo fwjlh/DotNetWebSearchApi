@@ -51,8 +51,8 @@ public sealed class OpenverseImageMetadataTests
         Assert.Equal("https://api.openverse.org/thumb/tree", result.ThumbnailUrl);
         Assert.Equal("6016 x 4016", image.Resolution);
         Assert.Equal("jpg", image.Format);
-        Assert.Equal(896128, image.FileSizeBytes);
-        Assert.Equal("875.13 KB", image.FileSize);
+        Assert.Equal(896128L, image.FileSizeBytes);
+        Assert.Equal("875.12 KB", image.FileSize);
         Assert.Equal("cc0", image.License);
         Assert.Equal("1.0", image.LicenseVersion);
         Assert.Equal("Tim Sullivan", image.Creator);
