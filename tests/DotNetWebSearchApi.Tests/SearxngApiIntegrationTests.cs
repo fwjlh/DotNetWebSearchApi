@@ -219,15 +219,15 @@ public sealed partial class SearxngApiIntegrationTests
             .ToArray();
 
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-        Assert.Equal(67, document.RootElement.GetProperty("provider_count").GetInt32());
-        Assert.Equal(67, providers.Length);
-        Assert.Equal(providers.Length, providers.Distinct(StringComparer.OrdinalIgnoreCase).Count());
         Assert.Contains("exa", providers);
         Assert.Contains("yandex", providers);
         Assert.Contains("kagi", providers);
         Assert.Contains("brave", providers);
         Assert.Contains("openverse", providers);
         Assert.Contains("google_news", providers);
+        Assert.Equal(67, document.RootElement.GetProperty("provider_count").GetInt32());
+        Assert.Equal(67, providers.Length);
+        Assert.Equal(providers.Length, providers.Distinct(StringComparer.OrdinalIgnoreCase).Count());
     }
 
     [Fact]
