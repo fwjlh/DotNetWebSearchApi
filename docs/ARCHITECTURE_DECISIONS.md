@@ -79,6 +79,14 @@ Provider expansion resumes only after:
 - existing provider tests remain green;
 - README, status and activity log agree on the provider count and verified CI baseline.
 
+## Outbound destination policy
+
+All provider HttpClientFactory clients use `PublicNetworkSocketsHandler`. Its `SocketsHttpHandler.ConnectCallback` resolves the requested host immediately before connecting and rejects the connection if any resolved address is non-public. Because automatic redirects use the same handler, each redirected host is subject to the same DNS/address policy. The handler connects directly rather than inheriting ambient proxy settings; deployments that require an outbound proxy need an explicitly trusted proxy design rather than silently bypassing destination checks.
+
+The shared transport also rejects non-HTTP(S) initial request URIs, embedded URI credentials, localhost/local/internal hostnames and non-public IP literals. Tests cover private/reserved IPv4 and IPv6 ranges, public address acceptance, handler configuration and initial URI rejection.
+
+This is not a substitute for network egress firewall rules. Keep provider destinations fixed in provider code/configuration; never accept arbitrary destination URLs from callers. Review any new custom HttpClient handler registration to ensure it retains this policy.
+
 ## Live upstream smoke tests
 
 The xUnit project contains an explicitly opt-in live integration suite for Wikipedia, Crossref and GitHub. It calls the real provider adapters with one request per provider, a 20-second timeout, a 1 MiB response cap and a maximum of three results. Set `DOTNETWEBSEARCHAPI_LIVE_TESTS=1` to run it. The default fixture suite remains offline and deterministic. Live smoke tests measure current reachability and response compatibility only; they do not guarantee future availability or validate all 67 adapters.
