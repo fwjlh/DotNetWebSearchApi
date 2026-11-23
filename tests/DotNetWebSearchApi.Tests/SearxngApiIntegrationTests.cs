@@ -126,6 +126,25 @@ public sealed class SearxngApiIntegrationTests
     }
 
     [Fact]
+    public async Task Search_MapsRequestContextIntoProviderQuery()
+    {
+        CapturingProvider provider = new();
+        using WebApplicationFactory<Program> factory = CreateFactory(provider);
+        using HttpClient client = factory.CreateClient();
+
+        using HttpResponseMessage response = await client.GetAsync(
+            "/search?q=test&pageno=2&categories=general,news&language=fr-FR&safesearch=2&time_range=week");
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        Assert.NotNull(provider.LastQuery);
+        Assert.Equal(2, provider.LastQuery.Page);
+        Assert.Equal(new[] { "general", "news" }, provider.LastQuery.Categories!.OrderBy(value => value));
+        Assert.Equal("fr-FR", provider.LastQuery.Language);
+        Assert.Equal(2, provider.LastQuery.SafeSearch);
+        Assert.Equal(SearchTimeRange.Week, provider.LastQuery.TimeRange);
+    }
+
+    [Fact]
     public async Task Search_RejectsInvalidRequestContextValues()
     {
         using WebApplicationFactory<Program> factory = CreateFactory(Provider("alpha", Result("A", "https://example.com/a")));
@@ -335,6 +354,28 @@ public sealed class SearxngApiIntegrationTests
     private static SearchResult Result(string title, string url)
     {
         return new SearchResult(title, url, title + " description", "fixture", 1.0);
+    }
+
+    private sealed class CapturingProvider : ISearchProvider, ISearchProviderCapabilities
+    {
+        public string Name => "capture";
+        public TimeSpan Timeout => TimeSpan.FromSeconds(2);
+        public SearchQuery? LastQuery { get; private set; }
+        public EngineCapabilities Capabilities { get; } = new(
+            new HashSet<string>(StringComparer.OrdinalIgnoreCase) { "general", "news" },
+            true,
+            10,
+            true,
+            true,
+            true);
+
+        public Task<IReadOnlyList<SearchResult>> SearchAsync(
+            SearchQuery query,
+            CancellationToken cancellationToken)
+        {
+            LastQuery = query;
+            return Task.FromResult<IReadOnlyList<SearchResult>>(Array.Empty<SearchResult>());
+        }
     }
 
     private sealed class TestProvider(
