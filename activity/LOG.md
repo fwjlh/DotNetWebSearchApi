@@ -1317,3 +1317,13 @@ Every material repository action is recorded here with its reason, result, verif
 - **Validation:** Rechecked the current tree: 83 C# files, 35 test files, none over 20 KB; 52 generic JSON definitions; no workflow paths.
 - **Commit:** `73d1188bde618a136c87f8d489e9c2353b876382`.
 - **Next:** At the local build/test session, run `dotnet test` with .NET 10 and fix failures directly on `main`, without workflows.
+
+
+### 137. Preserve scholarly subjects as typed paper tags
+- **Reason:** DataCite and Zenodo return subjects as arrays of objects, while PLOS returns a scalar string array. The paper parser previously handled only scalar arrays, so provider subjects were lost.
+- **Action:** Added a typed `TagName` path and a paper-tag reader that supports both string values and object properties without serializing whole objects as text.
+- **Action:** Configured DataCite and Zenodo subject paths and requested/mapped PLOS subjects.
+- **Tests:** Extended the three provider fixtures to assert subject tags and retained the existing OpenAIRE and paper metadata cases.
+- **Commit:** `dc78019502ab62106c2d312d718363357c7298c7`.
+- **Validation:** Reviewed the new path handling and local fixtures. Tests remain unexecuted because the .NET SDK is unavailable; no GitHub Actions or live scholarly API calls were used.
+- **Next:** Finish scholarly provider path audit and final category/result-template consistency review; then wait for the local .NET 10 build/test session.
