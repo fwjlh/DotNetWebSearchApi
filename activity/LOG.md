@@ -1476,3 +1476,14 @@ Every material repository action is recorded here with its reason, result, verif
 - **Commit:** `2787902b707de8ff69c0e2e8b0378615e75e7770`.
 - **Validation:** Compared startup ordering in `Program.cs` with the factory configuration callback and updated the test to configure host settings before app startup. Must be verified by the user's local .NET 10 test run.
 - **Next:** Pull `main` and run the full Release test suite. No GitHub Actions, no live provider calls.
+
+
+## 2026-11-23 — Correct optional-provider test host configuration
+
+### 158. Set optional provider keys before the test host is created
+- **Reason:** The previous correction called `ConfigureHostConfiguration` on the `IWebHostBuilder` supplied by `WithWebHostBuilder`. That API belongs to `IHostBuilder`, so the test project failed to compile with CS1061.
+- **Finding:** `Program.cs` reads Exa, Yandex, Kagi and Brave keys directly from `WebApplication.CreateBuilder(args)` and conditionally registers providers during top-level startup. A later web-host configuration callback cannot reliably change those already-made registration decisions.
+- **Correction:** The production-provider integration tests now apply temporary process environment values before constructing/starting `WebApplicationFactory`, then restore the original values after the factory is disposed. The test class uses a non-parallel xUnit collection because environment variables are process-wide. The invalid `ConfigureHostConfiguration` call and unused configuration import were removed.
+- **Commits:** `ef13f5f0646ab0c169a6b3641b28294503550f11` (initial test setup); `49e82bc2d5d09bd72c842514f6122fcddf951436` (serialize environment-dependent test collection and simplify factory construction).
+- **Validation:** Reviewed the updated test source and disposal order. No .NET SDK is available in this environment, so this correction has not been compiled or executed here. No GitHub Actions or live provider calls.
+- **Next:** Pull `main`, build the solution, then run the Release test suite. If the provider count still fails, report the first missing provider assertion and its local output.
