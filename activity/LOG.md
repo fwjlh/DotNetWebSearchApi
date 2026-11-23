@@ -1138,3 +1138,13 @@ Every material repository action is recorded here with its reason, result, verif
 - **Commit:** `ef0cdb3cbdab7f1b42cbed7a79d2ba2d08c8c6df`.
 - **Validation:** Test source reviewed; no network call is made by either test. Execution remains unavailable because the .NET SDK is not installed. No GitHub Actions were used.
 - **Next:** Continue auditing all provider capability declarations and template/result-type consistency. Keep the provider count at 67.
+
+
+### 124. Audit dedicated provider capabilities and registration
+- **Reason:** The generic JSON catalogue is now covered, so the remaining dedicated adapters and their DI registration need the same request/capability consistency check.
+- **Action:** Reviewed Arxiv, Bing, Brave, DuckDuckGo, Google, Kagi, Mojeek, Naver, Qwant, Seznam, Wikipedia, Yahoo, Yandex and RSS request builders against their declared/default capabilities. Pagination, locale, safe-search and time-range flags match the parameters actually sent; public/API-key providers are registered conditionally as intended.
+- **Action:** Added a DI registration regression for all 52 JSON definitions, Exa's required API key, and Bilibili's configured Referer header. No live provider requests are made by this test.
+- **Action:** Updated the Bilibili video test to expect `default.html` when the provider supplies no safe embed URL; the mapper's specialist-template guard intentionally requires a usable image source or video embed.
+- **Validation:** Source inspection only. The new registration test is committed but not executed because the .NET SDK is unavailable. No GitHub Actions were used.
+- **Commits:** `99386119d1b8fc7316293012b1a60d0bd6cba374` (registration test), `4e24a65463993a96b44615216db19e1d7c08cf5a` (Bilibili template expectation).
+- **Next:** Review music/audio result metadata and news result mapping; preserve the default template unless a typed media payload supports a specialist template.
