@@ -13,6 +13,8 @@ public sealed record SearchResult(
 
     public string? ThumbnailUrl { get; init; }
 
+    public string Category { get; init; } = "general";
+
     [JsonIgnore]
     public double? ProviderScore { get; init; }
 
