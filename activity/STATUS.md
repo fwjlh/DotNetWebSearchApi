@@ -239,3 +239,19 @@ Search/media/regional providers (batch 5): Wiby, TVmaze, Radio Browser, PeerTube
 2. Require explicit HTTP(S) validation for embed URLs; do not embed arbitrary destinations.
 3. Add a focused fixture for one video provider and a serialization test.
 4. Keep provider count frozen at 67; continue small commits on `main`.
+
+## Latest development — Dailymotion video metadata
+- Added typed `VideoResultMetadata` and Dailymotion mappings for embed URL, thumbnail, duration and upload timestamp.
+- SearXNG mapping now selects `videos.html` and emits `iframe_src`, `length`, `thumbnail` and `publishedDate`.
+- Embed and thumbnail URLs are restricted to absolute HTTP(S); invalid Unix timestamps are ignored.
+- Added fixture tests for video metadata, mapping, date conversion and unsafe URL rejection. Image results now also assert `images.html`.
+- Updated [porting rationale](../docs/PYTHON_TO_CSHARP_PORTING_NOTES.md) and [architecture audit](../docs/PORTING_AUDIT.md).
+- Activity record: [Dailymotion video metadata](2026-11-23-dailymotion-video-metadata.md).
+- Tests remain unexecuted because `dotnet` is not installed. No GitHub Actions or live provider requests were used.
+- Dailymotion requires a Player ID context for a functional embed; configuration is not implemented yet.
+
+## Next
+1. Add optional Dailymotion Player ID configuration and only claim functional embeds when configured.
+2. Audit Bilibili and PeerTube metadata fields against their documented response formats.
+3. Add fixture tests for each supported mapping and reject unsafe embed/thumbnail URLs.
+4. Keep provider count frozen at 67 and continue direct commits to `main`; no workflows.
