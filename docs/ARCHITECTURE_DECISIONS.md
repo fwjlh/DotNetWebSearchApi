@@ -1,6 +1,6 @@
 # Architecture decisions and consumer integration
 
-Updated: 2026-11-22
+Updated: 2026-11-23
 
 ## Product boundary
 
@@ -82,6 +82,7 @@ Provider expansion resumes only after:
 ## Current baseline
 
 - Provider adapters: 67 (frozen).
-- Last recorded CI baseline: 156 tests passed, 0 failed, 0 skipped; build had 0 warnings and 0 errors, run https://github.com/fwjlh/DotNetWebSearchApi/actions/runs/45020266512.
-- This is fixture/CI verification, not live upstream verification.
+- Latest user-reported local Release verification (23 November 2026): build succeeded; 319 tests passed, 0 failed, 0 skipped. This is fixture-based local verification, not live upstream verification.
+- GitHub Actions are disabled by the repository owner to conserve minutes; do not re-enable or rely on workflow runs.
+- Coverlet collector 6.0.4 has been added to the test project; measured coverage is the next quality gate.
 - The architecture audit is in [PORTING_AUDIT.md](PORTING_AUDIT.md).
