@@ -7,6 +7,23 @@ namespace DotNetWebSearchApi.Tests;
 public sealed class ImageResultMetadataTests
 {
     [Fact]
+    public void Map_UsesDefaultTemplateForOrdinaryResults()
+    {
+        SearchResult result = new(
+            "Ordinary result",
+            "https://example.org/result",
+            "Description",
+            "fixture",
+            1.0);
+
+        SearxngSearchResponse response = SearxngSearchResponseMapper.Map(
+            "ordinary",
+            new SearchExecutionResult(new[] { result }, Array.Empty<string>(), Array.Empty<string>()));
+
+        Assert.Equal("default.html", Assert.Single(response.Results).Template);
+    }
+
+    [Fact]
     public void Map_PreservesTypedImageMetadataInSearxngFields()
     {
         ImageResultMetadata image = new()
@@ -48,6 +65,7 @@ public sealed class ImageResultMetadataTests
         JsonElement mapped = Assert.Single(document.RootElement.GetProperty("results").EnumerateArray());
 
         Assert.Equal("images", mapped.GetProperty("category").GetString());
+        Assert.Equal("images.html", mapped.GetProperty("template").GetString());
         Assert.Equal(image.ImageUrl, mapped.GetProperty("img_src").GetString());
         Assert.Equal(image.ThumbnailUrl, mapped.GetProperty("thumbnail_src").GetString());
         Assert.Equal(image.Resolution, mapped.GetProperty("resolution").GetString());

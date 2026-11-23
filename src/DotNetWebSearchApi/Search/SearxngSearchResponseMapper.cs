@@ -23,9 +23,10 @@ public static class SearxngSearchResponseMapper
             uri.Scheme, uri.Authority, uri.AbsolutePath, string.Empty,
             uri.Query.TrimStart('?'), uri.Fragment.TrimStart('#')
         };
+        string template = result.ImageMetadata is null ? "default.html" : "images.html";
         return new SearxngSearchResult(
             result.Url, result.Title, result.Snippet, result.Provider, engines,
-            result.Positions, result.Score, result.Category, "default.html", parsedUrl, result.PublishedDate)
+            result.Positions, result.Score, result.Category, template, parsedUrl, result.PublishedDate)
         {
             Thumbnail = result.ThumbnailUrl,
             ImageUrl = result.ImageMetadata?.ImageUrl,
