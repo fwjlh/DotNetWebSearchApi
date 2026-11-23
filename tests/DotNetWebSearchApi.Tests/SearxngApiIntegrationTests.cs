@@ -323,7 +323,7 @@ public sealed partial class SearxngApiIntegrationTests
     private static WebApplicationFactory<Program> CreateProductionFactory()
     {
         return new WebApplicationFactory<Program>().WithWebHostBuilder(builder =>
-            builder.ConfigureAppConfiguration((_, configuration) =>
+            builder.ConfigureHostConfiguration(configuration =>
                 configuration.AddInMemoryCollection(new Dictionary<string, string?>
                 {
                     ["EXA_API_KEY"] = "test-key",
