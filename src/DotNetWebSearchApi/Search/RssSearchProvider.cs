@@ -6,7 +6,7 @@ using System.Xml.Linq;
 
 namespace DotNetWebSearchApi.Search;
 
-public sealed class RssSearchProvider : ISearchProvider
+public sealed class RssSearchProvider : ISearchProvider, ISearchProviderCapabilities
 {
     private readonly HttpClient _httpClient;
     private readonly RssSearchDefinition _definition;
