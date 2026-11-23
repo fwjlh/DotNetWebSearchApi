@@ -215,9 +215,8 @@ public sealed class SearchHttpTransport
             || bytes[0] == 127
             || bytes[0] == 169 && bytes[1] == 254
             || bytes[0] == 172 && bytes[1] is >= 16 and <= 31
-            || bytes[0] == 192 && (bytes[1] == 0 || bytes[1] == 168)
-            || bytes[0] == 192 && bytes[1] == 0 && bytes[2] == 2
-            || bytes[0] == 198 && (bytes[1] == 18 || bytes[1] == 19 || bytes[1] == 51)
+            || bytes[0] == 192 && (bytes[1] == 168 || bytes[1] == 0 && (bytes[2] == 0 || bytes[2] == 2))
+            || bytes[0] == 198 && (bytes[1] == 18 || bytes[1] == 19 || bytes[1] == 51 && bytes[2] == 100)
             || bytes[0] == 203 && bytes[1] == 0 && bytes[2] == 113
             || bytes[0] >= 224;
     }
