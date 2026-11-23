@@ -129,18 +129,24 @@ public sealed partial class JsonApiSearchProvider
 
     private static IReadOnlyList<string> ReadTextArray(JsonElement item, string path)
     {
-        if (string.IsNullOrWhiteSpace(path)
-            || !TryReadPath(item, path, out JsonElement array)
-            || array.ValueKind != JsonValueKind.Array)
+        if (string.IsNullOrWhiteSpace(path) || !TryReadPath(item, path, out JsonElement value))
         {
             return Array.Empty<string>();
         }
 
-        return array.EnumerateArray()
-            .Select(value => value.ValueKind == JsonValueKind.String
+        if (value.ValueKind != JsonValueKind.Array)
+        {
+            string scalar = value.ValueKind == JsonValueKind.String
                 ? value.GetString() ?? string.Empty
-                : value.ToString())
-            .Where(value => value.Length > 0)
+                : value.ToString();
+            return scalar.Length == 0 ? Array.Empty<string>() : new[] { scalar };
+        }
+
+        return value.EnumerateArray()
+            .Select(itemValue => itemValue.ValueKind == JsonValueKind.String
+                ? itemValue.GetString() ?? string.Empty
+                : itemValue.ToString())
+            .Where(itemValue => itemValue.Length > 0)
             .ToArray();
     }
 }
