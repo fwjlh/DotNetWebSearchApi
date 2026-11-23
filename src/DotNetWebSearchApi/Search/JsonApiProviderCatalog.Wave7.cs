@@ -76,7 +76,7 @@ public static partial class JsonApiProviderCatalog
             UrlPrefix = "https://explore.openaire.eu/search/publication?pid=",
             FixedParameters = new Dictionary<string, string>
             {
-                ["select"] = "id,mainTitle,descriptions,authors,publicationDate,publisher,journal,pids"
+                ["select"] = "id,mainTitle,descriptions,authors,publicationDate,publisher,journal,pids,webLinks"
             },
             PaperMetadata = new JsonApiPaperMetadataPaths
             {
