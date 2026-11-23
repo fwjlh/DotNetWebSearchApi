@@ -1230,3 +1230,12 @@ Every material repository action is recorded here with its reason, result, verif
 - **Commit:** `1307218be38b193d7277a4455c5c10b9c5ec8671`.
 - **Validation:** Reviewed the resolver and existing category tests. Full test execution remains blocked by the missing .NET SDK; no workflows or live provider requests used.
 - **Next:** Complete the final registration, source-size and workflow audit.
+
+
+### 133. Share SearXNG duration and author fields across audio/video
+- **Reason:** SearXNG's common result shape uses `length` and `author` for media. The C# mapper emitted video duration/author but left Deezer music duration and artist only in the nested extension.
+- **Action:** Replaced the video-only response properties with shared `LengthSeconds` and `Author`; the mapper selects video duration/author first, then music duration/artist.
+- **Tests:** Deezer fixture now asserts `audio_src`, `length`, `author` and default template together. Existing video tests continue to assert the same shared fields.
+- **Commits:** `ebb02425`, `ca766171`, `fac551d2`, `e75d2344`, `736fb606`.
+- **Validation:** Reviewed response model, mapper and fixture assertions. Tests remain unexecuted because the .NET SDK is unavailable; no GitHub Actions or live upstream calls used.
+- **Next:** Final source-size, provider registration and no-workflows audit.
