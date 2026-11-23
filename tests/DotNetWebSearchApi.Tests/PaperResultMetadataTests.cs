@@ -42,6 +42,7 @@ public sealed class PaperResultMetadataTests
 
         Assert.Equal("science", result.Category);
         Assert.Equal("Ada Lovelace", paper.Author);
+        Assert.Equal("Sample abstract.", paper.Content);
         Assert.Equal(new[] { "Ada Lovelace", "Grace Hopper" }, paper.Authors);
         Assert.Equal("Journal of Examples", paper.Journal);
         Assert.Equal("10.1234/sample", paper.Doi);
