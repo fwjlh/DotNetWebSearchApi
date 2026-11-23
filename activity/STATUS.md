@@ -62,3 +62,12 @@ At the planned local build/test session:
 4. Continue validating the configured provider field paths against their real response schemas, without live calls in tests.
 
 Never use GitHub Actions or workflow minutes. Keep this file and `LOG.md` current so the next session can resume without relying on chat history.
+
+
+## Scholarly subject metadata
+- DataCite and Zenodo subject objects are now parsed through an explicit subject-name path.
+- PLOS subject string arrays are preserved as paper tags.
+- Added fixture assertions for all three formats.
+- Commit: `dc78019502ab62106c2d312d718363357c7298c7`.
+- Logged as entry 137. Tests remain unexecuted because the .NET SDK is unavailable; no workflows or live API calls were used.
+- Next: complete scholarly path and category/template audit, then wait for the planned local .NET 10 build/test session.
