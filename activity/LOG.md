@@ -1308,3 +1308,12 @@ Every material repository action is recorded here with its reason, result, verif
 - **Action:** Preserved all log content and commit references while assigning unique heading numbers to the four later duplicate entries (137–140).
 - **Validation:** Rechecked the heading list; every numbered entry is now unique. The canonical current state and next action are maintained in `activity/STATUS.md`.
 - **Next:** Read the final status summary, then run the local .NET 10 build/test session when the SDK is available.
+
+
+### 142. Consolidate the canonical handover
+- **Reason:** Repeated status appends from concurrent work left obsolete next steps and conflicting provider counts after the scholarly metadata work.
+- **Action:** Rewrote `STATUS.md` as a single current handover with the 67-provider composition, implemented result families, file-size/test counts, known limits and exact next step.
+- **Action:** Clarified workflow history accurately: no Actions have been invoked since the stop instruction, and no workflow files currently exist.
+- **Validation:** Rechecked the current tree: 83 C# files, 35 test files, none over 20 KB; 52 generic JSON definitions; no workflow paths.
+- **Commit:** `73d1188bde618a136c87f8d489e9c2353b876382`.
+- **Next:** At the local build/test session, run `dotnet test` with .NET 10 and fix failures directly on `main`, without workflows.
