@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.Net;
 using System.Text.Json;
 using System.Text.RegularExpressions;
@@ -148,6 +149,7 @@ public sealed class JsonApiSearchProvider : ISearchProvider, ISearchProviderCapa
         }
 
         TryReadText(item, _definition.SnippetPath, out string snippet);
+        ImageResultMetadata? imageMetadata = ReadImageMetadata(item);
         result = new SearchResult(
             title,
             resultUri.AbsoluteUri,
@@ -155,7 +157,11 @@ public sealed class JsonApiSearchProvider : ISearchProvider, ISearchProviderCapa
             Name,
             1.0 / (position + 1))
         {
-            Category = ResolveResultCategory()
+            Category = ResolveResultCategory(),
+            ThumbnailUrl = string.IsNullOrWhiteSpace(imageMetadata?.ThumbnailUrl)
+                ? null
+                : imageMetadata.ThumbnailUrl,
+            ImageMetadata = imageMetadata
         };
         return true;
     }
@@ -217,6 +223,76 @@ public sealed class JsonApiSearchProvider : ISearchProvider, ISearchProviderCapa
         return false;
     }
 
+    private ImageResultMetadata? ReadImageMetadata(JsonElement item)
+    {
+        JsonApiImageMetadataPaths? paths = _definition.ImageMetadata;
+        if (paths is null)
+        {
+            return null;
+        }
+
+        string imageUrl = ReadSafeUrl(item, paths.ImageUrl);
+        string thumbnailUrl = ReadSafeUrl(item, paths.ThumbnailUrl);
+        string width = ReadOptionalText(item, paths.Width);
+        string height = ReadOptionalText(item, paths.Height);
+        string licenseUrl = ReadSafeUrl(item, paths.LicenseUrl);
+        string creatorUrl = ReadSafeUrl(item, paths.CreatorUrl);
+        string license = ReadOptionalText(item, paths.License);
+        string creator = ReadOptionalText(item, paths.Creator);
+        string source = ReadOptionalText(item, paths.Source);
+        string format = ReadOptionalText(item, paths.Format);
+        string fileSizeText = ReadOptionalText(item, paths.FileSizeBytes);
+        long? fileSize = long.TryParse(
+            fileSizeText,
+            NumberStyles.Integer,
+            CultureInfo.InvariantCulture,
+            out long parsedFileSize) ? parsedFileSize : null;
+
+        if (imageUrl.Length == 0 && thumbnailUrl.Length == 0 && license.Length == 0
+            && creator.Length == 0 && source.Length == 0 && format.Length == 0)
+        {
+            return null;
+        }
+
+        string resolution = width.Length > 0 && height.Length > 0
+            ? width + " x " + height
+            : string.Empty;
+        return new ImageResultMetadata
+        {
+            ImageUrl = imageUrl,
+            ThumbnailUrl = thumbnailUrl,
+            Resolution = resolution,
+            Format = format,
+            Source = source,
+            FileSizeBytes = fileSize,
+            License = license,
+            LicenseUrl = licenseUrl,
+            Creator = creator,
+            CreatorUrl = creatorUrl,
+            Provider = ReadOptionalText(item, paths.Provider),
+            LicenseVersion = ReadOptionalText(item, paths.LicenseVersion),
+            Attribution = ReadOptionalText(item, paths.Attribution),
+            MediaCategory = ReadOptionalText(item, paths.MediaCategory)
+        };
+    }
+
+    private static string ReadSafeUrl(JsonElement item, string path)
+    {
+        string value = ReadOptionalText(item, path);
+        if (!Uri.TryCreate(value, UriKind.Absolute, out Uri? uri)
+            || (uri.Scheme != Uri.UriSchemeHttp && uri.Scheme != Uri.UriSchemeHttps))
+        {
+            return string.Empty;
+        }
+
+        return uri.AbsoluteUri;
+    }
+
+    private static string ReadOptionalText(JsonElement item, string path)
+    {
+        return TryReadText(item, path, out string value) ? value : string.Empty;
+    }
+
     private string ResolveResultCategory()
     {
         return _definition.Categories.FirstOrDefault() ?? "general";
@@ -267,4 +343,24 @@ public sealed record JsonApiSearchDefinition
         new Dictionary<string, string>();
     public IReadOnlySet<string> Categories { get; init; } =
         new HashSet<string>(StringComparer.OrdinalIgnoreCase) { "general" };
+    public JsonApiImageMetadataPaths? ImageMetadata { get; init; }
+}
+
+public sealed record JsonApiImageMetadataPaths
+{
+    public string ImageUrl { get; init; } = string.Empty;
+    public string ThumbnailUrl { get; init; } = string.Empty;
+    public string Width { get; init; } = string.Empty;
+    public string Height { get; init; } = string.Empty;
+    public string Format { get; init; } = string.Empty;
+    public string Source { get; init; } = string.Empty;
+    public string FileSizeBytes { get; init; } = string.Empty;
+    public string License { get; init; } = string.Empty;
+    public string LicenseUrl { get; init; } = string.Empty;
+    public string Creator { get; init; } = string.Empty;
+    public string CreatorUrl { get; init; } = string.Empty;
+    public string Provider { get; init; } = string.Empty;
+    public string LicenseVersion { get; init; } = string.Empty;
+    public string Attribution { get; init; } = string.Empty;
+    public string MediaCategory { get; init; } = string.Empty;
 }
