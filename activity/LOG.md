@@ -1487,3 +1487,14 @@ Every material repository action is recorded here with its reason, result, verif
 - **Commits:** `ef13f5f0646ab0c169a6b3641b28294503550f11` (initial test setup); `49e82bc2d5d09bd72c842514f6122fcddf951436` (serialize environment-dependent test collection and simplify factory construction).
 - **Validation:** Reviewed the updated test source and disposal order. No .NET SDK is available in this environment, so this correction has not been compiled or executed here. No GitHub Actions or live provider calls.
 - **Next:** Pull `main`, build the solution, then run the Release test suite. If the provider count still fails, report the first missing provider assertion and its local output.
+
+
+## 2026-11-23 — Restore production registrations in Openverse integration test
+
+### 159. Keep the production provider catalogue in the Openverse test
+- **Reason:** The local Release test run reported 318/319 passing; `Search_SkipsRegisteredOpenverseForGeneralSearchWithoutNetwork` received HTTP 400 instead of 200.
+- **Finding:** The test called the parameterless `CreateFactory()` overload. That overload is actually `CreateFactory(params ISearchProvider[] providers)`; it removes every registered `ISearchProvider` and then adds zero replacements. Consequently, `openverse` is not in the aggregator's available-provider list and the request is correctly rejected as an unknown engine before category capability filtering occurs.
+- **Correction:** Constructed a plain `new WebApplicationFactory<Program>()` for this test, matching the production-host registration test. This preserves the real provider catalogue while the temporary environment variables activate optional providers. The request can now reach the intended capability filter: Openverse is registered but does not support the requested `general` category, so it should be reported as unsupported without making a network request.
+- **Commit:** Pending activity update.
+- **Validation:** Source-level diagnosis from the test factory and `Program.cs` registration path. No .NET execution performed here. No GitHub Actions or live provider calls.
+- **Next:** Pull `main` and rerun the Release suite; expect this test to return 200 with an empty result list and `openverse` in `unsupported_engines`.
