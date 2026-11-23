@@ -89,7 +89,7 @@ public sealed class JsonApiProviderCapabilityTests
             item => item.Name == "bilibili");
 
         Assert.Equal(string.Empty, definition.LimitParameter);
-        Assert.Equal("https://search.bilibili.com", definition.Headers["Referer"]);
+        Assert.Equal("https://search.bilibili.com/", definition.Headers["Referer"]);
     }
 
     [Fact]
