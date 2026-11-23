@@ -430,3 +430,16 @@ Search/media/regional providers (batch 5): Wiby, TVmaze, Radio Browser, PeerTube
 - Deezer previews now emit `audio_src`, duration as `length`, and artist as `author`; nested `music_metadata` remains available.
 - Added fixture assertions and updated the porting rationale/audit.
 - Logged as entry 133 in [LOG.md](LOG.md).
+
+
+## Final audit — 2026-11-23
+- Provider composition: 52 JSON definitions + 2 RSS providers + 13 dedicated adapters = 67. A production-host test verifies 67 unique providers when optional credentials are configured.
+- Dedicated capability corrections: arXiv is science-only; Mojeek and Seznam explicitly support general/web; Mojeek and Brave map safe-search values to their actual upstream parameters.
+- Specialist results: image, video, audio and news metadata are typed; specialist templates require a usable safe image/embed URL; publication dates are preserved only when supplied by providers.
+- Source size: all C# source and test files are below 20 KB. The JSON catalogue is split across family files.
+- Workflows: no files remain under `.github/workflows/`. Do not recreate or run GitHub Actions.
+- Rules and handover: `_LookAtMe.MD`, `activity/LOG.md` and this status file are present. Latest Seznam correction is LOG entry 134.
+- Tests: fixture and integration tests have been added, but none were executed in this environment because the .NET 10 SDK is unavailable. No CI run was used.
+
+## Exact next step
+At the planned local build/test session, install/use the .NET 10 SDK, run the full solution test suite, fix compile/test failures in small commits, then measure actual coverage for the new parser and capability logic. Until then, keep the 67-provider catalogue frozen and make no claims that tests have passed.
