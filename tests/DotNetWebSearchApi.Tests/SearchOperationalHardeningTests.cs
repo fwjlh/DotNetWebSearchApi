@@ -61,6 +61,29 @@ public sealed partial class SearxngApiIntegrationTests
         Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
     }
 
+
+    [Fact]
+    public async Task UnauthorizedRequests_DoNotConsumeAuthenticatedSearchQuota()
+    {
+        const string apiKey = "0123456789abcdef0123456789abcdef";
+        using EnvironmentVariableScope environment = EnvironmentVariableScope.Apply(
+            new Dictionary<string, string?> { ["SEARCH_API_KEYS"] = apiKey });
+        using WebApplicationFactory<Program> factory = CreateFactory(
+            Provider("alpha", Result("A", "https://example.com/a")));
+        using HttpClient client = factory.CreateClient();
+
+        for (int index = 0; index < 61; index++)
+        {
+            using HttpResponseMessage response = await client.GetAsync("/api/search?q=test");
+            Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
+        }
+
+        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", apiKey);
+        using HttpResponseMessage authorizedResponse = await client.GetAsync("/api/search?q=test");
+
+        Assert.Equal(HttpStatusCode.OK, authorizedResponse.StatusCode);
+    }
+
     [Fact]
     public async Task Search_RateLimitReturnsTooManyRequestsAfterSixtyRequests()
     {
