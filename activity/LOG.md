@@ -1016,3 +1016,11 @@ Every material repository action is recorded here with its reason, result, verif
 - **RSS/Atom:** Documented the feed-specific parser, secure XML settings (DTD prohibited, resolver disabled), fixed market settings and Bing News publisher URL extraction. Recorded the current Google News/Bing News scope and its pagination/locale limitations.
 - **Verification:** Documentation-only; no provider code changed in this entry. The JSON/RSS corpus commit's workflow is queued as [run 45144710763](https://github.com/fwjlh/DotNetWebSearchApi/actions/runs/45144710763). No live upstream requests.
 - **Next:** Continue auditing capability gaps and richer result metadata. Keep the 67-provider catalogue frozen.
+
+
+### 111. Verify request-context propagation end to end and formalise corpus entry quality
+- **Reason:** Existing integration coverage showed unsupported options were rejected, but did not prove that a capable provider receives the parsed request values intact. The corpus also needed a clear minimum evidence standard for future contributors.
+- **Test:** Added a capturing provider integration test that exercises `/search` with two categories, page 2, `fr-FR`, safe-search 2 and weekly time range, then asserts the exact `SearchQuery` delivered to the provider. GitHub Actions [run 45144835861](https://github.com/fwjlh/DotNetWebSearchApi/actions/runs/45144835861) passed the build-and-test job.
+- **Documentation:** Added a mandatory evidence chain for new porting notes: pinned Python source, C# source, original behaviour, translation rationale, preserved/adapted/omitted behaviour, verification and follow-up. Explicitly requires C#-only adapters to be labelled as such rather than inventing a Python origin.
+- **Verification:** The corpus standard commit is documentation-only; its workflow is tracked separately. No live provider requests.
+- **Next:** Continue auditing request/capability parity for the remaining catalogue; keep commits small and provider count frozen at 67.
