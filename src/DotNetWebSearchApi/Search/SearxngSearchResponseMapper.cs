@@ -64,7 +64,9 @@ public static class SearxngSearchResponseMapper
             VideoDurationSeconds = result.VideoMetadata?.DurationSeconds,
             VideoAuthor = result.VideoMetadata?.Author,
             VideoViews = result.VideoMetadata?.Views,
-            VideoMetadata = result.VideoMetadata
+            VideoMetadata = result.VideoMetadata,
+            AudioUrl = result.MusicMetadata?.AudioUrl,
+            MusicMetadata = result.MusicMetadata
         };
     }
 }
