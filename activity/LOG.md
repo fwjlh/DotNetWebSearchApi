@@ -1367,3 +1367,14 @@ Every material repository action is recorded here with its reason, result, verif
 - **Validation:** Status agrees with the latest inventory: 67 providers, 83 C# files, 35 test files, largest file 19,463 bytes, zero workflow files.
 - **Commit:** `06290049f368935dccc9439cda6cdae89b765c7b`.
 - **Next:** Local .NET 10 build/test session. No GitHub Actions.
+
+
+## 2026-11-23 — Correct the application entry-point declaration
+
+### 146. Fix the invalid top-level Program type declaration
+- **Reason:** The local .NET 10 build reported C# syntax errors in the application project, followed by a missing reference-assembly metadata file. The metadata error is a consequence of the failed compilation.
+- **Inspection:** Read the current `src/DotNetWebSearchApi/Program.cs` on `main`. Its final declaration was `public partial class Program;`, which is not a valid class declaration in C#.
+- **Correction:** Replaced it with `public partial class Program { }`, preserving the public partial Program type required by top-level-program integration tests.
+- **Commit:** `a81416bc8b69fd3c0a48e00aac27ad3e1396dcc6`.
+- **Validation:** Source-level correction only. No .NET SDK is available in this environment, so build/tests have not been executed. No GitHub Actions used.
+- **Next:** Pull this commit and run the local Release build/tests. If any further compiler errors remain, capture their full file/line diagnostics and fix the next root cause.
