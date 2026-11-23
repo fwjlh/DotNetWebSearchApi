@@ -12,7 +12,8 @@ public static class PublicNetworkSocketsHandler
             AllowAutoRedirect = true,
             ConnectCallback = ConnectToPublicAddressAsync,
             CookieContainer = cookieContainer ?? new CookieContainer(),
-            UseCookies = true
+            UseCookies = true,
+            UseProxy = false
         };
     }
 
@@ -36,7 +37,8 @@ public static class PublicNetworkSocketsHandler
         byte[] bytes = address.GetAddressBytes();
         if (address.AddressFamily == AddressFamily.InterNetworkV6)
         {
-            return (bytes[0] & 0xFE) != 0xFC
+            return bytes[0] != 0
+                && (bytes[0] & 0xFE) != 0xFC
                 && !(bytes[0] == 0x20 && bytes[1] == 0x01 && bytes[2] == 0x0D && bytes[3] == 0xB8);
         }
 
