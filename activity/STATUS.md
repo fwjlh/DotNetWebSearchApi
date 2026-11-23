@@ -378,3 +378,16 @@ Search/media/regional providers (batch 5): Wiby, TVmaze, Radio Browser, PeerTube
 2. Verify category selection is deterministic for multiple requested categories.
 3. Final source-size, registration-count and no-workflows audit.
 4. Keep 67 providers and continue direct commits to `main`; no workflows.
+
+## Latest development — source file-size cleanup
+- Split the large generic JSON fixture data and SearXNG request-context integration tests into partial-class files.
+- All C# source and test files are now below 20 KB; no file approaches the 25 KB hard limit.
+- No test behaviour was intentionally changed by the split.
+- Logged as entry 128 in [LOG.md](LOG.md).
+- Full test execution remains blocked by the missing .NET SDK; no GitHub Actions used.
+
+## Next
+1. Final audit of news candidates, categories and typed result mappings.
+2. Verify all 67 providers remain registered under expected optional-key conditions.
+3. Final tree check for source sizes, tests, activity handover and absence of workflows.
+4. Keep all changes on `main`; never use GitHub Actions.
