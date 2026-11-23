@@ -191,6 +191,142 @@ public sealed class PaperResultMetadataTests
     }
 
     [Fact]
+    public async Task SearchAsync_MapsDataCiteCreatorsAndPublicationYear()
+    {
+        const string fixture = """
+            {
+              "data": [
+                {
+                  "attributes": {
+                    "titles": [{ "title": "DataCite Record" }],
+                    "url": "https://doi.org/10.2222/datacite",
+                    "descriptions": [{ "description": "A repository abstract." }],
+                    "creators": [{ "name": "Lise Meitner" }],
+                    "publisher": "Example Repository",
+                    "types": { "resourceTypeGeneral": "Dataset" },
+                    "publicationYear": 2025,
+                    "doi": "10.2222/datacite"
+                  }
+                }
+              ]
+            }
+            """;
+        SearchResult result = await SearchAsync("datacite", fixture);
+        PaperResultMetadata paper = Assert.IsType<PaperResultMetadata>(result.PaperMetadata);
+
+        Assert.Equal("science", result.Category);
+        Assert.Equal("Lise Meitner", paper.Author);
+        Assert.Equal("2025", paper.PublicationYear);
+        Assert.Equal("Example Repository", paper.Publisher);
+        Assert.Equal("Dataset", paper.Type);
+        Assert.Equal("10.2222/datacite", paper.Doi);
+    }
+
+    [Fact]
+    public async Task SearchAsync_MapsZenodoPublicationAndJournalMetadata()
+    {
+        const string fixture = """
+            {
+              "hits": {
+                "hits": [
+                  {
+                    "metadata": {
+                      "title": "Zenodo Paper",
+                      "description": "A Zenodo abstract.",
+                      "publication_date": "2026-11-21",
+                      "creators": [{ "name": "Example Author" }],
+                      "publisher": "Zenodo",
+                      "journal": {
+                        "title": "Repository Journal",
+                        "volume": "5",
+                        "issue": "2",
+                        "pages": "1-5"
+                      },
+                      "doi": "10.3333/zenodo",
+                      "resource_type": { "title": "Publication" }
+                    },
+                    "links": { "html": "https://zenodo.org/records/123" }
+                  }
+                ]
+              }
+            }
+            """;
+        SearchResult result = await SearchAsync("zenodo", fixture);
+        PaperResultMetadata paper = Assert.IsType<PaperResultMetadata>(result.PaperMetadata);
+
+        Assert.Equal("Example Author", paper.Author);
+        Assert.Equal("Repository Journal", paper.Journal);
+        Assert.Equal("10.3333/zenodo", paper.Doi);
+        Assert.Equal(new DateTimeOffset(2026, 11, 21, 0, 0, 0, TimeSpan.Zero), paper.DateOfPublication);
+        Assert.Equal("https://zenodo.org/records/123", paper.HtmlUrl);
+    }
+
+    [Fact]
+    public async Task SearchAsync_MapsOpenAireAuthorsAndPublicationDate()
+    {
+        const string fixture = """
+            {
+              "results": [
+                {
+                  "mainTitle": "OpenAIRE Paper",
+                  "id": "10.4444/openaire",
+                  "descriptions": ["An OpenAIRE abstract."],
+                  "authors": [{ "fullName": "OpenAIRE Researcher" }],
+                  "publicationDate": "2026-11-19",
+                  "publisher": "OpenAIRE Press",
+                  "journal": { "title": "Research Journal" },
+                  "type": "publication",
+                  "webLinks": [{ "url": "https://research.example.org/paper" }]
+                }
+              ]
+            }
+            """;
+        SearchResult result = await SearchAsync("openaire", fixture);
+        PaperResultMetadata paper = Assert.IsType<PaperResultMetadata>(result.PaperMetadata);
+
+        Assert.Equal("OpenAIRE Researcher", paper.Author);
+        Assert.Equal("OpenAIRE Press", paper.Publisher);
+        Assert.Equal("Research Journal", paper.Journal);
+        Assert.Equal("https://research.example.org/paper", paper.HtmlUrl);
+        Assert.Equal(new DateTimeOffset(2026, 11, 19, 0, 0, 0, TimeSpan.Zero), paper.DateOfPublication);
+    }
+
+    [Fact]
+    public async Task SearchAsync_MapsPlosPublicationAndAuthorMetadata()
+    {
+        const string fixture = """
+            {
+              "response": {
+                "docs": [
+                  {
+                    "title_display": "PLOS Paper",
+                    "id": "10.5555/plos",
+                    "abstract": "A PLOS abstract.",
+                    "author_display": ["Author One", "Author Two"],
+                    "publication_date": "2026-11-17",
+                    "journal": "PLOS ONE",
+                    "volume": "21",
+                    "issue": "1",
+                    "page": "e12345",
+                    "eissn": "1932-6203",
+                    "article_type": "Research Article"
+                  }
+                ]
+              }
+            }
+            """;
+        SearchResult result = await SearchAsync("plos", fixture);
+        PaperResultMetadata paper = Assert.IsType<PaperResultMetadata>(result.PaperMetadata);
+
+        Assert.Equal("Author One", paper.Author);
+        Assert.Equal(new[] { "Author One", "Author Two" }, paper.Authors);
+        Assert.Equal("PLOS ONE", paper.Journal);
+        Assert.Equal("10.5555/plos", paper.Doi);
+        Assert.Equal(new[] { "1932-6203" }, paper.Issn);
+        Assert.Equal(new DateTimeOffset(2026, 11, 17, 0, 0, 0, TimeSpan.Zero), paper.DateOfPublication);
+    }
+
+    [Fact]
     public async Task SearchAsync_RejectsUnsafePaperPdfUrls()
     {
         const string fixture = """
