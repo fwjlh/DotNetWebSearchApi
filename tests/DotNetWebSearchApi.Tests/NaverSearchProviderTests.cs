@@ -14,6 +14,7 @@ public sealed class NaverSearchProviderTests
         Assert.Equal("https://example.com/article", result.Url);
         Assert.Equal("Naver result description.", result.Snippet);
         Assert.Equal("naver", result.Provider);
+        Assert.Equal("https://images.example.com/naver-thumb.jpg", result.ThumbnailUrl);
     }
 
     [Fact]
@@ -31,6 +32,21 @@ public sealed class NaverSearchProviderTests
             """;
 
         Assert.Empty(NaverSearchResultParser.Parse(html));
+    }
+
+    [Fact]
+    public void Parse_IgnoresNonHttpThumbnailUrls()
+    {
+        const string html = """
+            <div class="fds-web-normal-doc-root">
+              <div class="sds-comps-image"><img src="javascript:alert(1)" /></div>
+              <span class="sds-comps-text-type-headline1">Naver result</span>
+              <a href="https://example.com/article">Open result</a>
+            </div>
+            """;
+
+        SearchResult result = Assert.Single(NaverSearchResultParser.Parse(html));
+        Assert.Null(result.ThumbnailUrl);
     }
 
     [Fact]
@@ -114,6 +130,8 @@ public sealed class NaverSearchProviderTests
 
     private const string ResultPage = """
         <div class="fds-web-normal-doc-root">
+          <div class="sds-comps-image"><img src="https://images.example.com/naver-thumb.jpg" /></div>
+          <div class="sds-comps-image sds-comps-image-circle"><img src="https://images.example.com/avatar.jpg" /></div>
           <span class="sds-comps-text-type-headline1">Naver result &amp; title</span>
           <a href="https://example.com/article">Open result</a>
           <span class="sds-comps-text-type-body1">Naver result description.</span>
