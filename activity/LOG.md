@@ -1207,3 +1207,11 @@ Every material repository action is recorded here with its reason, result, verif
 - **Commit:** `e2e2b46f3b9a777dba5f97fcbcbd7f11737e84eb`.
 - **Validation:** Compared behaviour with the pinned SearXNG Mojeek engine and reviewed fixture tests. Tests remain unexecuted because the .NET SDK is unavailable; no GitHub Actions or live Mojeek requests were used.
 - **Next:** Apply the same conservative capability audit to Seznam and Brave.
+
+
+### 129. Preserve xUnit attributes across the request-context test split
+- **Reason:** The first pass split the SearXNG integration tests at the method signature, leaving the first `[Fact]` in the original file and moving the final `[Fact]` for the next test. The new partial file therefore needed its first attribute restored and the duplicate trailing attribute removed.
+- **Action:** Restored `[Fact]` on all four moved request-context tests and verified the remaining integration tests retain their own attributes.
+- **Validation:** Re-read both partial files and enumerated their `[Fact]` methods. No test body or helper behaviour changed.
+- **Commit:** `46a931fe`.
+- **Next:** Continue final test-source and registration audit; full compilation still awaits a local .NET 10 SDK.
