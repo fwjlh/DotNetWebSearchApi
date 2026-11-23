@@ -1648,3 +1648,11 @@ Every material repository action is recorded here with its reason, result, verif
 - **Correction:** The test now sets `ASPNETCORE_ENVIRONMENT=Staging` and clears `SEARCH_API_KEYS` before constructing/starting the factory, matching the repository's proven process-environment test pattern.
 - **Commit:** `32ea9a1f119295c5fb9b81aa6ababaa9d8051e31`.
 - **Verification:** Source-reviewed only.
+
+
+### 178. Enforce streamed POST limits before authentication
+- **Reason:** Applying the 16 KiB body cap only inside the endpoint left unauthenticated POST requests outside the same protection; those requests are rejected by auth before endpoint execution.
+- **Action:** Moved an early body-size check and `IHttpMaxRequestBodySizeFeature` limit into the request-security middleware, before authentication and rate limiting. The endpoint retains its own declared-length check and form parser limits.
+- **Test added:** With API-key enforcement enabled and no Authorization header, a POST body of 16 KiB + 1 receives HTTP 413 before the 401 auth response.
+- **Commits:** `0246903d84f6a50782d972c6dad822c7e009be53` (middleware), `7683d587e6570c94ec10d67e3af26588112884e7` (test).
+- **Verification:** Source-reviewed only; no .NET 10 execution.
