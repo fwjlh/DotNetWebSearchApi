@@ -270,3 +270,12 @@ Search/media/regional providers (batch 5): Wiby, TVmaze, Radio Browser, PeerTube
 2. Check SearXNG templates are emitted only when the corresponding result type is populated.
 3. Add provider registration/query-selection tests without live network calls.
 4. Keep provider count frozen at 67 and continue direct commits to `main`; no workflows.
+
+
+## Latest development — JSON provider catalogue file-size refactor
+- Split the oversized JSON catalogue into base, media and tail definition groups.
+- `JsonApiProviderCatalog.cs` is now 12,634 bytes; `JsonApiProviderCatalog.Media.cs` is 13,443 bytes.
+- Added a regression asserting 52 unique JSON definitions and preserved media/tail ordering.
+- Commit: `dff35fc2ae21255d118ce424db993e59518d0833`.
+- Verified the repository still contains no GitHub Actions workflow definitions. Tests remain unexecuted because the .NET SDK is unavailable.
+- Rationale and file-size validation are in [LOG.md](LOG.md), entry 121.
