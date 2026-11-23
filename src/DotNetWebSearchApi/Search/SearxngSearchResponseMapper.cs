@@ -89,7 +89,7 @@ public static class SearxngSearchResponseMapper
             VideoMetadata = result.VideoMetadata,
             AudioUrl = result.MusicMetadata?.AudioUrl,
             MusicMetadata = result.MusicMetadata,
-            PaperDateOfPublication = result.PaperMetadata?.DateOfPublication,
+            PaperDateOfPublication = result.PaperMetadata?.DateOfPublication ?? result.PublishedDate,
             PaperContent = result.PaperMetadata?.Content,
             PaperComments = result.PaperMetadata?.Comments,
             PaperTags = result.PaperMetadata?.Tags,

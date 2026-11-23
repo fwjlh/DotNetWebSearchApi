@@ -9,6 +9,32 @@ namespace DotNetWebSearchApi.Tests;
 public sealed class PaperResultMetadataTests
 {
     [Fact]
+    public void Map_UsesBasePublishedDateWhenPaperDateIsMissing()
+    {
+        DateTimeOffset publishedDate = new(2026, 11, 23, 9, 15, 0, TimeSpan.Zero);
+        SearchResult result = new(
+            "Paper with base date",
+            "https://example.org/paper",
+            "Abstract",
+            "fixture",
+            1.0)
+        {
+            Category = "science",
+            PublishedDate = publishedDate,
+            PaperMetadata = new PaperResultMetadata
+            {
+                Author = "Example Author",
+                Authors = new[] { "Example Author" }
+            }
+        };
+
+        SearxngSearchResult mapped = MapSingle(result);
+
+        Assert.Equal("paper.html", mapped.Template);
+        Assert.Equal(publishedDate, mapped.PaperDateOfPublication);
+    }
+
+    [Fact]
     public async Task SearchAsync_MapsCrossrefAuthorsAndJournalDetails()
     {
         const string fixture = """
