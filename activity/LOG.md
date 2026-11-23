@@ -1055,3 +1055,12 @@ Every material repository action is recorded here with its reason, result, verif
 - **Action:** Continued using `activity/LOG.md` and `activity/STATUS.md` as the durable handover; this entry records the change and updates the next actions.
 - **Validation:** Verified the file and workflow changes through the GitHub repository tree. These were documentation/configuration changes only; no application code changed. Local test execution is currently unavailable because this environment has no .NET SDK (`dotnet: command not found`). No CI fallback was used.
 - **Next:** Keep the 67-provider catalogue frozen. Continue the remaining provider capability/request-context audit and shared-framework work in small changes. For every code change, add focused tests and run `dotnet test` locally when a .NET SDK is available; do not use GitHub Actions.
+
+
+### 116. Prevent Openverse image results leaking into general web search
+- **Reason:** The shared JSON adapter defaulted every catalogue entry to `BasicWeb`. Openverse calls the Openverse Images API, so the aggregator could treat image-only results as ordinary general-web results.
+- **Action:** Added explicit category support to `JsonApiSearchDefinition`; generic JSON providers remain general-web by default. `JsonApiSearchProvider` now exposes those categories through `ISearchProviderCapabilities`.
+- **Action:** Declared Openverse as `images` only. The aggregator now skips it for the default/general category and selects it for image searches.
+- **Tests added:** Added focused aggregator tests proving Openverse is not called for general search and is called for image search.
+- **Verification:** The code and tests were pushed together in commit `b2dc9fd299dfc4eb6b7ed3034e69b54262c8c2fa`. Repository-tree verification confirms the test file is present and no GitHub Actions workflow definitions remain. Tests were not executed because the current environment has no .NET SDK. No workflow was used.
+- **Next:** Apply the same evidence-led category audit to other clearly vertical JSON adapters (video, news, audio and images), one small tested increment at a time. Keep the 67-provider catalogue frozen.
