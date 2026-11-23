@@ -157,7 +157,6 @@ builder.Services.AddSingleton<ProviderHealthRegistry>();
 builder.Services.AddSingleton<SearchAggregator>();
 WebApplication app = builder.Build();
 app.UseRouting();
-app.UseRateLimiter();
 app.UseStaticFiles();
 app.Use(async (context, next) =>
 {
@@ -189,6 +188,7 @@ app.Use(async (context, next) =>
 
     await next();
 });
+app.UseRateLimiter();
 app.MapGet("/health", HealthEndpoint);
 app.MapGet("/api/providers", ProvidersEndpoint);
 app.MapGet("/api/diagnostics", DiagnosticsEndpoint);
