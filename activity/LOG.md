@@ -1656,3 +1656,9 @@ Every material repository action is recorded here with its reason, result, verif
 - **Test added:** With API-key enforcement enabled and no Authorization header, a POST body of 16 KiB + 1 receives HTTP 413 before the 401 auth response.
 - **Commits:** `0246903d84f6a50782d972c6dad822c7e009be53` (middleware), `7683d587e6570c94ec10d67e3af26588112884e7` (test).
 - **Verification:** Source-reviewed only; no .NET 10 execution.
+
+
+### 179. Make the Staging startup test robust to host environment precedence
+- **Reason:** Minimal hosting can use `DOTNET_ENVIRONMENT` in preference to `ASPNETCORE_ENVIRONMENT`; the fail-closed test must set both before host construction.
+- **Correction:** The test now sets both variables to Staging and restores their prior values after factory disposal.
+- **Commit:** `92b279c49bb8d7c06217304d4ab8e755844a0c42`.
