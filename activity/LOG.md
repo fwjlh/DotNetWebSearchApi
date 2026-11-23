@@ -1103,3 +1103,12 @@ Every material repository action is recorded here with its reason, result, verif
 - **Commits:** `9cf0be75`, `20eac20d`, `96d46c46`, `faeebd91`, `cb41a3b6`, `dc6decec`, `d440d4dd`, `d7d4f2b1`, `0d6fd251`, `227231fa`.
 - **Validation:** Inspected the final model, response, mapper and tests. Tests are not executed because the .NET SDK is unavailable. No GitHub Actions workflows or live image requests were used.
 - **Next:** Validate image source, thumbnail and alternate-format URLs as absolute HTTP(S) before wiring Openverse response fields. Keep the provider catalogue frozen at 67.
+
+
+### 121. Split the JSON provider catalogue to enforce the file-size limit
+- **Reason:** Adding image and video metadata configuration pushed `JsonApiProviderCatalog.cs` to 25,689 bytes, beyond the repository's approximately 25 KB hard limit.
+- **Action:** Split the catalogue into base, media and tail definition groups across `JsonApiProviderCatalog.cs` and `JsonApiProviderCatalog.Media.cs`; retained Wave7 as its own file.
+- **Tests:** Added a catalogue regression asserting 52 JSON definitions, unique names and the expected ordering across the split. Existing provider fixture cases continue to cover the definitions.
+- **Commit:** `dff35fc2ae21255d118ce424db993e59518d0833`.
+- **Validation:** Verified the new file sizes: 12,634 bytes and 13,443 bytes. Verified the three definition groups total 52 unique names and the repository has no workflow definitions. Tests remain unexecuted because the .NET SDK is unavailable; no GitHub Actions were used.
+- **Next:** Continue reviewing the video metadata adapters and then implement the next typed media fields only where upstream evidence supports them. Keep all files below the hard limit and the provider catalogue frozen at 67.
