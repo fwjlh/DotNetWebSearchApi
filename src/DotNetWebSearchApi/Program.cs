@@ -1,5 +1,6 @@
 using System.Net;
 using Microsoft.AspNetCore.RateLimiting;
+using Microsoft.AspNetCore.Http.Features;
 using DotNetWebSearchApi;
 using DotNetWebSearchApi.Search;
 
