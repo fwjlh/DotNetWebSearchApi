@@ -335,3 +335,18 @@ Search/media/regional providers (batch 5): Wiby, TVmaze, Radio Browser, PeerTube
 2. Add typed music metadata only where upstream payloads support it; do not assign audio templates to ordinary links.
 3. Add news date/category mapping for JSON news providers where timestamp fields are available.
 4. Keep the 67-provider inventory frozen and commit directly to `main`; no workflows.
+
+## Latest development — music/audio metadata
+- Added typed `MusicResultMetadata` for audio URL, thumbnail, artist, album, duration, country, tags, codec and bitrate.
+- Deezer maps previews and track/album details; Radio Browser maps resolved streams and station metadata. MusicBrainz remains a metadata-only link.
+- SearXNG emits `audio_src` and `music_metadata`; music results retain the default template.
+- Audio and thumbnail URLs are restricted to absolute HTTP(S).
+- Split the generic JSON metadata parser into a partial file to keep both source files below 15 KB.
+- Added Deezer/Radio Browser fixtures and unsafe URL tests. Updated [porting rationale](../docs/PYTHON_TO_CSHARP_PORTING_NOTES.md) and [audit](../docs/PORTING_AUDIT.md).
+- Logged as entry 125 in [LOG.md](LOG.md). Tests remain unexecuted because `dotnet` is unavailable; no GitHub Actions or live requests used.
+
+## Next
+1. Add generic JSON publication-date paths and parsing.
+2. Map Wikinews timestamps into `SearchResult.PublishedDate` and SearXNG `publishedDate`.
+3. Review other news providers for documented timestamps; never synthesize missing dates.
+4. Keep 67 providers, small files, direct commits to `main`; no workflows.
