@@ -29,6 +29,13 @@
 - MusicBrainz returns artist metadata, not a playable stream; it therefore uses the default result template.
 - Optional Exa, Yandex, Kagi and Brave providers require configuration. The 67-provider integration test supplies dummy values to verify registration.
 
+## Latest compile correction
+
+- Corrected the invalid final declaration in `src/DotNetWebSearchApi/Program.cs` from `public partial class Program;` to `public partial class Program { }`.
+- The missing `obj\\Debug\\net10.0\\ref\\DotNetWebSearchApi.dll` was a downstream result of that source compilation failure.
+- Commit: `a81416bc8b69fd3c0a48e00aac27ad3e1396dcc6`.
+- The correction has not been built in this environment; local .NET 10 build/test verification is still required.
+
 ## Workflow and test rules
 
 - No files currently exist under `.github/workflows/`.
@@ -40,9 +47,9 @@
 
 At the planned local build/test session:
 
-1. Use the .NET 10 SDK and run `dotnet test` for the solution.
-2. Fix compile and fixture failures in small commits directly to `main`.
-3. Measure actual coverage for parser, capability and result-mapping logic.
-4. Continue validating provider field paths against their response schemas using fixtures, without live calls.
+1. Pull the latest `main` commit and run `dotnet build .\\DotNetWebSearchApi.sln -c Debug --no-incremental`.
+2. If the build succeeds, run `dotnet test .\\DotNetWebSearchApi.sln -c Release`.
+3. Fix any remaining compile or fixture failures in small commits directly to `main`.
+4. Measure actual coverage for parser, capability and result-mapping logic.
 
 Keep this file and `LOG.md` current so the next session can resume without chat history. Final category/template audit is recorded in LOG entry 144.
