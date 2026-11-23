@@ -1189,3 +1189,11 @@ Every material repository action is recorded here with its reason, result, verif
 - **Commits:** `4a48bcec`, `b19d44e8`, `6ae3fa65`, `bc7ef56c`, `5b066fc8`, `7363b5e3`.
 - **Validation:** Reviewed parser, capability and fixture source. Tests remain unexecuted because the .NET SDK is unavailable. No GitHub Actions or live Hacker News requests were used.
 - **Next:** Review the remaining generic JSON news candidates and ensure category selection remains deterministic when several categories are requested. Then run a final source-size and no-workflows audit.
+
+
+### 128. Split test sources to meet the repository file-size rule
+- **Reason:** The provider catalogue and metadata work pushed two test sources above the preferred 20 KB range, even though they remained below the 25 KB hard limit.
+- **Action:** Split the 52-provider fixture data into `JsonApiSearchProviderTests.Cases.cs` and split request-context integration tests into `SearxngApiRequestContextTests.cs`. Both use partial test classes so existing private fixtures/helpers remain shared without duplication.
+- **Validation:** Verified all C# files in the repository are now below 20 KB. The two new files are 18.5 KB and the remaining SearXNG integration file is 19.5 KB. No test logic was intentionally changed.
+- **Commits:** `78c35d45`, `8b26a1b1`, `d81c45ec`, `dffd6566`.
+- **Next:** Run the full test suite when a local .NET 10 SDK is available; continue with small source files and keep all GitHub Actions workflows unused.
