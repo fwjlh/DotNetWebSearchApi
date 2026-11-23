@@ -280,7 +280,7 @@ public sealed class JsonApiSearchProvider : ISearchProvider, ISearchProviderCapa
 
     private static string FormatFileSize(long? fileSize)
     {
-        if (fileSize is null || fileSize < 0)
+        if (fileSize is null || fileSize.Value < 0)
         {
             return string.Empty;
         }
