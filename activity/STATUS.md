@@ -71,3 +71,9 @@ Never use GitHub Actions or workflow minutes. Keep this file and `LOG.md` curren
 - Commit: `dc78019502ab62106c2d312d718363357c7298c7`.
 - Logged as entry 137. Tests remain unexecuted because the .NET SDK is unavailable; no workflows or live API calls were used.
 - Next: complete scholarly path and category/template audit, then wait for the planned local .NET 10 build/test session.
+
+
+## Provider count reconciliation
+- The apparent 74 count was an audit-script false positive: it counted `AuthorName` and `TagName` configuration properties as provider names.
+- Anchored recount confirms 52 unique JSON definitions + 2 RSS/Atom + 13 dedicated registrations = 67.
+- Logged as entry 138 in [LOG.md](LOG.md). No source changes were needed.
