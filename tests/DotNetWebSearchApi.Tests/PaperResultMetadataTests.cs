@@ -87,6 +87,7 @@ public sealed class PaperResultMetadataTests
         Assert.Equal("Katherine Johnson", paper.Author);
         Assert.Equal("Journal of Flight", paper.Journal);
         Assert.Equal("Example University", paper.Publisher);
+        Assert.Equal("10.5678/openalex", paper.Doi);
         Assert.Equal("https://files.example.org/paper.pdf", paper.PdfUrl);
         Assert.Equal(new DateTimeOffset(2026, 11, 23, 0, 0, 0, TimeSpan.Zero), paper.DateOfPublication);
     }
