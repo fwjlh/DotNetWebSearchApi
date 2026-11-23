@@ -1395,3 +1395,14 @@ Every material repository action is recorded here with its reason, result, verif
 - **Commit:** `290574e51997fb185ba0858ec2f999a7d05809e1`.
 - **Validation:** Reviewed the resulting brace/class boundaries. No .NET SDK/build execution is available in this environment; local build/tests remain required. No GitHub Actions used.
 - **Next:** Pull `main` and rebuild. Address any newly surfaced diagnostics from their actual file and line locations.
+
+
+## 2026-11-23 — Add missing metadata-file imports
+
+### 149. Import HTML decoding and regular-expression namespaces
+- **Reason:** The local build reported that `WebUtility` and `Regex` were not found in `JsonApiSearchProvider.Metadata.cs`.
+- **Finding:** C# using directives are scoped to their own source file. The imports in `JsonApiSearchProvider.cs` do not apply to this separate partial-class file.
+- **Correction:** Added explicit `using System.Net;` and `using System.Text.RegularExpressions;` directives to the metadata file, where `CleanText` uses both APIs.
+- **Commit:** `cdf4157c6963fbe7eae45087a0c16a9aee615e24`.
+- **Validation:** Confirmed both directives are present in the updated GitHub file. No .NET SDK/build execution is available in this environment; local build/tests remain required. No GitHub Actions used.
+- **Next:** Pull `main` and rebuild; address any remaining diagnostics from their exact source locations.
