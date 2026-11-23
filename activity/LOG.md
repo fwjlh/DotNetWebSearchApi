@@ -1112,3 +1112,12 @@ Every material repository action is recorded here with its reason, result, verif
 - **Commit:** `dff35fc2ae21255d118ce424db993e59518d0833`.
 - **Validation:** Verified the new file sizes: 12,634 bytes and 13,443 bytes. Verified the three definition groups total 52 unique names and the repository has no workflow definitions. Tests remain unexecuted because the .NET SDK is unavailable; no GitHub Actions were used.
 - **Next:** Continue reviewing the video metadata adapters and then implement the next typed media fields only where upstream evidence supports them. Keep all files below the hard limit and the provider catalogue frozen at 67.
+
+
+### 122. Require typed media metadata before selecting specialist templates
+- **Reason:** The SearXNG mapper selected `images.html` or `videos.html` from the category alone. Providers such as Wikimedia Commons can be categorised as images without returning a direct image source; unsafe or missing embed URLs can also leave video results without a usable player.
+- **Action:** Specialist templates now require the corresponding typed metadata and an absolute HTTP(S) image source or video embed URL. Otherwise the mapper falls back to `default.html`.
+- **Tests:** Added regressions for missing image/video metadata, javascript: URLs, relative image URLs and protocol-relative video embeds. Removed a duplicate image-template assertion.
+- **Commit:** `3d911356c7c59858d18ac2d679d823975820d89a`.
+- **Validation:** Reviewed the mapper and test source. Tests remain unexecuted because the .NET SDK is unavailable; no GitHub Actions or live provider requests were used.
+- **Next:** Finish the provider capability/template audit and add provider registration/query-selection tests without live network access. Keep the catalogue frozen at 67.
