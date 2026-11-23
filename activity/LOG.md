@@ -1530,3 +1530,14 @@ Every material repository action is recorded here with its reason, result, verif
 - **Validation:** Source reviewed only. No .NET SDK or outbound network execution is available in this environment; compilation and actual endpoint behaviour must be verified by the user locally. GitHub Actions remain disabled.
 - **Next:** Run the opt-in suite locally, share the output, then decide which additional providers are worth adding to the small live smoke-test set.
 
+
+
+## 2026-11-23 — Bound inbound search query size
+
+### 160. Reject oversized search queries before provider execution
+- **Reason:** Both public search routes accepted unbounded query strings. Excessively large queries waste request-processing resources and are forwarded to every eligible provider.
+- **Action:** Added a shared 512-character maximum in `TryBuildSearchQuery`, so both `/search` and `/api/search` apply the same rule before aggregation/provider execution. Requests above the limit return HTTP 400 with a clear validation message.
+- **Tests added:** Added four boundary cases covering both endpoints: exactly 512 characters is accepted; 513 characters is rejected. The tests use the existing in-memory provider fixture and make no upstream network calls.
+- **Commits:** `c51022e7076621e89fd037940548ff8ddbe553fd` (validation), `eb08ce39a07d16a6f41d7c02bbd01bbea91ef9bd` (boundary tests).
+- **Verification:** Reviewed the shared validation path and test source. Tests have not been executed in this environment because the .NET 10 SDK is unavailable; no GitHub Actions or live provider requests were used. The previously user-reported 319-test Release pass predates this increment.
+- **Next:** Add explicit maximum category/provider selection counts and form-body bounds, with tests, then review rate limiting and authentication design before public exposure. Measure line/branch coverage when the local SDK is available.
