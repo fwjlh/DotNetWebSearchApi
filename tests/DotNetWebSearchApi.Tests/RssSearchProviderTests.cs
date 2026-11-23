@@ -10,7 +10,7 @@ public sealed class RssSearchProviderTests
     [Fact]
     public async Task SearchAsync_ParsesGoogleNewsRss()
     {
-        const string fixture = "<rss><channel><item><title>News headline</title><link>https://news.google.com/rss/articles/123</link><description>A news summary</description></item></channel></rss>";
+        const string fixture = "<rss><channel><item><title>News headline</title><link>https://news.google.com/rss/articles/123</link><description>A news summary</description><pubDate>Mon, 23 Nov 2026 10:00:00 GMT</pubDate></item></channel></rss>";
         Uri? requestUri = null;
         using HttpClient client = new(new StubHttpMessageHandler(request =>
         {
@@ -26,6 +26,13 @@ public sealed class RssSearchProviderTests
         SearchResult result = Assert.Single(results);
         Assert.Equal("News headline", result.Title);
         Assert.Equal("https://news.google.com/rss/articles/123", result.Url);
+        Assert.Equal("news", result.Category);
+        Assert.Equal(new DateTimeOffset(2026, 11, 23, 10, 0, 0, TimeSpan.Zero), result.PublishedDate);
+        SearxngSearchResponse mapped = SearxngSearchResponseMapper.Map(
+            "AI policy",
+            new SearchExecutionResult(new[] { result }, Array.Empty<string>(), Array.Empty<string>()));
+        Assert.Equal("news", Assert.Single(mapped.Results).Category);
+        Assert.Equal(result.PublishedDate, Assert.Single(mapped.Results).PublishedDate);
         Assert.Contains("AI%20policy", requestUri!.Query);
     }
 
@@ -51,6 +58,7 @@ public sealed class RssSearchProviderTests
             <feed xmlns="http://www.w3.org/2005/Atom">
               <entry>
                 <title>Atom headline</title>
+                <published>2026-11-23T10:00:00Z</published>
                 <link rel="alternate" href="https://publisher.example/atom-story" />
                 <summary>An Atom summary</summary>
               </entry>
@@ -66,6 +74,20 @@ public sealed class RssSearchProviderTests
         Assert.Equal("Atom headline", result.Title);
         Assert.Equal("https://publisher.example/atom-story", result.Url);
         Assert.Equal("An Atom summary", result.Snippet);
+        Assert.Equal(new DateTimeOffset(2026, 11, 23, 10, 0, 0, TimeSpan.Zero), result.PublishedDate);
+    }
+
+    [Fact]
+    public void Capabilities_DeclareNewsOnly()
+    {
+        using HttpClient client = new();
+        RssSearchProvider provider = new(client, Definition("google_news"));
+
+        Assert.True(provider.Capabilities.Supports(new SearchQuery("news", 10)
+        {
+            Categories = new HashSet<string>(StringComparer.OrdinalIgnoreCase) { "news" }
+        }));
+        Assert.False(provider.Capabilities.Supports(new SearchQuery("news", 10)));
     }
 
     [Fact]
