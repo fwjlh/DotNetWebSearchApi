@@ -7,6 +7,21 @@ namespace DotNetWebSearchApi.Tests;
 
 public sealed partial class SearxngApiIntegrationTests
 {
+
+    [Fact]
+    public void NonDevelopmentHost_RefusesToStartWithoutApiKey()
+    {
+        using EnvironmentVariableScope environment = EnvironmentVariableScope.Apply(
+            new Dictionary<string, string?> { ["SEARCH_API_KEYS"] = null });
+        using WebApplicationFactory<Program> factory = new WebApplicationFactory<Program>()
+            .WithWebHostBuilder(builder => builder.UseEnvironment("Staging"));
+
+        InvalidOperationException exception = Assert.Throws<InvalidOperationException>(
+            () => factory.CreateClient());
+
+        Assert.Contains("SEARCH_API_KEYS", exception.ToString(), StringComparison.Ordinal);
+    }
+
     [Fact]
     public async Task Search_RequiresConfiguredBearerApiKey()
     {
