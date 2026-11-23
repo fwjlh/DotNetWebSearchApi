@@ -301,7 +301,7 @@ public sealed class JsonApiSearchProvider : ISearchProvider, ISearchProviderCapa
             return null;
         }
 
-        string embedUrl = ReadSafeUrl(item, paths.EmbedUrl, resultUri);
+        string embedUrl = ReadSafeEmbedUrl(item, paths, resultUri);
         string thumbnailUrl = ReadSafeUrl(item, paths.ThumbnailUrl);
         string durationText = ReadOptionalText(item, paths.DurationSeconds);
         double? duration = double.TryParse(
@@ -368,6 +368,33 @@ public sealed class JsonApiSearchProvider : ISearchProvider, ISearchProviderCapa
         }
 
         return value.ToString("0.##", CultureInfo.InvariantCulture) + " " + units[unitIndex];
+    }
+
+    private static string ReadSafeEmbedUrl(
+        JsonElement item,
+        JsonApiVideoMetadataPaths paths,
+        Uri resultUri)
+    {
+        string value = ReadOptionalText(item, paths.EmbedUrl);
+        if (Uri.TryCreate(value, UriKind.Absolute, out Uri? absoluteUri))
+        {
+            bool sameHost = absoluteUri.Host.Equals(resultUri.Host, StringComparison.OrdinalIgnoreCase);
+            bool allowedHost = paths.AllowedEmbedHosts.Contains(absoluteUri.Host);
+            return IsHttpUrl(absoluteUri) && (sameHost || allowedHost)
+                ? absoluteUri.AbsoluteUri
+                : string.Empty;
+        }
+
+        if (!value.StartsWith("/", StringComparison.Ordinal)
+            || !Uri.TryCreate(resultUri, value, out Uri? relativeUri)
+            || !IsHttpUrl(relativeUri)
+            || !relativeUri.Host.Equals(resultUri.Host, StringComparison.OrdinalIgnoreCase)
+            || relativeUri.Port != resultUri.Port)
+        {
+            return string.Empty;
+        }
+
+        return relativeUri.AbsoluteUri;
     }
 
     private static string ReadSafeUrl(JsonElement item, string path, Uri? baseUri = null)
@@ -482,4 +509,6 @@ public sealed record JsonApiVideoMetadataPaths
     public string PublishedDate { get; init; } = string.Empty;
     public string Author { get; init; } = string.Empty;
     public string Views { get; init; } = string.Empty;
+    public IReadOnlySet<string> AllowedEmbedHosts { get; init; } =
+        new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 }
