@@ -1442,3 +1442,20 @@ Every material repository action is recorded here with its reason, result, verif
 - **Remaining failure from this run:** The production-host integration test reported 63 providers instead of 67 despite configuring optional keys. The source configuration path needs a focused follow-up after the serialization fix is pulled and the test is rerun; do not treat the 67-provider integration test as passing.
 - **Other cascading failures:** The multiple SearXNG JSON parse errors and HTTP 500 responses in the same run are expected to be re-evaluated after the duplicate-property correction.
 - **Next:** Pull `main`, rerun the Release test suite, then investigate any remaining failures—especially production-host optional-provider configuration. No GitHub Actions or live provider calls.
+
+
+## 2026-11-23 — Correct latest regression-test expectations and improve diagnostics
+
+### 154. Correct the Bilibili Referer regression assertion
+- **Reason:** The latest local run still expected `https://search.bilibili.com`, while the HTTP header and the separate registration test correctly use the normalized URI with a trailing slash.
+- **Correction:** Updated `BilibiliDefinition_UsesRequiredRefererAndNoUnsupportedLimitParameter` to expect `https://search.bilibili.com/`.
+- **Commit:** `9129fb6be91386f276d8c77cd1f4cd39e07941de`.
+- **Validation:** Compared the definition, registration test and definition-level assertion. No local .NET execution available here.
+
+### 155. Make optional-provider registration failures identify the missing provider
+- **Reason:** The production-host test stops at the aggregate count (63 instead of 67), hiding which optional registrations are absent.
+- **Correction:** Moved the four optional-provider assertions (Exa, Yandex, Kagi and Brave) ahead of the aggregate count assertions. The next run will identify the first missing registration directly.
+- **Commit:** `a74679f515f37c02d9731d43cee430e5e089caca`.
+- **Finding:** The test fixture adds all four configuration keys through `ConfigureAppConfiguration`; Program reads those keys during startup. The configuration hand-off still needs diagnosis if any of the four assertions fail.
+- **Crossref finding:** Current `main` declares `PaperResultMetadata.PublicationYear` as a non-nullable string defaulting to `string.Empty`, and the Crossref mapper assigns a string returned by `ReadOptionalText`. The reported actual `null` therefore does not match the current remote source; verify the local checkout is on current `main` and has no stale build output before changing the mapping blindly.
+- **Next:** Pull current `main`, clean/rebuild the test project, rerun the three failing tests. If Crossref still fails, provide the local `PaperResultMetadata.cs`, `JsonApiSearchProvider.Paper.cs`, and `JsonApiProviderCatalog.cs` revisions. If optional-provider assertions fail, the first missing provider will narrow the configuration diagnosis. No GitHub Actions or live provider calls.
