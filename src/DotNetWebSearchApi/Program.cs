@@ -155,6 +155,7 @@ builder.Services.AddSingleton<SearchHttpTransport>();
 builder.Services.AddSingleton<ProviderHealthRegistry>();
 builder.Services.AddSingleton<SearchAggregator>();
 WebApplication app = builder.Build();
+app.UseRouting();
 app.UseRateLimiter();
 app.UseStaticFiles();
 app.Use(async (context, next) =>
@@ -169,9 +170,8 @@ app.Use(async (context, next) =>
 
     if (isSearchRequest && searchApiKeys.Length > 0)
     {
-        string? suppliedKey = context.Request.Headers.Authorization
-            .FirstOrDefault(value => value is not null && value.StartsWith("Bearer ", StringComparison.OrdinalIgnoreCase))?
-            .Substring(7);
+        string? suppliedKey = context.Request.Headers["Authorization"]
+            .FirstOrDefault(value => value is not null && value.StartsWith("Bearer ", StringComparison.OrdinalIgnoreCase))?.Substring(7);
         byte[] suppliedBytes = Encoding.UTF8.GetBytes(suppliedKey ?? string.Empty);
         bool authorized = searchApiKeys.Any(configuredKey =>
             CryptographicOperations.FixedTimeEquals(
