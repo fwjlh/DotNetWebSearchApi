@@ -1239,3 +1239,12 @@ Every material repository action is recorded here with its reason, result, verif
 - **Commits:** `ebb02425`, `ca766171`, `fac551d2`, `e75d2344`, `736fb606`.
 - **Validation:** Reviewed response model, mapper and fixture assertions. Tests remain unexecuted because the .NET SDK is unavailable; no GitHub Actions or live upstream calls used.
 - **Next:** Final source-size, provider registration and no-workflows audit.
+
+
+### 134. Declare Seznam's general/web category support
+- **Reason:** The pinned SearXNG Seznam engine supports `general` and `web`; the C# adapter inherited BasicWeb and would be skipped for web-category requests.
+- **Action:** Added explicit general/web capability with first-page-only behaviour and no unsupported time-range, safe-search or locale claims.
+- **Tests:** Added capability boundary coverage for general/web, images, paging, time range, safe search and locale.
+- **Commits:** `b38206857f6e03ca7829bf60875282c7b8ca36ee` (provider), `4a31c6c37d018077a93e874b920bec592aa21504` (tests).
+- **Validation:** Compared the category with the pinned SearXNG Seznam engine and reviewed the capability test. Tests remain unexecuted because the .NET SDK is unavailable; no GitHub Actions or live Seznam requests were used.
+- **Next:** Complete the final tree and provider registration audit; the next full build/test run must be local when the .NET 10 SDK is available.
