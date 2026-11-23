@@ -29,7 +29,14 @@
 - MusicBrainz returns artist metadata, not a playable stream; it therefore uses the default result template.
 - Optional Exa, Yandex, Kagi and Brave providers require configuration. The 67-provider integration test supplies dummy values to verify registration.
 
-## Latest compile correction
+## Latest compile corrections
+
+- Fixed the missing class-closing brace in `JsonApiSearchProvider.cs`, made its declaration `partial` to match the metadata partial declaration, and moved `JsonApiSearchDefinition` back to namespace scope.
+- Removed the redundant closing brace in `JsonApiSearchProvider.Metadata.cs` before the metadata path records.
+- Commits: `7af858f951ce5a1d949aa4cb549ada91137cf51c` and `290574e51997fb185ba0858ec2f999a7d05809e1`.
+- Source structure reviewed; build/test verification still needs to be run locally.
+
+## Previous compile correction
 
 - Corrected the invalid final declaration in `src/DotNetWebSearchApi/Program.cs` from `public partial class Program;` to `public partial class Program { }`.
 - The missing `obj\\Debug\\net10.0\\ref\\DotNetWebSearchApi.dll` was a downstream result of that source compilation failure.
