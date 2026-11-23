@@ -101,3 +101,12 @@ Keep this file and `LOG.md` current so the next session can resume without chat 
 - Verification: source and test changes reviewed, but the four new cases have not been executed here. The user's earlier 319-test Release pass is the pre-change baseline; do not describe the latest HEAD as tested.
 - No GitHub Actions were invoked or recreated.
 - Next: bound category/provider selection and POST form inputs; then design authentication, per-client quotas and request rate limiting before public exposure. Run the full Release suite and coverage collection locally when the .NET 10 SDK is available.
+
+
+## Latest incremental change — category input bounds
+
+- Both search endpoints now reject more than 10 categories or any category name longer than 32 characters.
+- Four additional boundary cases cover both endpoints; combined with the previous query-length work, eight new test cases are present on `main`.
+- Commits: `6676c99d274fc36d555cdf0870a4450ede3055a9`, `a0eb16ab21ef0c12802bf44c1dd03e4d6ff78c63`, and activity record `72441ec18bdf8cb7e24b6c88c676f6086477d277`.
+- Execution remains pending local .NET 10 build/test; the 319-test user-reported pass predates these changes. No Actions were run.
+- Next: limit explicit provider selection, bound form request bodies before parsing, then design rate limiting/authentication. Run the full Release suite and coverage locally when the SDK is available.
