@@ -151,7 +151,7 @@ public sealed class JsonApiSearchProvider : ISearchProvider, ISearchProviderCapa
         ImageResultMetadata? imageMetadata = ReadImageMetadata(item);
         VideoResultMetadata? videoMetadata = ReadVideoMetadata(item, resultUri);
         MusicResultMetadata? musicMetadata = ReadMusicMetadata(item);
-        PaperResultMetadata? paperMetadata = ReadPaperMetadata(item);
+        PaperResultMetadata? paperMetadata = ReadPaperMetadata(item, resultUri);
         result = new SearchResult(
             title,
             resultUri.AbsoluteUri,
