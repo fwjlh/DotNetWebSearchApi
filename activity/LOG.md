@@ -1064,3 +1064,11 @@ Every material repository action is recorded here with its reason, result, verif
 - **Tests added:** Added focused aggregator tests proving Openverse is not called for general search and is called for image search.
 - **Verification:** The code and tests were pushed together in commit `b2dc9fd299dfc4eb6b7ed3034e69b54262c8c2fa`. Repository-tree verification confirms the test file is present and no GitHub Actions workflow definitions remain. Tests were not executed because the current environment has no .NET SDK. No workflow was used.
 - **Next:** Apply the same evidence-led category audit to other clearly vertical JSON adapters (video, news, audio and images), one small tested increment at a time. Keep the 67-provider catalogue frozen.
+
+
+### 117. Separate specialist JSON adapters from general web search
+- **Reason:** The category audit found more generic JSON definitions whose endpoints are explicitly vertical-specific. Without declarations they inherited `general`, so they could pollute ordinary web searches.
+- **Action:** Declared Bilibili, Dailymotion and PeerTube as `videos`; Deezer, MusicBrainz and RadioBrowser as `music`; Wikimedia Commons as `images`; and Wikinews as `news`. Openverse remains `images`. All other generic JSON definitions retain the general-web default.
+- **Tests added:** Added a nine-case capability theory covering Openverse and all eight newly classified adapters. Each case asserts the provider rejects the default/general category and accepts its declared vertical.
+- **Validation:** Code and tests pushed together in commit `c1f81202bde134ba51dba961d3ebd006dec63cba`. The modified catalog remains below the 25 KB hard limit (23,886 bytes); the new capability test file is 3,910 bytes. Tests are not executed because no .NET SDK is installed. No GitHub Actions workflow exists or was used.
+- **Next:** Continue checking specialist definitions against their actual upstream endpoint semantics. Do not infer categories for ambiguous providers; record uncertain cases for the richer result-model design. Keep the provider catalogue frozen at 67.
