@@ -1406,3 +1406,14 @@ Every material repository action is recorded here with its reason, result, verif
 - **Commit:** `cdf4157c6963fbe7eae45087a0c16a9aee615e24`.
 - **Validation:** Confirmed both directives are present in the updated GitHub file. No .NET SDK/build execution is available in this environment; local build/tests remain required. No GitHub Actions used.
 - **Next:** Pull `main` and rebuild; address any remaining diagnostics from their exact source locations.
+
+
+## 2026-11-23 — Remove duplicate DataCite test declaration
+
+### 150. Keep the richer DataCite fixture and remove its duplicate
+- **Reason:** The local build reported CS0111: `PaperResultMetadataTests` declared `SearchAsync_MapsDataCiteCreatorsAndPublicationYear` more than once.
+- **Finding:** The same partial test class declared the method in both `PaperResultMetadataTests.cs` and `PaperResultMetadataAdditionalTests.cs`. The additional test is more complete: it checks multiple creators, publisher, resource type, publication year, DOI, landing-page URL and subject tags.
+- **Correction:** Removed only the shorter duplicate from `PaperResultMetadataTests.cs`; retained the richer test and all its assertions in `PaperResultMetadataAdditionalTests.cs`.
+- **Commit:** `1bc2f934084a47d8e3d32bd50ab1aee6beb3ca7f`.
+- **Validation:** Confirmed the duplicate method was present once in each partial source file before the change and removed the shorter copy. No local .NET build is available here; the user must rebuild. No GitHub Actions used.
+- **Next:** Pull `main`, rebuild, then run the full Release test suite if compilation succeeds.
