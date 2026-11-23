@@ -150,7 +150,7 @@ public sealed class JsonApiSearchProvider : ISearchProvider, ISearchProviderCapa
 
         TryReadText(item, _definition.SnippetPath, out string snippet);
         ImageResultMetadata? imageMetadata = ReadImageMetadata(item);
-        VideoResultMetadata? videoMetadata = ReadVideoMetadata(item);
+        VideoResultMetadata? videoMetadata = ReadVideoMetadata(item, resultUri);
         result = new SearchResult(
             title,
             resultUri.AbsoluteUri,
@@ -293,7 +293,7 @@ public sealed class JsonApiSearchProvider : ISearchProvider, ISearchProviderCapa
         };
     }
 
-    private VideoResultMetadata? ReadVideoMetadata(JsonElement item)
+    private VideoResultMetadata? ReadVideoMetadata(JsonElement item, Uri resultUri)
     {
         JsonApiVideoMetadataPaths? paths = _definition.VideoMetadata;
         if (paths is null)
@@ -301,7 +301,7 @@ public sealed class JsonApiSearchProvider : ISearchProvider, ISearchProviderCapa
             return null;
         }
 
-        string embedUrl = ReadSafeUrl(item, paths.EmbedUrl);
+        string embedUrl = ReadSafeUrl(item, paths.EmbedUrl, resultUri);
         string thumbnailUrl = ReadSafeUrl(item, paths.ThumbnailUrl);
         string durationText = ReadOptionalText(item, paths.DurationSeconds);
         double? duration = double.TryParse(
@@ -370,16 +370,29 @@ public sealed class JsonApiSearchProvider : ISearchProvider, ISearchProviderCapa
         return value.ToString("0.##", CultureInfo.InvariantCulture) + " " + units[unitIndex];
     }
 
-    private static string ReadSafeUrl(JsonElement item, string path)
+    private static string ReadSafeUrl(JsonElement item, string path, Uri? baseUri = null)
     {
         string value = ReadOptionalText(item, path);
-        if (!Uri.TryCreate(value, UriKind.Absolute, out Uri? uri)
-            || (uri.Scheme != Uri.UriSchemeHttp && uri.Scheme != Uri.UriSchemeHttps))
+        if (Uri.TryCreate(value, UriKind.Absolute, out Uri? absoluteUri))
+        {
+            return IsHttpUrl(absoluteUri) ? absoluteUri.AbsoluteUri : string.Empty;
+        }
+
+        if (baseUri is null || !value.StartsWith("/", StringComparison.Ordinal)
+            || !Uri.TryCreate(baseUri, value, out Uri? relativeUri)
+            || !IsHttpUrl(relativeUri)
+            || !relativeUri.Host.Equals(baseUri.Host, StringComparison.OrdinalIgnoreCase)
+            || relativeUri.Port != baseUri.Port)
         {
             return string.Empty;
         }
 
-        return uri.AbsoluteUri;
+        return relativeUri.AbsoluteUri;
+    }
+
+    private static bool IsHttpUrl(Uri uri)
+    {
+        return uri.Scheme == Uri.UriSchemeHttp || uri.Scheme == Uri.UriSchemeHttps;
     }
 
     private static string ReadOptionalText(JsonElement item, string path)
