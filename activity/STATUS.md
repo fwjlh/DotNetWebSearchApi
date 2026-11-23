@@ -1,11 +1,11 @@
 # Current handover status
 
-Updated: 2026-11-22
+Updated: 2026-11-23
 
 ## Repository
 - Public repository: https://github.com/fwjlh/DotNetWebSearchApi
 - Default branch: main
-- Latest code commit: `ce92700741629bd29f7ab436a86eaccf6316e5dc` (DuckDuckGo locale/time-range mapping and truthful capability declaration; build-and-test passed in [run 45029215535](https://github.com/fwjlh/DotNetWebSearchApi/actions/runs/45029215535)). Latest documentation handover commit: `14845597a6adbe19d6861fff0e93c79f38cf9266` (Bing locale rationale; CI passed in [run 45029103656](https://github.com/fwjlh/DotNetWebSearchApi/actions/runs/45029103656)).
+- Latest code/test commit: `16549750308dcdf759c32dd077d90fa35c88fe0d` (Yandex Cloud capability declaration and pre-flight tests; build-and-test passed in [run 45144264756](https://github.com/fwjlh/DotNetWebSearchApi/actions/runs/45144264756)). Latest porting-corpus update: `2577287a5860ec87cac396ea89ae7cb0f7d65b95` (Yandex capability boundaries); activity log update: `1c41a7619bb593d58c375b3ccbd5de11d5bb8a0b`.
 - Current provider catalogue: **67 adapters, frozen** pending shared-framework refactoring.
 - Previous provider-catalogue baseline: build 0 warnings/errors; 156 tests passed (0 failed, 0 skipped), run [45020266512](https://github.com/fwjlh/DotNetWebSearchApi/actions/runs/45020266512). The subsequent request-context/capability code has now passed its GitHub Actions build-and-test job in [run 45022944719](https://github.com/fwjlh/DotNetWebSearchApi/actions/runs/45022944719); the workflow job reports success.
 - Current direction and consumer boundary: [docs/ARCHITECTURE_DECISIONS.md](../docs/ARCHITECTURE_DECISIONS.md).
@@ -96,12 +96,10 @@ Search/media/regional providers (batch 5): Wiby, TVmaze, Radio Browser, PeerTube
 7. Push each increment to main and inspect the resulting GitHub Actions run before continuing.
 
 ## Next actions
-1. Keep provider expansion frozen at 67; do not add adapters during the shared-framework milestone.
-2. Extend the locale/region traits registry with DuckDuckGo, Wikipedia and Google maps; keep each mapping provider-specific and versioned.
-3. Add Naver thumbnail metadata and review Seznam hidden-form cookie handling.
-4. Expand API compatibility conformance tests for GET/POST, categories, safe-search, paging, partial time ranges, unsupported engines and typed outcomes.
-4. Add rich result models and metadata preservation before broadening image/news/video provider coverage.
-5. Make provider health/cooldown policy configurable per engine and decide whether persistence is required for multi-instance hosting.
-6. Harden the public API before internet exposure: authentication, quotas, request limits and outbound destination policy.
-7. Keep CoderInBox as an independent HTTP consumer; do not move provider code into that repository.
-8. Resume provider additions only when the shared-framework definition of done is met.
+1. Keep provider expansion frozen at 67; no new adapters during shared-framework completion.
+2. Audit the remaining adapters for request fields silently ignored by the current implementation; add truthful capability declarations and one focused test per small change.
+3. Expand locale/region traits only where the pinned Python source and C# request behaviour justify the mapping.
+4. Plan a richer result model for images/news/videos so vertical-specific metadata is not flattened into ordinary web links.
+5. Complete API compatibility tests, then harden the public API before internet exposure: authentication, quotas, request limits and outbound destination policy.
+6. Keep CoderInBox as an independent HTTP consumer; do not move provider code into that repository.
+7. Resume provider additions only when the shared-framework definition of done is met.
