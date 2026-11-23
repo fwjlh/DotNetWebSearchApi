@@ -88,6 +88,32 @@ public sealed class PeerTubeVideoMetadataTests
         Assert.Null(result.ThumbnailUrl);
     }
 
+    [Fact]
+    public async Task SearchAsync_RejectsHttpEmbedEvenOnSameHost()
+    {
+        const string fixture = """
+            {
+              "data": [
+                {
+                  "name": "Insecure PeerTube video",
+                  "url": "https://peertube.cpy.re/videos/watch/123",
+                  "embedPath": "http://peertube.cpy.re/videos/embed/123",
+                  "duration": 10
+                }
+              ]
+            }
+            """;
+        using HttpClient client = CreateClient(fixture);
+        JsonApiSearchProvider provider = CreateProvider(client);
+
+        SearchResult result = Assert.Single(await provider.SearchAsync(
+            new SearchQuery("insecure video", 10),
+            CancellationToken.None));
+        VideoResultMetadata video = Assert.IsType<VideoResultMetadata>(result.VideoMetadata);
+
+        Assert.Equal(string.Empty, video.EmbedUrl);
+    }
+
     private static JsonApiSearchProvider CreateProvider(HttpClient client)
     {
         JsonApiSearchDefinition definition = JsonApiProviderCatalog.Definitions.Single(
