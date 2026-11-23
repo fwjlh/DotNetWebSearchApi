@@ -63,10 +63,10 @@ public sealed record SearxngSearchResult(
     public string? VideoEmbedUrl { get; init; }
 
     [JsonPropertyName("length")]
-    public double? VideoDurationSeconds { get; init; }
+    public double? LengthSeconds { get; init; }
 
     [JsonPropertyName("author")]
-    public string? VideoAuthor { get; init; }
+    public string? Author { get; init; }
 
     [JsonPropertyName("views")]
     public string? VideoViews { get; init; }
