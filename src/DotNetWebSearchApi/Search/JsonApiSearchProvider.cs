@@ -159,9 +159,7 @@ public sealed class JsonApiSearchProvider : ISearchProvider, ISearchProviderCapa
             1.0 / (position + 1))
         {
             Category = ResolveResultCategory(),
-            ThumbnailUrl = imageMetadata?.ThumbnailUrl.Length > 0
-                ? imageMetadata.ThumbnailUrl
-                : videoMetadata?.ThumbnailUrl.Length > 0 ? videoMetadata.ThumbnailUrl : null,
+            ThumbnailUrl = ResolveThumbnailUrl(imageMetadata, videoMetadata),
             PublishedDate = videoMetadata?.PublishedDate,
             ImageMetadata = imageMetadata,
             VideoMetadata = videoMetadata
@@ -224,6 +222,20 @@ public sealed class JsonApiSearchProvider : ISearchProvider, ISearchProviderCapa
         }
 
         return false;
+    }
+
+    private static string? ResolveThumbnailUrl(
+        ImageResultMetadata? imageMetadata,
+        VideoResultMetadata? videoMetadata)
+    {
+        if (!string.IsNullOrWhiteSpace(imageMetadata?.ThumbnailUrl))
+        {
+            return imageMetadata.ThumbnailUrl;
+        }
+
+        return string.IsNullOrWhiteSpace(videoMetadata?.ThumbnailUrl)
+            ? null
+            : videoMetadata.ThumbnailUrl;
     }
 
     private ImageResultMetadata? ReadImageMetadata(JsonElement item)
