@@ -12,6 +12,7 @@ namespace DotNetWebSearchApi.Tests;
 
 public sealed partial class SearxngApiIntegrationTests
 {
+    [Fact]
     public async Task Search_ParsesAllRequestContextFields()
     {
         using WebApplicationFactory<Program> factory = CreateFactory(Provider("alpha", Result("A", "https://example.com/a")));
@@ -66,5 +67,4 @@ public sealed partial class SearxngApiIntegrationTests
         Assert.Empty(document.RootElement.GetProperty("results").EnumerateArray());
     }
 
-    [Fact]
 }
