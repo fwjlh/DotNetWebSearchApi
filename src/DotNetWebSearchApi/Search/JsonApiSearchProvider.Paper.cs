@@ -4,7 +4,7 @@ namespace DotNetWebSearchApi.Search;
 
 public sealed partial class JsonApiSearchProvider
 {
-    private PaperResultMetadata? ReadPaperMetadata(JsonElement item)
+    private PaperResultMetadata? ReadPaperMetadata(JsonElement item, Uri resultUri)
     {
         JsonApiPaperMetadataPaths? paths = _definition.PaperMetadata;
         if (paths is null)
@@ -25,6 +25,7 @@ public sealed partial class JsonApiSearchProvider
         string comments = CleanText(ReadOptionalText(item, paths.Comments));
         IReadOnlyList<string> tags = ReadTextArray(item, paths.Tags);
         string type = ReadOptionalText(item, paths.Type);
+        string publicationYear = ReadOptionalText(item, paths.PublicationYear);
         string editor = ReadOptionalText(item, paths.Editor);
         string publisher = ReadOptionalText(item, paths.Publisher);
         string journal = ReadOptionalText(item, paths.Journal);
@@ -36,9 +37,14 @@ public sealed partial class JsonApiSearchProvider
         IReadOnlyList<string> isbn = ReadTextArray(item, paths.Isbn);
         string pdfUrl = ReadSafeUrl(item, paths.PdfUrl);
         string htmlUrl = ReadSafeUrl(item, paths.HtmlUrl);
+        if (htmlUrl.Length == 0)
+        {
+            htmlUrl = resultUri.AbsoluteUri;
+        }
 
         if (date is null && author.Length == 0 && authors.Count == 0 && content.Length == 0
             && comments.Length == 0 && tags.Count == 0 && type.Length == 0
+            && publicationYear.Length == 0
             && editor.Length == 0 && publisher.Length == 0 && journal.Length == 0
             && volume.Length == 0 && pages.Length == 0 && number.Length == 0
             && doi.Length == 0 && issn.Count == 0 && isbn.Count == 0
@@ -54,6 +60,7 @@ public sealed partial class JsonApiSearchProvider
             Comments = comments,
             Tags = tags,
             Type = type,
+            PublicationYear = publicationYear,
             Author = author,
             Authors = authors,
             Editor = editor,
@@ -145,6 +152,7 @@ public sealed record JsonApiPaperMetadataPaths
     public string Comments { get; init; } = string.Empty;
     public string Tags { get; init; } = string.Empty;
     public string Type { get; init; } = string.Empty;
+    public string PublicationYear { get; init; } = string.Empty;
     public string Author { get; init; } = string.Empty;
     public string Authors { get; init; } = string.Empty;
     public string AuthorName { get; init; } = string.Empty;
