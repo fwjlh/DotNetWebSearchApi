@@ -36,7 +36,7 @@ Per-provider translation decisions are recorded in [PYTHON_TO_CSHARP_PORTING_NOT
 - `ProviderHealthRegistry` with process-local Closed/Open/HalfOpen states, failure thresholds, failure-kind cooldowns, capped exponential backoff, Retry-After handling and a single half-open recovery probe. Cooling-down providers are skipped and reported separately.
 - `EngineLocaleRegistry` with curated static locale/region mappings for Bing, DuckDuckGo, Google, Qwant, Yahoo and Wikipedia.
 - Result deduplication, one-based per-provider positions, contributing engine names, per-engine positions and SearXNG-style weighted-position scoring. Engine weights are configurable through capabilities; current providers use the default weight unless explicitly changed.
-- Optional `SearchResult.ThumbnailUrl` metadata, currently populated for Naver general-web results and mapped to the SearXNG `thumbnail` field.
+- `SearchResult` retains provider category and optional publication date; generic JSON adapters populate their declared category, RSS/Atom adapters declare `news` and parse RSS `pubDate` / Atom `published` or `updated`, and the SearXNG mapper preserves category and publication date. Optional `ThumbnailUrl` is currently populated for Naver general-web results and mapped to the SearXNG `thumbnail` field.
 - GET/POST SearXNG-shaped `/search`, GET `/api/search`, provider listing and diagnostics endpoints.
 - Provider fixture tests and GitHub Actions build/test workflow.
 
@@ -88,7 +88,7 @@ This is a curated static subset, not a full replacement for SearXNG's dynamicall
 
 The aggregator normalises HTTP(S) destinations, deduplicates results, retains contributing engines and their one-based positions, and calculates a weighted-position score. `EngineCapabilities.Weight` is the provider weight input; current weights remain mostly at the default 1.0. The SearXNG mapper emits actual engine positions rather than reconstructing them from score.
 
-The result model now has optional thumbnail metadata, used by Naver general-web parsing. It remains a predominantly ordinary-web-result model. Published dates, categories/templates, multiple thumbnail/image fields, video duration, licence/author metadata and structured provider-specific result types are not consistently represented. The SearXNG response currently returns empty answers, corrections, infoboxes and suggestions because those features are not yet implemented.
+The result model now retains category and optional publication date, and generic JSON/RSS adapters populate those fields where their endpoint semantics are clear. RSS 2.0 `pubDate` and Atom `published` / `updated` flow through to the SearXNG `publishedDate` field. Naver general-web parsing also supplies optional thumbnail metadata. The model remains predominantly ordinary-web-result shaped: image source/resolution/format/licence metadata, video embed/duration data, richer paper/file fields and structured provider-specific result types are not consistently represented. The SearXNG response currently returns empty answers, corrections, infoboxes and suggestions because those features are not yet implemented.
 
 **Remaining:** introduce a richer typed result model before broadening image/news/video verticals. Preserve provider-specific metadata rather than flattening it into title/URL/snippet. Define merge rules for metadata when multiple providers return the same URL.
 
