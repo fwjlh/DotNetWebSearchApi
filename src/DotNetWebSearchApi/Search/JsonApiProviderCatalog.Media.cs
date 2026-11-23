@@ -20,7 +20,7 @@ public static partial class JsonApiProviderCatalog
             FixedParameters = new Dictionary<string, string> { ["search_type"] = "video" },
             Headers = new Dictionary<string, string>
             {
-                ["Referer"] = "https://search.bilibili.com"
+                ["Referer"] = "https://search.bilibili.com/"
             },
             VideoMetadata = new JsonApiVideoMetadataPaths
             {
