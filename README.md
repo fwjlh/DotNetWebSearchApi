@@ -111,7 +111,7 @@ DotNetWebSearchApi puts that work behind one service:
 | Browser search interface | Working (initial) | Search page at / with selectable providers and result cards |
 | Read-only administration and diagnostics | Working (initial) | /admin, provider health counters, last outcome and active provider list |
 | SQL Server configuration store | Planned | Optional persistence and administration |
-| API keys, quotas and rate limiting | Planned | Required before untrusted public exposure |
+| API keys and request rate limiting | Implemented (initial) | Bearer keys via SEARCH_API_KEYS; 60 requests/minute per remote IP; no per-key quota yet |
 
 The status above is deliberately conservative: a provider is only marked **Working** once its adapter is implemented and tested. Planned integrations are not represented as available features.
 
@@ -247,6 +247,21 @@ There is no Docker or Python dependency in the intended deployment model.
 
 The application prints its local listening address when it starts. Open that address in a browser for the search page. Use /admin for read-only provider diagnostics. The admin page shows active providers, success/failure counts, last duration and last error type; it does not expose secrets or edit configuration.
 
+### Configure API access
+
+For a non-Development deployment, configure one or more random API keys of at least 32 UTF-8 bytes before starting the service. Keep them in the host's secret/environment configuration, not in source control. Multiple keys are separated by semicolons.
+
+In PowerShell:
+
+    $env:SEARCH_API_KEYS = "replace-with-a-random-secret-of-at-least-32-bytes"
+    dotnet run --project src/DotNetWebSearchApi
+
+Programmatic clients send:
+
+    Authorization: Bearer replace-with-the-configured-key
+
+The browser search page includes a password field for the key; it is held only in the current page and is not written to browser storage. Use HTTPS for all non-localhost traffic. The current limiter allows 60 search requests per minute per remote IP address. It is not yet a per-key quota, and deployments behind reverse proxies must configure trusted forwarded headers correctly.
+
 ### Optional Brave Search provider
 
 Brave is enabled only when an API key is supplied through the BRAVE_SEARCH_API_KEY environment variable. Without the variable, the service starts normally and skips Brave. In PowerShell, set it for the current session before starting the application:
@@ -342,7 +357,9 @@ See [docs/ARCHITECTURE_DECISIONS.md](docs/ARCHITECTURE_DECISIONS.md) for the con
 This service is designed to be self-hosted, but self-hosting does not automatically make an instance safe.
 
 - Do not expose an unauthenticated instance to the public internet.
-- Authentication, rate limits, quotas and request limits must be implemented before untrusted public access.
+- Configure `SEARCH_API_KEYS` before any non-Development deployment. Every key must be at least 32 UTF-8 bytes; separate multiple keys with semicolons. Search routes require `Authorization: Bearer <key>`. Production and other non-Development environments refuse to start without a key.
+- Search routes are limited to 60 requests per minute per remote IP and return HTTP 429 after the limit. This is an initial process-local IP limit, not a per-key quota. Behind a reverse proxy, configure trusted forwarded headers at the host; never trust arbitrary client-supplied forwarded headers.
+- POST `/search` rejects declared bodies above 16 KiB and applies ASP.NET form key/value/count limits. Kestrel/IIS hosting limits should also be configured at the edge.
 - Provider endpoints are administrative configuration, never arbitrary URLs supplied by search callers.
 - Configurable outbound requests must defend against SSRF: validate schemes and destinations, block loopback/link-local/private ranges where appropriate, revalidate redirects and apply outbound network controls.
 - Do not forward caller IP addresses, API keys or unrelated inbound headers to search providers.
