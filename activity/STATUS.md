@@ -109,3 +109,12 @@ Search/media/regional providers (batch 5): Wiby, TVmaze, Radio Browser, PeerTube
 5. Complete API compatibility tests, then harden the public API before internet exposure: authentication, quotas, request limits and outbound destination policy.
 6. Keep CoderInBox as an independent HTTP consumer; do not move provider code into that repository.
 7. Resume provider additions only when the shared-framework definition of done is met.
+
+
+## 2026-11-23 handover — Actions disabled
+- Repository rules: see [`_LookAtMe.MD`](../_LookAtMe.MD).
+- GitHub Actions: disabled by deleting `.github/workflows/ci.yml`; there are now no workflow definitions in this repository. Do not recreate or invoke workflows.
+- Branch: continue committing directly to `main`.
+- Activity: latest policy/configuration change is recorded in [`LOG.md`](LOG.md), entry 115.
+- Verification: no application code changed in this policy update. Local tests could not be run in this environment because the .NET SDK is unavailable. Do not substitute GitHub Actions.
+- Next work: keep the 67-provider catalogue frozen; continue auditing provider request/capability gaps and the shared-framework completion plan. Each code increment must include focused tests and be locally verified when a .NET SDK is available.
