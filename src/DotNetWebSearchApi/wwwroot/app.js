@@ -1,5 +1,6 @@
 const form = document.getElementById("search-form");
 const queryInput = document.getElementById("query");
+const apiKeyInput = document.getElementById("api-key");
 const providerList = document.getElementById("provider-list");
 const searchButton = document.getElementById("search-button");
 const feedback = document.getElementById("search-feedback");
@@ -84,7 +85,9 @@ form.addEventListener("submit", async event => {
     results.replaceChildren();
     try {
         const parameters = new URLSearchParams({ q: query, format: "json", engines: selected.join(",") });
-        const response = await fetch("/search?" + parameters.toString());
+        const headers = {};
+        if (apiKeyInput.value.trim()) headers.Authorization = "Bearer " + apiKeyInput.value.trim();
+        const response = await fetch("/search?" + parameters.toString(), { headers });
         const data = await response.json();
         if (!response.ok) throw new Error(data.error || "Search failed (" + response.status + ").");
         renderResults(data);
