@@ -150,6 +150,9 @@ public sealed class SearchHttpTransportTests
     [InlineData("fc00::1", false)]
     [InlineData("fe80::1", false)]
     [InlineData("2001:db8::1", false)]
+    [InlineData("2001:0::1", false)]
+    [InlineData("2002::1", false)]
+    [InlineData("3fff::1", false)]
     [InlineData("2606:4700:4700::1111", true)]
     public void PublicNetworkPolicy_ClassifiesAddressRanges(string value, bool expectedPublic)
     {
