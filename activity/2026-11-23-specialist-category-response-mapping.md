@@ -25,3 +25,10 @@ The provider capability audit correctly separated image, video, music and news p
 
 ## Next step
 Plan the richer result model for image/news/video metadata (image URL, licence/attribution, publication date and media-specific fields) without forcing provider-specific data into untyped dictionaries. Add model and API mapping tests before changing provider parsers.
+
+
+## Follow-up fixture correction
+- **Reason:** A follow-up source inspection found the C# fixture still contained an extra escaping layer, so the JSON parser would receive backslashes before property-name quotes.
+- **Action:** Corrected the C# string literal to encode valid JSON.
+- **Commit:** `982c14c4d7e0a70a450ff367d7fb00b21f6616ee`.
+- **Validation:** Re-read the committed source and confirmed the literal now has one C# escape per embedded quote. Runtime execution remains unavailable because `dotnet` is not installed. No workflow was used.
