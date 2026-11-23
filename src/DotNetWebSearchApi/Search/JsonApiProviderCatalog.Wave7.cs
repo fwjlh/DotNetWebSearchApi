@@ -59,6 +59,7 @@ public static partial class JsonApiProviderCatalog
                 Pages = "metadata.journal.pages",
                 Doi = "metadata.doi",
                 Type = "metadata.resource_type.title",
+                PdfUrl = "links.pdf",
                 HtmlUrl = "links.html"
             }
         },
