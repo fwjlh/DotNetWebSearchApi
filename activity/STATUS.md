@@ -396,3 +396,10 @@ Search/media/regional providers (batch 5): Wiby, TVmaze, Radio Browser, PeerTube
 - Rechecked the partial-class test split and restored xUnit attributes to all four moved request-context tests.
 - Verified the original integration tests retain their own `[Fact]` attributes.
 - Logged as entry 129 in [LOG.md](LOG.md).
+
+## Latest dedicated-provider capability corrections
+- Mojeek now declares its real general/web and safe-search capabilities and maps 0 to off, 1/2 to moderate.
+- Brave now declares safe-search support and maps 0/1/2 to off/moderate/strict; it remains first-page-only with no locale/time-range support.
+- Added request and capability tests for both providers.
+- Corrected the duplicate/misnumbered Mojeek entry in [LOG.md](LOG.md); new entries are 130 (Mojeek) and 131 (Brave).
+- Tests remain unexecuted because `dotnet` is unavailable. No GitHub Actions or live upstream calls used.
