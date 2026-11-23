@@ -29,19 +29,14 @@
 - MusicBrainz returns artist metadata, not a playable stream; it therefore uses the default result template.
 - Optional Exa, Yandex, Kagi and Brave providers require configuration. The 67-provider integration test supplies dummy values to verify registration.
 
-## Latest test failure corrections
+## Latest regression verification
 
-- Removed the duplicate SearXNG JSON property collision: paper abstract now maps into the common `content` field instead of a second property with the same JSON name.
-- Corrected the Openverse file-size expectation to `875.13 KB` for 896,128 bytes using the current invariant formatter.
-- Corrected the Bilibili definition-level test to expect the normalized Referer URI `https://search.bilibili.com/`.
-- Commits: `d0fa0416`, `7220173f`, `5f734214`, `20b365d9`, `9129fb6b`, `a74679f5`.
-- Latest user run: 3 failures remain — Bilibili expectation, Crossref publication year, and 63 vs 67 production-host registrations. The Bilibili assertion is now corrected on `main`.
-- The provider-count test now checks Exa, Yandex, Kagi and Brave before the aggregate count, so the next run identifies which optional registration is missing.
-- Crossref discrepancy needs local revision verification: current `main` defines `PublicationYear` as a non-nullable string defaulting to empty and assigns a string in the mapper, so the reported actual `null` is inconsistent with the currently fetched source.
-- Fixed the Crossref publication-year response omission: source metadata already contained `2024`, but the SearXNG mapper did not assign `PaperPublicationYear`. Commit: `47369b59`.
-- Fixed the optional-provider test configuration timing: the test now injects Exa/Yandex/Kagi/Brave keys via host configuration before minimal-host top-level registration. Commit: `2787902b`.
-- Activity entries 156–157 record both fixes and their validation limits.
-- No .NET build/tests were executed here. These two changes require the user's next local Release test run.
+- User ran the full Release solution build and test suite locally on 2026-11-23.
+- **Result reported:** build succeeded; 319 tests passed, 0 failed, 0 skipped (2.2 seconds test duration; 4.6 seconds build duration).
+- This confirms the fixes through Openverse integration test correction, including the 67-provider registration and Openverse category-filtering regression.
+- The Openverse integration test now preserves production provider registrations by using a plain `WebApplicationFactory<Program>`.
+- No GitHub Actions were invoked; the user has disabled workflows to conserve minutes.
+- **Next:** establish measured line/branch coverage and map uncovered high-risk logic before further implementation. Prioritise request validation, provider capability filtering, aggregation/ranking, health transitions, shared HTTP transport and response mapping.
 
 ## Latest compile corrections
 
