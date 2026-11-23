@@ -237,6 +237,12 @@ static bool TryBuildSearchQuery(
     query = new SearchQuery(queryText, limit, selectedProviders);
     error = null;
 
+    if (queryText.Length > 512)
+    {
+        error = "Query must be 512 characters or fewer.";
+        return false;
+    }
+
     string? pageValue = ReadParameter(request, form, "pageno");
     int page = 1;
     if (!string.IsNullOrWhiteSpace(pageValue)
