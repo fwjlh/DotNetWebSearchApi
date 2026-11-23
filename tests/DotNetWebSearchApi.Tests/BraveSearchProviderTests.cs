@@ -73,9 +73,41 @@ public sealed class BraveSearchProviderTests
             CancellationToken.None);
 
         Assert.Equal(
-            "https://api.search.brave.com/res/v1/web/search?q=cats%20%26%20dogs&count=5&offset=0&text_decorations=false&safesearch=moderate",
+            "https://api.search.brave.com/res/v1/web/search?q=cats%20%26%20dogs&count=5&offset=0&text_decorations=false&safesearch=off",
             requestedUri?.AbsoluteUri);
         Assert.Equal(2, results.Count);
+    }
+
+    [Theory]
+    [InlineData(0, "off")]
+    [InlineData(1, "moderate")]
+    [InlineData(2, "strict")]
+    public async Task SearchAsync_MapsSafeSearchLevel(int safeSearch, string expectedValue)
+    {
+        Uri? requestedUri = null;
+        using HttpClient client = new(new StubHttpMessageHandler(request =>
+        {
+            requestedUri = request.RequestUri;
+            return JsonResponse(SearchResponse);
+        }));
+        BraveSearchProvider provider = new(client);
+
+        await provider.SearchAsync(
+            new SearchQuery("test", 10) { SafeSearch = safeSearch },
+            CancellationToken.None);
+
+        Assert.Contains("safesearch=" + expectedValue, requestedUri?.Query);
+    }
+
+    [Fact]
+    public void Capabilities_DeclareSupportedRequestFeatures()
+    {
+        BraveSearchProvider provider = new(new HttpClient());
+
+        Assert.True(provider.Capabilities.Supports(new SearchQuery("test", 10) { SafeSearch = 2 }));
+        Assert.False(provider.Capabilities.Supports(new SearchQuery("test", 10) { Page = 2 }));
+        Assert.False(provider.Capabilities.Supports(new SearchQuery("test", 10) { TimeRange = SearchTimeRange.Day }));
+        Assert.False(provider.Capabilities.Supports(new SearchQuery("test", 10) { Language = "en-GB" }));
     }
 
     [Fact]
