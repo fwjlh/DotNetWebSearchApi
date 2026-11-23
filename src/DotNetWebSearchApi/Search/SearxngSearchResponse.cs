@@ -29,4 +29,8 @@ public sealed record SearxngSearchResult(
     string Category,
     string Template,
     [property: JsonPropertyName("parsed_url")] IReadOnlyList<string> ParsedUrl,
-    [property: JsonPropertyName("publishedDate")] DateTimeOffset? PublishedDate);
+    [property: JsonPropertyName("publishedDate")] DateTimeOffset? PublishedDate)
+{
+    [JsonPropertyName("thumbnail")]
+    public string? Thumbnail { get; init; }
+}
