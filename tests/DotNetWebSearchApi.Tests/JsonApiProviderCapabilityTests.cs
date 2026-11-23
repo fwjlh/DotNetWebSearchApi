@@ -35,6 +35,10 @@ public sealed class JsonApiProviderCapabilityTests
     [InlineData("openalex", "science")]
     [InlineData("europepmc", "science")]
     [InlineData("semanticscholar", "science")]
+    [InlineData("datacite", "science")]
+    [InlineData("zenodo", "science")]
+    [InlineData("openaire", "science")]
+    [InlineData("plos", "science")]
     public void Capabilities_RestrictVerticalProviderToItsDeclaredCategory(
         string providerName,
         string category)
