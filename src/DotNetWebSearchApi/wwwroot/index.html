@@ -7,6 +7,7 @@
 <section class="intro"><p class="eyebrow">SELF-HOSTED METASEARCH</p><h1>Search across the web.</h1><p>One query. Multiple providers. Results gathered and ranked by your own .NET service.</p></section>
 <form id="search-form" class="panel">
 <label class="field-label" for="query">What are you looking for?</label>
+<label class="field-label" for="api-key">API key (only if required by this server)</label><input id="api-key" name="api-key" type="password" autocomplete="off" spellcheck="false" placeholder="Bearer API key">
 <div class="query-row"><input id="query" name="q" type="search" maxlength="500" placeholder="Search the web..." required><button id="search-button" type="submit" disabled>Search</button></div>
 <div class="provider-heading"><span class="field-label">Search providers</span><div class="small-actions"><button id="select-all" type="button" class="link-button">All</button><button id="select-none" type="button" class="link-button">None</button></div></div>
 <div id="provider-list" class="provider-list"><p class="muted">Loading available providers…</p></div>
