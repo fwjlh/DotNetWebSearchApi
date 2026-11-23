@@ -27,7 +27,15 @@ public static class SearxngSearchResponseMapper
             result.Url, result.Title, result.Snippet, result.Provider, engines,
             result.Positions, result.Score, result.Category, "default.html", parsedUrl, result.PublishedDate)
         {
-            Thumbnail = result.ThumbnailUrl
+            Thumbnail = result.ThumbnailUrl,
+            ImageUrl = result.ImageMetadata?.ImageUrl,
+            ImageThumbnailUrl = result.ImageMetadata?.ThumbnailUrl,
+            ImageResolution = result.ImageMetadata?.Resolution,
+            ImageFormat = result.ImageMetadata?.Format,
+            ImageSource = result.ImageMetadata?.Source,
+            ImageFileSize = result.ImageMetadata?.FileSize,
+            ImageFormats = result.ImageMetadata?.Formats ?? Array.Empty<ImageFormatReference>(),
+            ImageMetadata = result.ImageMetadata
         };
     }
 }
