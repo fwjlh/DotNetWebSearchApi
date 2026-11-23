@@ -13,7 +13,7 @@ if (searchApiKeys.Any(key => Encoding.UTF8.GetByteCount(key) < 32))
 {
     throw new InvalidOperationException("Every SEARCH_API_KEYS entry must contain at least 32 UTF-8 bytes.");
 }
-if (builder.Environment.IsProduction() && searchApiKeys.Length == 0)
+if (!builder.Environment.IsDevelopment() && searchApiKeys.Length == 0)
 {
     throw new InvalidOperationException("SEARCH_API_KEYS must be configured before running in Production.");
 }
@@ -266,6 +266,12 @@ static async Task<IResult> SearxngSearchEndpoint(HttpRequest request, SearchAggr
     {
         if (!request.HasFormContentType) return Results.StatusCode(StatusCodes.Status415UnsupportedMediaType);
         if (request.ContentLength > 16 * 1024) return Results.StatusCode(StatusCodes.Status413PayloadTooLarge);
+        IHttpMaxRequestBodySizeFeature? bodySizeFeature =
+            request.HttpContext.Features.Get<IHttpMaxRequestBodySizeFeature>();
+        if (bodySizeFeature is { IsReadOnly: false })
+        {
+            bodySizeFeature.MaxRequestBodySize = 16 * 1024;
+        }
         form = await request.ReadFormAsync(cancellationToken);
     }
 
