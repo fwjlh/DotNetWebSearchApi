@@ -77,3 +77,11 @@ Never use GitHub Actions or workflow minutes. Keep this file and `LOG.md` curren
 - The apparent 74 count was an audit-script false positive: it counted `AuthorName` and `TagName` configuration properties as provider names.
 - Anchored recount confirms 52 unique JSON definitions + 2 RSS/Atom + 13 dedicated registrations = 67.
 - Logged as entry 138 in [LOG.md](LOG.md). No source changes were needed.
+
+
+## Latest music metadata coverage
+- MusicBrainz artist records now preserve typed artist and country metadata.
+- They do not claim an audio stream or use a specialist audio template when no playable URL exists.
+- Added a fixture and SearXNG mapping regression.
+- Commit: `83d36e386d18f94866dfbebd64f426142a07dfae`.
+- Logged as entry 139. Tests remain unexecuted because the .NET SDK is unavailable.
