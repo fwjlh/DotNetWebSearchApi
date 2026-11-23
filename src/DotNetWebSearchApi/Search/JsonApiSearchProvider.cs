@@ -150,6 +150,7 @@ public sealed class JsonApiSearchProvider : ISearchProvider, ISearchProviderCapa
 
         TryReadText(item, _definition.SnippetPath, out string snippet);
         ImageResultMetadata? imageMetadata = ReadImageMetadata(item);
+        VideoResultMetadata? videoMetadata = ReadVideoMetadata(item);
         result = new SearchResult(
             title,
             resultUri.AbsoluteUri,
@@ -158,10 +159,12 @@ public sealed class JsonApiSearchProvider : ISearchProvider, ISearchProviderCapa
             1.0 / (position + 1))
         {
             Category = ResolveResultCategory(),
-            ThumbnailUrl = string.IsNullOrWhiteSpace(imageMetadata?.ThumbnailUrl)
-                ? null
-                : imageMetadata.ThumbnailUrl,
-            ImageMetadata = imageMetadata
+            ThumbnailUrl = imageMetadata?.ThumbnailUrl.Length > 0
+                ? imageMetadata.ThumbnailUrl
+                : videoMetadata?.ThumbnailUrl.Length > 0 ? videoMetadata.ThumbnailUrl : null,
+            PublishedDate = videoMetadata?.PublishedDate,
+            ImageMetadata = imageMetadata,
+            VideoMetadata = videoMetadata
         };
         return true;
     }
@@ -278,6 +281,64 @@ public sealed class JsonApiSearchProvider : ISearchProvider, ISearchProviderCapa
         };
     }
 
+    private VideoResultMetadata? ReadVideoMetadata(JsonElement item)
+    {
+        JsonApiVideoMetadataPaths? paths = _definition.VideoMetadata;
+        if (paths is null)
+        {
+            return null;
+        }
+
+        string embedUrl = ReadSafeUrl(item, paths.EmbedUrl);
+        string thumbnailUrl = ReadSafeUrl(item, paths.ThumbnailUrl);
+        string durationText = ReadOptionalText(item, paths.DurationSeconds);
+        double? duration = double.TryParse(
+            durationText,
+            NumberStyles.Float,
+            CultureInfo.InvariantCulture,
+            out double parsedDuration) && parsedDuration >= 0 ? parsedDuration : null;
+        string author = ReadOptionalText(item, paths.Author);
+        string views = ReadOptionalText(item, paths.Views);
+        DateTimeOffset? publishedDate = ReadOptionalDate(item, paths.PublishedDate);
+
+        if (embedUrl.Length == 0 && thumbnailUrl.Length == 0 && duration is null
+            && author.Length == 0 && views.Length == 0 && publishedDate is null)
+        {
+            return null;
+        }
+
+        return new VideoResultMetadata
+        {
+            EmbedUrl = embedUrl,
+            ThumbnailUrl = thumbnailUrl,
+            DurationSeconds = duration,
+            PublishedDate = publishedDate,
+            Author = author,
+            Views = views
+        };
+    }
+
+    private static DateTimeOffset? ReadOptionalDate(JsonElement item, string path)
+    {
+        string value = ReadOptionalText(item, path);
+        if (long.TryParse(value, NumberStyles.Integer, CultureInfo.InvariantCulture, out long unixSeconds))
+        {
+            if (unixSeconds < DateTimeOffset.MinValue.ToUnixTimeSeconds()
+                || unixSeconds > DateTimeOffset.MaxValue.ToUnixTimeSeconds())
+            {
+                return null;
+            }
+
+            return DateTimeOffset.FromUnixTimeSeconds(unixSeconds);
+        }
+
+        return DateTimeOffset.TryParse(
+            value,
+            CultureInfo.InvariantCulture,
+            DateTimeStyles.AssumeUniversal | DateTimeStyles.AdjustToUniversal,
+            out DateTimeOffset parsedDate) ? parsedDate : null;
+    }
+
     private static string FormatFileSize(long? fileSize)
     {
         if (fileSize is null || fileSize.Value < 0)
@@ -365,6 +426,7 @@ public sealed record JsonApiSearchDefinition
     public IReadOnlySet<string> Categories { get; init; } =
         new HashSet<string>(StringComparer.OrdinalIgnoreCase) { "general" };
     public JsonApiImageMetadataPaths? ImageMetadata { get; init; }
+    public JsonApiVideoMetadataPaths? VideoMetadata { get; init; }
 }
 
 public sealed record JsonApiImageMetadataPaths
@@ -384,4 +446,15 @@ public sealed record JsonApiImageMetadataPaths
     public string LicenseVersion { get; init; } = string.Empty;
     public string Attribution { get; init; } = string.Empty;
     public string MediaCategory { get; init; } = string.Empty;
+}
+
+
+public sealed record JsonApiVideoMetadataPaths
+{
+    public string EmbedUrl { get; init; } = string.Empty;
+    public string ThumbnailUrl { get; init; } = string.Empty;
+    public string DurationSeconds { get; init; } = string.Empty;
+    public string PublishedDate { get; init; } = string.Empty;
+    public string Author { get; init; } = string.Empty;
+    public string Views { get; init; } = string.Empty;
 }
