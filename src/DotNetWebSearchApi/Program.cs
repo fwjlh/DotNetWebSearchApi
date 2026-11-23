@@ -180,7 +180,7 @@ app.Use(async (context, next) =>
         if (!authorized)
         {
             context.Response.StatusCode = StatusCodes.Status401Unauthorized;
-            context.Response.Headers.WWWAuthenticate = "Bearer";
+            context.Response.Headers["WWW-Authenticate"] = "Bearer";
             await context.Response.WriteAsJsonAsync(new { error = "A valid API key is required." });
             return;
         }
