@@ -264,6 +264,12 @@ static bool TryBuildSearchQuery(
         return false;
     }
 
+    if (categories is { Count: > 10 } || categories?.Any(category => category.Length > 32) == true)
+    {
+        error = "Supply no more than 10 categories, each 32 characters or fewer.";
+        return false;
+    }
+
     string language = ReadParameter(request, form, "language")?.Trim() ?? "auto";
     if (language.Length > 35)
     {
