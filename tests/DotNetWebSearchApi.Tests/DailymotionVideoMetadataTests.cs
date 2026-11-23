@@ -57,7 +57,7 @@ public sealed class DailymotionVideoMetadataTests
     }
 
     [Fact]
-    public async Task SearchAsync_RejectsNonHttpVideoEmbedAndThumbnailUrls()
+    public async Task SearchAsync_RejectsForeignEmbedHostAndUnsafeThumbnailUrls()
     {
         const string fixture = """
             {
@@ -65,7 +65,7 @@ public sealed class DailymotionVideoMetadataTests
                 {
                   "title": "Unsafe video",
                   "url": "https://www.dailymotion.com/video/x123abc",
-                  "embed_url": "javascript:alert(1)",
+                  "embed_url": "https://evil.example/player",
                   "thumbnail_360_url": "data:image/jpeg;base64,AAAA",
                   "duration": 10
                 }
