@@ -70,4 +70,49 @@ public sealed partial class SearxngApiIntegrationTests
 
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
     }
+
+    [Theory]
+    [InlineData("/search")]
+    [InlineData("/")]
+    public async Task Search_RejectsMoreThanTwentySelectedEngines(string endpoint)
+    {
+        using WebApplicationFactory<Program> factory = CreateFactory(
+            Provider("alpha", Result("A", "https://example.com/a")));
+        using HttpClient client = factory.CreateClient();
+        string engines = string.Join(",", Enumerable.Range(0, 21).Select(index => "engine" + index));
+
+        using HttpResponseMessage response = await client.GetAsync(
+            endpoint + "?q=test&engines=" + Uri.EscapeDataString(engines));
+
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task Search_RejectsSelectedEngineNameLongerThanSixtyFourCharacters()
+    {
+        using WebApplicationFactory<Program> factory = CreateFactory(
+            Provider("alpha", Result("A", "https://example.com/a")));
+        using HttpClient client = factory.CreateClient();
+        string engine = new('x', 65);
+
+        using HttpResponseMessage response = await client.GetAsync(
+            "/search?q=test&engines=" + Uri.EscapeDataString(engine));
+
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task PostSearch_RejectsFormBodyLargerThanSixteenKilobytes()
+    {
+        using WebApplicationFactory<Program> factory = CreateFactory(
+            Provider("alpha", Result("A", "https://example.com/a")));
+        using HttpClient client = factory.CreateClient();
+        using ByteArrayContent content = new(new byte[(16 * 1024) + 1]);
+        content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(
+            "application/x-www-form-urlencoded");
+
+        using HttpResponseMessage response = await client.PostAsync("/search", content);
+
+        Assert.Equal(HttpStatusCode.RequestEntityTooLarge, response.StatusCode);
+    }
 }
