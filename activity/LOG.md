@@ -1641,3 +1641,10 @@ Every material repository action is recorded here with its reason, result, verif
 - **Reason:** The service/consumer boundary is part of the agreed roadmap and must remain explicit across repositories.
 - **Action:** Updated the architecture decision record to describe the first CoderInBox HTTP client, environment-based configuration, WebResearch-first behaviour and preserved fallback chain. The integration is explicitly marked unverified until its Windows/.NET 8 tests run.
 - **Commit:** `d052a2d8a1f0dda5dc8a6180397b165435addf0e`.
+
+
+### 177. Set Staging environment before minimal-host startup in the fail-closed test
+- **Reason:** Minimal-host application code reads environment during `WebApplication.CreateBuilder`; a late `WithWebHostBuilder` callback may not affect the environment value used by top-level startup validation.
+- **Correction:** The test now sets `ASPNETCORE_ENVIRONMENT=Staging` and clears `SEARCH_API_KEYS` before constructing/starting the factory, matching the repository's proven process-environment test pattern.
+- **Commit:** `32ea9a1f119295c5fb9b81aa6ababaa9d8051e31`.
+- **Verification:** Source-reviewed only.
