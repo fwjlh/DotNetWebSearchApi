@@ -11,6 +11,8 @@ public sealed record SearchResult(
 {
     public int? Position { get; init; }
 
+    public string? ThumbnailUrl { get; init; }
+
     [JsonIgnore]
     public double? ProviderScore { get; init; }
 
