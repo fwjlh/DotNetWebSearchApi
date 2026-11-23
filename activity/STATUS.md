@@ -37,7 +37,8 @@
 - The Openverse integration test now preserves production provider registrations by using a plain `WebApplicationFactory<Program>`.
 - No GitHub Actions were invoked; the user has disabled workflows to conserve minutes.
 - **Coverage tooling:** Coverlet collector 6.0.4 is now referenced by the test project. Run `dotnet test .\\DotNetWebSearchApi.sln -c Release --collect:\"XPlat Code Coverage\"` to generate a Cobertura report under `tests\\DotNetWebSearchApi.Tests\\TestResults`.
-- **Next:** review the measured line/branch coverage and target uncovered high-risk logic: request validation, capability gating, aggregation/ranking, health transitions, shared HTTP transport and response mapping. Do not add tests solely to inflate the count.
+- **Live integration tests:** added opt-in real HTTP checks for Wikipedia, Crossref and GitHub. Enable with `DOTNETWEBSEARCHAPI_LIVE_TESTS=1`; ordinary test runs skip them. Each test makes one request with a 20-second timeout and a 1 MiB response bound.
+- **Next:** user should run the live test class locally and share provider outcomes. Expand the representative set only after confirming stability and reviewing upstream terms/rate limits. Then use measured line/branch coverage to target uncovered high-risk logic.
 
 ## Latest compile corrections
 
