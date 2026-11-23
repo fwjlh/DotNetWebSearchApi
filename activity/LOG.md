@@ -1221,3 +1221,12 @@ Every material repository action is recorded here with its reason, result, verif
 - **Commit:** `8427e9902a1a0b29beda4a39a46316ab25b86522` (provider), `60cdb6eb38a9a823e0949bf07bade8b9978c178e` (tests).
 - **Validation:** Source and fixture review only; .NET SDK unavailable. No GitHub Actions or live Brave requests were used.
 - **Next:** Complete the final provider capability and tree audit; run tests when the .NET 10 SDK is available.
+
+
+### 132. Make multi-category result selection deterministic
+- **Reason:** Generic JSON providers may advertise more than one vertical. HashSet enumeration order should not decide which category is written to a result when a request selects several supported verticals.
+- **Action:** The generic JSON category resolver now prefers `general` when explicitly requested and otherwise sorts the matching requested categories ordinal-ignore-case before choosing one. Its fallback category is also deterministic.
+- **Tests:** Existing Hacker News coverage verifies general priority when both general and news are requested, and news selection when requested alone.
+- **Commit:** `1307218be38b193d7277a4455c5c10b9c5ec8671`.
+- **Validation:** Reviewed the resolver and existing category tests. Full test execution remains blocked by the missing .NET SDK; no workflows or live provider requests used.
+- **Next:** Complete the final registration, source-size and workflow audit.
