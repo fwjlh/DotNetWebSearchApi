@@ -15,7 +15,8 @@ public sealed partial class SearxngApiIntegrationTests
             new Dictionary<string, string?>
             {
                 ["SEARCH_API_KEYS"] = null,
-                ["ASPNETCORE_ENVIRONMENT"] = "Staging"
+                ["ASPNETCORE_ENVIRONMENT"] = "Staging",
+                ["DOTNET_ENVIRONMENT"] = "Staging"
             });
         using WebApplicationFactory<Program> factory = new();
 
