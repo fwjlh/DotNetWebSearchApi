@@ -42,7 +42,7 @@ public sealed class JsonApiProviderCapabilityTests
             new HttpResponseMessage(HttpStatusCode.OK)
             {
                 Content = new StringContent(
-                    "{\\"data\\":{\\"result\\":[{\\"title\\":\\"Video result\\",\\"arcurl\\":\\"https://example.org/video\\",\\"description\\":\\"A video\\}]}}",
+                    "{\\"data\\":{\\"result\\":[{\\"title\\":\\"Video result\\",\\"arcurl\\":\\"https://example.org/video\\",\\"description\\":\\"A video\\"}]}}",
                     Encoding.UTF8,
                     "application/json")
             }));
