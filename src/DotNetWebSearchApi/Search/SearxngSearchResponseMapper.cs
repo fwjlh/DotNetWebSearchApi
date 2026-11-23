@@ -93,6 +93,7 @@ public static class SearxngSearchResponseMapper
             PaperComments = result.PaperMetadata?.Comments,
             PaperTags = result.PaperMetadata?.Tags,
             PaperType = result.PaperMetadata?.Type,
+            PaperPublicationYear = result.PaperMetadata?.PublicationYear,
             PaperAuthors = result.PaperMetadata?.Authors,
             PaperEditor = result.PaperMetadata?.Editor,
             PaperPublisher = result.PaperMetadata?.Publisher,
