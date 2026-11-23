@@ -393,6 +393,7 @@ These are C# framework decisions rather than one-to-one translations of a single
 - The JSON path reader is deliberately small and explicit. It supports object properties and array indices; it is not a general JSONPath engine. This bounds the configuration surface and avoids a query-language dependency for simple provider response shapes.
 - Relative identifiers are combined with a configured `UrlPrefix` for APIs such as crates.io, Open Library, Europe PMC, Docker Hub and Internet Archive. Wiby attribution is appended to the snippet to meet its attribution requirement.
 - Per-provider minimum intervals are delegated to the shared transport's provider-keyed rate gate rather than implemented as a semaphore and clock inside each provider.
+- Openverse is an explicit image-only definition. It keeps the foreign landing page as the result URL while mapping the direct image URL, thumbnail, dimensions, file type, source, byte size, licence, creator, provider and attribution into typed image metadata. Image, thumbnail, licence and creator URLs are accepted only when absolute HTTP(S); malformed file sizes are ignored. This mapping is fixture-tested and does not imply live Openverse availability.
 - Kagi was moved to a dedicated provider because its API has a more involved authentication/request contract and meaningful page, locale, safe-search and time-range capabilities. Exa remains a generic JSON definition because its current request/result shape fits the shared definition model.
 
 **Known limits**
