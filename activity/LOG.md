@@ -1082,3 +1082,13 @@ Every material repository action is recorded here with its reason, result, verif
 - **Follow-up:** Corrected an extra escaping layer in the Bilibili JSON fixture in `982c14c4d7e0a70a450ff367d7fb00b21f6616ee`; documented the correction in `activity/2026-11-23-specialist-category-response-mapping.md`.
 - **Validation:** Reviewed the model, provider, mapper and test source. Local execution is unavailable (`dotnet` is not installed). No GitHub Actions workflows were run or recreated; no live provider request was made.
 - **Next:** Design typed image/news/video metadata before adding provider-specific fields. Keep the catalogue frozen at 67.
+
+
+### 119. Preserve RSS/Atom news category and publication dates
+- **Reason:** RSS/Atom news providers still inherited the general-web capability profile and discarded publication dates, despite the SearXNG response supporting both news categories and `publishedDate`.
+- **Action:** RSS/Atom providers now declare `news`; RSS `pubDate` and Atom `published`/`updated` are parsed with invariant date handling; each result is tagged `news`.
+- **Action:** `SearchResult.PublishedDate` is preserved by the SearXNG response mapper.
+- **Tests:** Added RSS/Atom date parsing, news capability and response mapping coverage.
+- **Commits:** `5e0f5d96`, `3077eada`, `fc935b4b`, `94006ba7`, `407af21f`, `dc0f46a8`, `3a9b0e98`.
+- **Validation:** Source and fixture coverage inspected. Tests remain unexecuted because the .NET SDK is unavailable. No GitHub Actions workflows or live news feed requests were used.
+- **Next:** Use the pinned SearXNG result types to design typed image metadata first, then video embed metadata. Preserve provider-specific data without untyped extension dictionaries.
