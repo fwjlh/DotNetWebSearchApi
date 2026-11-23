@@ -378,9 +378,11 @@ public sealed class JsonApiSearchProvider : ISearchProvider, ISearchProviderCapa
         string value = ReadOptionalText(item, paths.EmbedUrl);
         if (Uri.TryCreate(value, UriKind.Absolute, out Uri? absoluteUri))
         {
-            bool sameHost = absoluteUri.Host.Equals(resultUri.Host, StringComparison.OrdinalIgnoreCase);
+            bool sameOrigin = absoluteUri.Host.Equals(resultUri.Host, StringComparison.OrdinalIgnoreCase)
+                && absoluteUri.Scheme.Equals(resultUri.Scheme, StringComparison.OrdinalIgnoreCase)
+                && absoluteUri.Port == resultUri.Port;
             bool allowedHost = paths.AllowedEmbedHosts.Contains(absoluteUri.Host);
-            return IsHttpUrl(absoluteUri) && (sameHost || allowedHost)
+            return IsHttpUrl(absoluteUri) && (sameOrigin || allowedHost)
                 ? absoluteUri.AbsoluteUri
                 : string.Empty;
         }
