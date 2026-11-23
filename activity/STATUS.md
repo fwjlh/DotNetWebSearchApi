@@ -411,12 +411,19 @@ Search/media/regional providers (batch 5): Wiby, TVmaze, Radio Browser, PeerTube
 - Logged as entries 130–132 in [LOG.md](LOG.md).
 - No workflows or live upstream calls used; tests remain unexecuted because the .NET SDK is unavailable.
 
-## Final audit checklist
-1. Confirm 52 JSON definitions + 2 RSS + 13 dedicated adapters = 67 providers.
-2. Confirm every C# source/test file is below 20 KB.
-3. Confirm `_LookAtMe.MD`, `activity/LOG.md` and `activity/STATUS.md` are present.
-4. Confirm no `.github/workflows/` files exist.
-5. Leave the exact next action here for the next session.
+## Final audit — verified on 2026-11-23
+- Provider inventory: 52 generic JSON definitions + 2 RSS/Atom adapters + 13 dedicated adapters = 67 total.
+- C# files: 79 source/test files; none exceeds 20 KB. The largest test fixture is 18.5 KB.
+- JSON catalogue split: 12.8 KB base, 14.2 KB media, 5.2 KB Wave7.
+- `_LookAtMe.MD`, `activity/LOG.md` and `activity/STATUS.md` are present.
+- No `.github/workflows/` files exist. No GitHub Actions have been invoked.
+- Test suite has 33 test source files, but has not been executed because this environment has no .NET SDK.
+
+## Next session
+1. Start with this status and the end of [LOG.md](LOG.md).
+2. Pull `main` and run `dotnet test` locally with the .NET 10 SDK; report and fix compile/test failures in small commits.
+3. Continue typed result coverage with scholarly/paper metadata (arXiv, Crossref, OpenAlex, Europe PMC and Semantic Scholar) using the pinned SearXNG result types as the contract.
+4. Keep all work on `main`; do not create or invoke GitHub Actions workflows.
 
 ## Latest media response mapping
 - SearXNG now uses shared `length` and `author` fields for both video and audio results.
