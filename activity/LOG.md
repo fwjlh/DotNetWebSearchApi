@@ -1574,3 +1574,20 @@ Every material repository action is recorded here with its reason, result, verif
 - **Verification:** Source and test files reviewed. No .NET 10 SDK is available in this environment, so none of the new tests have been executed. The user's earlier 319-test pass predates these changes. No GitHub Actions and no live provider requests.
 - **Security caveats:** IP-based throttling requires correct trusted-proxy configuration when deployed behind a reverse proxy; do not trust arbitrary forwarded headers. API keys must be supplied via environment/secret configuration and requests must use HTTPS outside localhost. Chunked request bodies and response redirects still require focused adversarial verification; do not claim complete SSRF or request-body protection yet.
 - **Next:** Harden streamed/chunked POST bodies and outbound redirect/SSRF policy; add a trusted-proxy-aware client identity strategy; run the complete Release suite and Coverlet locally. Then implement the general HTTP consumer client in CoderInBox without merging provider code.
+
+
+### 168. Enforce initial outbound destination checks
+- **Reason:** The shared transport accepted any absolute request URI, including non-HTTP schemes, embedded credentials, localhost and private/link-local IP literals. Provider request builders should not accidentally become a route to internal services.
+- **Action:** `SearchHttpTransport` now permits only absolute HTTP(S) URIs without embedded user information; blocks localhost/local/internal hostnames; and rejects loopback, private, link-local, carrier-grade NAT, multicast, reserved and documentation IP literals (including IPv4-mapped IPv6).
+- **Tests added:** Eight unsafe destination cases plus a public IPv4 literal acceptance case. All use a stub handler, so no network calls occur.
+- **Commits:** `d8563cf4f8cf5c8f2868416aadbde9b68814b201` (initial guard), `374ba70cb102f9c93085ddfa6edf93362127f410` (precise reserved ranges), `20366be5557d6a17b85880e5c02064d1d9dcba5f` (tests).
+- **Verification:** Reviewed the guard and test cases. No .NET SDK available; tests remain unexecuted.
+- **Limitations:** This is not yet complete SSRF protection. Hostnames that resolve to private addresses and automatic redirects are not yet revalidated. A complete redirect/DNS policy must preserve legitimate provider redirect flows and be tested before public exposure.
+
+### 169. Tighten API host configuration and record final middleware correction
+- **Reason:** A non-Development environment other than Production (for example Staging) must not silently start without API authentication; the streamed body-size feature must be set before form parsing; and the bearer challenge header must use the portable header dictionary indexer.
+- **Action:** API-key startup enforcement now applies to every non-Development environment. The POST endpoint sets `IHttpMaxRequestBodySizeFeature.MaxRequestBodySize` to 16 KiB where the host supports it, in addition to the declared-length and form-parser checks. The unauthorized response writes `WWW-Authenticate: Bearer` through the header indexer.
+- **Commits:** `f57123cbd2ed3b22d368ca36d394af70c122c3f7` (host/body limits), `57af843664f57681e138a4066f34c2024ecff176` (header correction).
+- **Documentation:** README now explains key configuration, HTTPS, the initial 60/minute IP limit, reverse-proxy caveats and remaining gaps (`972ee56c98be85492b606ebca1d6ae4a33622e6d`).
+- **Verification:** Source reviewed; no local .NET build/test execution and no GitHub Actions.
+- **Next:** Complete DNS/redirect policy, inspect real Coverlet output, then begin the independent CoderInBox HTTP client.
