@@ -31,7 +31,7 @@ public sealed partial class JsonApiSearchProvider
         string volume = ReadOptionalText(item, paths.Volume);
         string pages = ReadOptionalText(item, paths.Pages);
         string number = ReadOptionalText(item, paths.Number);
-        string doi = ReadOptionalText(item, paths.Doi);
+        string doi = NormalizeDoi(ReadOptionalText(item, paths.Doi));
         IReadOnlyList<string> issn = ReadTextArray(item, paths.Issn);
         IReadOnlyList<string> isbn = ReadTextArray(item, paths.Isbn);
         string pdfUrl = ReadSafeUrl(item, paths.PdfUrl);
@@ -68,6 +68,21 @@ public sealed partial class JsonApiSearchProvider
             PdfUrl = pdfUrl,
             HtmlUrl = htmlUrl
         };
+    }
+
+    private static string NormalizeDoi(string value)
+    {
+        string doi = value.Trim();
+        string[] prefixes = { "https://doi.org/", "http://doi.org/", "https://dx.doi.org/", "http://dx.doi.org/" };
+        foreach (string prefix in prefixes)
+        {
+            if (doi.StartsWith(prefix, StringComparison.OrdinalIgnoreCase))
+            {
+                return doi.Substring(prefix.Length);
+            }
+        }
+
+        return doi;
     }
 
     private static IReadOnlyList<string> ReadPaperAuthors(
