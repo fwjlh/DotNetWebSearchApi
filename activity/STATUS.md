@@ -294,3 +294,12 @@ Search/media/regional providers (batch 5): Wiby, TVmaze, Radio Browser, PeerTube
 2. Add provider registration/query-selection tests for any discovered gaps.
 3. Recheck SearXNG templates for image/video/music/news result families.
 4. Keep provider count frozen at 67; direct commits to `main`, no workflows.
+
+
+## Latest development — specialist template eligibility
+- SearXNG now uses `images.html` only when image metadata includes an absolute HTTP(S) image source.
+- SearXNG now uses `videos.html` only when video metadata includes an absolute HTTP(S) embed URL.
+- Missing or unsafe vertical metadata falls back to `default.html`.
+- Added regression cases for missing metadata, javascript: URLs, relative image URLs and protocol-relative video embeds.
+- Commit: `3d911356c7c59858d18ac2d679d823975820d89a`.
+- Activity rationale: [LOG.md](LOG.md), entry 122. Tests remain unexecuted because the .NET SDK is unavailable; no workflows were used.
