@@ -110,7 +110,9 @@ public sealed partial class JsonApiSearchProvider
         List<string> authors = new();
         foreach (JsonElement authorElement in authorsElement.EnumerateArray())
         {
-            string name = ReadOptionalText(authorElement, paths.AuthorName);
+            string name = authorElement.ValueKind == JsonValueKind.String
+                ? authorElement.GetString()?.Trim() ?? string.Empty
+                : ReadOptionalText(authorElement, paths.AuthorName);
             if (name.Length == 0)
             {
                 string given = ReadOptionalText(authorElement, paths.AuthorGiven);
