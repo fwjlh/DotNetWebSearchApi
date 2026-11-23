@@ -255,3 +255,18 @@ Search/media/regional providers (batch 5): Wiby, TVmaze, Radio Browser, PeerTube
 2. Audit Bilibili and PeerTube metadata fields against their documented response formats.
 3. Add fixture tests for each supported mapping and reject unsafe embed/thumbnail URLs.
 4. Keep provider count frozen at 67 and continue direct commits to `main`; no workflows.
+
+## Latest development — Bilibili and PeerTube video metadata
+- Bilibili now maps thumbnail, author, views and Unix upload date. Duration is intentionally omitted until the provider's string format is unambiguous.
+- PeerTube now maps same-origin embed path, current thumbnail collection, duration, author, views and publication date.
+- Embed URLs require HTTPS and either the result origin or an explicit provider-host allowlist. Dailymotion's documented embed host is allowed; cross-origin relative paths, foreign hosts and HTTP embeds are rejected.
+- Added provider fixture tests for metadata and URL safety.
+- Updated [provider rationale](../docs/PYTHON_TO_CSHARP_PORTING_NOTES.md) and [porting audit](../docs/PORTING_AUDIT.md).
+- Activity record: [Bilibili and PeerTube video metadata](2026-11-23-bilibili-peertube-video-metadata.md).
+- Tests remain unexecuted because `dotnet` is not installed. No GitHub Actions or live upstream requests were used.
+
+## Next
+1. Audit all provider capability declarations against their response types and categories.
+2. Check SearXNG templates are emitted only when the corresponding result type is populated.
+3. Add provider registration/query-selection tests without live network calls.
+4. Keep provider count frozen at 67 and continue direct commits to `main`; no workflows.
