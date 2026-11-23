@@ -350,3 +350,17 @@ Search/media/regional providers (batch 5): Wiby, TVmaze, Radio Browser, PeerTube
 2. Map Wikinews timestamps into `SearchResult.PublishedDate` and SearXNG `publishedDate`.
 3. Review other news providers for documented timestamps; never synthesize missing dates.
 4. Keep 67 providers, small files, direct commits to `main`; no workflows.
+
+## Latest development — Wikinews publication dates
+- Added generic JSON `PublishedDatePath` support using invariant ISO/Unix parsing.
+- Wikinews now requests the MediaWiki timestamp and preserves it through `SearchResult.PublishedDate` and SearXNG `publishedDate`.
+- Missing or malformed timestamps remain unset; no current/crawl time is invented.
+- Added fixture tests for valid, missing and malformed dates.
+- Updated [provider rationale](../docs/PYTHON_TO_CSHARP_PORTING_NOTES.md) and [porting audit](../docs/PORTING_AUDIT.md).
+- Logged as entry 126 in [LOG.md](LOG.md). Tests remain unexecuted because `dotnet` is unavailable; no workflows or live requests used.
+
+## Next
+1. Audit remaining news providers for documented publication timestamps.
+2. Recheck all vertical capability declarations and typed result mappings together.
+3. Add tests for any news provider whose category/date metadata does not match its payload.
+4. Keep provider count frozen at 67 and continue direct commits to `main`; no workflows.
