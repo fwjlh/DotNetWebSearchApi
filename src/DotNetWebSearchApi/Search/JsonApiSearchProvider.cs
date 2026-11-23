@@ -49,7 +49,7 @@ public sealed class JsonApiSearchProvider : ISearchProvider, ISearchProviderCapa
         response.EnsureSuccessStatusCode(Name);
         using JsonDocument document = JsonDocument.Parse(response.Content);
 
-        return ReadResults(document.RootElement);
+        return ReadResults(document.RootElement, query);
     }
 
     private HttpRequestMessage BuildRequest(SearchQuery query)
@@ -96,7 +96,7 @@ public sealed class JsonApiSearchProvider : ISearchProvider, ISearchProviderCapa
         return new Uri(_definition.Endpoint + separator + queryString);
     }
 
-    private IReadOnlyList<SearchResult> ReadResults(JsonElement root)
+    private IReadOnlyList<SearchResult> ReadResults(JsonElement root, SearchQuery query)
     {
         if (!TryReadPath(root, _definition.ResultsPath, out JsonElement resultsElement)
             || resultsElement.ValueKind != JsonValueKind.Array)
@@ -107,7 +107,7 @@ public sealed class JsonApiSearchProvider : ISearchProvider, ISearchProviderCapa
         List<SearchResult> results = new();
         foreach (JsonElement item in resultsElement.EnumerateArray())
         {
-            if (!TryReadResult(item, results.Count, out SearchResult? result) || result is null)
+            if (!TryReadResult(item, results.Count, query, out SearchResult? result) || result is null)
             {
                 continue;
             }
@@ -118,7 +118,7 @@ public sealed class JsonApiSearchProvider : ISearchProvider, ISearchProviderCapa
         return results;
     }
 
-    private bool TryReadResult(JsonElement item, int position, out SearchResult? result)
+    private bool TryReadResult(JsonElement item, int position, SearchQuery query, out SearchResult? result)
     {
         result = null;
         if (!TryReadText(item, _definition.TitlePath, out string title)
@@ -158,7 +158,7 @@ public sealed class JsonApiSearchProvider : ISearchProvider, ISearchProviderCapa
             Name,
             1.0 / (position + 1))
         {
-            Category = ResolveResultCategory(),
+            Category = ResolveResultCategory(query),
             ThumbnailUrl = ResolveThumbnailUrl(imageMetadata, videoMetadata, musicMetadata),
             PublishedDate = videoMetadata?.PublishedDate
                 ?? ReadOptionalDate(item, _definition.PublishedDatePath),
