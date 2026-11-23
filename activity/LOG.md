@@ -1635,3 +1635,9 @@ Every material repository action is recorded here with its reason, result, verif
 - **Correction:** Moved socket creation inside the guarded block and dispose any created socket on both connection and unexpected failures. A SocketException now allows the loop to try the next already-validated address.
 - **Commit:** `3ea73e68aded8f6b8f83d77dc97a75e581b924d5`.
 - **Verification:** Source-reviewed only; compile/test remains pending local .NET 10.
+
+
+### 176. Record the initial independent CoderInBox consumer
+- **Reason:** The service/consumer boundary is part of the agreed roadmap and must remain explicit across repositories.
+- **Action:** Updated the architecture decision record to describe the first CoderInBox HTTP client, environment-based configuration, WebResearch-first behaviour and preserved fallback chain. The integration is explicitly marked unverified until its Windows/.NET 8 tests run.
+- **Commit:** `d052a2d8a1f0dda5dc8a6180397b165435addf0e`.
