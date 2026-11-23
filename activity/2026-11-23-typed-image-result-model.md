@@ -30,3 +30,11 @@ The pinned SearXNG result types distinguish image results from ordinary links. I
 
 ## Next step
 Add strict absolute HTTP(S) URL validation for image source, thumbnail and alternate-format URLs, then wire Openverse's documented response fields into `ImageResultMetadata` with fixture tests. Keep provider count frozen at 67.
+
+
+## Follow-up — select the image result template
+- **Reason:** The typed image fields were mapped, but the SearXNG result still selected `default.html`. The pinned upstream `Image` result type uses `images.html`.
+- **Action:** The mapper now selects `images.html` when typed image metadata is present and retains `default.html` for ordinary results.
+- **Tests:** Added assertions for both image and ordinary templates.
+- **Commit:** `227231fa6291435f7da14e07f21718814e11b70c`.
+- **Validation:** Inspected the committed mapper and tests. Execution remains blocked by the missing .NET SDK; no GitHub Actions workflow was used.
