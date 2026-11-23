@@ -3,6 +3,7 @@ using System.Text.Json;
 using DotNetWebSearchApi.Search;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Xunit;
@@ -259,6 +260,50 @@ public sealed class SearxngApiIntegrationTests
     }
 
     [Fact]
+    public async Task ProvidersEndpoint_RegistersAllSixtySevenProvidersWhenOptionalKeysAreConfigured()
+    {
+        using WebApplicationFactory<Program> factory = CreateProductionFactory();
+        using HttpClient client = factory.CreateClient();
+
+        using HttpResponseMessage response = await client.GetAsync("/api/providers");
+        using JsonDocument document = await JsonDocument.ParseAsync(
+            await response.Content.ReadAsStreamAsync());
+        string[] providers = document.RootElement.GetProperty("providers")
+            .EnumerateArray()
+            .Select(item => item.GetString() ?? string.Empty)
+            .ToArray();
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        Assert.Equal(67, document.RootElement.GetProperty("provider_count").GetInt32());
+        Assert.Equal(67, providers.Length);
+        Assert.Equal(providers.Length, providers.Distinct(StringComparer.OrdinalIgnoreCase).Count());
+        Assert.Contains("exa", providers);
+        Assert.Contains("yandex", providers);
+        Assert.Contains("kagi", providers);
+        Assert.Contains("brave", providers);
+        Assert.Contains("openverse", providers);
+        Assert.Contains("google_news", providers);
+    }
+
+    [Fact]
+    public async Task Search_SkipsRegisteredOpenverseForGeneralSearchWithoutNetwork()
+    {
+        using WebApplicationFactory<Program> factory = CreateProductionFactory();
+        using HttpClient client = factory.CreateClient();
+
+        using HttpResponseMessage response = await client.GetAsync(
+            "/search?q=landscape&engines=openverse&categories=general");
+        using JsonDocument document = await JsonDocument.ParseAsync(
+            await response.Content.ReadAsStreamAsync());
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        Assert.Empty(document.RootElement.GetProperty("results").EnumerateArray());
+        Assert.Equal(
+            "openverse",
+            document.RootElement.GetProperty("unsupported_engines")[0].GetString());
+    }
+
+    [Fact]
     public async Task ProvidersEndpoint_ReturnsConfiguredProviders()
     {
         using WebApplicationFactory<Program> factory = CreateFactory(
@@ -328,6 +373,20 @@ public sealed class SearxngApiIntegrationTests
 
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         Assert.Contains("Provider diagnostics", html);
+    }
+
+    private static WebApplicationFactory<Program> CreateProductionFactory()
+    {
+        return new WebApplicationFactory<Program>().WithWebHostBuilder(builder =>
+            builder.ConfigureAppConfiguration((_, configuration) =>
+                configuration.AddInMemoryCollection(new Dictionary<string, string?>
+                {
+                    ["EXA_API_KEY"] = "test-key",
+                    ["YANDEX_SEARCH_API_KEY"] = "test-key",
+                    ["YANDEX_FOLDER_ID"] = "test-folder",
+                    ["KAGI_API_KEY"] = "test-key",
+                    ["BRAVE_SEARCH_API_KEY"] = "test-key"
+                })));
     }
 
     private static WebApplicationFactory<Program> CreateFactory(params ISearchProvider[] providers)
