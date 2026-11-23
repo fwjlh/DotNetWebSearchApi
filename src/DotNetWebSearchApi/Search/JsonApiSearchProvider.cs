@@ -397,24 +397,12 @@ public sealed class JsonApiSearchProvider : ISearchProvider, ISearchProviderCapa
         return relativeUri.AbsoluteUri;
     }
 
-    private static string ReadSafeUrl(JsonElement item, string path, Uri? baseUri = null)
+    private static string ReadSafeUrl(JsonElement item, string path)
     {
         string value = ReadOptionalText(item, path);
-        if (Uri.TryCreate(value, UriKind.Absolute, out Uri? absoluteUri))
-        {
-            return IsHttpUrl(absoluteUri) ? absoluteUri.AbsoluteUri : string.Empty;
-        }
-
-        if (baseUri is null || !value.StartsWith("/", StringComparison.Ordinal)
-            || !Uri.TryCreate(baseUri, value, out Uri? relativeUri)
-            || !IsHttpUrl(relativeUri)
-            || !relativeUri.Host.Equals(baseUri.Host, StringComparison.OrdinalIgnoreCase)
-            || relativeUri.Port != baseUri.Port)
-        {
-            return string.Empty;
-        }
-
-        return relativeUri.AbsoluteUri;
+        return Uri.TryCreate(value, UriKind.Absolute, out Uri? uri) && IsHttpUrl(uri)
+            ? uri.AbsoluteUri
+            : string.Empty;
     }
 
     private static bool IsHttpUrl(Uri uri)
