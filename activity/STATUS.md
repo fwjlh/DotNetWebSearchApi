@@ -151,3 +151,16 @@ Search/media/regional providers (batch 5): Wiby, TVmaze, Radio Browser, PeerTube
 1. Continue auditing specialist endpoints and their category semantics; do not infer ambiguous classifications.
 2. Check whether the API's response model and SearXNG mapper preserve the requested category rather than labelling every result as general.
 3. Keep the 67-provider catalogue frozen and the work on `main`.
+
+## Latest development — 2026-11-23 (continued)
+- Added the inverse category-boundary regression: Crossref is skipped for image-only searches and the test asserts no outbound request is made.
+- Test commit: `bfee32d6c04a0a5178f71baacc26d0b3f6ea277b`.
+- Activity record: [general-provider vertical regression](2026-11-23-general-provider-vertical-regression.md).
+- Test is committed but not executed because the available environment has no .NET SDK. No GitHub Actions workflow was invoked.
+- The test is a regression for request pre-flight filtering, not a claim that Crossref is live-tested.
+
+## Next
+1. Audit media-specialist providers individually before assigning vertical capabilities.
+2. Add paired aggregator tests proving supported categories are selected and unsupported categories are skipped before HTTP.
+3. Keep provider count frozen at 67; do not add providers while shared framework work remains.
+4. Keep all work on `main`, and never use GitHub Actions.
