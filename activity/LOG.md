@@ -1170,3 +1170,12 @@ Every material repository action is recorded here with its reason, result, verif
 - **Commits:** `a2f413e5`, `d9436783`, `8aee9636`, `6c38c607`, `012d25e9`.
 - **Validation:** Reviewed provider definition, parser path and fixtures. Tests remain unexecuted because the .NET SDK is unavailable. No GitHub Actions or live Wikinews requests were used.
 - **Next:** Audit remaining news providers for timestamp fields, then review image/video/music/news capability coverage as a whole. Keep provider count frozen at 67.
+
+
+### 124. Classify arXiv as science-only
+- **Reason:** The pinned SearXNG arXiv engine declares `science` / `scientific publications`; the C# adapter inherited BasicWeb and was therefore included in general searches while being excluded from science searches.
+- **Action:** Added explicit capabilities for the `science` category, first-page only, with no unsupported locale, safe-search or time-range claims.
+- **Tests:** Added an aggregator regression proving general searches skip arXiv without a request and science searches select it.
+- **Commit:** `668618212761ea77a4d8cb6b6dacad47005462c8`.
+- **Validation:** Compared the category with the pinned SearXNG engine source and reviewed the fixture test. Tests remain unexecuted because the .NET SDK is unavailable; no GitHub Actions or live arXiv request was used.
+- **Next:** Audit remaining legacy adapters for category and request-context mismatches, beginning with Mojeek, Seznam and Brave.
