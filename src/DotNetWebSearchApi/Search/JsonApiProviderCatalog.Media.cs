@@ -101,6 +101,11 @@ public static partial class JsonApiProviderCatalog
             UrlPath = "id",
             SnippetPath = "disambiguation",
             UrlPrefix = "https://musicbrainz.org/artist/",
+            MusicMetadata = new JsonApiMusicMetadataPaths
+            {
+                Artist = "name",
+                Country = "country"
+            },
             FixedParameters = new Dictionary<string, string> { ["fmt"] = "json" }
         },
         new JsonApiSearchDefinition

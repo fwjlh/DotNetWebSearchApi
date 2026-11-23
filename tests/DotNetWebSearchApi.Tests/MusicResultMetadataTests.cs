@@ -90,6 +90,45 @@ public sealed class MusicResultMetadataTests
     }
 
     [Fact]
+    public async Task SearchAsync_MapsMusicBrainzArtistMetadataWithoutInventingAudio()
+    {
+        const string fixture = """
+            {
+              "artists": [
+                {
+                  "id": "artist-123",
+                  "name": "Example Artist",
+                  "country": "GB",
+                  "disambiguation": "British recording artist"
+                }
+              ]
+            }
+            """;
+        using HttpClient client = CreateClient(fixture);
+        JsonApiSearchProvider provider = CreateProvider(client, "musicbrainz");
+
+        SearchResult result = Assert.Single(await provider.SearchAsync(
+            new SearchQuery("example artist", 10)
+            {
+                Categories = new HashSet<string>(StringComparer.OrdinalIgnoreCase) { "music" }
+            },
+            CancellationToken.None));
+        MusicResultMetadata music = Assert.IsType<MusicResultMetadata>(result.MusicMetadata);
+        SearxngSearchResponse response = SearxngSearchResponseMapper.Map(
+            "example artist",
+            new SearchExecutionResult(new[] { result }, Array.Empty<string>(), Array.Empty<string>()));
+        JsonSerializerOptions options = new(JsonSerializerDefaults.Web);
+        using JsonDocument document = JsonDocument.Parse(JsonSerializer.Serialize(response, options));
+        JsonElement mapped = Assert.Single(document.RootElement.GetProperty("results").EnumerateArray());
+
+        Assert.Equal("Example Artist", music.Artist);
+        Assert.Equal("GB", music.Country);
+        Assert.Equal(string.Empty, music.AudioUrl);
+        Assert.Equal("Example Artist", mapped.GetProperty("author").GetString());
+        Assert.Equal("default.html", mapped.GetProperty("template").GetString());
+    }
+
+    [Fact]
     public async Task SearchAsync_RejectsUnsafeMusicStreamAndThumbnailUrls()
     {
         const string fixture = """
