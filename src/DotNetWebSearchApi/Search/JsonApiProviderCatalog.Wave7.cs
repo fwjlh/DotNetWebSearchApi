@@ -9,6 +9,7 @@ public static partial class JsonApiProviderCatalog
         new JsonApiSearchDefinition
         {
             Name = "datacite",
+            Categories = new HashSet<string>(StringComparer.OrdinalIgnoreCase) { "science" },
             Endpoint = "https://api.datacite.org/dois",
             QueryParameter = "query",
             LimitParameter = "page[size]",
@@ -20,11 +21,23 @@ public static partial class JsonApiProviderCatalog
             {
                 ["sort"] = "relevance",
                 ["disable-facets"] = "true"
+            },
+            PaperMetadata = new JsonApiPaperMetadataPaths
+            {
+                Content = "attributes.descriptions.0.description",
+                Authors = "attributes.creators",
+                AuthorName = "name",
+                Publisher = "attributes.publisher",
+                Type = "attributes.types.resourceTypeGeneral",
+                PublicationYear = "attributes.publicationYear",
+                Doi = "attributes.doi",
+                HtmlUrl = "attributes.url"
             }
         },
         new JsonApiSearchDefinition
         {
             Name = "zenodo",
+            Categories = new HashSet<string>(StringComparer.OrdinalIgnoreCase) { "science" },
             Endpoint = "https://zenodo.org/api/records",
             QueryParameter = "q",
             LimitParameter = "size",
@@ -32,11 +45,27 @@ public static partial class JsonApiProviderCatalog
             TitlePath = "metadata.title",
             UrlPath = "links.html",
             SnippetPath = "metadata.description",
-            FixedParameters = new Dictionary<string, string> { ["sort"] = "bestmatch" }
+            FixedParameters = new Dictionary<string, string> { ["sort"] = "bestmatch" },
+            PaperMetadata = new JsonApiPaperMetadataPaths
+            {
+                PublishedDate = "metadata.publication_date",
+                Content = "metadata.description",
+                Authors = "metadata.creators",
+                AuthorName = "name",
+                Publisher = "metadata.publisher",
+                Journal = "metadata.journal.title",
+                Volume = "metadata.journal.volume",
+                Number = "metadata.journal.issue",
+                Pages = "metadata.journal.pages",
+                Doi = "metadata.doi",
+                Type = "metadata.resource_type.title",
+                HtmlUrl = "links.html"
+            }
         },
         new JsonApiSearchDefinition
         {
             Name = "openaire",
+            Categories = new HashSet<string>(StringComparer.OrdinalIgnoreCase) { "science" },
             Endpoint = "https://api.openaire.eu/graph/v4/research-products",
             QueryParameter = "search",
             LimitParameter = "page_size",
@@ -47,12 +76,24 @@ public static partial class JsonApiProviderCatalog
             UrlPrefix = "https://explore.openaire.eu/search/publication?pid=",
             FixedParameters = new Dictionary<string, string>
             {
-                ["select"] = "id,mainTitle,descriptions"
+                ["select"] = "id,mainTitle,descriptions,authors,publicationDate,publisher,journal,pids"
+            },
+            PaperMetadata = new JsonApiPaperMetadataPaths
+            {
+                PublishedDate = "publicationDate",
+                Content = "descriptions.0",
+                Authors = "authors",
+                AuthorName = "fullName",
+                Publisher = "publisher",
+                Journal = "journal.title",
+                Type = "type",
+                HtmlUrl = "webLinks.0.url"
             }
         },
         new JsonApiSearchDefinition
         {
             Name = "plos",
+            Categories = new HashSet<string>(StringComparer.OrdinalIgnoreCase) { "science" },
             Endpoint = "https://api.plos.org/search",
             QueryParameter = "q",
             LimitParameter = "rows",
@@ -65,7 +106,20 @@ public static partial class JsonApiProviderCatalog
             FixedParameters = new Dictionary<string, string>
             {
                 ["wt"] = "json",
-                ["fl"] = "id,title_display,abstract"
+                ["fl"] = "id,title_display,abstract,author_display,publication_date,journal,volume,issue,page,eissn,article_type"
+            },
+            PaperMetadata = new JsonApiPaperMetadataPaths
+            {
+                PublishedDate = "publication_date",
+                Content = "abstract",
+                Authors = "author_display",
+                Journal = "journal",
+                Volume = "volume",
+                Number = "issue",
+                Pages = "page",
+                Issn = "eissn",
+                Doi = "id",
+                Type = "article_type"
             }
         },
         new JsonApiSearchDefinition
