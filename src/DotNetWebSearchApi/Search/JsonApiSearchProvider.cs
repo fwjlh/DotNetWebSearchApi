@@ -4,7 +4,7 @@ using System.Text.RegularExpressions;
 
 namespace DotNetWebSearchApi.Search;
 
-public sealed class JsonApiSearchProvider : ISearchProvider, ISearchProviderCapabilities
+public sealed partial class JsonApiSearchProvider : ISearchProvider, ISearchProviderCapabilities
 {
     private readonly HttpClient _httpClient;
     private readonly JsonApiSearchDefinition _definition;
@@ -228,6 +228,8 @@ public sealed class JsonApiSearchProvider : ISearchProvider, ISearchProviderCapa
 
         return false;
     }
+
+}
 
 public sealed record JsonApiSearchDefinition
 {
