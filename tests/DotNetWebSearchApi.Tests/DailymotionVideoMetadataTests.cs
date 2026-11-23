@@ -47,7 +47,7 @@ public sealed class DailymotionVideoMetadataTests
         Assert.Equal("videos", result.Category);
         Assert.Equal("https://geo.dailymotion.com/player/x123.html?video=x123abc", video.EmbedUrl);
         Assert.Equal("https://s2.dmcdn.net/example/x360.jpg", result.ThumbnailUrl);
-        Assert.Equal(423, video.DurationSeconds);
+        Assert.Equal(423d, video.DurationSeconds);
         Assert.Equal(
             new DateTimeOffset(2026, 11, 23, 12, 40, 0, TimeSpan.Zero),
             result.PublishedDate);
