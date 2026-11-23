@@ -12,12 +12,16 @@ public static partial class JsonApiProviderCatalog
             Categories = new HashSet<string>(StringComparer.OrdinalIgnoreCase) { "videos" },
             Endpoint = "https://api.bilibili.com/x/web-interface/search/type",
             QueryParameter = "keyword",
-            LimitParameter = "page_size",
+            LimitParameter = string.Empty,
             ResultsPath = "data.result",
             TitlePath = "title",
             UrlPath = "arcurl",
             SnippetPath = "description",
             FixedParameters = new Dictionary<string, string> { ["search_type"] = "video" },
+            Headers = new Dictionary<string, string>
+            {
+                ["Referer"] = "https://search.bilibili.com"
+            },
             VideoMetadata = new JsonApiVideoMetadataPaths
             {
                 ThumbnailUrl = "pic",
