@@ -1197,3 +1197,13 @@ Every material repository action is recorded here with its reason, result, verif
 - **Validation:** Verified all C# files in the repository are now below 20 KB. The two new files are 18.5 KB and the remaining SearXNG integration file is 19.5 KB. No test logic was intentionally changed.
 - **Commits:** `78c35d45`, `8b26a1b1`, `d81c45ec`, `dffd6566`.
 - **Next:** Run the full test suite when a local .NET 10 SDK is available; continue with small source files and keep all GitHub Actions workflows unused.
+
+
+### 125. Make Mojeek category and safe-search capabilities explicit
+- **Reason:** The pinned SearXNG Mojeek engine supports general/web categories and safe search, but the C# adapter inherited BasicWeb and hard-coded `safe=1`, so an explicit safe-search-off request was silently changed to moderate.
+- **Action:** Declared general/web support, first-page-only, safe-search support, and no locale/time-range support.
+- **Action:** Mojeek now maps safe-search 0 to off and 1/2 to the upstream-supported moderate value.
+- **Tests:** Added request assertions for all three safe-search values and capability boundary checks for categories, paging, time range and locale.
+- **Commit:** `e2e2b46f3b9a777dba5f97fcbcbd7f11737e84eb`.
+- **Validation:** Compared behaviour with the pinned SearXNG Mojeek engine and reviewed fixture tests. Tests remain unexecuted because the .NET SDK is unavailable; no GitHub Actions or live Mojeek requests were used.
+- **Next:** Apply the same conservative capability audit to Seznam and Brave.
