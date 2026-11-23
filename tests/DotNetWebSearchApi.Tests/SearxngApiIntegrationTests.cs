@@ -45,6 +45,25 @@ public sealed class SearxngApiIntegrationTests
     }
 
     [Fact]
+    public async Task Search_ExposesProviderThumbnailMetadata()
+    {
+        SearchResult result = Result("Naver result", "https://example.com/naver") with
+        {
+            ThumbnailUrl = "https://images.example.com/naver.jpg"
+        };
+        using WebApplicationFactory<Program> factory = CreateFactory(Provider("naver", result));
+        using HttpClient client = factory.CreateClient();
+
+        using HttpResponseMessage response = await client.GetAsync("/search?q=naver");
+        using JsonDocument document = await JsonDocument.ParseAsync(await response.Content.ReadAsStreamAsync());
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        Assert.Equal(
+            "https://images.example.com/naver.jpg",
+            document.RootElement.GetProperty("results")[0].GetProperty("thumbnail").GetString());
+    }
+
+    [Fact]
     public async Task PostSearch_AcceptsFormEncodedRequest()
     {
         using WebApplicationFactory<Program> factory = CreateFactory(Provider("alpha", Result("Posted result", "https://example.com/post")));
