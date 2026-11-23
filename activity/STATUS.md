@@ -279,3 +279,18 @@ Search/media/regional providers (batch 5): Wiby, TVmaze, Radio Browser, PeerTube
 - Commit: `dff35fc2ae21255d118ce424db993e59518d0833`.
 - Verified the repository still contains no GitHub Actions workflow definitions. Tests remain unexecuted because the .NET SDK is unavailable.
 - Rationale and file-size validation are in [LOG.md](LOG.md), entry 121.
+
+## Latest development — capability inventory corrections
+- Completed a first pass over all 52 generic JSON definitions.
+- Corrected Wikimedia Commons: file-page search is general until direct image URLs/metadata are retrieved. Added tests proving it is skipped for image-only queries before HTTP.
+- Corrected Bilibili request settings: required Referer is now sent and unsupported `page_size` removed. Added a definition regression test.
+- Updated [provider rationale](../docs/PYTHON_TO_CSHARP_PORTING_NOTES.md) and [capability audit](../docs/PORTING_AUDIT.md).
+- Activity record: [provider capability audit](2026-11-23-provider-capability-audit.md).
+- Generic JSON catalogue remains 52; overall provider count remains 67. No additions in this pass.
+- Tests are committed but not executed because `dotnet` is unavailable. No GitHub Actions or live upstream calls were used.
+
+## Next
+1. Audit the dedicated search adapters and provider registration for request headers, endpoint parameters, and category declarations.
+2. Add provider registration/query-selection tests for any discovered gaps.
+3. Recheck SearXNG templates for image/video/music/news result families.
+4. Keep provider count frozen at 67; direct commits to `main`, no workflows.
