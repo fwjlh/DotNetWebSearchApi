@@ -70,9 +70,10 @@ public static class PublicNetworkSocketsHandler
         Exception? lastError = null;
         foreach (IPAddress address in addresses)
         {
-            Socket socket = new(address.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
+            Socket? socket = null;
             try
             {
+                socket = new Socket(address.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
                 await socket.ConnectAsync(
                     new IPEndPoint(address, context.DnsEndPoint.Port),
                     cancellationToken).ConfigureAwait(false);
@@ -81,11 +82,11 @@ public static class PublicNetworkSocketsHandler
             catch (SocketException exception)
             {
                 lastError = exception;
-                socket.Dispose();
+                socket?.Dispose();
             }
             catch
             {
-                socket.Dispose();
+                socket?.Dispose();
                 throw;
             }
         }
