@@ -6,7 +6,7 @@ using Xunit;
 
 namespace DotNetWebSearchApi.Tests;
 
-public sealed class PaperResultMetadataTests
+public sealed partial class PaperResultMetadataTests
 {
     [Fact]
     public void Map_UsesBasePublishedDateWhenPaperDateIsMissing()
