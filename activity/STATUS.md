@@ -36,7 +36,8 @@
 - This confirms the fixes through Openverse integration test correction, including the 67-provider registration and Openverse category-filtering regression.
 - The Openverse integration test now preserves production provider registrations by using a plain `WebApplicationFactory<Program>`.
 - No GitHub Actions were invoked; the user has disabled workflows to conserve minutes.
-- **Next:** establish measured line/branch coverage and map uncovered high-risk logic before further implementation. Prioritise request validation, provider capability filtering, aggregation/ranking, health transitions, shared HTTP transport and response mapping.
+- **Coverage tooling:** Coverlet collector 6.0.4 is now referenced by the test project. Run `dotnet test .\\DotNetWebSearchApi.sln -c Release --collect:\"XPlat Code Coverage\"` to generate a Cobertura report under `tests\\DotNetWebSearchApi.Tests\\TestResults`.
+- **Next:** review the measured line/branch coverage and target uncovered high-risk logic: request validation, capability gating, aggregation/ranking, health transitions, shared HTTP transport and response mapping. Do not add tests solely to inflate the count.
 
 ## Latest compile corrections
 
