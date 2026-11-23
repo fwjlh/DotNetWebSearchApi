@@ -157,3 +157,6 @@ Keep this file and `LOG.md` current so the next session can resume without chat 
 - Added tests for Staging startup without keys and 61 unauthorized calls followed by a valid call.
 - Commits: `aa18e8e6`, `29e1fbdc`, `a0f55af1`, `cae91224`, `4a61202c`, `84b9aa2f`, `cbb29832`, `52d3cdc0`, `0b41a286`, activity record `13ea6774`.
 - No new build/test execution has occurred; the latest code remains unverified until the operator runs Release locally.
+
+
+- Latest source corrections: restored the explicit request-size feature namespace in Program (`1395ad3e`) and made socket connection attempts continue safely across address-family failures (`3ea73e68`). Activity record: `4d4cdc36`.
