@@ -266,8 +266,12 @@ public sealed partial class JsonApiSearchProvider
             return "general";
         }
 
-        return query.Categories?.FirstOrDefault(_definition.Categories.Contains)
-            ?? _definition.Categories.FirstOrDefault()
+        string? requestedCategory = query.Categories?
+            .Where(_definition.Categories.Contains)
+            .OrderBy(category => category, StringComparer.OrdinalIgnoreCase)
+            .FirstOrDefault();
+        return requestedCategory
+            ?? _definition.Categories.OrderBy(category => category, StringComparer.OrdinalIgnoreCase).FirstOrDefault()
             ?? "general";
     }
 
