@@ -29,6 +29,15 @@
 - MusicBrainz returns artist metadata, not a playable stream; it therefore uses the default result template.
 - Optional Exa, Yandex, Kagi and Brave providers require configuration. The 67-provider integration test supplies dummy values to verify registration.
 
+## Latest test failure corrections
+
+- Removed the duplicate SearXNG JSON property collision: paper abstract now maps into the common `content` field instead of a second property with the same JSON name.
+- Corrected the Openverse file-size expectation to `875.13 KB` for 896,128 bytes using the current invariant formatter.
+- Made the Bilibili Referer URI and its test expectation consistently include the normalized trailing slash.
+- Commits: `d0fa0416`, `7220173f`, `5f734214`, `20b365d9`, `7030689d`.
+- The user's latest run had 295/319 tests passing. The remaining 24 failures included the duplicate JSON property cascade, Openverse rounding expectation, Bilibili Referer expectation, and a production-host provider count of 63 instead of 67. The count/configuration issue remains open and must be investigated after rerunning with these fixes.
+- Source edits have been reviewed but not executed in this environment; local .NET 10 test verification is required.
+
 ## Latest compile corrections
 
 - Fixed the missing class-closing brace in `JsonApiSearchProvider.cs`, made its declaration `partial` to match the metadata partial declaration, and moved `JsonApiSearchDefinition` back to namespace scope.
@@ -60,8 +69,8 @@
 ## Exact next step
 
 1. Pull the latest `main` commit and run `dotnet build .\\DotNetWebSearchApi.sln -c Debug --no-incremental`.
-2. If the build succeeds, run `dotnet test .\\DotNetWebSearchApi.sln -c Release`.
-3. Fix any remaining compile or fixture failures in small commits directly to `main`.
+2. Run `dotnet test .\\DotNetWebSearchApi.sln -c Release`.
+3. Investigate the production-host provider count (63 vs 67) and any remaining test failures from the fresh output.
 4. Measure actual coverage for parser, capability and result-mapping logic.
 
 Keep this file and `LOG.md` current so the next session can resume without chat history. Final category/template audit is recorded in LOG entry 144.
