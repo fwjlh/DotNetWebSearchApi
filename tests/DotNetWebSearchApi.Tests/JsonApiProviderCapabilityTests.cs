@@ -47,6 +47,16 @@ public sealed class JsonApiProviderCapabilityTests
     }
 
     [Fact]
+    public void BilibiliDefinition_UsesRequiredRefererAndNoUnsupportedLimitParameter()
+    {
+        JsonApiSearchDefinition definition = JsonApiProviderCatalog.Definitions.Single(
+            item => item.Name == "bilibili");
+
+        Assert.Equal(string.Empty, definition.LimitParameter);
+        Assert.Equal("https://search.bilibili.com", definition.Headers["Referer"]);
+    }
+
+    [Fact]
     public void Capabilities_KeepWikimediaCommonsGeneralUntilDirectImageUrlsExist()
     {
         using HttpClient client = new();
