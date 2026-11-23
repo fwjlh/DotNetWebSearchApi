@@ -466,3 +466,16 @@ At the planned local build/test session, install/use the .NET 10 SDK, run the fu
 - Commit: `5965ac58e1037ab618bef3e85567d0f0d1cf9b9b`.
 - Logged as entry 135. Tests remain unexecuted because the .NET SDK is unavailable.
 - Next: map DataCite, Zenodo, OpenAIRE and PLOS paper metadata from fixtures, without live API calls.
+
+## Latest development — complete scholarly provider set
+- Added typed paper metadata for DataCite, Zenodo, OpenAIRE and PLOS, bringing the scholarly set to arXiv, Crossref, OpenAlex, Europe PMC, Semantic Scholar, DataCite, Zenodo, OpenAIRE and PLOS.
+- DataCite publication year is preserved separately; no artificial full date is created.
+- Paper metadata uses the validated result URL as the HTML fallback when the provider does not supply a separate landing URL.
+- Added fixture and science-category tests for the four providers; updated [porting rationale](../docs/PYTHON_TO_CSHARP_PORTING_NOTES.md) and [audit](../docs/PORTING_AUDIT.md).
+- Logged as entry 135 in [LOG.md](LOG.md). Tests remain unexecuted because `dotnet` is unavailable; no workflows or live provider calls used.
+
+## Next
+1. Audit all science provider definitions and paper field mappings against actual response schemas.
+2. Verify SearXNG Paper JSON fields with serialization tests.
+3. Recheck file sizes, provider count and workflow absence.
+4. Keep 67 providers and all changes on `main`; no workflows.
