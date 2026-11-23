@@ -35,9 +35,16 @@ public sealed class HackerNewsMetadataTests
                 Categories = new HashSet<string>(StringComparer.OrdinalIgnoreCase) { "news" }
             },
             CancellationToken.None));
+        SearchResult multiCategoryResult = Assert.Single(await provider.SearchAsync(
+            new SearchQuery("story", 10)
+            {
+                Categories = new HashSet<string>(StringComparer.OrdinalIgnoreCase) { "news", "general" }
+            },
+            CancellationToken.None));
 
         Assert.Equal("general", generalResult.Category);
         Assert.Equal("news", newsResult.Category);
+        Assert.Equal("general", multiCategoryResult.Category);
         Assert.Equal(
             new DateTimeOffset(2026, 11, 23, 10, 0, 0, TimeSpan.Zero),
             newsResult.PublishedDate);
