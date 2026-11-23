@@ -1160,3 +1160,13 @@ Every material repository action is recorded here with its reason, result, verif
 - **Commits:** `2ba5018f`, `4acbbcd8`, `262c3d35`, `f3a1e3a4`, `8debca13`, `db3749b5`, `a40a5720`, `be455f5f`, `5941f6a1`, `869c9470`, `96a28a48`.
 - **Validation:** Reviewed source and fixture mapping. Tests remain unexecuted because the .NET SDK is unavailable. No GitHub Actions or live upstream calls were used.
 - **Next:** Add publication-date extraction to generic JSON definitions and wire Wikinews' timestamp field, then audit the remaining news results without inventing dates.
+
+
+### 126. Preserve generic JSON publication dates for Wikinews
+- **Reason:** RSS/Atom dates were preserved, but JSON news providers had no shared date path. Wikinews exposes a MediaWiki search timestamp and the generic adapter discarded it.
+- **Action:** Added optional `PublishedDatePath` to `JsonApiSearchDefinition`; the generic JSON parser uses the same invariant ISO/Unix date parser as video metadata.
+- **Action:** Wikinews now requests `srprop=snippet|timestamp` and maps `timestamp` to `SearchResult.PublishedDate`.
+- **Tests:** Added fixture tests for valid timestamp mapping to SearXNG `publishedDate`, plus missing and malformed timestamp cases. No current time or crawl time is substituted.
+- **Commits:** `a2f413e5`, `d9436783`, `8aee9636`, `6c38c607`, `012d25e9`.
+- **Validation:** Reviewed provider definition, parser path and fixtures. Tests remain unexecuted because the .NET SDK is unavailable. No GitHub Actions or live Wikinews requests were used.
+- **Next:** Audit remaining news providers for timestamp fields, then review image/video/music/news capability coverage as a whole. Keep provider count frozen at 67.
