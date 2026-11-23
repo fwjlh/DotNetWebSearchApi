@@ -86,9 +86,6 @@ public sealed record SearxngSearchResult(
     [JsonPropertyName("publication_year")]
     public string? PaperPublicationYear { get; init; }
 
-    [JsonPropertyName("content")]
-    public string? PaperContent { get; init; }
-
     [JsonPropertyName("comments")]
     public string? PaperComments { get; init; }
 
