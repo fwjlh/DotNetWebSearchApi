@@ -1591,3 +1591,19 @@ Every material repository action is recorded here with its reason, result, verif
 - **Documentation:** README now explains key configuration, HTTPS, the initial 60/minute IP limit, reverse-proxy caveats and remaining gaps (`972ee56c98be85492b606ebca1d6ae4a33622e6d`).
 - **Verification:** Source reviewed; no local .NET build/test execution and no GitHub Actions.
 - **Next:** Complete DNS/redirect policy, inspect real Coverlet output, then begin the independent CoderInBox HTTP client.
+
+
+### 170. Validate DNS destinations on every provider connection and redirect
+- **Reason:** Initial URI validation cannot stop an allowed public provider from redirecting the HTTP client to a private/link-local destination. DNS names can also resolve to internal addresses or change between validation and connection.
+- **Action:** Added `PublicNetworkSocketsHandler`, using `SocketsHttpHandler.ConnectCallback` to resolve the host immediately before connection and reject the request if any resolved address is non-public. The handler connects directly to the resolved IP, so the checked address is the address actually dialled. Automatic redirects remain enabled, but each new connection passes through the same callback. Ambient proxy use is disabled so an external proxy cannot bypass the destination policy. All HttpClientFactory defaults use this handler; Mojeek and Yahoo retain their isolated cookie containers while using the same connection policy.
+- **Address policy:** Public global IPv4/IPv6 ranges are allowed; loopback, private, link-local, carrier-grade NAT, multicast, reserved and documentation ranges are rejected. IPv4-mapped IPv6 is normalised before classification.
+- **Tests added:** Added public/private IPv4 and IPv6 classification cases and asserted that the provider handler has redirects enabled, proxy use disabled and a connection callback configured. Existing transport tests also cover unsafe initial URI schemes/hosts and private IP literals.
+- **Commits:** `69bc77cc121aa261a6ce40b1490f1775b7de4123` (handler), `df9900c30e044474e1099af5b1816333b6c59479` (shared policy), `3cf99a497723b5c9b0f3d2281eb9b7f6fb79f9cf` (HttpClientFactory wiring), `6eba3ea693df85815a1c6e9c71a9b7949979dee2` (proxy and address policy), `67b3b48942eb65076c57a8dda425847397958c06` (IPv6 and socket cleanup), `99b71d3bf8a379c8d40f0220b55310d2d7d11564` and `2f01cb58053f59dd26c7a614f9dc71eb04e791de` (address tests), `e3cdf1eaed26ea2747d85d3523abafc81963ec1f` and `46b98db21963c49b5f3707c697af616f796fac41` (security docs).
+- **Limitations:** Direct outbound connections are required; proxy-based deployments need an explicit trusted-proxy design. Network egress firewall rules remain recommended.
+- **Verification:** Source and tests reviewed only. No .NET 10 SDK is available here, so no compile/test result is claimed.
+
+### 171. Add a local coverage report summariser
+- **Reason:** Coverlet was already available, but analysing the generated Cobertura XML required manual inspection and made it harder to target the weakest production classes.
+- **Action:** Added `scripts/Show-CoverageSummary.ps1` to select the newest Cobertura report, print aggregate line/branch coverage and list the 25 lowest line-coverage classes. Added `docs/COVERAGE.md` and linked the workflow from README.
+- **Commits:** `e47185eb9c1bd9b8de6cf448a0f8bf69182ef8d2` (script), `7614faeb250fa99837b2e043a5cfb43e21423f11` (guide), `4541d27151ac70f6d841a52cfb339a241855609b` (README).
+- **Verification:** Script reviewed but not run; no local PowerShell/.NET test environment is available in this session. Actual line/branch percentages remain pending the operator's local run.
