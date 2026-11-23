@@ -1148,3 +1148,15 @@ Every material repository action is recorded here with its reason, result, verif
 - **Validation:** Source inspection only. The new registration test is committed but not executed because the .NET SDK is unavailable. No GitHub Actions were used.
 - **Commits:** `99386119d1b8fc7316293012b1a60d0bd6cba374` (registration test), `4e24a65463993a96b44615216db19e1d7c08cf5a` (Bilibili template expectation).
 - **Next:** Review music/audio result metadata and news result mapping; preserve the default template unless a typed media payload supports a specialist template.
+
+
+### 125. Add typed music/audio result metadata
+- **Reason:** Deezer and Radio Browser were correctly classified as music providers, but their audio previews/streams and provider metadata were discarded by the ordinary text result model. MusicBrainz has no audio stream and must remain a metadata-only link.
+- **Action:** Added typed `MusicResultMetadata` for audio URL, thumbnail, artist, album, duration, country, tags, codec and bitrate.
+- **Action:** Deezer maps preview, album cover, artist, album and duration. Radio Browser maps resolved stream, favicon, country, tags, codec and bitrate. Audio and thumbnail URLs pass only absolute HTTP(S) validation.
+- **Action:** Added SearXNG `audio_src` and a typed `music_metadata` extension. Music keeps the default template; no unsupported audio player template is invented.
+- **Tests:** Added fixture tests for Deezer and Radio Browser metadata, plus rejection of javascript: audio and data: thumbnails.
+- **Action:** Split the growing generic JSON provider metadata parser into `JsonApiSearchProvider.Metadata.cs`; the main provider source is now 9.6 KB and the metadata partial is 12.2 KB.
+- **Commits:** `2ba5018f`, `4acbbcd8`, `262c3d35`, `f3a1e3a4`, `8debca13`, `db3749b5`, `a40a5720`, `be455f5f`, `5941f6a1`, `869c9470`, `96a28a48`.
+- **Validation:** Reviewed source and fixture mapping. Tests remain unexecuted because the .NET SDK is unavailable. No GitHub Actions or live upstream calls were used.
+- **Next:** Add publication-date extraction to generic JSON definitions and wire Wikinews' timestamp field, then audit the remaining news results without inventing dates.
