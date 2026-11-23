@@ -308,13 +308,13 @@ These are translation targets, not assertions that every row is already implemen
 **Known divergence / omissions**
 
 - Python supports general, images, news and videos with different parsers and result types. C# implements only general web.
-- Python emits thumbnails for general results. C# currently drops the thumbnail even though the source card may contain one.
+- Python emits the first non-circular sds-comps-image thumbnail for general results. C# now extracts that image into the optional SearchResult.ThumbnailUrl field, rejects non-HTTP(S) thumbnail sources, and keeps circular avatar images out of the result metadata. The optional field is also exposed as `thumbnail` by the SearXNG-compatible response mapper.
 - Python has no safe-search flag in this engine; C# likewise does not advertise safe-search.
 - The maximum page 20 is a C# operational cap; the Python module declares paging without this same explicit cap.
 
-**Verification:** Naver tests cover page offset, time-range parameter, capabilities and the current web result parser. GitHub Actions [run 45030669036](https://github.com/fwjlh/DotNetWebSearchApi/actions/runs/45030669036) passed: 236 tests, 0 failed, 0 skipped. No live Naver requests were made.
+**Verification:** Naver tests cover page offset, time-range parameter, capabilities, thumbnail extraction, exclusion of circular avatars and rejection of non-HTTP thumbnail URLs. GitHub Actions [run 45143993872](https://github.com/fwjlh/DotNetWebSearchApi/actions/runs/45143993872) passed for the result model, parser and focused fixture tests. A separate SearXNG response integration test verifies the `thumbnail` field; its CI run is tracked in the current handover. No live Naver requests were made.
 
-**Interpretation:** a closer general-web request port, now preserving pagination and date filtering. It is still not a port of Naver's images/news/videos verticals or thumbnail result metadata.
+**Interpretation:** a closer general-web request port, now preserving pagination, date filtering and general-result thumbnails. It is still not a port of Naver's images/news/videos verticals or their richer vertical-specific metadata.
 
 
 ### Seznam Web
