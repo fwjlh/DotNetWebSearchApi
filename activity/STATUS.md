@@ -224,3 +224,18 @@ Search/media/regional providers (batch 5): Wiby, TVmaze, Radio Browser, PeerTube
 - Commits include `9cf0be75` through `227231fa`; full details in [LOG.md](LOG.md), entry 120.
 - Tests remain unexecuted because the .NET SDK is unavailable. GitHub Actions remains disabled.
 - Next: add strict HTTP(S) validation for image source, thumbnail and alternate formats, then map Openverse response fields with fixture tests. Keep provider count frozen at 67.
+
+## Latest development — Openverse image metadata
+- Openverse now populates the typed image model: direct image URL, thumbnail, dimensions, format, source, file size, licence, creator, provider and attribution.
+- The clickable result URL remains the Openverse foreign landing page.
+- Image, thumbnail, licence and creator URLs are accepted only as absolute HTTP(S); negative file sizes are discarded.
+- Added fixtures for metadata extraction and rejection of javascript:, data: and relative URLs.
+- Updated [porting rationale](../docs/PYTHON_TO_CSHARP_PORTING_NOTES.md) and [architecture audit](../docs/PORTING_AUDIT.md).
+- Activity record: [Openverse image metadata](2026-11-23-openverse-image-metadata.md).
+- Tests remain unexecuted because `dotnet` is unavailable. No GitHub Actions or live upstream requests were used.
+
+## Next
+1. Add typed video metadata, starting with embed URL and thumbnail handling.
+2. Require explicit HTTP(S) validation for embed URLs; do not embed arbitrary destinations.
+3. Add a focused fixture for one video provider and a serialization test.
+4. Keep provider count frozen at 67; continue small commits on `main`.
