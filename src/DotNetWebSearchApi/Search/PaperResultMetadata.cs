@@ -3,6 +3,7 @@ namespace DotNetWebSearchApi.Search;
 public sealed record PaperResultMetadata
 {
     public DateTimeOffset? DateOfPublication { get; init; }
+    public string PublicationYear { get; init; } = string.Empty;
     public string Content { get; init; } = string.Empty;
     public string Comments { get; init; } = string.Empty;
     public IReadOnlyList<string> Tags { get; init; } = Array.Empty<string>();
