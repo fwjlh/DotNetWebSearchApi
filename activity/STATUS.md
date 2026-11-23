@@ -491,3 +491,12 @@ At the planned local build/test session, install/use the .NET 10 SDK, run the fu
 2. Check all C# files remain under 20 KB and the 67-provider registration test remains current.
 3. Confirm no GitHub Actions workflow files or runs.
 4. Full test execution remains pending a local .NET 10 SDK; do not use workflows.
+
+
+## Latest scholarly metadata coverage
+- Added fixture tests for DataCite, Zenodo, OpenAIRE and PLOS.
+- PLOS scalar author arrays are now parsed; Zenodo's PDF link is preserved.
+- Commits: `a2c2b249`, `039a57d9`, `a20768cc`, `d05b1ad7`.
+- Details in [LOG.md](LOG.md), entry 136.
+- Tests remain unexecuted because the .NET SDK is unavailable; all new tests use local fixtures and no workflows were used.
+- Next: audit scholarly path mappings and remaining provider category/result-type consistency, then full local test run with .NET 10.
