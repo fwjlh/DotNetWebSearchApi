@@ -164,3 +164,17 @@ Search/media/regional providers (batch 5): Wiby, TVmaze, Radio Browser, PeerTube
 2. Add paired aggregator tests proving supported categories are selected and unsupported categories are skipped before HTTP.
 3. Keep provider count frozen at 67; do not add providers while shared framework work remains.
 4. Keep all work on `main`, and never use GitHub Actions.
+
+## Latest development — specialist category response mapping
+- Fixed the response-model gap found during the category audit: specialist results no longer emerge from the SearXNG mapper labelled `general`.
+- `SearchResult.Category` defaults to `general`; generic JSON adapters populate it from their declared category; SearXNG mapping preserves it.
+- Added a Bilibili fixture regression covering provider parsing through SearXNG mapping.
+- Activity record: [specialist category response mapping](2026-11-23-specialist-category-response-mapping.md).
+- Source/test commits: `2f822c38`, `e19be5fa`, `9dacb6a1`, `d6de9de0`, `b8ba727a`.
+- Local execution attempted; `dotnet` is not installed. No GitHub Actions were used. The test is committed but unexecuted.
+
+## Next
+1. Design typed rich-result metadata for image, news and video results; avoid untyped extension dictionaries.
+2. Define compatibility behaviour for fields absent from ordinary web results.
+3. Add model and API serialization tests before changing provider-specific parsers.
+4. Keep the catalogue at 67 and continue direct commits to `main`; no workflows.
