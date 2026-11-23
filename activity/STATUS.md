@@ -110,3 +110,16 @@ Keep this file and `LOG.md` current so the next session can resume without chat 
 - Commits: `6676c99d274fc36d555cdf0870a4450ede3055a9`, `a0eb16ab21ef0c12802bf44c1dd03e4d6ff78c63`, and activity record `72441ec18bdf8cb7e24b6c88c676f6086477d277`.
 - Execution remains pending local .NET 10 build/test; the 319-test user-reported pass predates these changes. No Actions were run.
 - Next: limit explicit provider selection, bound form request bodies before parsing, then design rate limiting/authentication. Run the full Release suite and coverage locally when the SDK is available.
+
+
+## Current API hardening increment — 2026-11-23
+
+- Explicit provider selection is capped at 20 distinct names, with a 64-character name limit.
+- POST /search rejects declared bodies above 16 KiB; form parsing has key/value/count/buffering limits.
+- Optional bearer API keys are configured through semicolon-separated `SEARCH_API_KEYS`; configured keys must be at least 32 UTF-8 bytes. Production startup fails closed when no key is configured. Browser search sends a manually entered key in the Authorization header and does not persist it.
+- Search endpoints have a fixed-window limit of 60 requests per minute per remote IP; excess requests return HTTP 429.
+- Added tests for provider-selection boundaries, oversized POST, valid/missing/invalid API keys and rate-limit rejection. Together with the prior query/category boundary cases, the new test source covers 15 additional scenarios/cases.
+- Commits: `1a973264`, `7be08cce`, `b3f8590d`, `f4d5385d`, `f94a403f`, `ef2ade31`, `580684a1`, `7ea3ce50`, `57af8436`, and activity record `0f79ed2e`.
+- **Verification:** Code and tests have been reviewed in GitHub. No .NET 10 SDK is available here; none of these latest tests has been executed. The 319-test user-reported baseline predates this increment. No GitHub Actions were used.
+- **Security still outstanding:** enforce streamed/chunked body bounds at the server layer; validate outbound redirect destinations and DNS/IP policy; define trusted proxy handling before relying on remote IP for rate limits. Use HTTPS for all non-localhost API-key traffic.
+- **Next:** Finish outbound request/redirect policy and tests, inspect actual Coverlet output from a local run, then add the independent HTTP client to CoderInBox.
