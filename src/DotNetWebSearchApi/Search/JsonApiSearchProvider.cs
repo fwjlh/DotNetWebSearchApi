@@ -151,6 +151,7 @@ public sealed class JsonApiSearchProvider : ISearchProvider, ISearchProviderCapa
         ImageResultMetadata? imageMetadata = ReadImageMetadata(item);
         VideoResultMetadata? videoMetadata = ReadVideoMetadata(item, resultUri);
         MusicResultMetadata? musicMetadata = ReadMusicMetadata(item);
+        PaperResultMetadata? paperMetadata = ReadPaperMetadata(item);
         result = new SearchResult(
             title,
             resultUri.AbsoluteUri,
@@ -161,10 +162,12 @@ public sealed class JsonApiSearchProvider : ISearchProvider, ISearchProviderCapa
             Category = ResolveResultCategory(query),
             ThumbnailUrl = ResolveThumbnailUrl(imageMetadata, videoMetadata, musicMetadata),
             PublishedDate = videoMetadata?.PublishedDate
+                ?? paperMetadata?.DateOfPublication
                 ?? ReadOptionalDate(item, _definition.PublishedDatePath),
             ImageMetadata = imageMetadata,
             VideoMetadata = videoMetadata,
-            MusicMetadata = musicMetadata
+            MusicMetadata = musicMetadata,
+            PaperMetadata = paperMetadata
         };
         return true;
     }
