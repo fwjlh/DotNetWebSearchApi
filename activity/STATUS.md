@@ -303,3 +303,14 @@ Search/media/regional providers (batch 5): Wiby, TVmaze, Radio Browser, PeerTube
 - Added regression cases for missing metadata, javascript: URLs, relative image URLs and protocol-relative video embeds.
 - Commit: `3d911356c7c59858d18ac2d679d823975820d89a`.
 - Activity rationale: [LOG.md](LOG.md), entry 122. Tests remain unexecuted because the .NET SDK is unavailable; no workflows were used.
+
+## Repository rules verification
+- Confirmed the root `_LookAtMe.MD` already exists in this repository and matches the supplied rules; no duplicate edit was needed.
+- Corrected two accidental file additions in `sqlDiffAi` by removing them; verified both paths are absent there.
+- Logged the correction as entry 123 in [LOG.md](LOG.md).
+- Confirmed this repository has no GitHub Actions workflows and no source files over 25 KB. No workflow was used.
+
+## Next
+1. Continue the dedicated provider registration/capability audit.
+2. Add local fixture tests for any request/header or category mismatches.
+3. Keep provider count at 67 and all work on `fwjlh/DotNetWebSearchApi:main`; no workflows.
