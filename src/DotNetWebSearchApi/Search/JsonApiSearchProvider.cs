@@ -160,7 +160,8 @@ public sealed class JsonApiSearchProvider : ISearchProvider, ISearchProviderCapa
         {
             Category = ResolveResultCategory(),
             ThumbnailUrl = ResolveThumbnailUrl(imageMetadata, videoMetadata, musicMetadata),
-            PublishedDate = videoMetadata?.PublishedDate,
+            PublishedDate = videoMetadata?.PublishedDate
+                ?? ReadOptionalDate(item, _definition.PublishedDatePath),
             ImageMetadata = imageMetadata,
             VideoMetadata = videoMetadata,
             MusicMetadata = musicMetadata
@@ -235,6 +236,7 @@ public sealed record JsonApiSearchDefinition
     public required string TitlePath { get; init; }
     public required string UrlPath { get; init; }
     public string SnippetPath { get; init; } = string.Empty;
+    public string PublishedDatePath { get; init; } = string.Empty;
     public string UrlPrefix { get; init; } = string.Empty;
     public string Attribution { get; init; } = string.Empty;
     public string RequestMethod { get; init; } = "GET";
