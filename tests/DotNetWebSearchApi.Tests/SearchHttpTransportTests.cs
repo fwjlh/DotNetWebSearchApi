@@ -133,6 +133,39 @@ public sealed class SearchHttpTransportTests
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
     }
 
+
+    [Theory]
+    [InlineData("0.0.0.0", false)]
+    [InlineData("10.0.0.1", false)]
+    [InlineData("100.64.0.1", false)]
+    [InlineData("127.0.0.1", false)]
+    [InlineData("169.254.169.254", false)]
+    [InlineData("172.16.0.1", false)]
+    [InlineData("192.168.1.1", false)]
+    [InlineData("198.18.0.1", false)]
+    [InlineData("224.0.0.1", false)]
+    [InlineData("8.8.8.8", true)]
+    [InlineData("1.1.1.1", true)]
+    [InlineData("::1", false)]
+    [InlineData("fc00::1", false)]
+    [InlineData("fe80::1", false)]
+    [InlineData("2001:db8::1", false)]
+    [InlineData("2606:4700:4700::1111", true)]
+    public void PublicNetworkPolicy_ClassifiesAddressRanges(string value, bool expectedPublic)
+    {
+        Assert.Equal(expectedPublic, PublicNetworkSocketsHandler.IsPublicAddress(IPAddress.Parse(value)));
+    }
+
+    [Fact]
+    public void PublicNetworkHandler_DisablesProxyAndValidatesEveryConnection()
+    {
+        using SocketsHttpHandler handler = PublicNetworkSocketsHandler.Create();
+
+        Assert.False(handler.UseProxy);
+        Assert.True(handler.AllowAutoRedirect);
+        Assert.NotNull(handler.ConnectCallback);
+    }
+
     private static async Task<SearchHttpResponse> SendAsync(
         SearchHttpTransport transport,
         HttpClient client,
