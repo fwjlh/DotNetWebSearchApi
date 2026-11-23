@@ -310,7 +310,17 @@ public static partial class JsonApiProviderCatalog
             TitlePath = "title",
             UrlPath = "url",
             SnippetPath = "description",
-            FixedParameters = new Dictionary<string, string> { ["fields"] = "id,title,description,url" }
+            FixedParameters = new Dictionary<string, string>
+            {
+                ["fields"] = "id,title,description,url,embed_url,thumbnail_360_url,duration,uploaded_time"
+            },
+            VideoMetadata = new JsonApiVideoMetadataPaths
+            {
+                EmbedUrl = "embed_url",
+                ThumbnailUrl = "thumbnail_360_url",
+                DurationSeconds = "duration",
+                PublishedDate = "uploaded_time"
+            }
         },
         new JsonApiSearchDefinition
         {
