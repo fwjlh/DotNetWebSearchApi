@@ -32,6 +32,7 @@ public static partial class JsonApiProviderCatalog
                 Issn = "ISSN",
                 Isbn = "ISBN",
                 Type = "type",
+                PublicationYear = "published.date-parts.0.0",
                 HtmlUrl = "URL"
             }
         },
