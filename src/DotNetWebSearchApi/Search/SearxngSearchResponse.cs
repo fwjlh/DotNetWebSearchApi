@@ -58,4 +58,19 @@ public sealed record SearxngSearchResult(
 
     [JsonPropertyName("image_metadata")]
     public ImageResultMetadata? ImageMetadata { get; init; }
+
+    [JsonPropertyName("iframe_src")]
+    public string? VideoEmbedUrl { get; init; }
+
+    [JsonPropertyName("length")]
+    public double? VideoDurationSeconds { get; init; }
+
+    [JsonPropertyName("author")]
+    public string? VideoAuthor { get; init; }
+
+    [JsonPropertyName("views")]
+    public string? VideoViews { get; init; }
+
+    [JsonPropertyName("video_metadata")]
+    public VideoResultMetadata? VideoMetadata { get; init; }
 }
