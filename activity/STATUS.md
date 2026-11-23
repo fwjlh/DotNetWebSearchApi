@@ -314,3 +314,11 @@ Search/media/regional providers (batch 5): Wiby, TVmaze, Radio Browser, PeerTube
 1. Continue the dedicated provider registration/capability audit.
 2. Add local fixture tests for any request/header or category mismatches.
 3. Keep provider count at 67 and all work on `fwjlh/DotNetWebSearchApi:main`; no workflows.
+
+
+## Latest development — provider registration and pre-flight tests
+- Added a production-host integration test asserting 67 unique providers register when optional Exa, Yandex, Kagi and Brave keys are supplied as dummy values.
+- Added a production-host test proving Openverse is rejected for general search before an upstream request.
+- Commit: `ef0cdb3cbdab7f1b42cbed7a79d2ba2d08c8c6df`.
+- Activity rationale: [LOG.md](LOG.md), entry 123.
+- Tests are committed but unexecuted because no .NET SDK is available. No GitHub Actions were used.
