@@ -235,7 +235,7 @@ public sealed partial class SearxngApiIntegrationTests
     public async Task Search_SkipsRegisteredOpenverseForGeneralSearchWithoutNetwork()
     {
         using EnvironmentVariableScope environment = ConfigureProductionProviderEnvironment();
-        using WebApplicationFactory<Program> factory = CreateFactory();
+        using WebApplicationFactory<Program> factory = new();
         using HttpClient client = factory.CreateClient();
 
         using HttpResponseMessage response = await client.GetAsync(
