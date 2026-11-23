@@ -332,7 +332,7 @@ To measure line and branch coverage locally:
 
     dotnet test .\\DotNetWebSearchApi.sln -c Release --collect:\"XPlat Code Coverage\"
 
-The Coverlet collector writes a Cobertura report beneath `tests/DotNetWebSearchApi.Tests/TestResults`. Use the report to target uncovered logic and branches; a passing test count alone is not a coverage measure.
+The Coverlet collector writes a Cobertura report beneath `tests/DotNetWebSearchApi.Tests/TestResults`. Run `.\\scripts\\Show-CoverageSummary.ps1` to report aggregate line/branch coverage and the 25 lowest-covered classes. See [docs/COVERAGE.md](docs/COVERAGE.md) for the analysis workflow; a passing test count alone is not a coverage measure.
 
 GitHub Actions workflows are intentionally disabled to conserve minutes. Run restore, build and tests locally using the commands above.
 
