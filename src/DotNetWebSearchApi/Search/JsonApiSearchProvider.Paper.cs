@@ -21,8 +21,8 @@ public sealed partial class JsonApiSearchProvider
             author = authors[0];
         }
 
-        string content = ReadOptionalText(item, paths.Content);
-        string comments = ReadOptionalText(item, paths.Comments);
+        string content = CleanText(ReadOptionalText(item, paths.Content));
+        string comments = CleanText(ReadOptionalText(item, paths.Comments));
         IReadOnlyList<string> tags = ReadTextArray(item, paths.Tags);
         string type = ReadOptionalText(item, paths.Type);
         string editor = ReadOptionalText(item, paths.Editor);
