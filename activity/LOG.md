@@ -1344,3 +1344,11 @@ Every material repository action is recorded here with its reason, result, verif
 - **Commit:** `83d36e386d18f94866dfbebd64f426142a07dfae`.
 - **Validation:** Reviewed the fixture and response mapping. Tests remain unexecuted because the .NET SDK is unavailable; no workflows or live MusicBrainz calls were used.
 - **Next:** Finish the category/template audit and prepare the local .NET 10 build/test handover.
+
+
+### 143. Consolidate the current handover after media and scholarly work
+- **Reason:** Incremental status appends left obsolete next steps after the image, video, music and paper metadata work had advanced.
+- **Action:** Replaced `STATUS.md` with one concise current-state handover: 67-provider composition, implemented metadata families, known limits, workflow prohibition, validation status and exact next step.
+- **Validation:** Rechecked 83 C# files, 35 test files, largest C# file 19,463 bytes, 67 unique providers and zero workflow files.
+- **Commit:** `0cebcec6383718cde3404d5ba97cb1e79dbdcfbf`.
+- **Next:** Local .NET 10 build/test session; no GitHub Actions.
