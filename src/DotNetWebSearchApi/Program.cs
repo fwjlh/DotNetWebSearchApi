@@ -31,6 +31,10 @@ builder.Services.AddRateLimiter(options =>
                 Window = TimeSpan.FromMinutes(1)
             }));
 });
+builder.Services.ConfigureHttpClientDefaults(http =>
+{
+    http.ConfigurePrimaryHttpMessageHandler(() => PublicNetworkSocketsHandler.Create());
+});
 builder.Services.Configure<FormOptions>(options =>
 {
     options.BufferBodyLengthLimit = 16 * 1024;
@@ -46,7 +50,8 @@ builder.Services.AddHttpClient<MojeekSearchProvider>(client =>
     client.DefaultRequestHeaders.UserAgent.ParseAdd("Mozilla/5.0 (compatible; DotNetWebSearchApi/0.1; +https://github.com/fwjlh/DotNetWebSearchApi)");
     client.DefaultRequestHeaders.Accept.ParseAdd("text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8");
     client.DefaultRequestHeaders.AcceptLanguage.ParseAdd("en-GB,en;q=0.9");
-});
+}).ConfigurePrimaryHttpMessageHandler(serviceProvider =>
+    PublicNetworkSocketsHandler.Create(serviceProvider.GetRequiredKeyedService<CookieContainer>("mojeek")));
 builder.Services.AddSingleton<ISearchProvider>(sp => sp.GetRequiredService<MojeekSearchProvider>());
 builder.Services.AddHttpClient<BingSearchProvider>(client => client.DefaultRequestHeaders.UserAgent.ParseAdd("DotNetWebSearchApi/0.1 (+https://github.com/fwjlh/DotNetWebSearchApi)"));
 builder.Services.AddHttpClient<DuckDuckGoSearchProvider>(client =>
@@ -95,12 +100,8 @@ builder.Services.AddHttpClient<YahooSearchProvider>(client =>
 {
     client.DefaultRequestHeaders.UserAgent.ParseAdd("DotNetWebSearchApi/0.1 (+https://github.com/fwjlh/DotNetWebSearchApi)");
     client.DefaultRequestHeaders.Accept.ParseAdd("text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8");
-}).ConfigurePrimaryHttpMessageHandler(serviceProvider => new HttpClientHandler
-{
-    AllowAutoRedirect = false,
-    UseCookies = true,
-    CookieContainer = serviceProvider.GetRequiredKeyedService<CookieContainer>("yahoo")
-});
+}).ConfigurePrimaryHttpMessageHandler(serviceProvider =>
+    PublicNetworkSocketsHandler.Create(serviceProvider.GetRequiredKeyedService<CookieContainer>("yahoo")));
 builder.Services.AddHttpClient<WikipediaSearchProvider>(client => client.DefaultRequestHeaders.UserAgent.ParseAdd("DotNetWebSearchApi/0.1 (+https://github.com/fwjlh/DotNetWebSearchApi)"));
 builder.Services.AddHttpClient<ArxivSearchProvider>(client => client.DefaultRequestHeaders.UserAgent.ParseAdd("DotNetWebSearchApi/0.1 (+https://github.com/fwjlh/DotNetWebSearchApi)"));
 builder.Services.AddSingleton<ISearchProvider>(sp => sp.GetRequiredService<BingSearchProvider>());
