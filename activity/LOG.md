@@ -1459,3 +1459,20 @@ Every material repository action is recorded here with its reason, result, verif
 - **Finding:** The test fixture adds all four configuration keys through `ConfigureAppConfiguration`; Program reads those keys during startup. The configuration hand-off still needs diagnosis if any of the four assertions fail.
 - **Crossref finding:** Current `main` declares `PaperResultMetadata.PublicationYear` as a non-nullable string defaulting to `string.Empty`, and the Crossref mapper assigns a string returned by `ReadOptionalText`. The reported actual `null` therefore does not match the current remote source; verify the local checkout is on current `main` and has no stale build output before changing the mapping blindly.
 - **Next:** Pull current `main`, clean/rebuild the test project, rerun the three failing tests. If Crossref still fails, provide the local `PaperResultMetadata.cs`, `JsonApiSearchProvider.Paper.cs`, and `JsonApiProviderCatalog.cs` revisions. If optional-provider assertions fail, the first missing provider will narrow the configuration diagnosis. No GitHub Actions or live provider calls.
+
+
+## 2026-11-23 — Fix final two reported metadata and provider-registration failures
+
+### 156. Map paper publication year into the SearXNG result
+- **Reason:** The Crossref test's source metadata correctly contained the year, but the serialized SearXNG result exposed `publication_year: null`.
+- **Finding:** The test's metadata assertion passed; the failure was the later serialized response assertion. `SearxngSearchResult` already defines `PaperPublicationYear`, but `SearxngSearchResponseMapper.MapResult` did not populate it.
+- **Correction:** Added `PaperPublicationYear = result.PaperMetadata?.PublicationYear` to the mapper. This preserves the metadata value through the API response.
+- **Commit:** `47369b59c07f4f8eaccdfcfaa3770b29cae230fd`.
+- **Validation:** Confirmed the property exists on the response model and the existing Crossref test serializes and checks `publication_year`. No local .NET test execution available here.
+
+### 157. Supply optional provider keys before minimal-host startup
+- **Reason:** The production-host test's Exa/Yandex/Kagi/Brave keys were added through `ConfigureAppConfiguration`, but `Program.cs` reads configuration and registers providers during top-level builder setup, before the deferred app-configuration callback takes effect.
+- **Correction:** Changed the test factory to inject its in-memory keys through `ConfigureHostConfiguration`, making the values available as host configuration before top-level provider registration. Kept all four provider assertions and the 67-provider total assertion.
+- **Commit:** `2787902b707de8ff69c0e2e8b0378615e75e7770`.
+- **Validation:** Compared startup ordering in `Program.cs` with the factory configuration callback and updated the test to configure host settings before app startup. Must be verified by the user's local .NET 10 test run.
+- **Next:** Pull `main` and run the full Release test suite. No GitHub Actions, no live provider calls.
