@@ -25,6 +25,27 @@ public sealed partial class SearxngApiIntegrationTests
         Assert.Contains("SEARCH_API_KEYS", exception.ToString(), StringComparison.Ordinal);
     }
 
+
+    [Fact]
+    public async Task PostSearch_RejectsOversizedBodyBeforeApiKeyAuthentication()
+    {
+        using EnvironmentVariableScope environment = EnvironmentVariableScope.Apply(
+            new Dictionary<string, string?>
+            {
+                ["SEARCH_API_KEYS"] = "0123456789abcdef0123456789abcdef"
+            });
+        using WebApplicationFactory<Program> factory = CreateFactory(
+            Provider("alpha", Result("A", "https://example.com/a")));
+        using HttpClient client = factory.CreateClient();
+        using ByteArrayContent content = new(new byte[(16 * 1024) + 1]);
+        content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(
+            "application/x-www-form-urlencoded");
+
+        using HttpResponseMessage response = await client.PostAsync("/search", content);
+
+        Assert.Equal(HttpStatusCode.RequestEntityTooLarge, response.StatusCode);
+    }
+
     [Fact]
     public async Task Search_RequiresConfiguredBearerApiKey()
     {
