@@ -53,7 +53,15 @@ public static class NaverSearchResultParser
 
         HtmlNode? snippetNode = item.SelectSingleNode(
             ".//span[contains(@class, 'sds-comps-text-type-body1')]");
-        result = new SearchResult(title, url, CleanText(snippetNode?.InnerText ?? string.Empty), "naver", 1.0 / (position + 1));
+        HtmlNode? thumbnailNode = item.SelectSingleNode(
+            ".//div[contains(@class, 'sds-comps-image') and not(contains(@class, 'sds-comps-image-circle'))]/img");
+        string thumbnailUrl = thumbnailNode?.GetAttributeValue("src", string.Empty) ?? string.Empty;
+        string? thumbnail = IsHttpUrl(thumbnailUrl) ? thumbnailUrl : null;
+
+        result = new SearchResult(title, url, CleanText(snippetNode?.InnerText ?? string.Empty), "naver", 1.0 / (position + 1))
+        {
+            ThumbnailUrl = thumbnail
+        };
         return true;
     }
 
