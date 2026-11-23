@@ -21,6 +21,8 @@ public sealed record SearchResult(
 
     public VideoResultMetadata? VideoMetadata { get; init; }
 
+    public MusicResultMetadata? MusicMetadata { get; init; }
+
     [JsonIgnore]
     public double? ProviderScore { get; init; }
 
