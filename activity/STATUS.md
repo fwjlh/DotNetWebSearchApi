@@ -417,3 +417,9 @@ Search/media/regional providers (batch 5): Wiby, TVmaze, Radio Browser, PeerTube
 3. Confirm `_LookAtMe.MD`, `activity/LOG.md` and `activity/STATUS.md` are present.
 4. Confirm no `.github/workflows/` files exist.
 5. Leave the exact next action here for the next session.
+
+## Latest media response mapping
+- SearXNG now uses shared `length` and `author` fields for both video and audio results.
+- Deezer previews now emit `audio_src`, duration as `length`, and artist as `author`; nested `music_metadata` remains available.
+- Added fixture assertions and updated the porting rationale/audit.
+- Logged as entry 133 in [LOG.md](LOG.md).
