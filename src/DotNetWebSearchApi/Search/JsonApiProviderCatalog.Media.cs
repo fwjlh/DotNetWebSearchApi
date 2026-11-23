@@ -246,8 +246,9 @@ public static partial class JsonApiProviderCatalog
                 ["action"] = "query",
                 ["list"] = "search",
                 ["format"] = "json",
-                ["srprop"] = "snippet"
-            }
+                ["srprop"] = "snippet|timestamp"
+            },
+            PublishedDatePath = "timestamp"
         },
         new JsonApiSearchDefinition
         {
