@@ -253,6 +253,8 @@ For a non-Development deployment, configure one or more random API keys of at le
 In PowerShell:
 
     $env:SEARCH_API_KEYS = "replace-with-a-random-secret-of-at-least-32-bytes"
+    # Optional: immediate reverse-proxy IPs only; omit when not behind a proxy.
+    $env:TRUSTED_PROXY_IPS = "10.0.0.5"
     dotnet run --project src/DotNetWebSearchApi
 
 Programmatic clients send:
@@ -359,7 +361,7 @@ This service is designed to be self-hosted, but self-hosting does not automatica
 
 - Do not expose an unauthenticated instance to the public internet.
 - Configure `SEARCH_API_KEYS` before any non-Development deployment. Every key must be at least 32 UTF-8 bytes; separate multiple keys with semicolons. Search routes require `Authorization: Bearer <key>`. Production and other non-Development environments refuse to start without a key.
-- Failed bearer authentication attempts are limited to 10 per minute per remote IP; authenticated search routes are limited to 60 requests per minute per remote IP and per API key, returning HTTP 429 after the applicable limit. Limits are process-local fixed windows; the per-key partition is keyed by a SHA-256 digest. Behind a reverse proxy, configure trusted forwarded headers at the host; never trust arbitrary client-supplied forwarded headers.
+- Failed bearer authentication attempts are limited to 10 per minute per remote IP; authenticated search routes are limited to 60 requests per minute per remote IP and per API key, returning HTTP 429 after the applicable limit. Limits are process-local fixed windows; the per-key partition is keyed by a SHA-256 digest. Behind a reverse proxy, set `TRUSTED_PROXY_IPS` to the semicolon-separated immediate proxy IP addresses. Only those peers are trusted for `X-Forwarded-For` and `X-Forwarded-Proto`; one proxy hop is processed. Never trust arbitrary client-supplied forwarded headers.
 - POST `/search` rejects declared bodies above 16 KiB and applies ASP.NET form key/value/count limits. Kestrel/IIS hosting limits should also be configured at the edge.
 - Provider endpoints are administrative configuration, never arbitrary URLs supplied by search callers.
 - Provider HttpClientFactory clients use a shared `SocketsHttpHandler` connection callback: DNS is resolved at connection time, every resolved address must be public, and the same check applies when automatic redirects open a new connection. Loopback, private, link-local, carrier-grade NAT, reserved and documentation ranges are blocked; non-HTTP(S), localhost/local/internal names and embedded URI credentials are rejected before sending. The handler disables ambient proxies so the connection policy cannot be bypassed by an untrusted proxy setting. This is defence in depth, not a replacement for outbound firewall rules.
