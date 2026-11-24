@@ -239,3 +239,6 @@ Keep this file and `LOG.md` current so the next session can resume without chat 
 - Commits: `c2593812e3bc4f3fdf5b2eecaf0e74e73292fbc5`, `97d4df048bd483c63d5cf02214e680df11ae069d`, `7a489af8dbba4f392f8acd7c7aaddfa0036b9ab5`.
 - README now documents both limits and removes the stale Actions badge. Commit: `33724bbc9172a128488ec5c7141a072612db1549`.
 - Static review only; local .NET 10 build/test pending. No workflows used.
+
+
+- README now clearly distinguishes historical 156-test CI and 368-test/3-provider local baselines from current HEAD, and directs current verification to the local full-evidence script. Commit: `df85c63713b7522da9c1a6ac5d3f0bf206aa3552`.
