@@ -1981,3 +1981,11 @@ Every material repository action is recorded here with its reason, result, verif
 - **Test added:** Mapped IPv4 loopback is accepted only when the Development exception is enabled.
 - **Commits:** `cd92d80abb8ca90420b93617c18ec729dfb2c511`, `41571c5a39a08dd0c24273408d2c9be28eef18aa`.
 - **Verification:** Static review only; .NET 10 build/test pending.
+
+
+## Forwarded-header trust-boundary correction — 2026-11-24
+- Full assessment exposed two failed forwarded-header security tests. The test host was actually running in Development despite the tests setting environment variables to Staging, and an empty trusted-proxy list was still passed to forwarded-header middleware.
+- Forwarded headers are now processed only when at least one explicit `TRUSTED_PROXY_IPS` address is configured. With no trusted proxies, `X-Forwarded-For` and `X-Forwarded-Proto` are ignored entirely.
+- The two untrusted-header regression tests now explicitly set the WebApplicationFactory host environment to Staging, so loopback HTTP cannot make the HTTPS test pass accidentally.
+- The full evidence runner now deduplicates provider outcomes by batch/provider and verifies exactly one captured outcome per selected provider. Summary counts will therefore reflect distinct provider tests rather than duplicated xUnit output lines.
+- Changes committed directly to main. Local .NET build and tests remain pending operator verification; no workflows used.
