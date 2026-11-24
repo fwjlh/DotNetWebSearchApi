@@ -278,14 +278,22 @@ public sealed partial class SearxngApiIntegrationTests
             Provider("alpha", Result("A", "https://example.com/a")));
         using HttpClient client = factory.CreateClient();
         HttpStatusCode finalStatus = HttpStatusCode.OK;
+        string? retryAfter = null;
 
         for (int index = 0; index < 61; index++)
         {
             using HttpResponseMessage response = await client.GetAsync("/api/search?q=test");
             finalStatus = response.StatusCode;
+            if (response.StatusCode == HttpStatusCode.TooManyRequests
+                && response.Headers.TryGetValues("Retry-After", out IEnumerable<string>? values))
+            {
+                retryAfter = values.Single();
+            }
         }
 
         Assert.Equal(HttpStatusCode.TooManyRequests, finalStatus);
+        Assert.True(int.TryParse(retryAfter, out int retryAfterSeconds));
+        Assert.InRange(retryAfterSeconds, 1, 60);
     }
 
     private static async Task<HttpStatusCode> SendSearchWithForwardedForAsync(
