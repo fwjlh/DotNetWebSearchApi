@@ -1877,3 +1877,11 @@ Every material repository action is recorded here with its reason, result, verif
 - **Correction:** The collection fixture now sets empty-string overrides for `SEARCH_API_KEYS` and `TRUSTED_PROXY_IPS`; individual no-key/untrusted-proxy tests also use explicit empty strings. The fixture restores original process values after the collection.
 - **Commits:** `c90828b35b7ef2386f60d479631c97fc5998a117`, `3f1ddaa3bb7bbbf3ec6bdb1d9932993d6a21eaaf`.
 - **Verification:** Static review only; .NET 10 test execution pending.
+
+
+### 209. Return Retry-After guidance from all rate-limit layers
+- **Reason:** Clients receiving HTTP 429 need to know when to retry; the failed-auth and per-key middleware limits previously returned only a status code, and the ASP.NET IP limiter had no explicit metadata response.
+- **Correction:** Added a shared helper that writes a standards-compatible `Retry-After` seconds header from `RateLimitLease` metadata. Applied it to failed-auth, per-key and IP-based throttles.
+- **Tests updated:** Failed-auth and authenticated IP quota tests now assert a 1–60 second Retry-After value on 429.
+- **Commits:** `4b639f399fd65e5cf859afe4f45acf51e638da88` (middleware), `ca56e12a614d39d79fe4fa563fed9c43b90944ee` and `1f1d46ecb551e11b8e31c372a022269b8068b75e` (tests).
+- **Verification:** Static review only; .NET 10 build/test pending locally.
