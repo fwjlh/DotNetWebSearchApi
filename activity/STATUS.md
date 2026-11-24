@@ -192,9 +192,8 @@ Keep this file and `LOG.md` current so the next session can resume without chat 
 
 
 ## Latest outbound-address policy correction — 2026-11-24
-- Blocked IPv6 ORCHIDv2 special-purpose prefix `2001:20::/28` in the public-address classifier.
-- Added two negative address-classification cases.
-- Commits: `db625feee2405309f279c22780145c52c56cdb86`, `126baa3fb6c5ba5ba64978ee4ccdea908d94ed02`.
+- Added two ORCHIDv2 (`2001:20::/28`) negative address-classification cases. Review confirmed the existing broader `2001:0000::/23` exclusion already blocks this range; a redundant explicit predicate was removed.
+- Commits: `db625feee2405309f279c22780145c52c56cdb86`, `126baa3fb6c5ba5ba64978ee4ccdea908d94ed02`, `cbe338f403df2ee89aa86b10ea0f1061ef4dfd45`.
 - Source reviewed only; .NET 10 build/test still requires the operator's local SDK. No Actions or live calls.
 
 
