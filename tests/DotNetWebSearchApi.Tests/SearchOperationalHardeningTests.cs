@@ -105,6 +105,23 @@ public sealed partial class SearxngApiIntegrationTests
     }
 
     [Fact]
+    public async Task RootSearch_RequiresConfiguredBearerApiKey()
+    {
+        using EnvironmentVariableScope environment = EnvironmentVariableScope.Apply(
+            new Dictionary<string, string?>
+            {
+                ["SEARCH_API_KEYS"] = "0123456789abcdef0123456789abcdef"
+            });
+        using WebApplicationFactory<Program> factory = CreateFactory(
+            Provider("alpha", Result("A", "https://example.com/a")));
+        using HttpClient client = factory.CreateClient();
+
+        using HttpResponseMessage response = await client.GetAsync("/?q=test");
+
+        Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
+    }
+
+    [Fact]
     public async Task Search_AcceptsConfiguredBearerApiKey()
     {
         const string apiKey = "0123456789abcdef0123456789abcdef";
