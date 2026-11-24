@@ -1782,3 +1782,9 @@ Every material repository action is recorded here with its reason, result, verif
 - **Action:** Documented separate failed-auth (10/minute/IP) and authenticated search (60/minute/IP) limits, clarified that neither is a per-key quota, and removed the stale GitHub Actions build badge because this project is not using workflows.
 - **Commit:** `33724bbc9172a128488ec5c7141a072612db1549`.
 - **Verification:** Source/test/docs reviewed statically. No .NET 10 build/test execution is available here; no GitHub Actions were used.
+
+
+### 196. Make local verification status explicit in README
+- **Action:** Replaced wording that implied current changes were awaiting CI with an accurate historical record: 156-test CI baseline, later user-reported 368-test Release baseline plus three live-provider checks, and an explicit warning that neither covers current HEAD.
+- **Reason:** GitHub Actions are intentionally disabled; the local full-evidence script is the authoritative next verification step.
+- **Commit:** `df85c63713b7522da9c1a6ac5d3f0bf206aa3552`.
