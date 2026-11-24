@@ -184,6 +184,70 @@ public sealed partial class SearxngApiIntegrationTests
     }
 
     [Fact]
+    public async Task TrustedProxyHeaders_SeparateClientIpQuotasWhenProxyIsConfigured()
+    {
+        const string firstKey = "0123456789abcdef0123456789abcdef";
+        const string secondKey = "abcdef0123456789abcdef0123456789";
+        using EnvironmentVariableScope environment = EnvironmentVariableScope.Apply(
+            new Dictionary<string, string?>
+            {
+                ["SEARCH_API_KEYS"] = firstKey + ";" + secondKey,
+                ["TRUSTED_PROXY_IPS"] = "127.0.0.1;::1"
+            });
+        using WebApplicationFactory<Program> factory = CreateFactory(
+            Provider("alpha", Result("A", "https://example.com/a")));
+        using HttpClient client = factory.CreateClient();
+
+        for (int index = 0; index < 60; index++)
+        {
+            HttpStatusCode status = await SendSearchWithForwardedForAsync(
+                client,
+                firstKey,
+                "203.0.113.10");
+            Assert.Equal(HttpStatusCode.OK, status);
+        }
+
+        HttpStatusCode secondClientStatus = await SendSearchWithForwardedForAsync(
+            client,
+            secondKey,
+            "203.0.113.11");
+
+        Assert.Equal(HttpStatusCode.OK, secondClientStatus);
+    }
+
+    [Fact]
+    public async Task UntrustedForwardedHeaders_CannotChangeClientIpQuota()
+    {
+        const string firstKey = "0123456789abcdef0123456789abcdef";
+        const string secondKey = "abcdef0123456789abcdef0123456789";
+        using EnvironmentVariableScope environment = EnvironmentVariableScope.Apply(
+            new Dictionary<string, string?>
+            {
+                ["SEARCH_API_KEYS"] = firstKey + ";" + secondKey,
+                ["TRUSTED_PROXY_IPS"] = null
+            });
+        using WebApplicationFactory<Program> factory = CreateFactory(
+            Provider("alpha", Result("A", "https://example.com/a")));
+        using HttpClient client = factory.CreateClient();
+
+        for (int index = 0; index < 60; index++)
+        {
+            HttpStatusCode status = await SendSearchWithForwardedForAsync(
+                client,
+                firstKey,
+                "203.0.113.10");
+            Assert.Equal(HttpStatusCode.OK, status);
+        }
+
+        HttpStatusCode spoofedClientStatus = await SendSearchWithForwardedForAsync(
+            client,
+            secondKey,
+            "203.0.113.11");
+
+        Assert.Equal(HttpStatusCode.TooManyRequests, spoofedClientStatus);
+    }
+
+    [Fact]
     public async Task Search_RateLimitReturnsTooManyRequestsAfterSixtyRequests()
     {
         using WebApplicationFactory<Program> factory = CreateFactory(
@@ -198,5 +262,17 @@ public sealed partial class SearxngApiIntegrationTests
         }
 
         Assert.Equal(HttpStatusCode.TooManyRequests, finalStatus);
+    }
+
+    private static async Task<HttpStatusCode> SendSearchWithForwardedForAsync(
+        HttpClient client,
+        string apiKey,
+        string forwardedFor)
+    {
+        using HttpRequestMessage request = new(HttpMethod.Get, "/api/search?q=test");
+        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", apiKey);
+        request.Headers.TryAddWithoutValidation("X-Forwarded-For", forwardedFor);
+        using HttpResponseMessage response = await client.SendAsync(request);
+        return response.StatusCode;
     }
 }
