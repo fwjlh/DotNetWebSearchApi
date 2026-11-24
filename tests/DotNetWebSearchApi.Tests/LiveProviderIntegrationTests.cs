@@ -6,7 +6,6 @@ namespace DotNetWebSearchApi.Tests;
 
 public sealed class LiveProviderIntegrationTests(ITestOutputHelper output)
 {
-    private const string OptInVariable = "DOTNETWEBSEARCHAPI_LIVE_TESTS";
     private static readonly TimeSpan RequestTimeout = TimeSpan.FromSeconds(20);
 
     [LiveProviderFact]
@@ -47,7 +46,8 @@ public sealed class LiveProviderIntegrationTests(ITestOutputHelper output)
         string queryText)
     {
         JsonApiSearchDefinition definition = Assert.Single(
-            JsonApiProviderCatalog.Definitions.Where(item => item.Name == providerName));
+            JsonApiProviderCatalog.Definitions,
+            item => item.Name == providerName);
         using HttpClient client = CreateClient();
         JsonApiSearchProvider provider = new(
             client,
@@ -95,7 +95,9 @@ public sealed class LiveProviderIntegrationTests(ITestOutputHelper output)
         {
             Assert.False(string.IsNullOrWhiteSpace(result.Title));
             Assert.True(Uri.TryCreate(result.Url, UriKind.Absolute, out Uri? uri));
-            Assert.True(uri!.Scheme is Uri.UriSchemeHttp or Uri.UriSchemeHttps);
+            Assert.True(
+                uri!.Scheme == Uri.UriSchemeHttp
+                || uri.Scheme == Uri.UriSchemeHttps);
         });
     }
 }
