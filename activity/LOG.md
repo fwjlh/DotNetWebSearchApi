@@ -1762,3 +1762,11 @@ Every material repository action is recorded here with its reason, result, verif
 - **Correction:** The runner now continues until the inventory-derived final batch has been processed; the stable-inventory and exact-selection checks prevent empty or skipped batches.
 - **Commit:** `462be91f74ba0fccc29a42882ad879795c5e0453`.
 - **Verification:** PowerShell source review only; execution requires the user's Windows PowerShell/.NET 10 environment. No Actions used.
+
+
+### 193. Sanitize merged provider result URLs and titles
+- **Reason:** The HTTP transport protects outbound provider requests, but a provider's response could still contain a credential-bearing result URL or a blank title. The aggregator previously checked only that the result URL was absolute HTTP(S), allowing such data into the public API response.
+- **Correction:** The aggregator now discards results with blank titles, empty hosts, non-HTTP(S) schemes or embedded URI credentials before canonicalization and merging.
+- **Test added:** A provider fixture returns a credential URL, a whitespace-title URL and a safe result; only the safe result may be returned.
+- **Commits:** `e4effd7dfa42a1739a5bc4d3acb41f1037cb626c` (aggregator), `490d7222e1d3c7b88a326c0d72f5c32f0d16a1e4` (test).
+- **Verification:** Static review only; .NET 10 build/test pending locally. No Actions used.
