@@ -130,7 +130,7 @@ WebApplication app = builder.Build();
 app.UseForwardedHeaders();
 app.UseRouting();
 app.UseStaticFiles();
-ApiRequestSecurity.UseAuthentication(app, securityOptions);
+ApiRequestSecurity.UseAuthentication(app, securityOptions, app.Environment.IsDevelopment());
 app.UseRateLimiter();
 app.MapGet("/health", HealthEndpoint);
 app.MapGet("/api/providers", ProvidersEndpoint);
