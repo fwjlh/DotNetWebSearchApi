@@ -1796,3 +1796,10 @@ Every material repository action is recorded here with its reason, result, verif
 - **Documentation:** README now describes the coverage evidence output.
 - **Commits:** `fcdb5a4911b66650ceb0e662c8f65e29cd5ef168` (coverage collection/summary), `6152fb48cf918e290366dd21017cccd363fa592c` (isolated output), `c6c51ab7aaf09c0076ac7ef35fd98cb42c050dde` (README).
 - **Verification:** PowerShell source review only; no PowerShell/.NET 10 runtime available here. No Actions used.
+
+
+### 198. Keep the coverage evidence runner compatible with Windows PowerShell
+- **Reason:** `System.IO.Path.GetRelativePath` is not available in the .NET Framework runtime used by Windows PowerShell 5.1, even though it is available in newer .NET runtimes.
+- **Correction:** Replaced that call with a path-relative substring/trim operation using APIs available to Windows PowerShell 5.1.
+- **Commit:** `fa9b821f09e09d6f80fb2c76f5018afb85a7f154`.
+- **Verification:** Static compatibility review only; PowerShell execution remains pending on Windows. No Actions used.
