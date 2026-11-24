@@ -1932,3 +1932,10 @@ Every material repository action is recorded here with its reason, result, verif
 - **Correction:** Added a reusable HTTPS TestServer client for auth and rate-limit tests. The trusted-proxy integration now runs in Staging over HTTP-to-TestServer with trusted X-Forwarded-For/Proto; added a Staging test proving an untrusted X-Forwarded-Proto cannot bypass the HTTPS requirement. No-key test configuration now uses an explicit empty string.
 - **Commits:** `96943e789f08d88ddd8397027971bc6dcf2192ce` (HTTPS client helper), `c635a9fc6f7d30e4ffb4a9efb9de8374886bb081` (client/config use), `1aea8c63b8ae2ec4c12c42336aae121dbf9b86ee` (proxy tests).
 - **Verification:** Static review only; .NET 10 test execution pending.
+
+
+### 215. Reject credential-bearing result links in the browser UI
+- **Reason:** The server aggregator already rejects result URLs containing user information, but the browser should enforce the same safe-link rule before rendering any result.
+- **Correction:** `addResult` now rejects URLs with username or password components in addition to non-HTTP(S) schemes.
+- **Commit:** `cddb7a5e7f4855841f95d2df1dd721ffcc8b6cd9`.
+- **Verification:** Static JavaScript review only; browser test execution pending.
