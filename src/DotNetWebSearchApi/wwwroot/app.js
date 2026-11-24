@@ -30,6 +30,15 @@ async function loadProviders() {
     }
 }
 
+function isLoopbackHost(hostname) {
+    const host = hostname.toLowerCase().replace(/^\[|\]$/g, "").replace(/\.$/, "");
+    if (host === "localhost" || host.endsWith(".localhost") || host === "::1") return true;
+    const octets = host.split(".");
+    return octets.length === 4
+        && octets[0] === "127"
+        && octets.every(part => /^\d{1,3}$/.test(part) && Number(part) <= 255);
+}
+
 function addResult(result) {
     let url;
     try { url = new URL(result.url); } catch { return; }
@@ -73,6 +82,12 @@ form.addEventListener("submit", async event => {
     event.preventDefault();
     const query = queryInput.value.trim();
     const selected = Array.from(providerList.querySelectorAll("input:checked")).map(input => input.value);
+    const apiKey = apiKeyInput.value.trim();
+    if (apiKey && location.protocol !== "https:" && !isLoopbackHost(location.hostname)) {
+        feedback.textContent = "Use HTTPS before sending an API key to a remote server.";
+        feedback.className = "feedback warning";
+        return;
+    }
     if (!query || selected.length === 0) {
         feedback.textContent = selected.length === 0 ? "Select at least one provider." : "Enter a search query.";
         feedback.className = "feedback warning";
@@ -86,7 +101,7 @@ form.addEventListener("submit", async event => {
     try {
         const parameters = new URLSearchParams({ q: query, format: "json", engines: selected.join(",") });
         const headers = {};
-        if (apiKeyInput.value.trim()) headers.Authorization = "Bearer " + apiKeyInput.value.trim();
+        if (apiKey) headers.Authorization = "Bearer " + apiKey;
         const response = await fetch("/search?" + parameters.toString(), { headers });
         const data = await response.json();
         if (!response.ok) throw new Error(data.error || "Search failed (" + response.status + ").");
