@@ -68,7 +68,7 @@ internal static class ApiRequestSecurity
             }
         });
 
-        services.AddRateLimiter(options =>
+        BoundedPartitionKeySelector ipPartitions = new(4096);\n        services.AddRateLimiter(options =>
         {
             options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
             options.OnRejected = (context, _) =>
@@ -78,7 +78,7 @@ internal static class ApiRequestSecurity
             };
             options.AddPolicy("search", context =>
                 RateLimitPartition.GetFixedWindowLimiter(
-                    GetClientIpPartitionKey(context.Connection.RemoteIpAddress),
+                    ipPartitions.GetPartitionKey(GetClientIpPartitionKey(context.Connection.RemoteIpAddress)),
                     _ => new FixedWindowRateLimiterOptions
                     {
                         AutoReplenishment = true,
@@ -99,7 +99,7 @@ internal static class ApiRequestSecurity
         PartitionedRateLimiter<HttpContext> authenticationFailureLimiter =
             PartitionedRateLimiter.Create<HttpContext, string>(
                 context => RateLimitPartition.GetFixedWindowLimiter(
-                    GetClientIpPartitionKey(context.Connection.RemoteIpAddress),
+                    ipPartitions.GetPartitionKey(GetClientIpPartitionKey(context.Connection.RemoteIpAddress)),
                     _ => new FixedWindowRateLimiterOptions
                     {
                         AutoReplenishment = true,
