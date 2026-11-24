@@ -1809,3 +1809,11 @@ Every material repository action is recorded here with its reason, result, verif
 - **Action:** Clarified that direct test runs write under the test project's `TestResults`, while the full assessment writes to its unique `evidence/coverage` directory; added the exact `Show-CoverageSummary.ps1 -ResultsPath` command.
 - **Reason:** Prevent users from looking in the old default location after running the new evidence script.
 - **Commit:** `1650553067270dbee78a158bf5d40e115b94c9fa`.
+
+
+### 200. Merge provider position maps defensively
+- **Reason:** A provider could supply a case-sensitive position dictionary containing keys such as `alpha` and `ALPHA`. Converting that dictionary directly to an ordinal-ignore-case dictionary with `ToDictionary` could throw and fail the entire aggregate search.
+- **Correction:** Added explicit position normalization that ignores blank keys/non-positive positions and keeps the best (lowest) position when keys collide case-insensitively.
+- **Test added:** A fixture with duplicate-case engine keys and an invalid zero position must merge to one valid entry without failing.
+- **Commits:** `247c80fd8df94408dafb086c7b5f40e37be11921` (aggregator), `7644cbd4f2a26d97c6dbe19c8ee177734a887eca` (test).
+- **Verification:** Static review only; .NET 10 build/test pending locally.
