@@ -385,3 +385,6 @@ Keep this file and `LOG.md` current so the next session can resume without chat 
 - arXiv was the only timeout in that run; its provider-specific timeout was 10 seconds. Increased to 20 seconds and added a contract test. Commits: `06a1b59d574524a9977830cd966bb5a77b35d4e8`, `989e53456559697766690cd44295c6ee2d7e171b`.
 - The other nine failures were explicit upstream HTTP 403/429/503 responses (or Qwant's anti-bot denial), not response-parser failures. They remain availability/access-policy observations; do not weaken provider assertions to disguise them.
 - **Next:** run focused ArxivSearchProviderTests, full offline suite, then full live assessment to verify the longer allowance and collect fresh evidence. No Actions/workflows.
+
+
+- Moved the remote-HTTPS check after bearer validation so unauthenticated HTTP requests cannot bypass the 10/minute IP-based authentication-failure throttle. Valid keys over remote HTTP remain rejected before search. Added Staging/HTTP regression test for 401 x10 then 429 + Retry-After. Commits: `261df5745a9a9b4e1602e75651c893ea70b412e2`, `1459049b8d6b8c5d8c03631c6d2fe7b228ce0925`.
