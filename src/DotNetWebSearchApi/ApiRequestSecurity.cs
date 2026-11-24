@@ -156,7 +156,8 @@ internal static class ApiRequestSecurity
 
     public static void UseAuthentication(
         WebApplication app,
-        ApiRequestSecurityOptions options)
+        ApiRequestSecurityOptions options,
+        bool allowLoopbackHttp)
     {
         app.Use(async (context, next) =>
         {
