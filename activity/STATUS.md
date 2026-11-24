@@ -291,3 +291,6 @@ Keep this file and `LOG.md` current so the next session can resume without chat 
 
 
 - Auth/proxy integration tests now override configuration with empty strings instead of removing environment variables, ensuring the environment provider overrides any appsettings values on developer machines; original process values are restored after the collection. Commits: `c90828b35b7ef2386f60d479631c97fc5998a117`, `3f1ddaa3bb7bbbf3ec6bdb1d9932993d6a21eaaf`.
+
+
+- All three throttling layers (failed auth, per-key search and IP search) now expose Retry-After seconds when the limiter supplies retry metadata. Regression tests assert the header for failed-auth and IP throttles. Commits: `4b639f399fd65e5cf859afe4f45acf51e638da88`, `ca56e12a614d39d79fe4fa563fed9c43b90944ee`, `1f1d46ecb551e11b8e31c372a022269b8068b75e`.
