@@ -283,6 +283,34 @@ public sealed partial class SearxngApiIntegrationTests
     }
 
     [Fact]
+    public async Task RemoteHttpAuthenticationFailures_AreThrottledBeforeTransportRejection()
+    {
+        using EnvironmentVariableScope environment = EnvironmentVariableScope.Apply(
+            new Dictionary<string, string?>
+            {
+                ["SEARCH_API_KEYS"] = "0123456789abcdef0123456789abcdef",
+                ["TRUSTED_PROXY_IPS"] = string.Empty,
+                ["ASPNETCORE_ENVIRONMENT"] = "Staging",
+                ["DOTNET_ENVIRONMENT"] = "Staging"
+            });
+        using WebApplicationFactory<Program> factory = CreateFactory(
+            Provider("alpha", Result("A", "https://example.com/a")))
+            .WithWebHostBuilder(builder => builder.UseEnvironment("Staging"));
+        using HttpClient client = factory.CreateClient();
+
+        for (int index = 0; index < 10; index++)
+        {
+            using HttpResponseMessage response = await client.GetAsync("/api/search?q=test");
+            Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
+        }
+
+        using HttpResponseMessage blockedResponse = await client.GetAsync("/api/search?q=test");
+
+        Assert.Equal(HttpStatusCode.TooManyRequests, blockedResponse.StatusCode);
+        Assert.True(blockedResponse.Headers.Contains("Retry-After"));
+    }
+
+    [Fact]
     public async Task UntrustedForwardedHeaders_CannotChangeClientIpQuota()
     {
         const string firstKey = "0123456789abcdef0123456789abcdef";
