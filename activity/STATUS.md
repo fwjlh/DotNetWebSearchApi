@@ -1,12 +1,12 @@
 # Current project handover
 
-## Authoritative current state — 2026-11-24 19:30 UTC
-- **Branch:** `main`; latest commit: `dd4e148550384dab8f82d67b3f98ad90df660827`.
-- **Provider inventory:** 63 registered providers. Latest supplied evidence remains Release build 0 warnings/errors, offline suite 397 passed / 0 failed / 5 skipped; line coverage 96.40%, branch coverage 83.85%. These numbers predate the latest arXiv, auth-ordering, live-evidence classification, bounded-partition and concurrency-test edits.
+## Authoritative current state — 2026-11-24 19:32 UTC
+- **Branch:** `main`; latest commit: `47480608d5c2764cbff0c92a38cc46210d1ae245`.
+- **Provider inventory:** 63 registered providers. Latest supplied evidence remains Release build 0 warnings/errors, offline suite 397 passed / 0 failed / 5 skipped; line coverage 96.40%, branch coverage 83.85%. These numbers predate the latest arXiv, auth-ordering, live-evidence classification, bounded-partition and selector-test edits.
 - **Live providers:** Last supplied assessment recorded 46 result-bearing, 7 successful-empty and 10 failed/denied outcomes; aggregate API and SearXNG-compatible endpoint passed. Several failures were upstream 403/429/503 responses or anti-bot denials.
 - **Security:** Bearer keys, remote HTTPS enforcement, trusted-proxy forwarded headers, bounded request bodies, IP/per-key/failure quotas, DNS-pinned public-only outbound transport and redirect validation are implemented. IP limiter partition storage is capped at 4,096 distinct client keys; new addresses after capacity share an overflow bucket.
-- **Latest test addition:** `ApiRequestSecurityRateLimitTests.BoundedPartitionSelector_ConcurrentNewKeysNeverExceedCapacity` checks 100 concurrent distinct keys against capacity two. Test is committed but not executed.
-- **Verification status:** No fresh build/test is claimed after the latest changes. Assistant environment has no .NET SDK; the operator's Windows machine must run focused tests and the full Release assessment.
+- **Latest tests added:** Concurrent allocation (100 unique keys/capacity 2), non-positive capacity rejection (0 and -1), and null-key rejection in `ApiRequestSecurityRateLimitTests`.
+- **Verification status:** Tests are committed but not executed. No fresh build/test is claimed after the latest changes. The assistant environment has no .NET SDK; the operator's Windows machine must run focused tests and the full Release assessment.
 - **No GitHub Actions/workflows:** none present or used. Continue direct commits to `main`.
 - **Next:** Run focused `ApiRequestSecurityRateLimitTests` and arXiv tests, then Release build + offline regression + evidence script. Do not repeat upstream batches unnecessarily while providers are rate-limiting.
 - Older notes below are historical.
