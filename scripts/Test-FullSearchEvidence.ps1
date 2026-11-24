@@ -73,7 +73,6 @@ $registeredProviderCount = $null
 $expectedProviderCount = $null
 $batchOffset = 0
 $batchNumber = 0
-$maximumProviderCount = 200
 $overallError = $null
 $apiEvidenceLines = @()
 
@@ -91,7 +90,7 @@ try {
     $env:DOTNETWEBSEARCHAPI_LIVE_TESTS = "1"
     $env:DOTNETWEBSEARCHAPI_LIVE_PROVIDER_COUNT = [string]$BatchSize
 
-    while ($batchOffset -lt $maximumProviderCount) {
+    while ($true) {
         $batchNumber++
         $env:DOTNETWEBSEARCHAPI_LIVE_PROVIDER_OFFSET = [string]$batchOffset
         $lineStart = $logLines.Count
