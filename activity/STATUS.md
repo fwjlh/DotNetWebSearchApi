@@ -1,5 +1,17 @@
 # Current project handover
 
+## Authoritative current state — 2026-11-24 15:xx UTC
+- **Current branch:** `main`; current HEAD before this handover refresh: `f8ea093bc9b3df3b923510819870afb82e218ed6`.
+- **Provider inventory:** 63 registered providers in the latest supplied assessment (do not use the older 67-provider snapshot below as current).
+- **Latest supplied build/test evidence (13:14 UTC):** Release build passed with 0 warnings and 0 errors; offline regression passed **397, failed 0, skipped 5**.
+- **Coverage:** 96.40% line (4,287/4,447); 83.85% branch (1,600/1,908).
+- **Live provider results:** 53 providers responded without exceptions, of which 7 returned empty results for the generic `dotnet` probe; therefore 46 returned results, 7 responded empty and 10 failed/denied. The aggregate API and SearXNG-compatible endpoint passed. The 10 observed failures were arXiv timeout, Gitea 429, Google 403, Google Books 429, Marginalia 429, Mojeek 403, MusicBrainz 503, Qwant anti-bot denial, Semantic Scholar 429 and Yep 403.
+- **Changes after that evidence:** arXiv timeout increased from 10 to 20 seconds; live assessment now distinguishes result-bearing, empty and failed outcomes; remote-HTTP auth failures now hit the auth-failure limiter before HTTPS rejection. These latest changes have NOT yet been built/tested.
+- **Current expected next verification:** pull latest `main`; run focused auth/transport and arXiv tests, then Release build + offline suite + full `scripts/Test-FullSearchEvidence.ps1`. Review the new empty-provider fields in the JSON. Do not repeat live runs unnecessarily because several upstreams are throttling/denying requests.
+- **No GitHub Actions/workflows:** none present or used. Do not create or invoke workflows.
+- Older status snapshots below are retained as history; this block is the authoritative handover.
+
+
 ## Latest update — 2026-11-24: full search evidence assessment
 - Added an opt-in live integration test that resolves all `ISearchProvider` services registered by the actual application host, orders them alphabetically and runs them sequentially.
 - Added `scripts/Test-LiveProvidersInBatches.ps1`: Release build once, then blocks of 20; every provider in a block is attempted, and any failure stops all subsequent blocks.
