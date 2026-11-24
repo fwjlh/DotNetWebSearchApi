@@ -1901,3 +1901,11 @@ Every material repository action is recorded here with its reason, result, verif
 - **Correction:** Changed the helper to call `IPAddress.IsLoopback(remoteAddress)` after a null check.
 - **Commit:** `ac7829318aa756e010ab74a5ddac54e749de15b9`.
 - **Verification:** Source review only; build still pending.
+
+
+### 212. Prevent the browser UI from transmitting keys over remote HTTP
+- **Reason:** Server-side rejection occurs after an HTTP request reaches the server; it cannot prevent a browser from transmitting the bearer key in cleartext before receiving the rejection.
+- **Correction:** The search UI now checks the page scheme and hostname before adding the Authorization header. It permits HTTP only for localhost, '.localhost' domains, IPv4 loopback and IPv6 loopback; remote hosts require HTTPS. The server-side check remains authoritative.
+- **Documentation:** README records the browser-side guard as an additional safety layer.
+- **Commits:** `9d8fbbbedfb14e420cc11f489a16b01b170b6e17` (UI), `ffdfefe2c16d9f5b0345c81879beaa99ac94d7b6` (README).
+- **Verification:** Static JavaScript review only; no browser test harness executed.
