@@ -1662,3 +1662,10 @@ Every material repository action is recorded here with its reason, result, verif
 - **Reason:** Minimal hosting can use `DOTNET_ENVIRONMENT` in preference to `ASPNETCORE_ENVIRONMENT`; the fail-closed test must set both before host construction.
 - **Correction:** The test now sets both variables to Staging and restores their prior values after factory disposal.
 - **Commit:** `92b279c49bb8d7c06217304d4ab8e755844a0c42`.
+
+
+### 180. Fix diagnostics endpoint static-local capture
+- **Reason:** The diagnostics endpoint reads the startup-configured `securityOptions` local to report whether API-key authentication is enabled. Declaring that local function `static` caused compiler error CS8421 because static local functions cannot capture enclosing locals.
+- **Correction:** Removed `static` from `DiagnosticsEndpoint`. The endpoint remains a named local handler and reads the same immutable startup options; no security behaviour or response contract changed.
+- **Commit:** `d0c854301be653c3cc843270c6cda75e3cf3ffd8`.
+- **Verification:** Source correction committed. Build and tests must be run locally; no .NET execution is claimed here. The CS0006 test-project metadata error should clear once the main project builds successfully.
