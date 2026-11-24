@@ -1,9 +1,11 @@
+using System.Net;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.RateLimiting;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Features;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Configuration;
@@ -35,6 +37,26 @@ internal static class ApiRequestSecurity
         {
             throw new InvalidOperationException("SEARCH_API_KEYS must be configured before running outside Development.");
         }
+
+        string[] trustedProxyValues = (configuration["TRUSTED_PROXY_IPS"] ?? string.Empty)
+            .Split(';', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+        IPAddress[] trustedProxies = trustedProxyValues
+            .Select(value => IPAddress.TryParse(value, out IPAddress? address)
+                ? address
+                : throw new InvalidOperationException($"TRUSTED_PROXY_IPS contains an invalid IP address: '{value}'."))
+            .Distinct()
+            .ToArray();
+        services.Configure<ForwardedHeadersOptions>(options =>
+        {
+            options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
+            options.ForwardLimit = 1;
+            options.KnownProxies.Clear();
+            options.KnownNetworks.Clear();
+            foreach (IPAddress proxy in trustedProxies)
+            {
+                options.KnownProxies.Add(proxy);
+            }
+        });
 
         services.AddRateLimiter(options =>
         {
