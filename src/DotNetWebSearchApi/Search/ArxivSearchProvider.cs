@@ -27,7 +27,7 @@ public sealed class ArxivSearchProvider : ISearchProvider, ISearchProviderCapabi
         false,
         false);
 
-    public TimeSpan Timeout => TimeSpan.FromSeconds(10);
+    public TimeSpan Timeout => TimeSpan.FromSeconds(20);
 
     public async Task<IReadOnlyList<SearchResult>> SearchAsync(
         SearchQuery query,
