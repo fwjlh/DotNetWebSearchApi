@@ -1,4 +1,6 @@
 using DotNetWebSearchApi.Search;
+using Microsoft.AspNetCore.Mvc.Testing;
+using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -39,6 +41,97 @@ public sealed class LiveProviderIntegrationTests(ITestOutputHelper output)
             "dotnet");
 
         AssertLiveResults("github", results);
+    }
+
+
+    [LiveProviderFact]
+    public async Task AllRegisteredProviders_RespondToLiveRequests()
+    {
+        int offset = ReadBatchSetting("DOTNETWEBSEARCHAPI_LIVE_PROVIDER_OFFSET", 0);
+        int batchSize = ReadBatchSetting("DOTNETWEBSEARCHAPI_LIVE_PROVIDER_COUNT", 20);
+        if (batchSize is < 1 or > 20)
+        {
+            throw new InvalidOperationException("Live provider batch size must be between 1 and 20.");
+        }
+
+        using WebApplicationFactory<Program> factory = new();
+        ISearchProvider[] providers = factory.Services
+            .GetServices<ISearchProvider>()
+            .OrderBy(provider => provider.Name, StringComparer.OrdinalIgnoreCase)
+            .ToArray();
+        ISearchProvider[] batch = providers.Skip(offset).Take(batchSize).ToArray();
+
+        output.WriteLine(
+            "Provider inventory: {0} registered; batch offset {1}; selected {2}.",
+            providers.Length,
+            offset,
+            batch.Length);
+
+        List<string> failures = new();
+        foreach (ISearchProvider provider in batch)
+        {
+            await CheckProviderAsync(provider, failures);
+        }
+
+        Assert.True(
+            failures.Count == 0,
+            "Live provider batch failed:" + Environment.NewLine + string.Join(Environment.NewLine, failures));
+    }
+
+    private async Task CheckProviderAsync(ISearchProvider provider, ICollection<string> failures)
+    {
+        using CancellationTokenSource timeout = new(provider.Timeout);
+        try
+        {
+            IReadOnlyList<SearchResult> results = await provider.SearchAsync(
+                new SearchQuery("dotnet", 3),
+                timeout.Token);
+            ValidateResults(provider.Name, results);
+            output.WriteLine(
+                "PASS {0}: {1} results. {2}",
+                provider.Name,
+                results.Count,
+                string.Join(" | ", results.Take(3).Select(result => result.Title)));
+        }
+        catch (Exception exception)
+        {
+            string failure = $"{provider.Name}: {exception.GetType().Name}: {exception.Message}";
+            failures.Add(failure);
+            output.WriteLine("FAIL {0}", failure);
+        }
+    }
+
+    private static void ValidateResults(string providerName, IReadOnlyList<SearchResult> results)
+    {
+        foreach (SearchResult result in results)
+        {
+            if (string.IsNullOrWhiteSpace(result.Title))
+            {
+                throw new InvalidOperationException($"Provider '{providerName}' returned a result without a title.");
+            }
+
+            if (!Uri.TryCreate(result.Url, UriKind.Absolute, out Uri? uri)
+                || (uri.Scheme != Uri.UriSchemeHttp && uri.Scheme != Uri.UriSchemeHttps))
+            {
+                throw new InvalidOperationException($"Provider '{providerName}' returned a non-HTTP result URL.");
+            }
+        }
+    }
+
+    private static int ReadBatchSetting(string name, int defaultValue)
+    {
+        string? value = Environment.GetEnvironmentVariable(name);
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            return defaultValue;
+        }
+
+        if (!int.TryParse(value, out int parsedValue) || parsedValue < 0)
+        {
+            throw new InvalidOperationException($"Environment variable '{name}' must be a non-negative integer.");
+        }
+
+        return parsedValue;
     }
 
     private async Task<IReadOnlyList<SearchResult>> SearchJsonProviderAsync(
