@@ -42,7 +42,7 @@ function isLoopbackHost(hostname) {
 function addResult(result) {
     let url;
     try { url = new URL(result.url); } catch { return; }
-    if (url.protocol !== "http:" && url.protocol !== "https:") return;
+    if ((url.protocol !== "http:" && url.protocol !== "https:") || url.username || url.password) return;
     const card = document.createElement("article");
     card.className = "result-card";
     const heading = document.createElement("h2");
