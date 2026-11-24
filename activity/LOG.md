@@ -1966,3 +1966,10 @@ Every material repository action is recorded here with its reason, result, verif
 ### 219. Record current source-size and workflow audit
 - **Audit:** All C# source files remain below the 25 KB hard limit; the largest hand-maintained file is the integration-test partial at 22.3 KB. No GitHub workflow files are present or used.
 - **Reason:** Preserve the agreed small-source discipline and confirm the no-Actions constraint after the security/test additions.
+
+
+### 220. Correct the authentication middleware signature after transport-policy wiring
+- **Reason:** Final source review found the transport-policy argument had been added at the call site and use site but not to the existing `WebApplication` method signature.
+- **Correction:** Added the required `allowLoopbackHttp` parameter to `UseAuthentication`, matching Program.cs and the Development-only loopback rule.
+- **Commit:** `376d94f73c5d30b0e75ba240f97dfd9f32ac3d7e`.
+- **Verification:** Static review only; this would have been a compile error, so build remains essential.
