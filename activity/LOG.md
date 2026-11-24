@@ -1917,3 +1917,11 @@ Every material repository action is recorded here with its reason, result, verif
 - **Tests updated:** Transport policy tests now distinguish Development loopback from Staging/Production loopback and remote HTTP.
 - **Commits:** `851d2ca26154e7a68576887bb4c991d917dee8d0` (policy), `34a01c4763fefb65a82dcd32a1024f6e0bc53712` (Program), `34608f41f57e3e1b68a91ba4eddad82e98e601cc` (tests).
 - **Verification:** Static review only; .NET 10 build/test pending locally.
+
+
+### 214. Preserve full live-provider evidence when a batch fails
+- **Evidence:** The 2026-11-24 assessment built cleanly and the offline suite passed (373 passed, 5 skipped). A direct live diagnostic confirmed 63 registered providers and 20 selected in batch 1; 16 passed and four failed (Bilibili HTTP 412, Europe PMC cancellation/timeout, Google HTTP 403, Google Books HTTP 429).
+- **Root cause:** The full assessment script used global PowerShell stop-on-error behavior while invoking `dotnet`. A non-zero test exit could terminate the stage before its output was copied into the evidence log, preventing inventory parsing and the remaining batches.
+- **Correction:** Native process invocation now temporarily uses Continue behavior, captures stdout/stderr, preserves the actual exit code, and restores the caller's error preference. Failed batches can therefore be recorded and the full catalogue assessment can continue.
+- **Commit:** `a7c91a20092ffabe2d45126a28ed67554afc2e28`.
+- **Verification:** Static review only. The user must rerun the assessment locally; no build, tests, or workflows were run by the assistant.
