@@ -304,6 +304,7 @@ public sealed partial class SearxngApiIntegrationTests
         using HttpRequestMessage request = new(HttpMethod.Get, "/api/search?q=test");
         request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", apiKey);
         request.Headers.TryAddWithoutValidation("X-Forwarded-For", forwardedFor);
+        request.Headers.TryAddWithoutValidation("X-Forwarded-Proto", "https");
         using HttpResponseMessage response = await client.SendAsync(request);
         return response.StatusCode;
     }
