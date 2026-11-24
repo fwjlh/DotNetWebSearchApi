@@ -1863,3 +1863,10 @@ Every material repository action is recorded here with its reason, result, verif
 - **Test added:** Native and mapped representations of the same IPv4 address must produce the same quota key.
 - **Commits:** `77f82746e271f68405313fcf4b510edfb5e8c174` (helper/use), `40f2fb91b50aa77d30f5aacee3832bc8cfc9e13e` (test).
 - **Verification:** Static review only; .NET 10 build/test pending locally.
+
+
+### 207. Fully qualify the coverage parser's invariant culture type
+- **Reason:** The evidence script should not depend on PowerShell's abbreviated namespace resolution when parsing Cobertura decimal rates.
+- **Correction:** Replaced abbreviated `Globalization.CultureInfo` references with `System.Globalization.CultureInfo`.
+- **Commit:** `acfc80b201ea96a7e6d251351be55fc7e7725aac`.
+- **Verification:** Static PowerShell review only; Windows execution pending.
