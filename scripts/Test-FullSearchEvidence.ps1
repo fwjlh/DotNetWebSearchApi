@@ -74,6 +74,7 @@ $batchOffset = 0
 $batchNumber = 0
 $maximumProviderCount = 200
 $overallError = $null
+$apiEvidenceLines = @()
 
 try {
     $build = Invoke-DotNetStage "Release build" @("build", $solutionPath, "-c", $Configuration, "--no-incremental")
@@ -82,6 +83,7 @@ try {
         throw "Build failed; tests cannot provide reliable evidence."
     }
 
+    $env:DOTNETWEBSEARCHAPI_LIVE_TESTS = "0"
     $regression = Invoke-DotNetStage "Offline regression suite" @("test", $solutionPath, "-c", $Configuration, "--no-build", "--no-restore", "--logger", "console;verbosity=minimal")
     $regressionPassed = $regression.passed
 
@@ -143,12 +145,14 @@ try {
         Start-Sleep -Seconds 3
     }
 
+    $apiLineStart = $logLines.Count
     $apiTest = Invoke-DotNetStage "End-to-end aggregate API and compatibility search" @(
         "test", $solutionPath, "-c", $Configuration, "--no-build", "--no-restore",
         "--filter", "FullyQualifiedName~FullSearchApi_ReturnsAggregatedLiveResultsAndCompatibilityJson",
         "--logger", "console;verbosity=detailed"
     )
     $apiPassed = $apiTest.passed
+    $apiEvidenceLines = @($logLines | Select-Object -Skip $apiLineStart)
 }
 catch {
     $overallError = $_.Exception.Message
@@ -167,6 +171,7 @@ finally {
 
     $passedProviders = @($providerRuns | Where-Object status -eq "passed").Count
     $failedProviders = @($providerRuns | Where-Object status -eq "failed").Count
+    $providerBatchStagesPassed = @($stages | Where-Object { $_.name -like "Live provider batch *" -and -not $_.passed }).Count -eq 0
     $evidence = [ordered]@{
         generatedAtUtc = [DateTime]::UtcNow.ToString("o")
         machine = [Environment]::MachineName
@@ -181,11 +186,13 @@ finally {
             regressionSuitePassed = $regressionPassed
             providerChecksPassed = $passedProviders
             providerChecksFailed = $failedProviders
+            providerBatchStagesPassed = $providerBatchStagesPassed
             aggregateApiPassed = $apiPassed
-            overallPassed = ($buildPassed -and $regressionPassed -and $failedProviders -eq 0 -and $apiPassed -and $null -eq $overallError)
+            overallPassed = ($buildPassed -and $regressionPassed -and $providerBatchStagesPassed -and $failedProviders -eq 0 -and $apiPassed -and $null -eq $overallError)
         }
         stages = @($stages)
         providers = @($providerRuns)
+        aggregateApiEvidence = @($apiEvidenceLines)
         error = $overallError
         logFile = [System.IO.Path]::GetFileName($logPath)
     }
@@ -197,6 +204,6 @@ finally {
     Write-Host "Provider checks: $passedProviders passed; $failedProviders failed."
 }
 
-if (-not $buildPassed -or -not $regressionPassed -or $failedProviders -gt 0 -or -not $apiPassed -or $null -ne $overallError) {
+if (-not $buildPassed -or -not $regressionPassed -or -not $providerBatchStagesPassed -or $failedProviders -gt 0 -or -not $apiPassed -or $null -ne $overallError) {
     exit 1
 }
