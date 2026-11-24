@@ -1,13 +1,14 @@
 # Current project handover
 
-## Authoritative current state — 2026-11-24
-- **Branch:** `main`; latest verified handover commit: `bb1f851b694555f0f8d2b65065b604c8e835022f`.
-- **Provider inventory:** 63 registered providers. Latest supplied evidence: Release build 0 warnings/errors, offline suite 397 passed / 0 failed / 5 skipped; line coverage 96.40%, branch coverage 83.85%. These numbers predate the latest arXiv, auth-ordering and live-evidence classification edits.
+## Authoritative current state — 2026-11-24 19:30 UTC
+- **Branch:** `main`; latest commit: `dd4e148550384dab8f82d67b3f98ad90df660827`.
+- **Provider inventory:** 63 registered providers. Latest supplied evidence remains Release build 0 warnings/errors, offline suite 397 passed / 0 failed / 5 skipped; line coverage 96.40%, branch coverage 83.85%. These numbers predate the latest arXiv, auth-ordering, live-evidence classification, bounded-partition and concurrency-test edits.
 - **Live providers:** Last supplied assessment recorded 46 result-bearing, 7 successful-empty and 10 failed/denied outcomes; aggregate API and SearXNG-compatible endpoint passed. Several failures were upstream 403/429/503 responses or anti-bot denials.
-- **Security:** Bearer keys, HTTPS enforcement for remote key requests, trusted-proxy forwarded headers, bounded request bodies, IP/per-key/failure quotas, DNS-pinned public-only outbound transport and redirect validation are implemented. IP limiter partition storage is now capped at 4,096 distinct client keys; additional new IPs share an overflow bucket.
-- **Latest changes requiring local verification:** arXiv timeout increase, auth failure ordering, empty-provider evidence classification, and bounded IP partition selector. No fresh build/test is claimed after these changes.
+- **Security:** Bearer keys, remote HTTPS enforcement, trusted-proxy forwarded headers, bounded request bodies, IP/per-key/failure quotas, DNS-pinned public-only outbound transport and redirect validation are implemented. IP limiter partition storage is capped at 4,096 distinct client keys; new addresses after capacity share an overflow bucket.
+- **Latest test addition:** `ApiRequestSecurityRateLimitTests.BoundedPartitionSelector_ConcurrentNewKeysNeverExceedCapacity` checks 100 concurrent distinct keys against capacity two. Test is committed but not executed.
+- **Verification status:** No fresh build/test is claimed after the latest changes. Assistant environment has no .NET SDK; the operator's Windows machine must run focused tests and the full Release assessment.
 - **No GitHub Actions/workflows:** none present or used. Continue direct commits to `main`.
-- **Next:** Run focused `ApiRequestSecurityRateLimitTests`, arXiv tests, then Release build + offline regression + evidence script. Do not rerun upstream batches repeatedly while providers are rate-limiting.
+- **Next:** Run focused `ApiRequestSecurityRateLimitTests` and arXiv tests, then Release build + offline regression + evidence script. Do not repeat upstream batches unnecessarily while providers are rate-limiting.
 - Older notes below are historical.
 
 ---
