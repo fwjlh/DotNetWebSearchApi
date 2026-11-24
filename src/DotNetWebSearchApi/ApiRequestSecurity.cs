@@ -70,6 +70,7 @@ internal static class ApiRequestSecurity
                         Window = TimeSpan.FromMinutes(1)
                     }));
 
+        services.AddSingleton(authenticationFailureLimiter);
         return new ApiRequestSecurityOptions(apiKeys, authenticationFailureLimiter);
     }
 
