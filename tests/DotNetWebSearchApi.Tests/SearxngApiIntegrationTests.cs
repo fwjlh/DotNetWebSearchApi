@@ -335,6 +335,14 @@ public sealed partial class SearxngApiIntegrationTests
         });
     }
 
+    private static HttpClient CreateHttpsClient(WebApplicationFactory<Program> factory)
+    {
+        return factory.CreateClient(new WebApplicationFactoryClientOptions
+        {
+            BaseAddress = new Uri("https://localhost")
+        });
+    }
+
     private static WebApplicationFactory<Program> CreateFactory(params ISearchProvider[] providers)
     {
         return new WebApplicationFactory<Program>().WithWebHostBuilder(builder =>
