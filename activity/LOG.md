@@ -1947,3 +1947,10 @@ Every material repository action is recorded here with its reason, result, verif
 - **Test added:** Verify that configuring `10.0.0.5` registers both `10.0.0.5` and `::ffff:10.0.0.5` in the trusted proxy list.
 - **Commits:** `52ddf55a42051fabf1297b2bb2af5a275d4aee30` (normalization), `9361bfde164d87d6c6daea9ee3e1152de94a7f47` and `f1f67c5758ceb23e21ebd1cc1e3952e7e87520e0` (test).
 - **Verification:** Static review only; .NET 10 test execution pending.
+
+
+### 217. Import the forwarded-options namespace explicitly in tests
+- **Reason:** The test project does not inherit the Web SDK's global ASP.NET Core builder usings; `ForwardedHeadersOptions` is declared in `Microsoft.AspNetCore.Builder`.
+- **Correction:** Added the explicit namespace import to the proxy options test.
+- **Commit:** `60d6fd97b24f13cf4a39008b331751ede2e1eb0d`.
+- **Verification:** Static source review only; build pending.
