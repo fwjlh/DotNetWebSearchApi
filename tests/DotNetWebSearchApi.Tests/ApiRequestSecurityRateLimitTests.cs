@@ -10,6 +10,7 @@ public sealed class ApiRequestSecurityRateLimitTests
     [Theory]
     [InlineData(true, "203.0.113.10", false, true)]
     [InlineData(false, "127.0.0.1", true, true)]
+    [InlineData(false, "::ffff:127.0.0.1", true, true)]
     [InlineData(false, "127.0.0.1", false, false)]
     [InlineData(false, "203.0.113.10", true, false)]
     public void SecureTransport_RequiresHttpsForRemoteAddresses(
