@@ -125,7 +125,51 @@ function Publish-Evidence {
     }
 
     $origin = Invoke-GitCommand $actualRoot @("remote", "get-url", "origin")
-    if ($origin -notmatch '(?i)github\.com[:/]fwjlh/DotNetWebSearchApi(?:\.git)?
+    $originIsExpected = $origin.Contains("github.com", [System.StringComparison]::OrdinalIgnoreCase) -and (
+        $origin.EndsWith("fwjlh/DotNetWebSearchApi.git", [System.StringComparison]::OrdinalIgnoreCase) -or
+        $origin.EndsWith("fwjlh/DotNetWebSearchApi", [System.StringComparison]::OrdinalIgnoreCase)
+    )
+    if (-not $originIsExpected) {
+        throw "The origin remote is not fwjlh/DotNetWebSearchApi; refusing to publish evidence."
+    }
+
+    & git -C $actualRoot diff --cached --quiet
+    $stagedExitCode = $LASTEXITCODE
+    if ($stagedExitCode -eq 1) {
+        throw "There are already staged changes. Commit or unstage them before publishing assessment evidence."
+    }
+    if ($stagedExitCode -ne 0) {
+        throw "Could not inspect the Git staging area (exit code $stagedExitCode)."
+    }
+
+    foreach ($path in @($JsonPath, $LogPath)) {
+        $fullPath = [System.IO.Path]::GetFullPath($path)
+        if (-not $fullPath.StartsWith($actualRoot + [System.IO.Path]::DirectorySeparatorChar, [System.StringComparison]::OrdinalIgnoreCase)) {
+            throw "Evidence file is outside the repository: $fullPath"
+        }
+        if (-not (Test-Path -LiteralPath $fullPath -PathType Leaf)) {
+            throw "Evidence file does not exist: $fullPath"
+        }
+    }
+
+    $jsonRelativePath = $JsonPath.Substring($actualRoot.Length).TrimStart([char[]]@([System.IO.Path]::DirectorySeparatorChar, [System.IO.Path]::AltDirectorySeparatorChar)).Replace("\", "/")
+    $logRelativePath = $LogPath.Substring($actualRoot.Length).TrimStart([char[]]@([System.IO.Path]::DirectorySeparatorChar, [System.IO.Path]::AltDirectorySeparatorChar)).Replace("\", "/")
+    Invoke-GitCommand $actualRoot @("add", "-f", "--", $jsonRelativePath, $logRelativePath) | Out-Null
+
+    $stagedOutput = Invoke-GitCommand $actualRoot @("diff", "--cached", "--name-only")
+    $stagedPaths = @([regex]::Split($stagedOutput, "\r?\n") | Where-Object { $_ })
+    $expectedPaths = @($jsonRelativePath, $logRelativePath)
+    if ($stagedPaths.Count -ne 2 -or @($stagedPaths | Where-Object { $expectedPaths -notcontains $_ }).Count -ne 0) {
+        throw "Git staging contains unexpected files; refusing to commit."
+    }
+
+    Invoke-GitCommand $actualRoot @("commit", "-m", "Add search assessment evidence $RunTimestamp") | Out-Null
+    $commit = Invoke-GitCommand $actualRoot @("rev-parse", "--short", "HEAD")
+    Invoke-GitCommand $actualRoot @("push", "origin", "HEAD:main") | Out-Null
+    return $commit
+}
+
+$buildPassed = $false
 $regressionPassed = $false
 $coverageSummary = $null
 $apiPassed = $false
