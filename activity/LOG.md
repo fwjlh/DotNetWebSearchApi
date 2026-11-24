@@ -2060,3 +2060,12 @@ Every material repository action is recorded here with its reason, result, verif
 - **Commits:** `03c338a40dcd3942777ac091033d73c5bc7d3022` (selector), `093f8360d5d0e502442937664587597ab4a9ba44` and `346587e903e33353e1ce1a5528a80a245f9e6b7f` (middleware wiring/format correction), `957ba7d35fda64396e0679f3e7051b8f9a81a169` (tests).
 - **Trade-off:** Once 4,096 distinct client addresses have been seen, new addresses share the overflow quota. This intentionally trades per-address fairness for a strict memory bound under adversarial address churn.
 - **Verification:** Static review only; .NET 10 build/test has not been run. No GitHub Actions used.
+
+
+### 226. Verify bounded IP partition allocation under concurrency
+- **Reason:** The 4,096-key selector is shared by the search and authentication-failure limiters. Its lock should guarantee that concurrent first-seen addresses cannot exceed the configured number of retained keys.
+- **Action:** Added a parallel allocation regression test using 100 distinct client keys and a capacity of two.
+- **Assertions:** Exactly two distinct client partitions are retained and the remaining 98 map to the shared overflow partition, independent of thread scheduling.
+- **Commit:** `b1b6a61e5215fc12e696e0c44d0da393dfe85fad`.
+- **Verification:** Test authored and committed; not executed because the assistant environment has no .NET SDK. No GitHub Actions/workflows used.
+- **Next:** Run `dotnet test .\\DotNetWebSearchApi.sln -c Release --filter FullyQualifiedName~ApiRequestSecurityRateLimitTests`, then the complete Release suite.
