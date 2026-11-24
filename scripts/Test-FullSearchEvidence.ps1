@@ -31,6 +31,7 @@ $coverageResultsDirectory = Join-Path $evidencePath "coverage"
 $jsonPath = Join-Path $evidencePath "search-assessment-$timestamp.json"
 $logPath = Join-Path $evidencePath "search-assessment-$timestamp.log"
 $providerRuns = [System.Collections.Generic.List[object]]::new()
+$providerOutcomeKeys = [System.Collections.Generic.HashSet[string]]::new([System.StringComparer]::OrdinalIgnoreCase)
 $stages = [System.Collections.Generic.List[object]]::new()
 $logLines = [System.Collections.Generic.List[string]]::new()
 $environmentNames = @(
@@ -165,31 +166,46 @@ try {
             throw "Batch $batchNumber selected $selectedCount providers; expected $expectedSelectedCount."
         }
         $providerLines = $batchText -split "`r?`n"
+        $batchOutcomeCount = 0
         foreach ($providerLine in $providerLines) {
             $passMatch = [regex]::Match($providerLine, "PASS ([^:]+): (\d+) results\.")
             if ($passMatch.Success) {
-                $providerRuns.Add([pscustomobject]@{
-                    batch = $batchNumber
-                    offset = $batchOffset
-                    provider = $passMatch.Groups[1].Value.Trim()
-                    status = "passed"
-                    resultCount = [int]$passMatch.Groups[2].Value
-                    detail = $providerLine.Trim()
-                })
+                $providerName = $passMatch.Groups[1].Value.Trim()
+                $outcomeKey = "$batchNumber|$providerName"
+                if ($providerOutcomeKeys.Add($outcomeKey)) {
+                    $providerRuns.Add([pscustomobject]@{
+                        batch = $batchNumber
+                        offset = $batchOffset
+                        provider = $providerName
+                        status = "passed"
+                        resultCount = [int]$passMatch.Groups[2].Value
+                        detail = $providerLine.Trim()
+                    })
+                    $batchOutcomeCount++
+                }
                 continue
             }
 
             $failMatch = [regex]::Match($providerLine, "FAIL ([^:]+): (.*)$")
             if ($failMatch.Success) {
-                $providerRuns.Add([pscustomobject]@{
-                    batch = $batchNumber
-                    offset = $batchOffset
-                    provider = $failMatch.Groups[1].Value.Trim()
-                    status = "failed"
-                    resultCount = 0
-                    detail = $failMatch.Groups[2].Value.Trim()
-                })
+                $providerName = $failMatch.Groups[1].Value.Trim()
+                $outcomeKey = "$batchNumber|$providerName"
+                if ($providerOutcomeKeys.Add($outcomeKey)) {
+                    $providerRuns.Add([pscustomobject]@{
+                        batch = $batchNumber
+                        offset = $batchOffset
+                        provider = $providerName
+                        status = "failed"
+                        resultCount = 0
+                        detail = $failMatch.Groups[2].Value.Trim()
+                    })
+                    $batchOutcomeCount++
+                }
             }
+        }
+
+        if ($batchOutcomeCount -ne $selectedCount) {
+            throw "Batch $batchNumber captured $batchOutcomeCount distinct provider outcomes; expected $selectedCount."
         }
 
         Write-Host "Batch $batchNumber exit code: $($batch.exitCode); providers selected: $selectedCount."
