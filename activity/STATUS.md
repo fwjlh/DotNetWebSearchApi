@@ -252,3 +252,6 @@ Keep this file and `LOG.md` current so the next session can resume without chat 
 
 
 - Coverage evidence path formatting now avoids `Path.GetRelativePath`, which is unavailable in Windows PowerShell 5.1/.NET Framework; it uses compatible path substring/trim APIs. Commit: `fa9b821f09e09d6f80fb2c76f5018afb85a7f154`.
+
+
+- README now distinguishes direct-test and full-assessment coverage report locations and gives the correct summary command for `evidence/coverage`. Commit: `1650553067270dbee78a158bf5d40e115b94c9fa`.
