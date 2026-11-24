@@ -1834,3 +1834,12 @@ Every material repository action is recorded here with its reason, result, verif
 - **Documentation:** README now records 10 failed-auth/minute/IP, 60 authenticated requests/minute/IP and 60/minute/key, and clarifies the direct-peer IP limitation behind reverse proxies.
 - **Commits:** `b54addd11c589de690ca3a61011c70e03bed8663` (middleware), `8333e6ad8864b745dd5de101113dfd071e53e752` (tests), `865b33577f0aec3b944a99b69a988a6a9f788e95` (test visibility), `0d913693b495b929f3eed0864317491b47bb4c79` (README).
 - **Verification:** Static review only; .NET 10 build/test pending locally. No Actions used.
+
+
+### 203. Add explicit trusted reverse-proxy support for client-IP quotas
+- **Reason:** IP-based limits behind a reverse proxy otherwise see only the proxy's address; trusting arbitrary `X-Forwarded-For` headers would let clients spoof quota partitions.
+- **Correction:** Added `TRUSTED_PROXY_IPS` (semicolon-separated literal IP addresses). The app validates the list at startup, clears default trusted proxy/network entries, trusts only configured immediate peers, processes one forwarded hop, and applies forwarded headers before routing/security/rate limiting. With no configured proxies, forwarded headers are ignored.
+- **Tests added:** Invalid proxy configuration refuses startup; a configured loopback proxy can separate client IP quotas; untrusted forwarded headers cannot spoof a new quota partition.
+- **Documentation:** README includes the optional environment variable and one-hop trust model.
+- **Commits:** `a9f66a0e38c2f9b36a62f03fdf0b14fd5d31be1c` (options), `f53dfdd5b0a61cbd1bce4a7d44e2d0f5ef4f1c66` (middleware order), `b1ae1e639c01b1862d6c610995bf9d4ea961cadf` (tests), `6465e5d1f28bcb0ab3abf4249bf752d3b18729f6` and `10e7e5756a8464f8fbad78447c0caa9eb31ddcc1` (docs).
+- **Verification:** Static review only; .NET 10 build/test pending locally. No Actions used.
