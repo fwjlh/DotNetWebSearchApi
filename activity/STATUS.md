@@ -218,3 +218,6 @@ Keep this file and `LOG.md` current so the next session can resume without chat 
 
 
 - Expanded outbound-address regression cases to cover shorthand/integer IPv4 loopback hosts, IPv4-mapped IPv6 loopback, documentation space and limited broadcast. Commit: `18c1d1793e87fadc4b807b77dd94613785910994`. Execution remains pending the local .NET 10 test run.
+
+
+- Added a non-seekable, unknown-length streaming response test proving the provider HTTP transport enforces its response cap without relying on Content-Length. Commit: `939bb2a9234770e7aa3132f235b9c5128dab6508`. Execution pending local .NET 10.
