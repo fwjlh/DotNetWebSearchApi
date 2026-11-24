@@ -266,6 +266,11 @@ public sealed partial class SearxngApiIntegrationTests
     [Fact]
     public async Task Search_RateLimitReturnsTooManyRequestsAfterSixtyRequests()
     {
+        using EnvironmentVariableScope environment = EnvironmentVariableScope.Apply(
+            new Dictionary<string, string?>
+            {
+                ["SEARCH_API_KEYS"] = null
+            });
         using WebApplicationFactory<Program> factory = CreateFactory(
             Provider("alpha", Result("A", "https://example.com/a")));
         using HttpClient client = factory.CreateClient();
