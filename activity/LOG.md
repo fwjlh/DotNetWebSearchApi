@@ -1699,3 +1699,10 @@ Every material repository action is recorded here with its reason, result, verif
 - **API validation:** Added an opt-in live integration test that checks health, provider inventory, diagnostics, merged search results, result URL validity and deduplication, provider outcome classifications, and the SearXNG-compatible JSON endpoint.
 - **Execution:** Source and script committed for local execution. No .NET build or live request is claimed here. GitHub Actions remain untouched.
 - **Next:** Run the evidence script once and inspect the JSON plus log together; group failures by status/failure kind/provider family before changing adapters.
+
+
+### 185. Harden evidence collection for complete batch runs
+- **Correction:** Evidence parsing is scoped to the current batch, preventing earlier batch lines from being counted again. Failed provider batches do not stop later batches; a failed batch-stage exit code is still retained and causes the final assessment to fail.
+- **Isolation:** The offline regression stage explicitly disables opt-in live tests, then the live flag is enabled only for the provider and aggregate API stages. Original process environment values are restored in a `finally` block.
+- **Evidence detail:** The JSON summary now includes the aggregate API test output, provider batch-stage status and provider-level outcomes. Generated evidence files are ignored by Git.
+- **Verification:** Source reviewed only. The assessment must be run locally with the .NET 10 SDK; no build or live test is claimed.
