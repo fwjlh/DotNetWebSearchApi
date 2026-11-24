@@ -112,20 +112,20 @@ function Publish-Evidence {
         [string]$RunTimestamp
     )
 
-    $actualRoot = Invoke-GitCommand $RepositoryRoot @("rev-parse", "--show-toplevel")
+    $actualRoot = Invoke-GitCommand -RepositoryRoot $RepositoryRoot -Arguments @("rev-parse", "--show-toplevel")
     $expectedRoot = [System.IO.Path]::GetFullPath($RepositoryRoot).TrimEnd([char[]]@([System.IO.Path]::DirectorySeparatorChar, [System.IO.Path]::AltDirectorySeparatorChar))
     $actualRoot = [System.IO.Path]::GetFullPath($actualRoot).TrimEnd([char[]]@([System.IO.Path]::DirectorySeparatorChar, [System.IO.Path]::AltDirectorySeparatorChar))
     if (-not $actualRoot.Equals($expectedRoot, [System.StringComparison]::OrdinalIgnoreCase)) {
         throw "Git repository root does not match the assessment script directory."
     }
 
-    $branch = Invoke-GitCommand $actualRoot @("branch", "--show-current")
+    $branch = Invoke-GitCommand -RepositoryRoot $actualRoot -Arguments @("branch", "--show-current")
     if ($branch -ne "main") {
         throw "Evidence publishing requires the current branch to be main; found '$branch'."
     }
 
-    $origin = Invoke-GitCommand $actualRoot @("remote", "get-url", "origin")
-    $originIsExpected = $origin.Contains("github.com", [System.StringComparison]::OrdinalIgnoreCase) -and (
+    $origin = Invoke-GitCommand -RepositoryRoot $actualRoot -Arguments @("remote", "get-url", "origin")
+    $originIsExpected = $origin.IndexOf("github.com", [System.StringComparison]::OrdinalIgnoreCase) -ge 0 -and (
         $origin.EndsWith("fwjlh/DotNetWebSearchApi.git", [System.StringComparison]::OrdinalIgnoreCase) -or
         $origin.EndsWith("fwjlh/DotNetWebSearchApi", [System.StringComparison]::OrdinalIgnoreCase)
     )
@@ -154,18 +154,18 @@ function Publish-Evidence {
 
     $jsonRelativePath = $JsonPath.Substring($actualRoot.Length).TrimStart([char[]]@([System.IO.Path]::DirectorySeparatorChar, [System.IO.Path]::AltDirectorySeparatorChar)).Replace("\", "/")
     $logRelativePath = $LogPath.Substring($actualRoot.Length).TrimStart([char[]]@([System.IO.Path]::DirectorySeparatorChar, [System.IO.Path]::AltDirectorySeparatorChar)).Replace("\", "/")
-    Invoke-GitCommand $actualRoot @("add", "-f", "--", $jsonRelativePath, $logRelativePath) | Out-Null
+    Invoke-GitCommand -RepositoryRoot $actualRoot -Arguments @("add", "-f", "--", $jsonRelativePath, $logRelativePath) | Out-Null
 
-    $stagedOutput = Invoke-GitCommand $actualRoot @("diff", "--cached", "--name-only")
+    $stagedOutput = Invoke-GitCommand -RepositoryRoot $actualRoot -Arguments @("diff", "--cached", "--name-only")
     $stagedPaths = @([regex]::Split($stagedOutput, "\r?\n") | Where-Object { $_ })
     $expectedPaths = @($jsonRelativePath, $logRelativePath)
     if ($stagedPaths.Count -ne 2 -or @($stagedPaths | Where-Object { $expectedPaths -notcontains $_ }).Count -ne 0) {
         throw "Git staging contains unexpected files; refusing to commit."
     }
 
-    Invoke-GitCommand $actualRoot @("commit", "-m", "Add search assessment evidence $RunTimestamp") | Out-Null
-    $commit = Invoke-GitCommand $actualRoot @("rev-parse", "--short", "HEAD")
-    Invoke-GitCommand $actualRoot @("push", "origin", "HEAD:main") | Out-Null
+    Invoke-GitCommand -RepositoryRoot $actualRoot -Arguments @("commit", "-m", "Add search assessment evidence $RunTimestamp") | Out-Null
+    $commit = Invoke-GitCommand -RepositoryRoot $actualRoot -Arguments @("rev-parse", "--short", "HEAD")
+    Invoke-GitCommand -RepositoryRoot $actualRoot -Arguments @("push", "origin", "HEAD:main") | Out-Null
     return $commit
 }
 
@@ -607,6 +607,6 @@ finally {
     Write-Host "Provider checks: $passedProviders passed; $failedProviders failed."
 }
 
-if (-not $buildPassed -or -not $regressionPassed -or $null -eq $coverageSummary -or -not $providerBatchStagesPassed -or $failedProviders -gt 0 -or -not $apiPassed -or $null -ne $overallError) {
+if (-not $buildPassed -or -not $regressionPassed -or $null -eq $coverageSummary -or -not $providerBatchStagesPassed -or $failedProviders -gt 0 -or -not $apiPassed -or $null -ne $overallError -or $null -ne $publishError) {
     exit 1
 }
