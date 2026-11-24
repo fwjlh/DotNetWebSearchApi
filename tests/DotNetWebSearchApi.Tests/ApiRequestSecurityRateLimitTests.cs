@@ -7,6 +7,20 @@ namespace DotNetWebSearchApi.Tests;
 
 public sealed class ApiRequestSecurityRateLimitTests
 {
+    [Theory]
+    [InlineData(true, "203.0.113.10", true)]
+    [InlineData(false, "127.0.0.1", true)]
+    [InlineData(false, "203.0.113.10", false)]
+    public void SecureTransport_RequiresHttpsForRemoteAddresses(
+        bool isHttps,
+        string remoteAddress,
+        bool expected)
+    {
+        Assert.Equal(
+            expected,
+            ApiRequestSecurity.IsSecureTransport(isHttps, IPAddress.Parse(remoteAddress)));
+    }
+
     [Fact]
     public void ClientIpPartitionKey_NormalizesIpv4MappedIpv6()
     {
