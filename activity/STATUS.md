@@ -365,3 +365,16 @@ Keep this file and `LOG.md` current so the next session can resume without chat 
 - Publishing checks the expected repository, `main` branch, an up-to-date local `main` matching `origin/main`, and an empty staging area, then stages only the two generated evidence files and pushes through the existing Git credential manager.
 - Default execution remains local-only. Use `.\scripts\Test-FullSearchEvidence.ps1 -PublishEvidence` to opt in.
 - **Pending:** operator-side PowerShell run and authenticated Git push. Static review only; no Actions/workflows used.
+
+
+## Latest full assessment — 2026-11-24 12:22 UTC
+- Release build passed with 0 warnings and 0 errors.
+- Offline regression: **395 passed, 2 failed, 5 skipped**. Both failures are stale OpenAIRE metadata fixtures still using legacy `journal.title` and `webLinks` fields. The v4 adapter now maps `container.name` and `instances.urls`; the fixtures have been updated to match that contract.
+- Live provider assessment: **55 passed / 8 failed** across 63 providers. Batch outcomes: 16/20, 18/20, 19/20 and 2/3.
+- OpenAIRE now passes live with 3 results; MusicBrainz and OpenLibrary also passed in this run.
+- Remaining live failures: Europe PMC timeout/cancellation; Gitea HTTP 429; Google HTTP 403; Google Books HTTP 429; Marginalia HTTP 429; Qwant access denied/DataDome; Semantic Scholar HTTP 429; Yep HTTP 403.
+- Aggregate API passed: HTTP 200, 10 results and 10 unique URLs; 39 providers succeeded and 5 failed. SearXNG compatibility endpoint passed with HTTP 200 and 10 results.
+- Coverage: **96.40% line (4,287/4,447), 83.85% branch (1,600/1,908)**.
+- Updated both OpenAIRE metadata test fixtures to v4 fields in commits `214d9ccccbf6baa912123d93be1fb580ef811af2` and `fe53ce6d37e5cd5f1ad41331c3d505915e55dad8`.
+- **Verification pending:** user must pull and rerun the two metadata tests and full assessment. Evidence files were supplied in chat; successful GitHub evidence publication has not been established by the files alone.
+- No GitHub Actions/workflows were used.
