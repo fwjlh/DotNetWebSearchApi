@@ -12,7 +12,9 @@ using Microsoft.Extensions.Hosting;
 
 namespace DotNetWebSearchApi;
 
-internal sealed record ApiRequestSecurityOptions(IReadOnlyList<string> ApiKeys);
+internal sealed record ApiRequestSecurityOptions(
+    IReadOnlyList<string> ApiKeys,
+    PartitionedRateLimiter<HttpContext> AuthenticationFailureLimiter);
 
 internal static class ApiRequestSecurity
 {
@@ -56,7 +58,19 @@ internal static class ApiRequestSecurity
             options.MultipartBodyLengthLimit = 16 * 1024;
         });
 
-        return new ApiRequestSecurityOptions(apiKeys);
+        PartitionedRateLimiter<HttpContext> authenticationFailureLimiter =
+            PartitionedRateLimiter.Create<HttpContext, string>(
+                context => RateLimitPartition.GetFixedWindowLimiter(
+                    context.Connection.RemoteIpAddress?.ToString() ?? "unknown",
+                    _ => new FixedWindowRateLimiterOptions
+                    {
+                        AutoReplenishment = true,
+                        PermitLimit = 10,
+                        QueueLimit = 0,
+                        Window = TimeSpan.FromMinutes(1)
+                    }));
+
+        return new ApiRequestSecurityOptions(apiKeys, authenticationFailureLimiter);
     }
 
     public static void UseAuthentication(
@@ -101,6 +115,16 @@ internal static class ApiRequestSecurity
                         suppliedBytes));
                 if (!authorized)
                 {
+                    using RateLimitLease failureLease = await options.AuthenticationFailureLimiter.AcquireAsync(
+                        context,
+                        1,
+                        context.RequestAborted);
+                    if (!failureLease.IsAcquired)
+                    {
+                        context.Response.StatusCode = StatusCodes.Status429TooManyRequests;
+                        return;
+                    }
+
                     context.Response.StatusCode = StatusCodes.Status401Unauthorized;
                     context.Response.Headers["WWW-Authenticate"] = "Bearer";
                     await context.Response.WriteAsJsonAsync(new { error = "A valid API key is required." });
