@@ -101,7 +101,7 @@ try {
     [xml]$coverageDocument = Get-Content -LiteralPath $latestCoverage.FullName -Raw
     $coverageRoot = $coverageDocument.coverage
     $coverageSummary = [ordered]@{
-        reportFile = [System.IO.Path]::GetRelativePath($evidencePath, $latestCoverage.FullName)
+        reportFile = $latestCoverage.FullName.Substring($evidencePath.Length).TrimStart([char[]]@([System.IO.Path]::DirectorySeparatorChar, [System.IO.Path]::AltDirectorySeparatorChar)).Replace([System.IO.Path]::DirectorySeparatorChar, '/')
         lineCoveragePercent = [Math]::Round(([double]::Parse([string]$coverageRoot.'line-rate', [Globalization.CultureInfo]::InvariantCulture) * 100), 2)
         branchCoveragePercent = [Math]::Round(([double]::Parse([string]$coverageRoot.'branch-rate', [Globalization.CultureInfo]::InvariantCulture) * 100), 2)
         linesCovered = [int]$coverageRoot.'lines-covered'
