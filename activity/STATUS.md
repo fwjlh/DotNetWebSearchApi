@@ -255,3 +255,6 @@ Keep this file and `LOG.md` current so the next session can resume without chat 
 
 
 - README now distinguishes direct-test and full-assessment coverage report locations and gives the correct summary command for `evidence/coverage`. Commit: `1650553067270dbee78a158bf5d40e115b94c9fa`.
+
+
+- Aggregator now normalizes provider position maps without throwing on case-insensitive duplicate keys; blank keys and non-positive positions are ignored and the best position is retained. Added regression test. Commits: `247c80fd8df94408dafb086c7b5f40e37be11921`, `7644cbd4f2a26d97c6dbe19c8ee177734a887eca`. Execution pending local .NET 10.
