@@ -282,3 +282,6 @@ Keep this file and `LOG.md` current so the next session can resume without chat 
 
 - Proxy/auth integration tests now save, clear and restore inherited `SEARCH_API_KEYS` and `TRUSTED_PROXY_IPS`, preventing developer-machine settings from changing test outcomes. Commits: `845d8e81f16bf3cb277cdfdea05540ae600519e2`, `3b1bb202ce9cb27427c19edd63649208324b32fe`, `5fa73f011dbd3b194c54f6c74241affe38b05d82`.
 - Forwarded-header options now clear `KnownIPNetworks` rather than obsolete `KnownNetworks`. Commit: `7b74b1a5ed55a70486d7c1518b346649ef3a810e`.
+
+
+- Failed-auth and authenticated IP quota partitions now normalize IPv4-mapped IPv6 to the corresponding IPv4 address; added an equality regression test. Commits: `77f82746e271f68405313fcf4b510edfb5e8c174`, `40f2fb91b50aa77d30f5aacee3832bc8cfc9e13e`. Execution pending local .NET 10.
