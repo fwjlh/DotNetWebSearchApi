@@ -318,3 +318,6 @@ Keep this file and `LOG.md` current so the next session can resume without chat 
 - Fixed the full evidence runner to capture non-zero `dotnet test` output without PowerShell terminating the stage early. This should preserve provider inventory and failure details and allow subsequent batches plus aggregate API testing to run.
 - Commit: `a7c91a20092ffabe2d45126a28ed67554afc2e28`.
 - Pending user rerun of `scripts/Test-FullSearchEvidence.ps1`; no local execution or workflows used.
+
+
+- Auth integration tests now use an HTTPS TestServer client. Trusted-proxy test runs in Staging and relies on trusted forwarded scheme/IP; an untrusted forwarded scheme is explicitly rejected in Staging. Commits: `96943e789f08d88ddd8397027971bc6dcf2192ce`, `c635a9fc6f7d30e4ffb4a9efb9de8374886bb081`, `1aea8c63b8ae2ec4c12c42336aae121dbf9b86ee`.
