@@ -52,8 +52,26 @@ function Invoke-DotNetStage {
     Write-Host ""
     Write-Host "=== $Name ==="
     $logLines.Add("=== $Name ===")
-    $output = & dotnet @Arguments 2>&1
-    $exitCode = $LASTEXITCODE
+    $output = @()
+    $exitCode = 1
+    $previousPreference = $ErrorActionPreference
+    try {
+        # A failing test process is evidence, not a PowerShell control-flow failure.
+        # Keep stderr captured so the batch output and xUnit diagnostics are still parsed.
+        $ErrorActionPreference = "Continue"
+        $output = @(& dotnet @Arguments 2>&1)
+        if ($null -ne $LASTEXITCODE) {
+            $exitCode = $LASTEXITCODE
+        }
+    }
+    catch {
+        $output += $_.ToString()
+        $exitCode = 1
+    }
+    finally {
+        $ErrorActionPreference = $previousPreference
+    }
+
     foreach ($line in $output) {
         $textLine = [string]$line
         Write-Host $textLine
