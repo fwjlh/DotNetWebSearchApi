@@ -278,3 +278,7 @@ Keep this file and `LOG.md` current so the next session can resume without chat 
 - README documents the configuration and trust boundary.
 - Commits: `a9f66a0e38c2f9b36a62f03fdf0b14fd5d31be1c`, `f53dfdd5b0a61cbd1bce4a7d44e2d0f5ef4f1c66`, `b1ae1e639c01b1862d6c610995bf9d4ea961cadf`, `6465e5d1f28bcb0ab3abf4249bf752d3b18729f6`, `10e7e5756a8464f8fbad78447c0caa9eb31ddcc1`.
 - Static review only; local .NET 10 build/test pending.
+
+
+- Proxy/auth integration tests now save, clear and restore inherited `SEARCH_API_KEYS` and `TRUSTED_PROXY_IPS`, preventing developer-machine settings from changing test outcomes. Commits: `845d8e81f16bf3cb277cdfdea05540ae600519e2`, `3b1bb202ce9cb27427c19edd63649208324b32fe`, `5fa73f011dbd3b194c54f6c74241affe38b05d82`.
+- Forwarded-header options now clear `KnownIPNetworks` rather than obsolete `KnownNetworks`. Commit: `7b74b1a5ed55a70486d7c1518b346649ef3a810e`.
