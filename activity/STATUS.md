@@ -321,3 +321,6 @@ Keep this file and `LOG.md` current so the next session can resume without chat 
 
 
 - Auth integration tests now use an HTTPS TestServer client. Trusted-proxy test runs in Staging and relies on trusted forwarded scheme/IP; an untrusted forwarded scheme is explicitly rejected in Staging. Commits: `96943e789f08d88ddd8397027971bc6dcf2192ce`, `c635a9fc6f7d30e4ffb4a9efb9de8374886bb081`, `1aea8c63b8ae2ec4c12c42336aae121dbf9b86ee`.
+
+
+- Browser result rendering now rejects URLs containing embedded username/password components, matching server/client result sanitization. Commit: `cddb7a5e7f4855841f95d2df1dd721ffcc8b6cd9`.
