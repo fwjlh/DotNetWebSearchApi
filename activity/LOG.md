@@ -1894,3 +1894,10 @@ Every material repository action is recorded here with its reason, result, verif
 - **Documentation:** README now states that the server enforces remote HTTPS and explains the trusted-proxy scheme requirement.
 - **Commits:** `3b235706d6c8bf189696cc8ff8ddda6a04d6382f` (middleware), `26bab43114c8533ae22f73538bcbbdaf966443e1` (tests), `896dc21801e8c232f9ff8e809cd6522ca14f17c7` (proxy test), `35a8b3601e59c2910c4b5d3a5fb096ccdecfac0a` (README).
 - **Verification:** Static review only; .NET 10 build/test pending locally.
+
+
+### 211. Correct loopback transport helper API usage
+- **Reason:** Static review caught an incorrect instance-property reference to `IPAddress.IsLoopback`; the .NET API exposes this as a static method.
+- **Correction:** Changed the helper to call `IPAddress.IsLoopback(remoteAddress)` after a null check.
+- **Commit:** `ac7829318aa756e010ab74a5ddac54e749de15b9`.
+- **Verification:** Source review only; build still pending.
