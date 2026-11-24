@@ -38,6 +38,7 @@ public static class PublicNetworkSocketsHandler
         {
             return bytes[0] is >= 0x20 and <= 0x3F
                 && !(bytes[0] == 0x20 && bytes[1] == 0x01 && bytes[2] <= 0x01)
+                && !(bytes[0] == 0x20 && bytes[1] == 0x01 && bytes[2] == 0x00 && (bytes[3] & 0xF0) == 0x20)
                 && !(bytes[0] == 0x20 && bytes[1] == 0x01 && bytes[2] == 0x0D && bytes[3] == 0xB8)
                 && !(bytes[0] == 0x20 && bytes[1] == 0x02)
                 && !(bytes[0] == 0x3F && bytes[1] == 0xFF && (bytes[2] & 0xF0) == 0);
