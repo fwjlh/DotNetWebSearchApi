@@ -114,6 +114,9 @@ internal static class ApiRequestSecurity
         }
     }
 
+    internal static bool IsSecureTransport(bool isHttps, IPAddress? remoteAddress)
+        => isHttps || remoteAddress?.IsLoopback == true;
+
     internal static string GetClientIpPartitionKey(IPAddress? address)
     {
         if (address?.IsIPv4MappedToIPv6 == true)
@@ -176,6 +179,16 @@ internal static class ApiRequestSecurity
 
             if (isSearchRequest && options.ApiKeys.Count > 0)
             {
+                if (!IsSecureTransport(context.Request.IsHttps, context.Connection.RemoteIpAddress))
+                {
+                    context.Response.StatusCode = StatusCodes.Status400BadRequest;
+                    await context.Response.WriteAsJsonAsync(new
+                    {
+                        error = "HTTPS is required for remote API-key requests."
+                    });
+                    return;
+                }
+
                 string? suppliedKey = context.Request.Headers["Authorization"]
                     .FirstOrDefault(value => value is not null && value.StartsWith("Bearer ", StringComparison.OrdinalIgnoreCase))?.Substring(7);
                 byte[] suppliedBytes = Encoding.UTF8.GetBytes(suppliedKey ?? string.Empty);
