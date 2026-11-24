@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.Net;
 using System.Security.Cryptography;
 using System.Text;
@@ -61,6 +62,11 @@ internal static class ApiRequestSecurity
         services.AddRateLimiter(options =>
         {
             options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+            options.OnRejected = (context, _) =>
+            {
+                AddRetryAfterHeader(context.HttpContext.Response, context.Lease);
+                return ValueTask.CompletedTask;
+            };
             options.AddPolicy("search", context =>
                 RateLimitPartition.GetFixedWindowLimiter(
                     GetClientIpPartitionKey(context.Connection.RemoteIpAddress),
@@ -97,6 +103,15 @@ internal static class ApiRequestSecurity
         services.AddSingleton(authenticationFailureLimiter);
         services.AddSingleton(perKeySearchLimiter);
         return new ApiRequestSecurityOptions(apiKeys, authenticationFailureLimiter, perKeySearchLimiter);
+    }
+
+    private static void AddRetryAfterHeader(HttpResponse response, RateLimitLease lease)
+    {
+        if (lease.TryGetMetadata(MetadataName.RetryAfter, out TimeSpan retryAfter))
+        {
+            int retrySeconds = Math.Max(1, (int)Math.Ceiling(retryAfter.TotalSeconds));
+            response.Headers["Retry-After"] = retrySeconds.ToString(CultureInfo.InvariantCulture);
+        }
     }
 
     internal static string GetClientIpPartitionKey(IPAddress? address)
@@ -177,6 +192,7 @@ internal static class ApiRequestSecurity
                     if (!failureLease.IsAcquired)
                     {
                         context.Response.StatusCode = StatusCodes.Status429TooManyRequests;
+                        AddRetryAfterHeader(context.Response, failureLease);
                         return;
                     }
 
@@ -193,6 +209,7 @@ internal static class ApiRequestSecurity
                 if (!keyLease.IsAcquired)
                 {
                     context.Response.StatusCode = StatusCodes.Status429TooManyRequests;
+                    AddRetryAfterHeader(context.Response, keyLease);
                     return;
                 }
             }
