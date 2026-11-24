@@ -224,3 +224,10 @@ Keep this file and `LOG.md` current so the next session can resume without chat 
 
 
 - Full-search evidence runner no longer has a hard-coded 200-provider ceiling; it terminates using the registered inventory and exact batch coverage checks. Commit: `462be91f74ba0fccc29a42882ad879795c5e0453`. PowerShell execution pending locally.
+
+
+## Latest API result sanitization — 2026-11-24
+- Search aggregation now rejects blank titles, empty-host/non-HTTP URLs and result URLs containing embedded credentials before merging provider output.
+- Added a fixture test proving credential-bearing and title-less results are dropped while a valid result survives.
+- Commits: `e4effd7dfa42a1739a5bc4d3acb41f1037cb626c`, `490d7222e1d3c7b88a326c0d72f5c32f0d16a1e4`.
+- Static review only; local .NET 10 build/test remains pending.
