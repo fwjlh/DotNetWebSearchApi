@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.RateLimiting;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -64,13 +65,8 @@ internal static class ApiRequestSecurity
     {
         app.Use(async (context, next) =>
         {
-            string requestPath = context.Request.Path.Value ?? "/";
-            if (requestPath.Length > 1)
-            {
-                requestPath = requestPath.TrimEnd('/');
-            }
-
-            bool isFormSearchPost = requestPath.Equals("/search", StringComparison.OrdinalIgnoreCase)
+            string? routePattern = (context.GetEndpoint() as RouteEndpoint)?.RoutePattern.RawText;
+            bool isFormSearchPost = string.Equals(routePattern, "/search", StringComparison.OrdinalIgnoreCase)
                 && HttpMethods.IsPost(context.Request.Method);
             if (isFormSearchPost)
             {
@@ -89,11 +85,9 @@ internal static class ApiRequestSecurity
             }
 
             bool isSearchRequest =
-                (requestPath.Equals("/search", StringComparison.OrdinalIgnoreCase)
-                    && (HttpMethods.IsGet(context.Request.Method) || HttpMethods.IsPost(context.Request.Method)))
-                || (requestPath.Equals("/api/search", StringComparison.OrdinalIgnoreCase)
-                    && HttpMethods.IsGet(context.Request.Method))
-                || (requestPath.Equals("/", StringComparison.OrdinalIgnoreCase)
+                string.Equals(routePattern, "/search", StringComparison.OrdinalIgnoreCase)
+                || string.Equals(routePattern, "/api/search", StringComparison.OrdinalIgnoreCase)
+                || (string.Equals(routePattern, "/", StringComparison.OrdinalIgnoreCase)
                     && context.Request.Query.ContainsKey("q"));
 
             if (isSearchRequest && options.ApiKeys.Count > 0)
