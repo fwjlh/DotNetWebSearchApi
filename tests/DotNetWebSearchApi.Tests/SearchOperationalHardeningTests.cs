@@ -1,6 +1,8 @@
 using System.Net;
 using System.Net.Http.Headers;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Mvc.Testing;
+using Microsoft.Extensions.Options;
 using Xunit;
 
 namespace DotNetWebSearchApi.Tests;
@@ -200,6 +202,22 @@ public sealed partial class SearxngApiIntegrationTests
             () => factory.CreateClient());
 
         Assert.Contains("TRUSTED_PROXY_IPS", exception.Message, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public void TrustedProxyConfiguration_AddsMappedIpv4Representation()
+    {
+        using EnvironmentVariableScope environment = EnvironmentVariableScope.Apply(
+            new Dictionary<string, string?>
+            {
+                ["TRUSTED_PROXY_IPS"] = "10.0.0.5"
+            });
+        using WebApplicationFactory<Program> factory = CreateFactory(
+            Provider("alpha", Result("A", "https://example.com/a")));
+        ForwardedHeadersOptions options = factory.Services.GetRequiredService<IOptions<ForwardedHeadersOptions>>().Value;
+
+        Assert.Contains(IPAddress.Parse("10.0.0.5"), options.KnownProxies);
+        Assert.Contains(IPAddress.Parse("::ffff:10.0.0.5"), options.KnownProxies);
     }
 
     [Fact]
