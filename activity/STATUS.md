@@ -294,3 +294,10 @@ Keep this file and `LOG.md` current so the next session can resume without chat 
 
 
 - All three throttling layers (failed auth, per-key search and IP search) now expose Retry-After seconds when the limiter supplies retry metadata. Regression tests assert the header for failed-auth and IP throttles. Commits: `4b639f399fd65e5cf859afe4f45acf51e638da88`, `ca56e12a614d39d79fe4fa563fed9c43b90944ee`, `1f1d46ecb551e11b8e31c372a022269b8068b75e`.
+
+
+## Latest transport enforcement — 2026-11-24
+- API server now rejects remote search requests over HTTP whenever API keys are configured; loopback HTTP remains allowed for local development. Trusted reverse proxies can supply `X-Forwarded-Proto: https` only when their IP is in `TRUSTED_PROXY_IPS`.
+- Added secure-transport decision tests; proxy integration tests now send trusted forwarded scheme.
+- Commits: `3b235706d6c8bf189696cc8ff8ddda6a04d6382f`, `26bab43114c8533ae22f73538bcbbdaf966443e1`, `896dc21801e8c232f9ff8e809cd6522ca14f17c7`, `35a8b3601e59c2910c4b5d3a5fb096ccdecfac0a`.
+- Static review only; local .NET 10 build/test pending.
