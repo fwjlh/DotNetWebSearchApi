@@ -70,6 +70,7 @@ $buildPassed = $false
 $regressionPassed = $false
 $apiPassed = $false
 $registeredProviderCount = $null
+$expectedProviderCount = $null
 $batchOffset = 0
 $batchNumber = 0
 $maximumProviderCount = 200
@@ -108,6 +109,19 @@ try {
 
         $registeredProviderCount = [int]$inventoryMatch.Groups[1].Value
         $selectedCount = [int]$inventoryMatch.Groups[3].Value
+        if ($registeredProviderCount -lt 1) {
+            throw "The application registered no live search providers."
+        }
+        if ($null -eq $expectedProviderCount) {
+            $expectedProviderCount = $registeredProviderCount
+        }
+        elseif ($registeredProviderCount -ne $expectedProviderCount) {
+            throw "Provider inventory changed during the live assessment."
+        }
+        $expectedSelectedCount = [Math]::Min($BatchSize, [Math]::Max(0, $expectedProviderCount - $batchOffset))
+        if ($selectedCount -ne $expectedSelectedCount) {
+            throw "Batch $batchNumber selected $selectedCount providers; expected $expectedSelectedCount."
+        }
         $providerLines = $batchText -split "`r?`n"
         foreach ($providerLine in $providerLines) {
             $passMatch = [regex]::Match($providerLine, "PASS ([^:]+): (\d+) results\.")
@@ -137,7 +151,7 @@ try {
         }
 
         Write-Host "Batch $batchNumber exit code: $($batch.exitCode); providers selected: $selectedCount."
-        if ($selectedCount -lt $BatchSize) {
+        if (($batchOffset + $selectedCount) -ge $registeredProviderCount) {
             break
         }
 
