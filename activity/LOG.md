@@ -2051,3 +2051,12 @@ Every material repository action is recorded here with its reason, result, verif
 - **Correction:** Added an authoritative top-of-file status block with the current evidence, 46 result-bearing providers, 7 empty responses, 10 upstream failures, post-evidence code changes and exact next verification steps. Marked older entries as historical. Corrected the timestamp to 15:40 UTC.
 - **Commits:** `8b659f32364cc568cba864797e5445db6864899e`, `f55f10551aa3f8954d623cb57c1044de513bfac6`.
 - **Verification:** Documentation review only; no source/test execution.
+
+
+## 2026-11-24 — Bound IP rate-limit partition memory
+- **Finding:** The built-in partitioned rate limiters retain a limiter for every distinct partition key. Using raw remote IP addresses for both search and failed-auth quotas could therefore grow memory indefinitely under a high-cardinality source-address attack.
+- **Correction:** Added `BoundedPartitionKeySelector` with a hard cap of 4,096 distinct IP keys. Existing keys keep their individual buckets; previously unseen keys after capacity share a single overflow bucket. The selector is shared by the IP search and failed-auth limiters, so their combined address registry remains bounded.
+- **Tests added:** Capacity boundary, stable existing-key mapping, overflow mapping and invalid-capacity rejection.
+- **Commits:** `03c338a40dcd3942777ac091033d73c5bc7d3022` (selector), `093f8360d5d0e502442937664587597ab4a9ba44` and `346587e903e33353e1ce1a5528a80a245f9e6b7f` (middleware wiring/format correction), `957ba7d35fda64396e0679f3e7051b8f9a81a169` (tests).
+- **Trade-off:** Once 4,096 distinct client addresses have been seen, new addresses share the overflow quota. This intentionally trades per-address fairness for a strict memory bound under adversarial address churn.
+- **Verification:** Static review only; .NET 10 build/test has not been run. No GitHub Actions used.
