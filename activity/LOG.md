@@ -1885,3 +1885,12 @@ Every material repository action is recorded here with its reason, result, verif
 - **Tests updated:** Failed-auth and authenticated IP quota tests now assert a 1–60 second Retry-After value on 429.
 - **Commits:** `4b639f399fd65e5cf859afe4f45acf51e638da88` (middleware), `ca56e12a614d39d79fe4fa563fed9c43b90944ee` and `1f1d46ecb551e11b8e31c372a022269b8068b75e` (tests).
 - **Verification:** Static review only; .NET 10 build/test pending locally.
+
+
+### 210. Enforce HTTPS on the API server, not only in its consumer
+- **Reason:** The CoderInBox client already refused to send a bearer key to a remote HTTP service, but other clients could still send credentials over cleartext HTTP because the API server did not enforce the same rule.
+- **Correction:** When API keys are configured, remote search requests now require `Request.IsHttps`; loopback HTTP remains permitted for local development. Trusted proxy `X-Forwarded-Proto` is processed before the security middleware, so a correctly configured TLS-terminating proxy is supported.
+- **Tests added:** Added secure-transport decision cases for remote HTTPS, loopback HTTP and remote HTTP; proxy integration tests now send trusted `X-Forwarded-Proto: https`.
+- **Documentation:** README now states that the server enforces remote HTTPS and explains the trusted-proxy scheme requirement.
+- **Commits:** `3b235706d6c8bf189696cc8ff8ddda6a04d6382f` (middleware), `26bab43114c8533ae22f73538bcbbdaf966443e1` (tests), `896dc21801e8c232f9ff8e809cd6522ca14f17c7` (proxy test), `35a8b3601e59c2910c4b5d3a5fb096ccdecfac0a` (README).
+- **Verification:** Static review only; .NET 10 build/test pending locally.
