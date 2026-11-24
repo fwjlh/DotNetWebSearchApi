@@ -2028,3 +2028,11 @@ Every material repository action is recorded here with its reason, result, verif
 - **Test added:** Assert the provider's explicit 20-second timeout contract.
 - **Commits:** `06a1b59d574524a9977830cd966bb5a77b35d4e8`, `989e53456559697766690cd44295c6ee2d7e171b`.
 - **Verification:** Build and offline suite passed before this change; rerun required to verify the new assertion and the live outcome. No Actions used.
+
+
+### 223. Keep remote-HTTP authentication failures inside the IP throttle
+- **Finding:** The remote-HTTPS check ran before bearer validation. An unauthenticated caller using plain HTTP was rejected with 400 before the authentication-failure limiter, allowing that path to bypass the 10/minute per-IP failure throttle.
+- **Correction:** Bearer validation and failure throttling now run first. A valid key presented over remote HTTP is still rejected with 400 before search execution; invalid/missing keys receive 401 and are throttled.
+- **Test added:** In Staging over HTTP, ten unauthenticated requests receive 401 and the eleventh receives 429 with Retry-After.
+- **Commits:** `261df5745a9a9b4e1602e75651c893ea70b412e2` (middleware), `1459049b8d6b8c5d8c03631c6d2fe7b228ce0925` (test).
+- **Verification:** Static review only; .NET 10 focused and full test runs pending.
