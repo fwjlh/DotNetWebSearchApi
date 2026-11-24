@@ -211,11 +211,13 @@ public sealed partial class SearxngApiIntegrationTests
             new Dictionary<string, string?>
             {
                 ["SEARCH_API_KEYS"] = firstKey + ";" + secondKey,
-                ["TRUSTED_PROXY_IPS"] = "127.0.0.1;::1"
+                ["TRUSTED_PROXY_IPS"] = "127.0.0.1;::1",
+                ["ASPNETCORE_ENVIRONMENT"] = "Staging",
+                ["DOTNET_ENVIRONMENT"] = "Staging"
             });
         using WebApplicationFactory<Program> factory = CreateFactory(
             Provider("alpha", Result("A", "https://example.com/a")));
-        using HttpClient client = CreateHttpsClient(factory);
+        using HttpClient client = factory.CreateClient();
 
         for (int index = 0; index < 60; index++)
         {
@@ -232,6 +234,30 @@ public sealed partial class SearxngApiIntegrationTests
             "203.0.113.11");
 
         Assert.Equal(HttpStatusCode.OK, secondClientStatus);
+    }
+
+    [Fact]
+    public async Task UntrustedForwardedProto_CannotBypassRemoteHttpsRequirement()
+    {
+        const string apiKey = "0123456789abcdef0123456789abcdef";
+        using EnvironmentVariableScope environment = EnvironmentVariableScope.Apply(
+            new Dictionary<string, string?>
+            {
+                ["SEARCH_API_KEYS"] = apiKey,
+                ["TRUSTED_PROXY_IPS"] = string.Empty,
+                ["ASPNETCORE_ENVIRONMENT"] = "Staging",
+                ["DOTNET_ENVIRONMENT"] = "Staging"
+            });
+        using WebApplicationFactory<Program> factory = CreateFactory(
+            Provider("alpha", Result("A", "https://example.com/a")));
+        using HttpClient client = factory.CreateClient();
+
+        HttpStatusCode status = await SendSearchWithForwardedForAsync(
+            client,
+            apiKey,
+            "203.0.113.10");
+
+        Assert.Equal(HttpStatusCode.BadRequest, status);
     }
 
     [Fact]
