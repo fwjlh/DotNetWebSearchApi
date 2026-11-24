@@ -330,3 +330,6 @@ Keep this file and `LOG.md` current so the next session can resume without chat 
 
 
 - Added explicit `Microsoft.AspNetCore.Builder` import for the forwarded-header options test (test project lacks Web SDK global usings). Commit: `60d6fd97b24f13cf4a39008b331751ede2e1eb0d`.
+
+
+- Integration fixture now forces Development and empty API-key/proxy overrides for its collection, saving/restoring the developer's original ASPNETCORE_ENVIRONMENT and DOTNET_ENVIRONMENT values. Staging tests explicitly override both. Commit: `92190fdb9fbad451df2f7ccb12e9babd5682dd5c`.
