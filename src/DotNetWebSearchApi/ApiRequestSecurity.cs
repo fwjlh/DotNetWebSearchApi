@@ -68,7 +68,8 @@ internal static class ApiRequestSecurity
             }
         });
 
-        BoundedPartitionKeySelector ipPartitions = new(4096);\n        services.AddRateLimiter(options =>
+        BoundedPartitionKeySelector ipPartitions = new(4096);
+        services.AddRateLimiter(options =>
         {
             options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
             options.OnRejected = (context, _) =>
