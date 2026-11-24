@@ -2020,3 +2020,11 @@ Every material repository action is recorded here with its reason, result, verif
 - **Coverage:** 96.40% line (4,287/4,447) and 83.85% branch (1,600/1,908).
 - **Verification:** User-provided assessment is evidence of the run. The updated test fixtures have not yet been executed; request a focused test run and then a full rerun. No local .NET execution or GitHub Actions/workflows were used by the assistant.
 - **Evidence publishing:** The attachments do not prove that `-PublishEvidence` completed an authenticated GitHub push; confirm from the PowerShell console or repository history before treating them as published.
+
+
+### 222. Increase the arXiv provider's response allowance
+- **Evidence:** The 2026-11-24 13:14 live assessment recorded one arXiv cancellation while the other 62 providers completed; the request had no HTTP response before the provider's 10-second cancellation token expired.
+- **Correction:** Increased the arXiv provider timeout from 10 to 20 seconds. This is a bounded allowance for a public scholarly API and does not change global request limits.
+- **Test added:** Assert the provider's explicit 20-second timeout contract.
+- **Commits:** `06a1b59d574524a9977830cd966bb5a77b35d4e8`, `989e53456559697766690cd44295c6ee2d7e171b`.
+- **Verification:** Build and offline suite passed before this change; rerun required to verify the new assertion and the live outcome. No Actions used.
