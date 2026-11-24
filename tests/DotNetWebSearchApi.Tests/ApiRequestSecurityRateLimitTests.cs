@@ -70,6 +70,38 @@ public sealed class ApiRequestSecurityRateLimitTests
     }
 
     [Fact]
+    public void BoundedPartitionSelector_ConcurrentNewKeysNeverExceedCapacity()
+    {
+        const int capacity = 2;
+        const int clientCount = 100;
+        const string overflowKey = "__partition_overflow__";
+        BoundedPartitionKeySelector selector = new(capacity);
+        string[] partitions = new string[clientCount];
+
+        Parallel.For(0, clientCount, index =>
+        {
+            partitions[index] = selector.GetPartitionKey($"client-{index}");
+        });
+
+        HashSet<string> retainedPartitions = new(StringComparer.Ordinal);
+        int overflowCount = 0;
+        foreach (string partition in partitions)
+        {
+            if (partition == overflowKey)
+            {
+                overflowCount++;
+            }
+            else
+            {
+                retainedPartitions.Add(partition);
+            }
+        }
+
+        Assert.Equal(capacity, retainedPartitions.Count);
+        Assert.Equal(clientCount - capacity, overflowCount);
+    }
+
+    [Fact]
     public void BoundedPartitionSelector_RejectsInvalidCapacity()
     {
         Assert.Throws<ArgumentOutOfRangeException>(() => new BoundedPartitionKeySelector(0));
