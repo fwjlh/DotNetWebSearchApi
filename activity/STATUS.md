@@ -11,7 +11,7 @@
 
 **Repository:** `fwjlh/DotNetWebSearchApi`  
 **Branch:** `main`  
-**Last reviewed:** 2026-11-23
+**Last reviewed:** 2026-11-24
 
 ## Current state
 
@@ -46,7 +46,7 @@
 - The Openverse integration test now preserves production provider registrations by using a plain `WebApplicationFactory<Program>`.
 - No GitHub Actions were invoked; the user has disabled workflows to conserve minutes.
 - **Coverage tooling:** Coverlet collector 6.0.4 is now referenced by the test project. Run `dotnet test .\\DotNetWebSearchApi.sln -c Release --collect:\"XPlat Code Coverage\"` to generate a Cobertura report under `tests\\DotNetWebSearchApi.Tests\\TestResults`.
-- **Live integration tests:** added opt-in real HTTP checks for Wikipedia, Crossref and GitHub. Enable with `DOTNETWEBSEARCHAPI_LIVE_TESTS=1`; ordinary test runs skip them. Each test makes one request with a 20-second timeout and a 1 MiB response bound.
+- **Live integration tests:** the original opt-in Wikipedia, Crossref and GitHub checks remain available. The new batch test resolves the actual registered provider adapters, runs them sequentially in groups of up to 20, and stops on a failed group. API-key providers are included only when configured with real credentials.
 - **Next:** user should run the live test class locally and share provider outcomes. Expand the representative set only after confirming stability and reviewing upstream terms/rate limits. Then use measured line/branch coverage to target uncovered high-risk logic.
 
 ## Latest compile corrections
@@ -68,7 +68,7 @@
 
 - No files currently exist under `.github/workflows/`.
 - Do not recreate, invoke or rely on GitHub Actions/workflow minutes. Commit directly to `main`.
-- Tests must use local fixtures; no live provider calls in tests.
+- Ordinary unit/regression tests use local fixtures. Real upstream calls are confined to opt-in live tests and the explicit batch runner.
 - Fixture and integration tests have been added, but **the suite has not been executed** because the .NET 10 SDK is unavailable in this environment. Do not claim tests have passed.
 
 ## Latest test compile correction
