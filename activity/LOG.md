@@ -1685,3 +1685,8 @@ Every material repository action is recorded here with its reason, result, verif
 - **Credential handling:** Only providers registered from the local configuration are exercised. API-key providers are included only when their real credentials are configured; dummy keys are not introduced. The script's current maximum catalogue size is 67 and can be overridden.
 - **Verification:** Source and runner committed for local execution. The user has confirmed the three initial live checks (Wikipedia, Crossref and GitHub) passed, alongside the previously reported 368 active offline tests. The new full-provider batches have **not** yet been run; no build/test execution is claimed here.
 - **Workflows:** No GitHub Actions were invoked or changed.
+
+
+### 183. Improve live batch diagnostics
+- **Correction:** The batch runner now uses detailed console verbosity so per-provider output from `ITestOutputHelper` is visible during the run. The progress label describes alphabetical provider slots rather than catalogue positions, because only locally registered providers are included.
+- **Verification:** Documentation/source reviewed. The runner still requires execution on the user's Windows/.NET 10 machine; no local build or live request is claimed.
