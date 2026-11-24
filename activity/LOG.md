@@ -1755,3 +1755,10 @@ Every material repository action is recorded here with its reason, result, verif
 - **Test added:** Added a non-seekable 11-byte stream with no Content-Length and a 10-byte transport limit; the transport must classify the response as invalid.
 - **Commit:** `939bb2a9234770e7aa3132f235b9c5128dab6508`.
 - **Verification:** Test source reviewed only; .NET 10 execution pending. No Actions or live requests.
+
+
+### 192. Remove the evidence runner's fixed provider-count ceiling
+- **Reason:** The full-search assessment runner used a fixed upper bound of 200 provider slots. That would silently stop early if future catalogue growth exceeded the bound.
+- **Correction:** The runner now continues until the inventory-derived final batch has been processed; the stable-inventory and exact-selection checks prevent empty or skipped batches.
+- **Commit:** `462be91f74ba0fccc29a42882ad879795c5e0453`.
+- **Verification:** PowerShell source review only; execution requires the user's Windows PowerShell/.NET 10 environment. No Actions used.
