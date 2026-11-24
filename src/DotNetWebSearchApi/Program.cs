@@ -1,5 +1,6 @@
 using System.Net;
 using Microsoft.AspNetCore.RateLimiting;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Http.Features;
 using DotNetWebSearchApi;
 using DotNetWebSearchApi.Search;
@@ -126,6 +127,7 @@ builder.Services.AddSingleton<SearchHttpTransport>();
 builder.Services.AddSingleton<ProviderHealthRegistry>();
 builder.Services.AddSingleton<SearchAggregator>();
 WebApplication app = builder.Build();
+app.UseForwardedHeaders();
 app.UseRouting();
 app.UseStaticFiles();
 ApiRequestSecurity.UseAuthentication(app, securityOptions);
