@@ -1954,3 +1954,10 @@ Every material repository action is recorded here with its reason, result, verif
 - **Correction:** Added the explicit namespace import to the proxy options test.
 - **Commit:** `60d6fd97b24f13cf4a39008b331751ede2e1eb0d`.
 - **Verification:** Static source review only; build pending.
+
+
+### 218. Isolate integration tests from inherited host environment settings
+- **Reason:** Developer machines or CI runners may set `ASPNETCORE_ENVIRONMENT`/`DOTNET_ENVIRONMENT` to Staging/Production. With the production API-key startup requirement, that could make unrelated integration tests fail before reaching their assertions.
+- **Correction:** The non-parallel integration collection now saves and forces both environment variables to Development, alongside empty API-key/proxy overrides, and restores all original values after the collection. Staging-specific tests explicitly override both variables.
+- **Commit:** `92190fdb9fbad451df2f7ccb12e9babd5682dd5c`.
+- **Verification:** Static review only; .NET 10 test execution pending.
