@@ -270,3 +270,11 @@ Keep this file and `LOG.md` current so the next session can resume without chat 
 - Commits: `b54addd11c589de690ca3a61011c70e03bed8663`, `8333e6ad8864b745dd5de101113dfd071e53e752`, `865b33577f0aec3b944a99b69a988a6a9f788e95`, `0d913693b495b929f3eed0864317491b47bb4c79`.
 - Proxy caveat: the service currently partitions IP quotas on the direct connection peer; trusted forwarded-header handling remains outstanding for reverse-proxy deployments.
 - Static review only; local .NET 10 build/test pending.
+
+
+## Latest reverse-proxy quota support — 2026-11-24
+- Added explicit `TRUSTED_PROXY_IPS` configuration. Only configured immediate proxy addresses are trusted for forwarded client IP/protocol; one hop is processed, and forwarded headers are ignored when unset. Configuration is validated at startup and middleware runs before routing and rate limiting.
+- Added tests for invalid proxy configuration, trusted proxy client-IP partitioning, and rejection of spoofed forwarded headers from untrusted peers.
+- README documents the configuration and trust boundary.
+- Commits: `a9f66a0e38c2f9b36a62f03fdf0b14fd5d31be1c`, `f53dfdd5b0a61cbd1bce4a7d44e2d0f5ef4f1c66`, `b1ae1e639c01b1862d6c610995bf9d4ea961cadf`, `6465e5d1f28bcb0ab3abf4249bf752d3b18729f6`, `10e7e5756a8464f8fbad78447c0caa9eb31ddcc1`.
+- Static review only; local .NET 10 build/test pending.
