@@ -341,3 +341,6 @@ Keep this file and `LOG.md` current so the next session can resume without chat 
 
 
 - Corrected `UseAuthentication(WebApplication, ApiRequestSecurityOptions, bool allowLoopbackHttp)` to match the Program.cs call and transport policy. Commit: `376d94f73c5d30b0e75ba240f97dfd9f32ac3d7e`. Static review only; build/test pending.
+
+
+- Development loopback transport handling now normalizes IPv4-mapped IPv6 before the loopback check; added a mapped-loopback test. Commits: `cd92d80abb8ca90420b93617c18ec729dfb2c511`, `41571c5a39a08dd0c24273408d2c9be28eef18aa`.
