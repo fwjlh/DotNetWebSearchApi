@@ -93,13 +93,14 @@ try {
     while ($batchOffset -lt $maximumProviderCount) {
         $batchNumber++
         $env:DOTNETWEBSEARCHAPI_LIVE_PROVIDER_OFFSET = [string]$batchOffset
+        $lineStart = $logLines.Count
         $batch = Invoke-DotNetStage "Live provider batch $batchNumber (offset $batchOffset)" @(
             "test", $solutionPath, "-c", $Configuration, "--no-build", "--no-restore",
             "--filter", "FullyQualifiedName~AllRegisteredProviders_RespondToLiveRequests",
             "--logger", "console;verbosity=detailed"
         )
 
-        $batchText = ($logLines | Select-Object -Last 500) -join "`n"
+        $batchText = ($logLines | Select-Object -Skip $lineStart) -join "`n"
         $inventoryMatch = [regex]::Match($batchText, "Provider inventory: (\d+) registered; batch offset (\d+); selected (\d+)\.")
         if (-not $inventoryMatch.Success) {
             throw "Could not read provider inventory from batch $batchNumber output. See the log."
@@ -153,7 +154,7 @@ try {
 }
 catch {
     $overallError = $_.Exception.Message
-    Write-Error $overallError
+    Write-Host "ERROR: $overallError"
 }
 finally {
     foreach ($name in $environmentNames) {
