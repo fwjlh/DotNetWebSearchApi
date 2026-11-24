@@ -276,6 +276,20 @@ public sealed class SearchAggregatorTests
     }
 
     [Fact]
+    public async Task SearchDetailedAsync_MatchesRequestedProviderNamesCaseInsensitively()
+    {
+        SearchAggregator aggregator = CreateAggregator(
+            Provider("alpha", Result("Alpha", "https://example.com/alpha")),
+            Provider("beta", Result("Beta", "https://example.com/beta")));
+
+        SearchExecutionResult execution = await aggregator.SearchDetailedAsync(
+            new SearchQuery("test", 10, new HashSet<string> { "ALPHA" }),
+            CancellationToken.None);
+
+        Assert.Equal("Alpha", Assert.Single(execution.Results).Title);
+    }
+
+    [Fact]
     public async Task SearchDetailedAsync_SkipsProvidersThatDoNotSupportRequestedPage()
     {
         int capableCalls = 0;
