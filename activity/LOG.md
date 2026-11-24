@@ -1961,3 +1961,8 @@ Every material repository action is recorded here with its reason, result, verif
 - **Correction:** The non-parallel integration collection now saves and forces both environment variables to Development, alongside empty API-key/proxy overrides, and restores all original values after the collection. Staging-specific tests explicitly override both variables.
 - **Commit:** `92190fdb9fbad451df2f7ccb12e9babd5682dd5c`.
 - **Verification:** Static review only; .NET 10 test execution pending.
+
+
+### 219. Record current source-size and workflow audit
+- **Audit:** All C# source files remain below the 25 KB hard limit; the largest hand-maintained file is the integration-test partial at 22.3 KB. No GitHub workflow files are present or used.
+- **Reason:** Preserve the agreed small-source discipline and confirm the no-Actions constraint after the security/test additions.
