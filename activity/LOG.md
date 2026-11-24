@@ -1870,3 +1870,10 @@ Every material repository action is recorded here with its reason, result, verif
 - **Correction:** Replaced abbreviated `Globalization.CultureInfo` references with `System.Globalization.CultureInfo`.
 - **Commit:** `acfc80b201ea96a7e6d251351be55fc7e7725aac`.
 - **Verification:** Static PowerShell review only; Windows execution pending.
+
+
+### 208. Ensure test overrides beat appsettings as well as inherited environment
+- **Reason:** Removing an environment variable does not override a value loaded from `appsettings*.json`. A developer's local API key or proxy setting could still affect integration tests even after the test fixture cleared process environment variables.
+- **Correction:** The collection fixture now sets empty-string overrides for `SEARCH_API_KEYS` and `TRUSTED_PROXY_IPS`; individual no-key/untrusted-proxy tests also use explicit empty strings. The fixture restores original process values after the collection.
+- **Commits:** `c90828b35b7ef2386f60d479631c97fc5998a117`, `3f1ddaa3bb7bbbf3ec6bdb1d9932993d6a21eaaf`.
+- **Verification:** Static review only; .NET 10 test execution pending.
