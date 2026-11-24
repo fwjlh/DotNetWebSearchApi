@@ -1709,10 +1709,9 @@ Every material repository action is recorded here with its reason, result, verif
 
 
 ### 185. Close an IPv6 special-purpose address gap
-- **Reason:** The public-address classifier rejected the main IPv6 special ranges but allowed the IETF ORCHIDv2 allocation `2001:20::/28`, which is not globally routable and should not be a provider destination.
-- **Correction:** Added an explicit prefix check for `2001:20::/28` in `PublicNetworkSocketsHandler.IsPublicAddress`.
-- **Tests added:** Added `2001:20::1` and `2001:20:f::1` negative classification cases alongside the existing IPv6 special-range matrix.
-- **Commits:** `db625feee2405309f279c22780145c52c56cdb86` (policy), `126baa3fb6c5ba5ba64978ee4ccdea908d94ed02` (tests).
+- **Reason:** Make sure the IETF ORCHIDv2 allocation `2001:20::/28` is explicitly represented in the outbound-address regression matrix.
+- **Review correction:** The existing `2001:0000::/23` exclusion already covers `2001:20::/28`; the extra explicit predicate was redundant and has been removed. The two new negative test cases remain as documentation/regression coverage.
+- **Commits:** `db625feee2405309f279c22780145c52c56cdb86` (temporary redundant predicate), `126baa3fb6c5ba5ba64978ee4ccdea908d94ed02` (tests), `cbe338f403df2ee89aa86b10ea0f1061ef4dfd45` (remove redundant predicate).
 - **Verification:** Source-level review only. The .NET 10 SDK is unavailable in this environment; do not treat these tests as executed. No GitHub Actions or live network calls were used.
 
 
