@@ -51,7 +51,7 @@ internal static class ApiRequestSecurity
             options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
             options.ForwardLimit = 1;
             options.KnownProxies.Clear();
-            options.KnownNetworks.Clear();
+            options.KnownIPNetworks.Clear();
             foreach (IPAddress proxy in trustedProxies)
             {
                 options.KnownProxies.Add(proxy);
