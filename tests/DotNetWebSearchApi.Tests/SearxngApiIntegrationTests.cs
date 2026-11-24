@@ -428,5 +428,21 @@ public sealed partial class SearxngApiIntegrationTests
 
 [CollectionDefinition("Production provider configuration", DisableParallelization = true)]
 public sealed class ProductionProviderConfigurationCollection
+    : ICollectionFixture<ProductionProviderConfigurationFixture>
 {
+}
+
+public sealed class ProductionProviderConfigurationFixture : IDisposable
+{
+    private readonly string? _originalApiKeys = Environment.GetEnvironmentVariable("SEARCH_API_KEYS");
+
+    public ProductionProviderConfigurationFixture()
+    {
+        Environment.SetEnvironmentVariable("SEARCH_API_KEYS", null);
+    }
+
+    public void Dispose()
+    {
+        Environment.SetEnvironmentVariable("SEARCH_API_KEYS", _originalApiKeys);
+    }
 }
