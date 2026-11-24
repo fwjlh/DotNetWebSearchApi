@@ -1939,3 +1939,11 @@ Every material repository action is recorded here with its reason, result, verif
 - **Correction:** `addResult` now rejects URLs with username or password components in addition to non-HTTP(S) schemes.
 - **Commit:** `cddb7a5e7f4855841f95d2df1dd721ffcc8b6cd9`.
 - **Verification:** Static JavaScript review only; browser test execution pending.
+
+
+### 216. Normalize trusted proxy addresses across IPv4 socket representations
+- **Reason:** Dual-mode sockets can report an IPv4 proxy as an IPv4-mapped IPv6 address even when configuration uses the ordinary IPv4 literal. Exact-only matching could silently ignore otherwise valid forwarded headers.
+- **Correction:** Every configured IPv4 proxy is now registered in both IPv4 and IPv4-mapped IPv6 form; configured mapped addresses also register their IPv4 form.
+- **Test added:** Verify that configuring `10.0.0.5` registers both `10.0.0.5` and `::ffff:10.0.0.5` in the trusted proxy list.
+- **Commits:** `52ddf55a42051fabf1297b2bb2af5a275d4aee30` (normalization), `9361bfde164d87d6c6daea9ee3e1152de94a7f47` and `f1f67c5758ceb23e21ebd1cc1e3952e7e87520e0` (test).
+- **Verification:** Static review only; .NET 10 test execution pending.
