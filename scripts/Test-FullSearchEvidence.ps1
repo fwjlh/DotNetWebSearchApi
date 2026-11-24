@@ -68,6 +68,7 @@ function Invoke-DotNetStage {
 
 $buildPassed = $false
 $regressionPassed = $false
+$coverageSummary = $null
 $apiPassed = $false
 $registeredProviderCount = $null
 $expectedProviderCount = $null
@@ -84,8 +85,31 @@ try {
     }
 
     $env:DOTNETWEBSEARCHAPI_LIVE_TESTS = "0"
-    $regression = Invoke-DotNetStage "Offline regression suite" @("test", $solutionPath, "-c", $Configuration, "--no-build", "--no-restore", "--logger", "console;verbosity=minimal")
+    $regression = Invoke-DotNetStage "Offline regression suite" @(
+        "test", $solutionPath, "-c", $Configuration, "--no-build", "--no-restore",
+        "--logger", "console;verbosity=minimal", "--collect", "XPlat Code Coverage"
+    )
     $regressionPassed = $regression.passed
+
+    $coverageDirectory = Join-Path $PSScriptRoot "..\tests\DotNetWebSearchApi.Tests\TestResults"
+    $coverageReports = @(Get-ChildItem -Path $coverageDirectory -Filter "coverage.cobertura.xml" -File -Recurse -ErrorAction SilentlyContinue)
+    if ($coverageReports.Count -eq 0) {
+        throw "The offline test run did not produce a Cobertura coverage report."
+    }
+    $latestCoverage = $coverageReports | Sort-Object LastWriteTimeUtc -Descending | Select-Object -First 1
+    [xml]$coverageDocument = Get-Content -LiteralPath $latestCoverage.FullName -Raw
+    $coverageRoot = $coverageDocument.coverage
+    $coverageSummary = [ordered]@{
+        reportFile = [System.IO.Path]::GetFileName($latestCoverage.FullName)
+        lineCoveragePercent = [Math]::Round(([double]::Parse([string]$coverageRoot.'line-rate', [Globalization.CultureInfo]::InvariantCulture) * 100), 2)
+        branchCoveragePercent = [Math]::Round(([double]::Parse([string]$coverageRoot.'branch-rate', [Globalization.CultureInfo]::InvariantCulture) * 100), 2)
+        linesCovered = [int]$coverageRoot.'lines-covered'
+        linesValid = [int]$coverageRoot.'lines-valid'
+        branchesCovered = [int]$coverageRoot.'branches-covered'
+        branchesValid = [int]$coverageRoot.'branches-valid'
+    }
+    Write-Host ("Coverage: lines {0}% ({1}/{2}); branches {3}% ({4}/{5})." -f $coverageSummary.lineCoveragePercent, $coverageSummary.linesCovered, $coverageSummary.linesValid, $coverageSummary.branchCoveragePercent, $coverageSummary.branchesCovered, $coverageSummary.branchesValid)
+    $logLines.Add(("Coverage: lines {0}%; branches {1}%." -f $coverageSummary.lineCoveragePercent, $coverageSummary.branchCoveragePercent))
 
     $env:DOTNETWEBSEARCHAPI_LIVE_TESTS = "1"
     $env:DOTNETWEBSEARCHAPI_LIVE_PROVIDER_COUNT = [string]$BatchSize
@@ -201,10 +225,12 @@ finally {
             providerChecksFailed = $failedProviders
             providerBatchStagesPassed = $providerBatchStagesPassed
             aggregateApiPassed = $apiPassed
-            overallPassed = ($buildPassed -and $regressionPassed -and $providerBatchStagesPassed -and $failedProviders -eq 0 -and $apiPassed -and $null -eq $overallError)
+            coverageReportGenerated = ($null -ne $coverageSummary)
+            overallPassed = ($buildPassed -and $regressionPassed -and $null -ne $coverageSummary -and $providerBatchStagesPassed -and $failedProviders -eq 0 -and $apiPassed -and $null -eq $overallError)
         }
         stages = @($stages)
         providers = @($providerRuns)
+        coverage = $coverageSummary
         aggregateApiEvidence = @($apiEvidenceLines)
         error = $overallError
         logFile = [System.IO.Path]::GetFileName($logPath)
@@ -217,6 +243,6 @@ finally {
     Write-Host "Provider checks: $passedProviders passed; $failedProviders failed."
 }
 
-if (-not $buildPassed -or -not $regressionPassed -or -not $providerBatchStagesPassed -or $failedProviders -gt 0 -or -not $apiPassed -or $null -ne $overallError) {
+if (-not $buildPassed -or -not $regressionPassed -or $null -eq $coverageSummary -or -not $providerBatchStagesPassed -or $failedProviders -gt 0 -or -not $apiPassed -or $null -ne $overallError) {
     exit 1
 }
