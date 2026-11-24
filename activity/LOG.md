@@ -2044,3 +2044,10 @@ Every material repository action is recorded here with its reason, result, verif
 - **Documentation:** README explains the three distinct outcomes.
 - **Commits:** `557c12c49312bbc2bf3adf5d3eda8e1c03190782` (live test), `e5666db1cdf16e7e7f0912327d90a04871bbd6a7` (evidence script), `677f954ba062e0783c80a659c7f0e8d3ab0a5645` (README).
 - **Verification:** Static review only; PowerShell and .NET 10 assessment rerun pending.
+
+
+### 225. Refresh authoritative status after the 13:14 assessment and follow-up fixes
+- **Reason:** The old handover header still described 67 providers and earlier test counts, while the latest supplied assessment has 63 providers, a green 397-test offline suite and measured coverage. The new security/timeout/reporting changes also postdate that evidence.
+- **Correction:** Added an authoritative top-of-file status block with the current evidence, 46 result-bearing providers, 7 empty responses, 10 upstream failures, post-evidence code changes and exact next verification steps. Marked older entries as historical. Corrected the timestamp to 15:40 UTC.
+- **Commits:** `8b659f32364cc568cba864797e5445db6864899e`, `f55f10551aa3f8954d623cb57c1044de513bfac6`.
+- **Verification:** Documentation review only; no source/test execution.
