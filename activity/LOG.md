@@ -1803,3 +1803,9 @@ Every material repository action is recorded here with its reason, result, verif
 - **Correction:** Replaced that call with a path-relative substring/trim operation using APIs available to Windows PowerShell 5.1.
 - **Commit:** `fa9b821f09e09d6f80fb2c76f5018afb85a7f154`.
 - **Verification:** Static compatibility review only; PowerShell execution remains pending on Windows. No Actions used.
+
+
+### 199. Document both direct and evidence-run coverage report locations
+- **Action:** Clarified that direct test runs write under the test project's `TestResults`, while the full assessment writes to its unique `evidence/coverage` directory; added the exact `Show-CoverageSummary.ps1 -ResultsPath` command.
+- **Reason:** Prevent users from looking in the old default location after running the new evidence script.
+- **Commit:** `1650553067270dbee78a158bf5d40e115b94c9fa`.
