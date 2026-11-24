@@ -1,5 +1,14 @@
 # Current project handover
 
+## Latest update — 2026-11-24: fail-fast live provider batches
+- Added an opt-in live integration test that resolves all `ISearchProvider` services registered by the actual application host, orders them alphabetically and runs them sequentially.
+- Added `scripts/Test-LiveProvidersInBatches.ps1`: Release build once, then blocks of 20; every provider in a block is attempted, and any failure stops all subsequent blocks.
+- Each request uses the provider's own timeout and validates result titles and absolute HTTP(S) URLs. Empty result sets are allowed when the provider returns a valid response.
+- Only locally registered providers are tested. Optional providers requiring API keys are included only when real credentials are configured.
+- User-confirmed baseline: 368 active Release tests passed and the three initial live provider checks passed. The new all-provider batch runner still requires local execution.
+- No GitHub Actions were used or changed.
+
+
 **Repository:** `fwjlh/DotNetWebSearchApi`  
 **Branch:** `main`  
 **Last reviewed:** 2026-11-23
