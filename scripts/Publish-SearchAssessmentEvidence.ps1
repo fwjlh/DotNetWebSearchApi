@@ -59,13 +59,16 @@ function Publish-Evidence {
         throw "The origin remote is not fwjlh/DotNetWebSearchApi; refusing to publish evidence."
     }
 
-    & git -C $actualRoot diff --cached --quiet
-    $stagedExitCode = $LASTEXITCODE
-    if ($stagedExitCode -eq 1) {
-        throw "There are already staged changes. Commit or unstage them before publishing assessment evidence."
+    Invoke-GitCommand -RepositoryRoot $actualRoot -Arguments @("fetch", "origin", "main") | Out-Null
+    $localHead = Invoke-GitCommand -RepositoryRoot $actualRoot -Arguments @("rev-parse", "HEAD")
+    $remoteHead = Invoke-GitCommand -RepositoryRoot $actualRoot -Arguments @("rev-parse", "origin/main")
+    if ($localHead -ne $remoteHead) {
+        throw "Local main is not synchronized with origin/main. Pull or reconcile changes before publishing evidence."
     }
-    if ($stagedExitCode -ne 0) {
-        throw "Could not inspect the Git staging area (exit code $stagedExitCode)."
+
+    $existingStagedPaths = Invoke-GitCommand -RepositoryRoot $actualRoot -Arguments @("diff", "--cached", "--name-only")
+    if (-not [string]::IsNullOrWhiteSpace($existingStagedPaths)) {
+        throw "There are already staged changes. Commit or unstage them before publishing assessment evidence."
     }
 
     foreach ($path in @($JsonPath, $LogPath)) {
