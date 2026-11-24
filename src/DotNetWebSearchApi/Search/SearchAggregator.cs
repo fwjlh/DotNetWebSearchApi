@@ -158,12 +158,7 @@ public sealed class SearchAggregator
                 }
 
                 string providerName = providerResult.Outcome.ProviderName;
-                Dictionary<string, int> positions = result.Positions
-                    .Where(item => item.Value > 0)
-                    .ToDictionary(
-                        item => item.Key,
-                        item => item.Value,
-                        StringComparer.OrdinalIgnoreCase);
+                Dictionary<string, int> positions = NormalizePositions(result.Positions);
                 if (!positions.TryGetValue(providerName, out int position))
                 {
                     position = result.Position is > 0 ? result.Position.Value : resultIndex;
@@ -228,6 +223,27 @@ public sealed class SearchAggregator
             .ThenBy(result => result.Title, StringComparer.OrdinalIgnoreCase)
             .Take(limit)
             .ToArray();
+    }
+
+    private static Dictionary<string, int> NormalizePositions(
+        IReadOnlyDictionary<string, int> source)
+    {
+        Dictionary<string, int> positions = new(StringComparer.OrdinalIgnoreCase);
+        foreach (KeyValuePair<string, int> item in source)
+        {
+            if (string.IsNullOrWhiteSpace(item.Key) || item.Value <= 0)
+            {
+                continue;
+            }
+
+            if (!positions.TryGetValue(item.Key, out int currentPosition)
+                || item.Value < currentPosition)
+            {
+                positions[item.Key] = item.Value;
+            }
+        }
+
+        return positions;
     }
 
     private double CalculateScore(
