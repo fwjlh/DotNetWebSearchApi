@@ -1843,3 +1843,15 @@ Every material repository action is recorded here with its reason, result, verif
 - **Documentation:** README includes the optional environment variable and one-hop trust model.
 - **Commits:** `a9f66a0e38c2f9b36a62f03fdf0b14fd5d31be1c` (options), `f53dfdd5b0a61cbd1bce4a7d44e2d0f5ef4f1c66` (middleware order), `b1ae1e639c01b1862d6c610995bf9d4ea961cadf` (tests), `6465e5d1f28bcb0ab3abf4249bf752d3b18729f6` and `10e7e5756a8464f8fbad78447c0caa9eb31ddcc1` (docs).
 - **Verification:** Static review only; .NET 10 build/test pending locally. No Actions used.
+
+
+### 204. Make proxy quota tests independent of machine environment
+- **Reason:** A developer machine may already define `SEARCH_API_KEYS` or `TRUSTED_PROXY_IPS`; inherited settings could make otherwise unauthenticated integration tests fail or alter rate-limit partitions.
+- **Correction:** The non-parallel production-configuration test collection now saves, clears and restores both variables for its lifetime. The IP-only quota test also explicitly clears API keys.
+- **Commits:** `845d8e81f16bf3cb277cdfdea05540ae600519e2`, `3b1bb202ce9cb27427c19edd63649208324b32fe`, `5fa73f011dbd3b194c54f6c74241affe38b05d82`.
+
+### 205. Use the current forwarded-header trusted-network API
+- **Reason:** The older `KnownNetworks` option is obsolete in newer ASP.NET Core versions.
+- **Correction:** Switched to `KnownIPNetworks` when clearing default trusted networks, avoiding an obsolete API warning on .NET 10.
+- **Commit:** `7b74b1a5ed55a70486d7c1518b346649ef3a810e`.
+- **Verification:** Static review only; .NET 10 build/test pending locally. No Actions used.
