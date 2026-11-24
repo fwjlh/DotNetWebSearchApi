@@ -81,7 +81,7 @@ public static partial class JsonApiProviderCatalog
             UrlPrefix = "https://explore.openaire.eu/search/publication?pid=",
             FixedParameters = new Dictionary<string, string>
             {
-                ["select"] = "id,mainTitle,descriptions,authors,publicationDate,publisher,journal,pids,webLinks"
+                ["select"] = "id,mainTitle,descriptions,authors.fullName,publicationDate,publisher,container.name,pids,instances.urls,type"
             },
             PaperMetadata = new JsonApiPaperMetadataPaths
             {
@@ -90,9 +90,9 @@ public static partial class JsonApiProviderCatalog
                 Authors = "authors",
                 AuthorName = "fullName",
                 Publisher = "publisher",
-                Journal = "journal.title",
+                Journal = "container.name",
                 Type = "type",
-                HtmlUrl = "webLinks.0.url"
+                HtmlUrl = "instances.0.urls.0"
             }
         },
         new JsonApiSearchDefinition
