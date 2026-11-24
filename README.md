@@ -337,6 +337,16 @@ To measure line and branch coverage locally:
 
 A direct `dotnet test --collect "XPlat Code Coverage"` run writes a Cobertura report beneath `tests/DotNetWebSearchApi.Tests/TestResults`. The full assessment script writes its fresh report beneath `evidence/coverage`; summarize it with `.\\scripts\\Show-CoverageSummary.ps1 -ResultsPath .\\evidence\\coverage`. The report includes aggregate line/branch coverage and the 25 lowest-covered classes. See [docs/COVERAGE.md](docs/COVERAGE.md); a passing test count alone is not a coverage measure.
 
+For the complete evidence run, use:
+
+    .\scripts\Test-FullSearchEvidence.ps1
+
+To publish the timestamped JSON assessment and full execution log to this repository's `main` branch after the run, add `-PublishEvidence`:
+
+    .\scripts\Test-FullSearchEvidence.ps1 -PublishEvidence
+
+Publishing uses your existing Git credential manager; no personal access token is stored by the script. It verifies that the current branch is `main`, that `origin` is `fwjlh/DotNetWebSearchApi`, and that the Git staging area is empty. It force-adds only the two generated evidence files (they are ignored by default), commits them, and pushes that commit. Failed assessments are published too. If the push is rejected, the evidence commit remains local and can be pushed after synchronising with `origin/main`. The JSON records the machine name and OS, and the log may contain local diagnostic paths; review those files before publishing if that metadata is sensitive.
+
 GitHub Actions workflows are intentionally disabled to conserve minutes. Run restore, build and tests locally using the commands above.
 
 The last historical CI baseline passed with **156 tests**, 0 failures and 0 skipped, with 0 build warnings and 0 errors ([run 45020266512](https://github.com/fwjlh/DotNetWebSearchApi/actions/runs/45020266512)). A later locally reported baseline passed **368 active Release tests** plus three live-provider checks, but that result also predates the hardening commits now on `main`. Neither historical result certifies the current HEAD. GitHub Actions remain intentionally disabled; run `scripts/Test-FullSearchEvidence.ps1` locally for current build, regression and live-provider evidence.
