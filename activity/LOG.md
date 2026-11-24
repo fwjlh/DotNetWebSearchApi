@@ -1669,3 +1669,10 @@ Every material repository action is recorded here with its reason, result, verif
 - **Correction:** Removed `static` from `DiagnosticsEndpoint`. The endpoint remains a named local handler and reads the same immutable startup options; no security behaviour or response contract changed.
 - **Commit:** `d0c854301be653c3cc843270c6cda75e3cf3ffd8`.
 - **Verification:** Source correction committed. Build and tests must be run locally; no .NET execution is claimed here. The CS0006 test-project metadata error should clear once the main project builds successfully.
+
+
+### 181. Correct live-provider test compiler and analyzer errors
+- **Reason:** The first local Release build after the diagnostics fix reached the test project and exposed two test-source issues: URI scheme values are not compile-time constants for an `is` constant pattern (CS9135), and filtering with `Where` before `Assert.Single` violates xUnit2031.
+- **Correction:** Replaced the URI pattern with explicit ordinal scheme equality checks, used the predicate overload of `Assert.Single`, and removed an unused opt-in constant. Live tests still require HTTP/HTTPS absolute result URLs and exactly one matching provider definition.
+- **Commit:** `64327de4ee2d92261d7a3a0424a7dd2659a334bd`.
+- **Verification:** Awaiting the operator's next local Release build/test. No local .NET execution is claimed here.
