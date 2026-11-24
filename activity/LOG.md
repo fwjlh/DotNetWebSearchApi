@@ -1714,3 +1714,15 @@ Every material repository action is recorded here with its reason, result, verif
 - **Tests added:** Added `2001:20::1` and `2001:20:f::1` negative classification cases alongside the existing IPv6 special-range matrix.
 - **Commits:** `db625feee2405309f279c22780145c52c56cdb86` (policy), `126baa3fb6c5ba5ba64978ee4ccdea908d94ed02` (tests).
 - **Verification:** Source-level review only. The .NET 10 SDK is unavailable in this environment; do not treat these tests as executed. No GitHub Actions or live network calls were used.
+
+
+### 186. Make the full-search evidence runner prove provider coverage
+- **Reason:** The evidence runner previously treated an empty provider inventory as a successful zero-provider assessment and relied on a fixed upper bound to terminate batches.
+- **Correction:** It now requires a non-empty inventory, verifies the registered provider count remains stable across batches, checks that each batch selected exactly the expected number of providers, and stops immediately after the final provider rather than launching an empty terminal batch.
+- **Commit:** `5720c81b0bb5dcbe4cbea2eed963812c28b57c3b`.
+
+### 187. Authenticate live API endpoint checks when configured
+- **Reason:** The opt-in end-to-end test called authenticated search endpoints without a bearer header. A developer machine with `SEARCH_API_KEYS` configured would therefore fail the test for the wrong reason (HTTP 401).
+- **Correction:** The live API test now reads the effective application configuration from the test host and supplies the first configured key only in the Authorization header. It does not print or persist the key.
+- **Commit:** `1d494e02b37cd50d42969307b826929ac3826b49`.
+- **Verification:** Both changes reviewed statically. No .NET 10 SDK is available here, so build, offline tests and live provider execution remain pending. No GitHub Actions were used.
