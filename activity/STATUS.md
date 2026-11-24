@@ -221,3 +221,6 @@ Keep this file and `LOG.md` current so the next session can resume without chat 
 
 
 - Added a non-seekable, unknown-length streaming response test proving the provider HTTP transport enforces its response cap without relying on Content-Length. Commit: `939bb2a9234770e7aa3132f235b9c5128dab6508`. Execution pending local .NET 10.
+
+
+- Full-search evidence runner no longer has a hard-coded 200-provider ceiling; it terminates using the registered inventory and exact batch coverage checks. Commit: `462be91f74ba0fccc29a42882ad879795c5e0453`. PowerShell execution pending locally.
