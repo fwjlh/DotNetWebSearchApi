@@ -184,6 +184,22 @@ public sealed partial class SearxngApiIntegrationTests
     }
 
     [Fact]
+    public void InvalidTrustedProxyAddress_RefusesToStart()
+    {
+        using EnvironmentVariableScope environment = EnvironmentVariableScope.Apply(
+            new Dictionary<string, string?>
+            {
+                ["TRUSTED_PROXY_IPS"] = "not-an-ip"
+            });
+        using WebApplicationFactory<Program> factory = new();
+
+        InvalidOperationException exception = Assert.Throws<InvalidOperationException>(
+            () => factory.CreateClient());
+
+        Assert.Contains("TRUSTED_PROXY_IPS", exception.Message, StringComparison.Ordinal);
+    }
+
+    [Fact]
     public async Task TrustedProxyHeaders_SeparateClientIpQuotasWhenProxyIsConfigured()
     {
         const string firstKey = "0123456789abcdef0123456789abcdef";
