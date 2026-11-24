@@ -189,6 +189,24 @@ try {
                 continue
             }
 
+            $emptyMatch = [regex]::Match($providerLine, "EMPTY ([^:]+): (.*)$")
+            if ($emptyMatch.Success) {
+                $providerName = $emptyMatch.Groups[1].Value.Trim()
+                $outcomeKey = "$batchNumber|$providerName"
+                if ($providerOutcomeKeys.Add($outcomeKey)) {
+                    $providerRuns.Add([pscustomobject]@{
+                        batch = $batchNumber
+                        offset = $batchOffset
+                        provider = $providerName
+                        status = "empty"
+                        resultCount = 0
+                        detail = $emptyMatch.Groups[2].Value.Trim()
+                    })
+                    $batchOutcomeCount++
+                }
+                continue
+            }
+
             $failMatch = [regex]::Match($providerLine, "FAIL ([^:]+): (.*)$")
             if ($failMatch.Success) {
                 $providerName = $failMatch.Groups[1].Value.Trim()
@@ -245,7 +263,9 @@ finally {
     }
 
     $passedProviders = @($providerRuns | Where-Object status -eq "passed").Count
+    $emptyProviders = @($providerRuns | Where-Object status -eq "empty").Count
     $failedProviders = @($providerRuns | Where-Object status -eq "failed").Count
+    $providerChecksResponded = $passedProviders + $emptyProviders
     $providerBatchStagesPassed = @($stages | Where-Object { $_.name -like "Live provider batch *" -and -not $_.passed }).Count -eq 0
     $evidence = [ordered]@{
         generatedAtUtc = [DateTime]::UtcNow.ToString("o")
@@ -260,6 +280,8 @@ finally {
             buildPassed = $buildPassed
             regressionSuitePassed = $regressionPassed
             providerChecksPassed = $passedProviders
+            providerChecksEmpty = $emptyProviders
+            providerChecksResponded = $providerChecksResponded
             providerChecksFailed = $failedProviders
             providerBatchStagesPassed = $providerBatchStagesPassed
             aggregateApiPassed = $apiPassed
@@ -278,7 +300,7 @@ finally {
     Write-Host ""
     Write-Host "Evidence JSON: $jsonPath"
     Write-Host "Full execution log: $logPath"
-    Write-Host "Provider checks: $passedProviders passed; $failedProviders failed."
+    Write-Host "Provider checks: $passedProviders returned results; $emptyProviders responded empty; $failedProviders failed."
 
     if ($PublishEvidence) {
         try {
