@@ -1817,3 +1817,11 @@ Every material repository action is recorded here with its reason, result, verif
 - **Test added:** A fixture with duplicate-case engine keys and an invalid zero position must merge to one valid entry without failing.
 - **Commits:** `247c80fd8df94408dafb086c7b5f40e37be11921` (aggregator), `7644cbd4f2a26d97c6dbe19c8ee177734a887eca` (test).
 - **Verification:** Static review only; .NET 10 build/test pending locally.
+
+
+### 201. Make explicit provider selection case-insensitive
+- **Reason:** Provider names are treated case-insensitively throughout the API, but `SearchAggregator` delegated selection to the caller's `IReadOnlySet` comparer. A normal case-sensitive set containing `ALPHA` could fail to select the registered provider `alpha`.
+- **Correction:** Aggregator selection now compares requested and registered provider names using `OrdinalIgnoreCase`, independent of the caller's set implementation.
+- **Test added:** A default case-sensitive set containing uppercase `ALPHA` must select the lowercase provider.
+- **Commits:** `d4b314be5e2786c0f1e2891ec9d4df4c057f5041` (aggregator), `0840587e9b0270bd88531d91c13c01575ce64a85` (test).
+- **Verification:** Static review only; local .NET 10 build/test pending.
