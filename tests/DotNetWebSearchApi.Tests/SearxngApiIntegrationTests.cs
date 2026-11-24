@@ -439,8 +439,8 @@ public sealed class ProductionProviderConfigurationFixture : IDisposable
 
     public ProductionProviderConfigurationFixture()
     {
-        Environment.SetEnvironmentVariable("SEARCH_API_KEYS", null);
-        Environment.SetEnvironmentVariable("TRUSTED_PROXY_IPS", null);
+        Environment.SetEnvironmentVariable("SEARCH_API_KEYS", string.Empty);
+        Environment.SetEnvironmentVariable("TRUSTED_PROXY_IPS", string.Empty);
     }
 
     public void Dispose()
