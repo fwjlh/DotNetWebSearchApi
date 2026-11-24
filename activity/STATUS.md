@@ -215,3 +215,6 @@ Keep this file and `LOG.md` current so the next session can resume without chat 
 - Added a root `/?q=test` bearer-authentication regression test; trailing-slash cases remain.
 - Commits: `32dc8f2252e0c40c501e7c15a96b91b6018a4aa6`, `7f3b1a722914d404381e9e788a6eda8c8e3fda8c`.
 - Static review only; local .NET 10 build/test pending.
+
+
+- Expanded outbound-address regression cases to cover shorthand/integer IPv4 loopback hosts, IPv4-mapped IPv6 loopback, documentation space and limited broadcast. Commit: `18c1d1793e87fadc4b807b77dd94613785910994`. Execution remains pending the local .NET 10 test run.
