@@ -114,8 +114,8 @@ internal static class ApiRequestSecurity
         }
     }
 
-    internal static bool IsSecureTransport(bool isHttps, IPAddress? remoteAddress)
-        => isHttps || (remoteAddress is not null && IPAddress.IsLoopback(remoteAddress));
+    internal static bool IsSecureTransport(bool isHttps, IPAddress? remoteAddress, bool allowLoopbackHttp)
+        => isHttps || (allowLoopbackHttp && remoteAddress is not null && IPAddress.IsLoopback(remoteAddress));
 
     internal static string GetClientIpPartitionKey(IPAddress? address)
     {
@@ -179,7 +179,7 @@ internal static class ApiRequestSecurity
 
             if (isSearchRequest && options.ApiKeys.Count > 0)
             {
-                if (!IsSecureTransport(context.Request.IsHttps, context.Connection.RemoteIpAddress))
+                if (!IsSecureTransport(context.Request.IsHttps, context.Connection.RemoteIpAddress, allowLoopbackHttp))
                 {
                     context.Response.StatusCode = StatusCodes.Status400BadRequest;
                     await context.Response.WriteAsJsonAsync(new
