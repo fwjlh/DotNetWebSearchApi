@@ -301,3 +301,6 @@ Keep this file and `LOG.md` current so the next session can resume without chat 
 - Added secure-transport decision tests; proxy integration tests now send trusted forwarded scheme.
 - Commits: `3b235706d6c8bf189696cc8ff8ddda6a04d6382f`, `26bab43114c8533ae22f73538bcbbdaf966443e1`, `896dc21801e8c232f9ff8e809cd6522ca14f17c7`, `35a8b3601e59c2910c4b5d3a5fb096ccdecfac0a`.
 - Static review only; local .NET 10 build/test pending.
+
+
+- Corrected the loopback transport helper to call the static `IPAddress.IsLoopback(address)` API. Commit: `ac7829318aa756e010ab74a5ddac54e749de15b9`.
