@@ -350,3 +350,11 @@ Keep this file and `LOG.md` current so the next session can resume without chat 
 - Pending local verification of the forwarded-header trust-boundary correction and evidence-runner outcome deduplication.
 - Forwarded headers are disabled unless explicit trusted proxy IPs are configured; security tests now force Staging at the test-host level.
 - Next: pull main, run the focused forwarded-header tests, then rerun the full evidence assessment.
+
+
+## 2026-11-24 — OpenAIRE Graph v4 adapter correction
+- Updated the OpenAIRE sparse-field selection from legacy `journal`/`webLinks` names to documented v4 `container.name`/`instances.urls` paths.
+- Added a focused fixture test for the outgoing select list and mapped author, publisher, journal and full-text URL metadata.
+- This is a schema-alignment fix based on current OpenAIRE documentation. It is not yet confirmed as the cause of the observed HTTP 400; the next live assessment must verify the outcome.
+- **Required verification:** pull `main`, run the focused JSON API provider tests, then rerun `scripts/Test-FullSearchEvidence.ps1`.
+- No GitHub Actions/workflows were used. Local build and test execution were not available in this session.
