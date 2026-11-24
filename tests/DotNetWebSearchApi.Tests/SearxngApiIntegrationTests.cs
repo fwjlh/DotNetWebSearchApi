@@ -435,14 +435,17 @@ public sealed class ProductionProviderConfigurationCollection
 public sealed class ProductionProviderConfigurationFixture : IDisposable
 {
     private readonly string? _originalApiKeys = Environment.GetEnvironmentVariable("SEARCH_API_KEYS");
+    private readonly string? _originalTrustedProxyIps = Environment.GetEnvironmentVariable("TRUSTED_PROXY_IPS");
 
     public ProductionProviderConfigurationFixture()
     {
         Environment.SetEnvironmentVariable("SEARCH_API_KEYS", null);
+        Environment.SetEnvironmentVariable("TRUSTED_PROXY_IPS", null);
     }
 
     public void Dispose()
     {
         Environment.SetEnvironmentVariable("SEARCH_API_KEYS", _originalApiKeys);
+        Environment.SetEnvironmentVariable("TRUSTED_PROXY_IPS", _originalTrustedProxyIps);
     }
 }
