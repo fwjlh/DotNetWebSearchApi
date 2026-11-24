@@ -378,3 +378,10 @@ Keep this file and `LOG.md` current so the next session can resume without chat 
 - Updated both OpenAIRE metadata test fixtures to v4 fields in commits `214d9ccccbf6baa912123d93be1fb580ef811af2` and `fe53ce6d37e5cd5f1ad41331c3d505915e55dad8`.
 - **Verification pending:** user must pull and rerun the two metadata tests and full assessment. Evidence files were supplied in chat; successful GitHub evidence publication has not been established by the files alone.
 - No GitHub Actions/workflows were used.
+
+
+## Latest live-provider adjustment — 2026-11-24
+- The uploaded 13:14 UTC assessment passed Release build and offline regression (397 passed, 5 skipped), with 96.40% line and 83.85% branch coverage. It recorded 53/63 live providers passing and 10 upstream failures/denials. The aggregate API and compatibility endpoint passed.
+- arXiv was the only timeout in that run; its provider-specific timeout was 10 seconds. Increased to 20 seconds and added a contract test. Commits: `06a1b59d574524a9977830cd966bb5a77b35d4e8`, `989e53456559697766690cd44295c6ee2d7e171b`.
+- The other nine failures were explicit upstream HTTP 403/429/503 responses (or Qwant's anti-bot denial), not response-parser failures. They remain availability/access-policy observations; do not weaken provider assertions to disguise them.
+- **Next:** run focused ArxivSearchProviderTests, full offline suite, then full live assessment to verify the longer allowance and collect fresh evidence. No Actions/workflows.
