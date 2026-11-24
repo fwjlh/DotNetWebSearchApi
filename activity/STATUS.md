@@ -324,3 +324,6 @@ Keep this file and `LOG.md` current so the next session can resume without chat 
 
 
 - Browser result rendering now rejects URLs containing embedded username/password components, matching server/client result sanitization. Commit: `cddb7a5e7f4855841f95d2df1dd721ffcc8b6cd9`.
+
+
+- Trusted proxy registration now includes IPv4 and IPv4-mapped IPv6 representations for each configured proxy, matching dual-mode socket behaviour. Added an options-level regression test. Commits: `52ddf55a42051fabf1297b2bb2af5a275d4aee30`, `9361bfde164d87d6c6daea9ee3e1152de94a7f47`, `f1f67c5758ceb23e21ebd1cc1e3952e7e87520e0`.
