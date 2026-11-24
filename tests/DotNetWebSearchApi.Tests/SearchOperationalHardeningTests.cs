@@ -1,4 +1,5 @@
 using System.Net;
+using Microsoft.AspNetCore.Hosting;
 using System.Net.Http.Headers;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.HttpOverrides;
@@ -269,7 +270,8 @@ public sealed partial class SearxngApiIntegrationTests
                 ["DOTNET_ENVIRONMENT"] = "Staging"
             });
         using WebApplicationFactory<Program> factory = CreateFactory(
-            Provider("alpha", Result("A", "https://example.com/a")));
+            Provider("alpha", Result("A", "https://example.com/a")))
+            .WithWebHostBuilder(builder => builder.UseEnvironment("Staging"));
         using HttpClient client = factory.CreateClient();
 
         HttpStatusCode status = await SendSearchWithForwardedForAsync(
@@ -292,7 +294,8 @@ public sealed partial class SearxngApiIntegrationTests
                 ["TRUSTED_PROXY_IPS"] = string.Empty
             });
         using WebApplicationFactory<Program> factory = CreateFactory(
-            Provider("alpha", Result("A", "https://example.com/a")));
+            Provider("alpha", Result("A", "https://example.com/a")))
+            .WithWebHostBuilder(builder => builder.UseEnvironment("Staging"));
         using HttpClient client = CreateHttpsClient(factory);
 
         for (int index = 0; index < 60; index++)
