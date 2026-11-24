@@ -38,7 +38,7 @@ Provider ordering is a development priority, not a claim that every upstream ser
 |---|---|---|
 | DataCite | CI-verified | Public DOI metadata API; no authentication |
 | Zenodo | CI-verified | Public research record search API |
-| OpenAIRE Graph | CI-verified | Research-products Graph API v4; public rate limits apply |
+| OpenAIRE Graph | Implemented; live recheck pending | Graph API v4 request now selects documented `container` and `instances` fields; public rate limits apply |
 | PLOS | CI-verified | Solr search API; throttled to one request every six seconds |
 | Wikisource | CI-verified | English MediaWiki source-text search |
 | Wikibooks | CI-verified | English MediaWiki textbook search |
