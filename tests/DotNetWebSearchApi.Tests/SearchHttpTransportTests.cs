@@ -66,6 +66,24 @@ public sealed class SearchHttpTransportTests
     }
 
     [Fact]
+    public async Task SendAsync_RejectsStreamingResponseWithoutContentLengthWhenOverLimit()
+    {
+        using HttpClient client = new(new StubHttpMessageHandler(_ =>
+        {
+            StreamContent content = new(new NonSeekableStream(new byte[11]));
+            Assert.Null(content.Headers.ContentLength);
+            return new HttpResponseMessage(HttpStatusCode.OK) { Content = content };
+        }));
+        SearchHttpTransport transport = new(new SearchHttpTransportOptions { MaximumResponseBytes = 10 });
+        using HttpRequestMessage request = new(HttpMethod.Get, "https://example.com/search");
+
+        ProviderFailureException exception = await Assert.ThrowsAsync<ProviderFailureException>(
+            () => transport.SendAsync(client, request, CancellationToken.None));
+
+        Assert.Equal(ProviderFailureKind.InvalidResponse, exception.FailureKind);
+    }
+
+    [Fact]
     public async Task SendAsync_EnforcesPerHostConcurrencyLimit()
     {
         int active = 0;
@@ -256,6 +274,39 @@ public sealed class SearchHttpTransportTests
         SearchHttpResponse response = await transport.SendAsync(client, request, CancellationToken.None);
 
         Assert.Equal("café", response.Content);
+    }
+
+    private sealed class NonSeekableStream(byte[] content) : Stream
+    {
+        private readonly MemoryStream _inner = new(content, writable: false);
+
+        public override bool CanRead => true;
+        public override bool CanSeek => false;
+        public override bool CanWrite => false;
+        public override long Length => throw new NotSupportedException();
+        public override long Position
+        {
+            get => throw new NotSupportedException();
+            set => throw new NotSupportedException();
+        }
+
+        public override void Flush() { }
+        public override int Read(byte[] buffer, int offset, int count) => _inner.Read(buffer, offset, count);
+        public override ValueTask<int> ReadAsync(Memory<byte> buffer, CancellationToken cancellationToken = default)
+            => _inner.ReadAsync(buffer, cancellationToken);
+        public override long Seek(long offset, SeekOrigin origin) => throw new NotSupportedException();
+        public override void SetLength(long value) => throw new NotSupportedException();
+        public override void Write(byte[] buffer, int offset, int count) => throw new NotSupportedException();
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                _inner.Dispose();
+            }
+
+            base.Dispose(disposing);
+        }
     }
 
     private sealed class AsyncStubHttpMessageHandler(
