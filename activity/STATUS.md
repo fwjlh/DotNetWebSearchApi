@@ -288,3 +288,6 @@ Keep this file and `LOG.md` current so the next session can resume without chat 
 
 
 - Coverage percentage parsing now uses fully qualified `System.Globalization.CultureInfo.InvariantCulture` references. Commit: `acfc80b201ea96a7e6d251351be55fc7e7725aac`. PowerShell execution pending locally.
+
+
+- Auth/proxy integration tests now override configuration with empty strings instead of removing environment variables, ensuring the environment provider overrides any appsettings values on developer machines; original process values are restored after the collection. Commits: `c90828b35b7ef2386f60d479631c97fc5998a117`, `3f1ddaa3bb7bbbf3ec6bdb1d9932993d6a21eaaf`.
