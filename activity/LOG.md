@@ -1726,3 +1726,11 @@ Every material repository action is recorded here with its reason, result, verif
 - **Correction:** The live API test now reads the effective application configuration from the test host and supplies the first configured key only in the Authorization header. It does not print or persist the key.
 - **Commit:** `1d494e02b37cd50d42969307b826929ac3826b49`.
 - **Verification:** Both changes reviewed statically. No .NET 10 SDK is available here, so build, offline tests and live provider execution remain pending. No GitHub Actions were used.
+
+
+### 188. Close trailing-slash authentication and body-limit bypass
+- **Reason:** The security middleware compared exact request paths, while ASP.NET Core endpoint routing can treat a trailing slash as equivalent to the route template. Requests to `/search/` or `/api/search/` could therefore reach search endpoints without matching the middleware's authentication path check; POST body protection had the same path mismatch.
+- **Correction:** Normalize trailing slashes before identifying protected search routes and form-search POST requests. Root remains normalized as `/`.
+- **Tests added:** Unauthenticated GET requests to both trailing-slash search paths must return 401; an oversized unauthenticated POST to `/search/` must return 413 before authentication.
+- **Commits:** `57f7fdd1d3d836a8b2c2bda28a48e7f679068372` (middleware), `994dcf6754e3a079e0bde6fdf7d0150158780cb2` (tests).
+- **Verification:** Security-path review and test-source review only. No .NET 10 build/test execution is available here. No Actions used.
