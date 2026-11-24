@@ -261,3 +261,12 @@ Keep this file and `LOG.md` current so the next session can resume without chat 
 
 
 - Aggregator now matches explicit provider selections with `OrdinalIgnoreCase`, independent of the supplied set comparer; added a regression test using a default case-sensitive set. Commits: `d4b314be5e2786c0f1e2891ec9d4df4c057f5041`, `0840587e9b0270bd88531d91c13c01575ce64a85`. Execution pending local .NET 10.
+
+
+## Latest quota model — 2026-11-24
+- Failed bearer attempts: 10/minute per direct peer IP.
+- Authenticated search: 60/minute per direct peer IP **and** 60/minute per API key. Per-key partitions use SHA-256 digests, not raw keys. Both limiters are process-local fixed windows and are host-owned/disposed.
+- Added direct per-key limiter tests proving independent key partitions and invalid-limit rejection.
+- Commits: `b54addd11c589de690ca3a61011c70e03bed8663`, `8333e6ad8864b745dd5de101113dfd071e53e752`, `865b33577f0aec3b944a99b69a988a6a9f788e95`, `0d913693b495b929f3eed0864317491b47bb4c79`.
+- Proxy caveat: the service currently partitions IP quotas on the direct connection peer; trusted forwarded-header handling remains outstanding for reverse-proxy deployments.
+- Static review only; local .NET 10 build/test pending.
