@@ -215,11 +215,20 @@ public sealed class LiveProviderIntegrationTests(ITestOutputHelper output)
                 new SearchQuery("dotnet", 3),
                 timeout.Token);
             ValidateResults(provider.Name, results);
-            output.WriteLine(
-                "PASS {0}: {1} results. {2}",
-                provider.Name,
-                results.Count,
-                string.Join(" | ", results.Take(3).Select(result => result.Title)));
+            if (results.Count == 0)
+            {
+                output.WriteLine(
+                    "EMPTY {0}: provider responded successfully but returned no results for the assessment query.",
+                    provider.Name);
+            }
+            else
+            {
+                output.WriteLine(
+                    "PASS {0}: {1} results. {2}",
+                    provider.Name,
+                    results.Count,
+                    string.Join(" | ", results.Take(3).Select(result => result.Title)));
+            }
         }
         catch (Exception exception)
         {
