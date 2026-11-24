@@ -1,6 +1,5 @@
 # DotNetWebSearchApi
 
-[![Build and test](https://github.com/fwjlh/DotNetWebSearchApi/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/fwjlh/DotNetWebSearchApi/actions/workflows/ci.yml)
 [![License: AGPL v3](https://img.shields.io/badge/License-AGPL--3.0-blue.svg)](LICENSE)
 [![.NET](https://img.shields.io/badge/.NET-10-512BD4.svg)](https://dotnet.microsoft.com/)
 
@@ -111,7 +110,7 @@ DotNetWebSearchApi puts that work behind one service:
 | Browser search interface | Working (initial) | Search page at / with selectable providers and result cards |
 | Read-only administration and diagnostics | Working (initial) | /admin, provider health counters, last outcome and active provider list |
 | SQL Server configuration store | Planned | Optional persistence and administration |
-| API keys and request rate limiting | Implemented (initial) | Bearer keys via SEARCH_API_KEYS; 60 requests/minute per remote IP; no per-key quota yet |
+| API keys and request rate limiting | Implemented (initial) | Bearer keys via SEARCH_API_KEYS; 10 failed-auth attempts/minute and 60 authenticated searches/minute per remote IP; no per-key quota yet |
 
 The status above is deliberately conservative: a provider is only marked **Working** once its adapter is implemented and tested. Planned integrations are not represented as available features.
 
@@ -260,7 +259,7 @@ Programmatic clients send:
 
     Authorization: Bearer replace-with-the-configured-key
 
-The browser search page includes a password field for the key; it is held only in the current page and is not written to browser storage. Use HTTPS for all non-localhost traffic. The current limiter allows 60 search requests per minute per remote IP address. It is not yet a per-key quota, and deployments behind reverse proxies must configure trusted forwarded headers correctly.
+The browser search page includes a password field for the key; it is held only in the current page and is not written to browser storage. Use HTTPS for all non-localhost traffic. Failed bearer authentication attempts are limited to 10 per minute per remote IP; authenticated search requests are limited to 60 per minute per remote IP. These are separate process-local limits, not a per-key quota. Deployments behind reverse proxies must configure trusted forwarded headers correctly.
 
 ### Optional Brave Search provider
 
@@ -360,7 +359,7 @@ This service is designed to be self-hosted, but self-hosting does not automatica
 
 - Do not expose an unauthenticated instance to the public internet.
 - Configure `SEARCH_API_KEYS` before any non-Development deployment. Every key must be at least 32 UTF-8 bytes; separate multiple keys with semicolons. Search routes require `Authorization: Bearer <key>`. Production and other non-Development environments refuse to start without a key.
-- Search routes are limited to 60 requests per minute per remote IP and return HTTP 429 after the limit. This is an initial process-local IP limit, not a per-key quota. Behind a reverse proxy, configure trusted forwarded headers at the host; never trust arbitrary client-supplied forwarded headers.
+- Failed bearer authentication attempts are limited to 10 per minute per remote IP; authenticated search routes are limited to 60 requests per minute per remote IP and return HTTP 429 after the applicable limit. These are process-local IP limits, not per-key quotas. Behind a reverse proxy, configure trusted forwarded headers at the host; never trust arbitrary client-supplied forwarded headers.
 - POST `/search` rejects declared bodies above 16 KiB and applies ASP.NET form key/value/count limits. Kestrel/IIS hosting limits should also be configured at the edge.
 - Provider endpoints are administrative configuration, never arbitrary URLs supplied by search callers.
 - Provider HttpClientFactory clients use a shared `SocketsHttpHandler` connection callback: DNS is resolved at connection time, every resolved address must be public, and the same check applies when automatic redirects open a new connection. Loopback, private, link-local, carrier-grade NAT, reserved and documentation ranges are blocked; non-HTTP(S), localhost/local/internal names and embedded URI credentials are rejected before sending. The handler disables ambient proxies so the connection policy cannot be bypassed by an untrusted proxy setting. This is defence in depth, not a replacement for outbound firewall rules.
