@@ -1748,3 +1748,10 @@ Every material repository action is recorded here with its reason, result, verif
 - **Tests added:** Unsafe URI cases now include `127.1` and `2130706433`; address classification now includes IPv4-mapped loopback, IPv4 documentation space and limited broadcast.
 - **Commit:** `18c1d1793e87fadc4b807b77dd94613785910994`.
 - **Verification:** Test-source review only. .NET 10 build/test remains pending; no live network calls or Actions.
+
+
+### 191. Test provider response limits without Content-Length
+- **Reason:** The existing response-size test used a response with a declared length and did not prove the streaming read loop enforces the cap when a provider omits Content-Length.
+- **Test added:** Added a non-seekable 11-byte stream with no Content-Length and a 10-byte transport limit; the transport must classify the response as invalid.
+- **Commit:** `939bb2a9234770e7aa3132f235b9c5128dab6508`.
+- **Verification:** Test source reviewed only; .NET 10 execution pending. No Actions or live requests.
