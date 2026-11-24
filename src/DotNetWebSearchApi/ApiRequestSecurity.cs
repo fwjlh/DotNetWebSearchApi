@@ -115,7 +115,7 @@ internal static class ApiRequestSecurity
     }
 
     internal static bool IsSecureTransport(bool isHttps, IPAddress? remoteAddress)
-        => isHttps || remoteAddress?.IsLoopback == true;
+        => isHttps || (remoteAddress is not null && IPAddress.IsLoopback(remoteAddress));
 
     internal static string GetClientIpPartitionKey(IPAddress? address)
     {
