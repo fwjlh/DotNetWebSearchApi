@@ -1,7 +1,9 @@
 using System.Net;
+using System.Net.Http.Headers;
 using System.Text.Json;
 using DotNetWebSearchApi.Search;
 using Microsoft.AspNetCore.Mvc.Testing;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 using Xunit.Abstractions;
@@ -87,6 +89,15 @@ public sealed class LiveProviderIntegrationTests(ITestOutputHelper output)
         using WebApplicationFactory<Program> factory = new();
         using HttpClient client = factory.CreateClient();
         client.Timeout = TimeSpan.FromMinutes(2);
+        string? configuredApiKeys = factory.Services
+            .GetRequiredService<IConfiguration>()["SEARCH_API_KEYS"];
+        string? apiKey = configuredApiKeys?
+            .Split(';', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+            .FirstOrDefault();
+        if (!string.IsNullOrWhiteSpace(apiKey))
+        {
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", apiKey);
+        }
 
         using HttpResponseMessage health = await client.GetAsync("/health");
         Assert.Equal(HttpStatusCode.OK, health.StatusCode);
