@@ -307,3 +307,6 @@ Keep this file and `LOG.md` current so the next session can resume without chat 
 
 
 - Browser search UI now refuses to attach an API key to requests from remote HTTP pages; loopback hostnames/addresses remain allowed. Server-side HTTPS enforcement remains authoritative. Commits: `9d8fbbbedfb14e420cc11f489a16b01b170b6e17`, `ffdfefe2c16d9f5b0345c81879beaa99ac94d7b6`. Static JS review only; browser verification pending.
+
+
+- Loopback HTTP is now allowed only in Development. Staging/Production require HTTPS even when the direct peer is localhost, closing the reverse-proxy-to-loopback bypass; trusted TLS proxies must forward X-Forwarded-Proto=https from configured IPs. Commits: `851d2ca26154e7a68576887bb4c991d917dee8d0`, `34a01c4763fefb65a82dcd32a1024f6e0bc53712`, `34608f41f57e3e1b68a91ba4eddad82e98e601cc`.
