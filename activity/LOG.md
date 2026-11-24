@@ -1734,3 +1734,11 @@ Every material repository action is recorded here with its reason, result, verif
 - **Tests added:** Unauthenticated GET requests to both trailing-slash search paths must return 401; an oversized unauthenticated POST to `/search/` must return 413 before authentication.
 - **Commits:** `57f7fdd1d3d836a8b2c2bda28a48e7f679068372` (middleware), `994dcf6754e3a079e0bde6fdf7d0150158780cb2` (tests).
 - **Verification:** Security-path review and test-source review only. No .NET 10 build/test execution is available here. No Actions used.
+
+
+### 189. Bind authentication to routed endpoint metadata
+- **Reason:** Path-string checks, even after trimming trailing slashes, remain brittle around URL normalization and endpoint-routing equivalence. The security middleware runs after `UseRouting`, so the selected route is the reliable source of which endpoint is being invoked.
+- **Correction:** Authentication and POST body-limit classification now use `RouteEndpoint.RoutePattern.RawText` for `/search` and `/api/search`; the root search route is protected when its `q` parameter is present. This also covers route variants that ASP.NET Core resolves to the same endpoint.
+- **Test added:** Root `/?q=test` must require the configured bearer key. Existing trailing-slash tests remain in place.
+- **Commits:** `32dc8f2252e0c40c501e7c15a96b91b6018a4aa6` (middleware), `7f3b1a722914d404381e9e788a6eda8c8e3fda8c` (test).
+- **Verification:** Static review only; no .NET 10 build/test execution available. No Actions used.
