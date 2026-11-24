@@ -209,3 +209,10 @@ Keep this file and `LOG.md` current so the next session can resume without chat 
 - Added two trailing-slash authentication cases and an oversized trailing-slash POST case.
 - Commits: `57f7fdd1d3d836a8b2c2bda28a48e7f679068372`, `994dcf6754e3a079e0bde6fdf7d0150158780cb2`.
 - Static review only; build and test execution remain pending on the local .NET 10 environment.
+
+
+## Latest endpoint-authentication hardening — 2026-11-24
+- Security middleware now classifies protected search routes from ASP.NET Core routed endpoint metadata rather than comparing raw path strings. This protects route-equivalent path spellings and keeps POST body-size enforcement aligned with the selected `/search` endpoint.
+- Added a root `/?q=test` bearer-authentication regression test; trailing-slash cases remain.
+- Commits: `32dc8f2252e0c40c501e7c15a96b91b6018a4aa6`, `7f3b1a722914d404381e9e788a6eda8c8e3fda8c`.
+- Static review only; local .NET 10 build/test pending.
