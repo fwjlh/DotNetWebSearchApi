@@ -64,7 +64,13 @@ internal static class ApiRequestSecurity
     {
         app.Use(async (context, next) =>
         {
-            bool isFormSearchPost = context.Request.Path.Equals("/search", StringComparison.OrdinalIgnoreCase)
+            string requestPath = context.Request.Path.Value ?? "/";
+            if (requestPath.Length > 1)
+            {
+                requestPath = requestPath.TrimEnd('/');
+            }
+
+            bool isFormSearchPost = requestPath.Equals("/search", StringComparison.OrdinalIgnoreCase)
                 && HttpMethods.IsPost(context.Request.Method);
             if (isFormSearchPost)
             {
@@ -83,11 +89,11 @@ internal static class ApiRequestSecurity
             }
 
             bool isSearchRequest =
-                (context.Request.Path.Equals("/search", StringComparison.OrdinalIgnoreCase)
+                (requestPath.Equals("/search", StringComparison.OrdinalIgnoreCase)
                     && (HttpMethods.IsGet(context.Request.Method) || HttpMethods.IsPost(context.Request.Method)))
-                || (context.Request.Path.Equals("/api/search", StringComparison.OrdinalIgnoreCase)
+                || (requestPath.Equals("/api/search", StringComparison.OrdinalIgnoreCase)
                     && HttpMethods.IsGet(context.Request.Method))
-                || (context.Request.Path.Equals("/", StringComparison.OrdinalIgnoreCase)
+                || (requestPath.Equals("/", StringComparison.OrdinalIgnoreCase)
                     && context.Request.Query.ContainsKey("q"));
 
             if (isSearchRequest && options.ApiKeys.Count > 0)
