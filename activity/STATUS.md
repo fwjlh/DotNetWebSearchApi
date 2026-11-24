@@ -338,3 +338,6 @@ Keep this file and `LOG.md` current so the next session can resume without chat 
 ## Current repository hygiene
 - All C# files are below the 25 KB hard limit; largest hand-maintained file is `SearxngApiIntegrationTests.cs` at approximately 22.3 KB.
 - No `.github/workflows` files are present. No GitHub Actions were used for this work.
+
+
+- Corrected `UseAuthentication(WebApplication, ApiRequestSecurityOptions, bool allowLoopbackHttp)` to match the Program.cs call and transport policy. Commit: `376d94f73c5d30b0e75ba240f97dfd9f32ac3d7e`. Static review only; build/test pending.
