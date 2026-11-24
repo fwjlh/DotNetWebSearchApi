@@ -210,16 +210,6 @@ internal static class ApiRequestSecurity
 
             if (isSearchRequest && options.ApiKeys.Count > 0)
             {
-                if (!IsSecureTransport(context.Request.IsHttps, context.Connection.RemoteIpAddress, allowLoopbackHttp))
-                {
-                    context.Response.StatusCode = StatusCodes.Status400BadRequest;
-                    await context.Response.WriteAsJsonAsync(new
-                    {
-                        error = "HTTPS is required for remote API-key requests."
-                    });
-                    return;
-                }
-
                 string? suppliedKey = context.Request.Headers["Authorization"]
                     .FirstOrDefault(value => value is not null && value.StartsWith("Bearer ", StringComparison.OrdinalIgnoreCase))?.Substring(7);
                 byte[] suppliedBytes = Encoding.UTF8.GetBytes(suppliedKey ?? string.Empty);
@@ -243,6 +233,16 @@ internal static class ApiRequestSecurity
                     context.Response.StatusCode = StatusCodes.Status401Unauthorized;
                     context.Response.Headers["WWW-Authenticate"] = "Bearer";
                     await context.Response.WriteAsJsonAsync(new { error = "A valid API key is required." });
+                    return;
+                }
+
+                if (!IsSecureTransport(context.Request.IsHttps, context.Connection.RemoteIpAddress, allowLoopbackHttp))
+                {
+                    context.Response.StatusCode = StatusCodes.Status400BadRequest;
+                    await context.Response.WriteAsJsonAsync(new
+                    {
+                        error = "HTTPS is required for remote API-key requests."
+                    });
                     return;
                 }
 
