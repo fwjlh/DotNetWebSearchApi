@@ -1825,3 +1825,12 @@ Every material repository action is recorded here with its reason, result, verif
 - **Test added:** A default case-sensitive set containing uppercase `ALPHA` must select the lowercase provider.
 - **Commits:** `d4b314be5e2786c0f1e2891ec9d4df4c057f5041` (aggregator), `0840587e9b0270bd88531d91c13c01575ce64a85` (test).
 - **Verification:** Static review only; local .NET 10 build/test pending.
+
+
+### 202. Add a per-API-key authenticated search quota
+- **Reason:** IP-only limits allow one key to be used across many client IPs without sharing a quota, while a single NAT can make unrelated keys share the same limit.
+- **Correction:** Added an independent 60-request/minute fixed-window limiter partitioned by SHA-256 digest of the authenticated key. It runs after successful key validation and before the existing 60/minute IP limiter. The raw key is not used as the partition identifier; the limiter is host-owned/disposed through DI.
+- **Tests added:** Added direct limiter tests proving one key exhausts its own quota while a second key retains an independent quota; invalid permit limits are rejected. Added test-assembly visibility for the internal limiter factory.
+- **Documentation:** README now records 10 failed-auth/minute/IP, 60 authenticated requests/minute/IP and 60/minute/key, and clarifies the direct-peer IP limitation behind reverse proxies.
+- **Commits:** `b54addd11c589de690ca3a61011c70e03bed8663` (middleware), `8333e6ad8864b745dd5de101113dfd071e53e752` (tests), `865b33577f0aec3b944a99b69a988a6a9f788e95` (test visibility), `0d913693b495b929f3eed0864317491b47bb4c79` (README).
+- **Verification:** Static review only; .NET 10 build/test pending locally. No Actions used.
