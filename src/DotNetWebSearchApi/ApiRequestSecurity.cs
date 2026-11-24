@@ -56,6 +56,14 @@ internal static class ApiRequestSecurity
             foreach (IPAddress proxy in trustedProxies)
             {
                 options.KnownProxies.Add(proxy);
+                if (proxy.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork)
+                {
+                    options.KnownProxies.Add(proxy.MapToIPv6());
+                }
+                else if (proxy.IsIPv4MappedToIPv6)
+                {
+                    options.KnownProxies.Add(proxy.MapToIPv4());
+                }
             }
         });
 
