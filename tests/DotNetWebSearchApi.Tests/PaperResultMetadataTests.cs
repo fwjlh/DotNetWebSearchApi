@@ -250,9 +250,9 @@ public sealed partial class PaperResultMetadataTests
                   "authors": [{ "fullName": "OpenAIRE Researcher" }],
                   "publicationDate": "2026-11-19",
                   "publisher": "OpenAIRE Press",
-                  "journal": { "title": "Research Journal" },
+                  "container": { "name": "Research Journal" },
                   "type": "publication",
-                  "webLinks": [{ "url": "https://research.example.org/paper" }]
+                  "instances": [{ "urls": ["https://research.example.org/paper"] }]
                 }
               ]
             }
