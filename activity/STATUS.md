@@ -285,3 +285,6 @@ Keep this file and `LOG.md` current so the next session can resume without chat 
 
 
 - Failed-auth and authenticated IP quota partitions now normalize IPv4-mapped IPv6 to the corresponding IPv4 address; added an equality regression test. Commits: `77f82746e271f68405313fcf4b510edfb5e8c174`, `40f2fb91b50aa77d30f5aacee3832bc8cfc9e13e`. Execution pending local .NET 10.
+
+
+- Coverage percentage parsing now uses fully qualified `System.Globalization.CultureInfo.InvariantCulture` references. Commit: `acfc80b201ea96a7e6d251351be55fc7e7725aac`. PowerShell execution pending locally.
