@@ -57,4 +57,22 @@ public sealed class ApiRequestSecurityRateLimitTests
         Assert.Throws<ArgumentOutOfRangeException>(
             () => ApiRequestSecurity.CreatePerKeySearchLimiter(0));
     }
+    [Fact]
+    public void BoundedPartitionSelector_SendsNewKeysToOverflowAfterCapacity()
+    {
+        BoundedPartitionKeySelector selector = new(2);
+
+        Assert.Equal("client-a", selector.GetPartitionKey("client-a"));
+        Assert.Equal("client-b", selector.GetPartitionKey("client-b"));
+        Assert.Equal("__partition_overflow__", selector.GetPartitionKey("client-c"));
+        Assert.Equal("client-a", selector.GetPartitionKey("client-a"));
+        Assert.Equal("__partition_overflow__", selector.GetPartitionKey("client-d"));
+    }
+
+    [Fact]
+    public void BoundedPartitionSelector_RejectsInvalidCapacity()
+    {
+        Assert.Throws<ArgumentOutOfRangeException>(() => new BoundedPartitionKeySelector(0));
+    }
+
 }
