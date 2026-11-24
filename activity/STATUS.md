@@ -1,6 +1,6 @@
 # Current project handover
 
-## Authoritative current state — 2026-11-24 15:xx UTC
+## Authoritative current state — 2026-11-24 15:40 UTC
 - **Current branch:** `main`; current HEAD before this handover refresh: `f8ea093bc9b3df3b923510819870afb82e218ed6`.
 - **Provider inventory:** 63 registered providers in the latest supplied assessment (do not use the older 67-provider snapshot below as current).
 - **Latest supplied build/test evidence (13:14 UTC):** Release build passed with 0 warnings and 0 errors; offline regression passed **397, failed 0, skipped 5**.
