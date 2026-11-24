@@ -173,3 +173,10 @@ Keep this file and `LOG.md` current so the next session can resume without chat 
 - This is a compile-only correction; authentication configuration and diagnostics output are unchanged.
 - Commit: `d0c854301be653c3cc843270c6cda75e3cf3ffd8`.
 - **Verification pending:** run the Release build and full tests locally. CS0006 was a downstream missing-reference error caused by the main-project compilation failure.
+
+
+## Live-provider test compile correction — 2026-11-24
+- Fixed the three reported test-project diagnostics in `LiveProviderIntegrationTests.cs`: two CS9135 URI scheme pattern errors and xUnit2031 on filtered `Assert.Single`.
+- Retained strict absolute HTTP/HTTPS URL assertions and exact provider lookup.
+- Commit: `64327de4ee2d92261d7a3a0424a7dd2659a334bd`.
+- **Verification pending:** rerun Release build and full test suite; live upstream tests remain opt-in.
