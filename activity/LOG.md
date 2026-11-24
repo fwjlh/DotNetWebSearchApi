@@ -1989,3 +1989,11 @@ Every material repository action is recorded here with its reason, result, verif
 - The two untrusted-header regression tests now explicitly set the WebApplicationFactory host environment to Staging, so loopback HTTP cannot make the HTTPS test pass accidentally.
 - The full evidence runner now deduplicates provider outcomes by batch/provider and verifies exactly one captured outcome per selected provider. Summary counts will therefore reflect distinct provider tests rather than duplicated xUnit output lines.
 - Changes committed directly to main. Local .NET build and tests remain pending operator verification; no workflows used.
+
+
+### OpenAIRE Graph v4 request correction — 2026-11-24
+- **Evidence:** The provider's v4 request selected `journal` and `webLinks`, while the current OpenAIRE v4 sparse-field documentation identifies `container` and `instances` as the corresponding response fields.
+- **Correction:** The adapter now selects `container.name` and `instances.urls`, requests only documented metadata fields, and maps the journal and landing/full-text URL from the v4 response shape.
+- **Regression coverage:** Added a request-and-mapping test that checks the selected field list and verifies author, publisher, journal and URL metadata.
+- **Verification:** Source and official API documentation reviewed. Local .NET 10 tests and a fresh live-provider assessment remain pending; the HTTP 400 cause is not considered confirmed until the live rerun.
+- **External reference:** OpenAIRE Graph v4 sparse fieldsets and research-product documentation (https://graph.openaire.eu/docs/apis/graph-api-v4/research-products/select/).
