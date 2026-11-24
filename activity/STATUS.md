@@ -249,3 +249,6 @@ Keep this file and `LOG.md` current so the next session can resume without chat 
 - README updated to describe this output.
 - Commits: `fcdb5a4911b66650ceb0e662c8f65e29cd5ef168`, `6152fb48cf918e290366dd21017cccd363fa592c`, `c6c51ab7aaf09c0076ac7ef35fd98cb42c050dde`.
 - Static PowerShell review only; local Windows execution remains pending. No Actions used.
+
+
+- Coverage evidence path formatting now avoids `Path.GetRelativePath`, which is unavailable in Windows PowerShell 5.1/.NET Framework; it uses compatible path substring/trim APIs. Commit: `fa9b821f09e09d6f80fb2c76f5018afb85a7f154`.
