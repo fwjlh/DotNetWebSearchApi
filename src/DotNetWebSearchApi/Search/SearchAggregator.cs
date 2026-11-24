@@ -42,7 +42,8 @@ public sealed class SearchAggregator
 
         ISearchProvider[] selectedProviders = query.ProviderNames is null
             ? _providers.ToArray()
-            : _providers.Where(provider => query.ProviderNames.Contains(provider.Name)).ToArray();
+            : _providers.Where(provider => query.ProviderNames.Any(name =>
+                string.Equals(name, provider.Name, StringComparison.OrdinalIgnoreCase))).ToArray();
         ISearchProvider[] eligibleProviders = selectedProviders
             .Where(provider => GetCapabilities(provider).Supports(query))
             .ToArray();
