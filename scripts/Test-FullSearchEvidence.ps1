@@ -26,6 +26,8 @@ if (-not (Test-Path -LiteralPath $solutionPath)) {
 $timestamp = Get-Date -Format "yyyyMMdd-HHmmss"
 $evidencePath = [System.IO.Path]::GetFullPath($EvidenceDirectory)
 [System.IO.Directory]::CreateDirectory($evidencePath) | Out-Null
+$coverageResultsDirectory = Join-Path $evidencePath "coverage"
+[System.IO.Directory]::CreateDirectory($coverageResultsDirectory) | Out-Null
 $jsonPath = Join-Path $evidencePath "search-assessment-$timestamp.json"
 $logPath = Join-Path $evidencePath "search-assessment-$timestamp.log"
 $providerRuns = [System.Collections.Generic.List[object]]::new()
@@ -87,12 +89,11 @@ try {
     $env:DOTNETWEBSEARCHAPI_LIVE_TESTS = "0"
     $regression = Invoke-DotNetStage "Offline regression suite" @(
         "test", $solutionPath, "-c", $Configuration, "--no-build", "--no-restore",
-        "--logger", "console;verbosity=minimal", "--collect", "XPlat Code Coverage"
+        "--logger", "console;verbosity=minimal", "--collect", "XPlat Code Coverage", "--results-directory", $coverageResultsDirectory
     )
     $regressionPassed = $regression.passed
 
-    $coverageDirectory = Join-Path $PSScriptRoot "..\tests\DotNetWebSearchApi.Tests\TestResults"
-    $coverageReports = @(Get-ChildItem -Path $coverageDirectory -Filter "coverage.cobertura.xml" -File -Recurse -ErrorAction SilentlyContinue)
+    $coverageReports = @(Get-ChildItem -Path $coverageResultsDirectory -Filter "coverage.cobertura.xml" -File -Recurse -ErrorAction SilentlyContinue)
     if ($coverageReports.Count -eq 0) {
         throw "The offline test run did not produce a Cobertura coverage report."
     }
@@ -100,7 +101,7 @@ try {
     [xml]$coverageDocument = Get-Content -LiteralPath $latestCoverage.FullName -Raw
     $coverageRoot = $coverageDocument.coverage
     $coverageSummary = [ordered]@{
-        reportFile = [System.IO.Path]::GetFileName($latestCoverage.FullName)
+        reportFile = [System.IO.Path]::GetRelativePath($evidencePath, $latestCoverage.FullName)
         lineCoveragePercent = [Math]::Round(([double]::Parse([string]$coverageRoot.'line-rate', [Globalization.CultureInfo]::InvariantCulture) * 100), 2)
         branchCoveragePercent = [Math]::Round(([double]::Parse([string]$coverageRoot.'branch-rate', [Globalization.CultureInfo]::InvariantCulture) * 100), 2)
         linesCovered = [int]$coverageRoot.'lines-covered'
