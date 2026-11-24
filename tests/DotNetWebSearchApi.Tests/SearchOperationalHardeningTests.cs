@@ -14,7 +14,7 @@ public sealed partial class SearxngApiIntegrationTests
         using EnvironmentVariableScope environment = EnvironmentVariableScope.Apply(
             new Dictionary<string, string?>
             {
-                ["SEARCH_API_KEYS"] = null,
+                ["SEARCH_API_KEYS"] = string.Empty,
                 ["ASPNETCORE_ENVIRONMENT"] = "Staging",
                 ["DOTNET_ENVIRONMENT"] = "Staging"
             });
@@ -240,7 +240,7 @@ public sealed partial class SearxngApiIntegrationTests
             new Dictionary<string, string?>
             {
                 ["SEARCH_API_KEYS"] = firstKey + ";" + secondKey,
-                ["TRUSTED_PROXY_IPS"] = null
+                ["TRUSTED_PROXY_IPS"] = string.Empty
             });
         using WebApplicationFactory<Program> factory = CreateFactory(
             Provider("alpha", Result("A", "https://example.com/a")));
