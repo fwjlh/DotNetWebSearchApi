@@ -2069,3 +2069,11 @@ Every material repository action is recorded here with its reason, result, verif
 - **Commit:** `b1b6a61e5215fc12e696e0c44d0da393dfe85fad`.
 - **Verification:** Test authored and committed; not executed because the assistant environment has no .NET SDK. No GitHub Actions/workflows used.
 - **Next:** Run `dotnet test .\\DotNetWebSearchApi.sln -c Release --filter FullyQualifiedName~ApiRequestSecurityRateLimitTests`, then the complete Release suite.
+
+
+### 227. Cover invalid selector inputs
+- **Reason:** Complete the boundary contract for the shared bounded partition selector, not just its normal capacity path.
+- **Action:** Expanded capacity validation to cover zero and negative values; added a null-key rejection test.
+- **Commit:** `12d231894d4418ee337ae9a7515d241aed49e746`.
+- **Verification:** Tests authored and committed; not executed because the assistant environment has no .NET SDK. No GitHub Actions/workflows used.
+- **Next:** Run the focused rate-limit test class on the operator's Windows machine.
