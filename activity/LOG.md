@@ -1770,3 +1770,15 @@ Every material repository action is recorded here with its reason, result, verif
 - **Test added:** A provider fixture returns a credential URL, a whitespace-title URL and a safe result; only the safe result may be returned.
 - **Commits:** `e4effd7dfa42a1739a5bc4d3acb41f1037cb626c` (aggregator), `490d7222e1d3c7b88a326c0d72f5c32f0d16a1e4` (test).
 - **Verification:** Static review only; .NET 10 build/test pending locally. No Actions used.
+
+
+### 194. Add a separate throttle for failed bearer authentication
+- **Reason:** Authentication runs before the authenticated search limiter so bad credentials cannot consume legitimate search quota, but that left failed-key guessing attempts unthrottled.
+- **Correction:** Added a separate process-local fixed-window limiter of 10 failed bearer attempts per minute per remote IP. It is acquired only after an invalid/missing key, so successful requests do not consume this budget. The limiter is registered as a host-owned singleton so it is disposed with the application.
+- **Test updated:** The authentication/quota regression now verifies ten failures return 401, the next failure returns 429, and a subsequent valid key still succeeds.
+- **Commits:** `c2593812e3bc4f3fdf5b2eecaf0e74e73292fbc5` (limiter), `97d4df048bd483c63d5cf02214e680df11ae069d` (lifetime), `7a489af8dbba4f392f8acd7c7aaddfa0036b9ab5` (test).
+
+### 195. Align README security and workflow status
+- **Action:** Documented separate failed-auth (10/minute/IP) and authenticated search (60/minute/IP) limits, clarified that neither is a per-key quota, and removed the stale GitHub Actions build badge because this project is not using workflows.
+- **Commit:** `33724bbc9172a128488ec5c7141a072612db1549`.
+- **Verification:** Source/test/docs reviewed statically. No .NET 10 build/test execution is available here; no GitHub Actions were used.
