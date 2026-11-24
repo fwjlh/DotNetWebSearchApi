@@ -344,3 +344,9 @@ Keep this file and `LOG.md` current so the next session can resume without chat 
 
 
 - Development loopback transport handling now normalizes IPv4-mapped IPv6 before the loopback check; added a mapped-loopback test. Commits: `cd92d80abb8ca90420b93617c18ec729dfb2c511`, `41571c5a39a08dd0c24273408d2c9be28eef18aa`.
+
+
+## 2026-11-24 — forwarded-header trust boundary
+- Pending local verification of the forwarded-header trust-boundary correction and evidence-runner outcome deduplication.
+- Forwarded headers are disabled unless explicit trusted proxy IPs are configured; security tests now force Staging at the test-host level.
+- Next: pull main, run the focused forwarded-header tests, then rerun the full evidence assessment.
