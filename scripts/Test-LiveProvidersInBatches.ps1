@@ -49,9 +49,9 @@ try {
         $env:DOTNETWEBSEARCHAPI_LIVE_PROVIDER_OFFSET = [string]$offset
 
         Write-Host ""
-        Write-Host "Live provider batch $batchNumber (catalogue positions $firstProvider-$lastProvider)..."
+        Write-Host "Live provider batch $batchNumber (alphabetical provider slots $firstProvider-$lastProvider)..."
 
-        & dotnet test $solutionPath -c $Configuration --no-build --no-restore --filter "FullyQualifiedName~AllRegisteredProviders_RespondToLiveRequests" --logger "console;verbosity=normal"
+        & dotnet test $solutionPath -c $Configuration --no-build --no-restore --filter "FullyQualifiedName~AllRegisteredProviders_RespondToLiveRequests" --logger "console;verbosity=detailed"
 
         if ($LASTEXITCODE -ne 0) {
             throw "Live provider batch $batchNumber failed. Stopping; later batches were not run."
