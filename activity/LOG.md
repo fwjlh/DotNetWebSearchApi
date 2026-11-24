@@ -2036,3 +2036,11 @@ Every material repository action is recorded here with its reason, result, verif
 - **Test added:** In Staging over HTTP, ten unauthenticated requests receive 401 and the eleventh receives 429 with Retry-After.
 - **Commits:** `261df5745a9a9b4e1602e75651c893ea70b412e2` (middleware), `1459049b8d6b8c5d8c03631c6d2fe7b228ce0925` (test).
 - **Verification:** Static review only; .NET 10 focused and full test runs pending.
+
+
+### 224. Distinguish empty live-provider responses from successful result-bearing responses
+- **Evidence:** The 13:14 assessment counted seven providers as passed despite returning zero results for the generic `dotnet` probe (PeerTube, RadioBrowser, Steam, WikiNews, WikiSource, WikiVoyage and Zenodo). These are successful HTTP/API responses, but should not be presented as result-bearing passes.
+- **Correction:** Live test output now labels a successful zero-result response as `EMPTY`; the evidence script records `status=empty`, `providerChecksEmpty` and `providerChecksResponded` separately. Non-empty responses remain `passed`; exceptions/denials remain `failed`. Empty responses do not fail the transport availability stage, but they are not included in the result-bearing pass count.
+- **Documentation:** README explains the three distinct outcomes.
+- **Commits:** `557c12c49312bbc2bf3adf5d3eda8e1c03190782` (live test), `e5666db1cdf16e7e7f0912327d90a04871bbd6a7` (evidence script), `677f954ba062e0783c80a659c7f0e8d3ab0a5645` (README).
+- **Verification:** Static review only; PowerShell and .NET 10 assessment rerun pending.
