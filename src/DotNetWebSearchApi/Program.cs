@@ -127,7 +127,10 @@ builder.Services.AddSingleton<SearchHttpTransport>();
 builder.Services.AddSingleton<ProviderHealthRegistry>();
 builder.Services.AddSingleton<SearchAggregator>();
 WebApplication app = builder.Build();
-app.UseForwardedHeaders();
+if (securityOptions.TrustForwardedHeaders)
+{
+    app.UseForwardedHeaders();
+}
 app.UseRouting();
 app.UseStaticFiles();
 ApiRequestSecurity.UseAuthentication(app, securityOptions, app.Environment.IsDevelopment());
