@@ -1676,3 +1676,12 @@ Every material repository action is recorded here with its reason, result, verif
 - **Correction:** Replaced the URI pattern with explicit ordinal scheme equality checks, used the predicate overload of `Assert.Single`, and removed an unused opt-in constant. Live tests still require HTTP/HTTPS absolute result URLs and exactly one matching provider definition.
 - **Commit:** `64327de4ee2d92261d7a3a0424a7dd2659a334bd`.
 - **Verification:** Awaiting the operator's next local Release build/test. No local .NET execution is claimed here.
+
+
+### 182. Add fail-fast live-provider batches of 20
+- **Request:** Exercise the complete locally configured provider set using real outbound HTTP, grouped into batches of 20; stop after the first failed batch.
+- **Implementation:** Added `AllRegisteredProviders_RespondToLiveRequests`, which resolves the production `ISearchProvider` registrations from `WebApplicationFactory`, sorts them by provider name, and invokes each provider sequentially with a bounded query and its declared timeout. Each response is checked for non-empty titles and absolute HTTP(S) URLs. All providers in the current batch are attempted so the batch report captures multiple failures; the test then fails the batch.
+- **Runner:** Added `scripts/Test-LiveProvidersInBatches.ps1`. It builds Release once, runs batches of 20, and stops before the next batch when the current test process fails. It restores the caller's live-test environment variables afterward.
+- **Credential handling:** Only providers registered from the local configuration are exercised. API-key providers are included only when their real credentials are configured; dummy keys are not introduced. The script's current maximum catalogue size is 67 and can be overridden.
+- **Verification:** Source and runner committed for local execution. The user has confirmed the three initial live checks (Wikipedia, Crossref and GitHub) passed, alongside the previously reported 368 active offline tests. The new full-provider batches have **not** yet been run; no build/test execution is claimed here.
+- **Workflows:** No GitHub Actions were invoked or changed.
