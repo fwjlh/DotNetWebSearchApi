@@ -327,3 +327,6 @@ Keep this file and `LOG.md` current so the next session can resume without chat 
 
 
 - Trusted proxy registration now includes IPv4 and IPv4-mapped IPv6 representations for each configured proxy, matching dual-mode socket behaviour. Added an options-level regression test. Commits: `52ddf55a42051fabf1297b2bb2af5a275d4aee30`, `9361bfde164d87d6c6daea9ee3e1152de94a7f47`, `f1f67c5758ceb23e21ebd1cc1e3952e7e87520e0`.
+
+
+- Added explicit `Microsoft.AspNetCore.Builder` import for the forwarded-header options test (test project lacks Web SDK global usings). Commit: `60d6fd97b24f13cf4a39008b331751ede2e1eb0d`.
