@@ -166,3 +166,10 @@ Keep this file and `LOG.md` current so the next session can resume without chat 
 
 
 - The non-Development startup test now sets both `ASPNETCORE_ENVIRONMENT` and `DOTNET_ENVIRONMENT` to Staging before host creation, avoiding minimal-host environment precedence ambiguity. Commit `92b279c4`; activity entry `7c993b2b`.
+
+
+## Compiler correction — 2026-11-24
+- Fixed CS8421 in `Program.cs`: `DiagnosticsEndpoint` is no longer a static local function because it reads the enclosing `securityOptions` value.
+- This is a compile-only correction; authentication configuration and diagnostics output are unchanged.
+- Commit: `d0c854301be653c3cc843270c6cda75e3cf3ffd8`.
+- **Verification pending:** run the Release build and full tests locally. CS0006 was a downstream missing-reference error caused by the main-project compilation failure.
