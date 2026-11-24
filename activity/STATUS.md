@@ -258,3 +258,6 @@ Keep this file and `LOG.md` current so the next session can resume without chat 
 
 
 - Aggregator now normalizes provider position maps without throwing on case-insensitive duplicate keys; blank keys and non-positive positions are ignored and the best position is retained. Added regression test. Commits: `247c80fd8df94408dafb086c7b5f40e37be11921`, `7644cbd4f2a26d97c6dbe19c8ee177734a887eca`. Execution pending local .NET 10.
+
+
+- Aggregator now matches explicit provider selections with `OrdinalIgnoreCase`, independent of the supplied set comparer; added a regression test using a default case-sensitive set. Commits: `d4b314be5e2786c0f1e2891ec9d4df4c057f5041`, `0840587e9b0270bd88531d91c13c01575ce64a85`. Execution pending local .NET 10.
