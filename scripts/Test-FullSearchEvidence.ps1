@@ -1,0 +1,203 @@
+<#
+.SYNOPSIS
+Builds, regression-tests and live-tests the complete search service, preserving machine-readable evidence.
+.DESCRIPTION
+Runs the offline suite, every locally registered live provider in batches of up to 20 (continuing
+after failed batches), and one end-to-end aggregate API search. Writes JSON evidence and a full log.
+API keys are read only from the caller's existing environment; no secrets are written to evidence.
+#>
+[CmdletBinding()]
+param(
+    [ValidateRange(1, 20)]
+    [int]$BatchSize = 20,
+
+    [ValidateSet("Debug", "Release")]
+    [string]$Configuration = "Release",
+
+    [string]$Query = "dotnet",
+
+    [string]$EvidenceDirectory = (Join-Path $PSScriptRoot "..\evidence")
+)
+
+$ErrorActionPreference = "Stop"
+$solutionPath = [System.IO.Path]::GetFullPath((Join-Path $PSScriptRoot "..\DotNetWebSearchApi.sln"))
+if (-not (Test-Path -LiteralPath $solutionPath)) {
+    throw "Solution file was not found: $solutionPath"
+}
+
+$timestamp = Get-Date -Format "yyyyMMdd-HHmmss"
+$evidencePath = [System.IO.Path]::GetFullPath($EvidenceDirectory)
+[System.IO.Directory]::CreateDirectory($evidencePath) | Out-Null
+$jsonPath = Join-Path $evidencePath "search-assessment-$timestamp.json"
+$logPath = Join-Path $evidencePath "search-assessment-$timestamp.log"
+$providerRuns = [System.Collections.Generic.List[object]]::new()
+$stages = [System.Collections.Generic.List[object]]::new()
+$logLines = [System.Collections.Generic.List[string]]::new()
+$environmentNames = @(
+    "DOTNETWEBSEARCHAPI_LIVE_TESTS",
+    "DOTNETWEBSEARCHAPI_LIVE_PROVIDER_OFFSET",
+    "DOTNETWEBSEARCHAPI_LIVE_PROVIDER_COUNT"
+)
+$previousValues = @{}
+foreach ($name in $environmentNames) {
+    $previousValues[$name] = [Environment]::GetEnvironmentVariable($name, "Process")
+}
+
+function Invoke-DotNetStage {
+    param(
+        [string]$Name,
+        [string[]]$Arguments
+    )
+
+    Write-Host ""
+    Write-Host "=== $Name ==="
+    $logLines.Add("=== $Name ===")
+    $output = & dotnet @Arguments 2>&1
+    $exitCode = $LASTEXITCODE
+    foreach ($line in $output) {
+        $textLine = [string]$line
+        Write-Host $textLine
+        $logLines.Add($textLine)
+    }
+    $stage = [pscustomobject]@{
+        name = $Name
+        exitCode = $exitCode
+        passed = ($exitCode -eq 0)
+    }
+    $stages.Add($stage)
+    return $stage
+}
+
+$buildPassed = $false
+$regressionPassed = $false
+$apiPassed = $false
+$registeredProviderCount = $null
+$batchOffset = 0
+$batchNumber = 0
+$maximumProviderCount = 200
+$overallError = $null
+
+try {
+    $build = Invoke-DotNetStage "Release build" @("build", $solutionPath, "-c", $Configuration, "--no-incremental")
+    $buildPassed = $build.passed
+    if (-not $buildPassed) {
+        throw "Build failed; tests cannot provide reliable evidence."
+    }
+
+    $regression = Invoke-DotNetStage "Offline regression suite" @("test", $solutionPath, "-c", $Configuration, "--no-build", "--no-restore", "--logger", "console;verbosity=minimal")
+    $regressionPassed = $regression.passed
+
+    $env:DOTNETWEBSEARCHAPI_LIVE_TESTS = "1"
+    $env:DOTNETWEBSEARCHAPI_LIVE_PROVIDER_COUNT = [string]$BatchSize
+
+    while ($batchOffset -lt $maximumProviderCount) {
+        $batchNumber++
+        $env:DOTNETWEBSEARCHAPI_LIVE_PROVIDER_OFFSET = [string]$batchOffset
+        $batch = Invoke-DotNetStage "Live provider batch $batchNumber (offset $batchOffset)" @(
+            "test", $solutionPath, "-c", $Configuration, "--no-build", "--no-restore",
+            "--filter", "FullyQualifiedName~AllRegisteredProviders_RespondToLiveRequests",
+            "--logger", "console;verbosity=detailed"
+        )
+
+        $batchText = ($logLines | Select-Object -Last 500) -join "`n"
+        $inventoryMatch = [regex]::Match($batchText, "Provider inventory: (\d+) registered; batch offset (\d+); selected (\d+)\.")
+        if (-not $inventoryMatch.Success) {
+            throw "Could not read provider inventory from batch $batchNumber output. See the log."
+        }
+
+        $registeredProviderCount = [int]$inventoryMatch.Groups[1].Value
+        $selectedCount = [int]$inventoryMatch.Groups[3].Value
+        $providerLines = $batchText -split "`r?`n"
+        foreach ($providerLine in $providerLines) {
+            $passMatch = [regex]::Match($providerLine, "PASS ([^:]+): (\d+) results\.")
+            if ($passMatch.Success) {
+                $providerRuns.Add([pscustomobject]@{
+                    batch = $batchNumber
+                    offset = $batchOffset
+                    provider = $passMatch.Groups[1].Value.Trim()
+                    status = "passed"
+                    resultCount = [int]$passMatch.Groups[2].Value
+                    detail = $providerLine.Trim()
+                })
+                continue
+            }
+
+            $failMatch = [regex]::Match($providerLine, "FAIL ([^:]+): (.*)$")
+            if ($failMatch.Success) {
+                $providerRuns.Add([pscustomobject]@{
+                    batch = $batchNumber
+                    offset = $batchOffset
+                    provider = $failMatch.Groups[1].Value.Trim()
+                    status = "failed"
+                    resultCount = 0
+                    detail = $failMatch.Groups[2].Value.Trim()
+                })
+            }
+        }
+
+        Write-Host "Batch $batchNumber exit code: $($batch.exitCode); providers selected: $selectedCount."
+        if ($selectedCount -lt $BatchSize) {
+            break
+        }
+
+        $batchOffset += $BatchSize
+        Start-Sleep -Seconds 3
+    }
+
+    $apiTest = Invoke-DotNetStage "End-to-end aggregate API and compatibility search" @(
+        "test", $solutionPath, "-c", $Configuration, "--no-build", "--no-restore",
+        "--filter", "FullyQualifiedName~FullSearchApi_ReturnsAggregatedLiveResultsAndCompatibilityJson",
+        "--logger", "console;verbosity=detailed"
+    )
+    $apiPassed = $apiTest.passed
+}
+catch {
+    $overallError = $_.Exception.Message
+    Write-Error $overallError
+}
+finally {
+    foreach ($name in $environmentNames) {
+        $previousValue = $previousValues[$name]
+        if ($null -eq $previousValue) {
+            Remove-Item -Path "Env:$name" -ErrorAction SilentlyContinue
+        }
+        else {
+            Set-Item -Path "Env:$name" -Value $previousValue
+        }
+    }
+
+    $passedProviders = @($providerRuns | Where-Object status -eq "passed").Count
+    $failedProviders = @($providerRuns | Where-Object status -eq "failed").Count
+    $evidence = [ordered]@{
+        generatedAtUtc = [DateTime]::UtcNow.ToString("o")
+        machine = [Environment]::MachineName
+        operatingSystem = [System.Runtime.InteropServices.RuntimeInformation]::OSDescription
+        dotnetSdk = (& dotnet --version 2>$null | Select-Object -First 1)
+        configuration = $Configuration
+        query = $Query
+        batchSize = $BatchSize
+        registeredProviderCount = $registeredProviderCount
+        summary = [ordered]@{
+            buildPassed = $buildPassed
+            regressionSuitePassed = $regressionPassed
+            providerChecksPassed = $passedProviders
+            providerChecksFailed = $failedProviders
+            aggregateApiPassed = $apiPassed
+            overallPassed = ($buildPassed -and $regressionPassed -and $failedProviders -eq 0 -and $apiPassed -and $null -eq $overallError)
+        }
+        stages = @($stages)
+        providers = @($providerRuns)
+        error = $overallError
+        logFile = [System.IO.Path]::GetFileName($logPath)
+    }
+    $evidence | ConvertTo-Json -Depth 8 | Set-Content -LiteralPath $jsonPath -Encoding utf8
+    $logLines | Set-Content -LiteralPath $logPath -Encoding utf8
+    Write-Host ""
+    Write-Host "Evidence JSON: $jsonPath"
+    Write-Host "Full execution log: $logPath"
+    Write-Host "Provider checks: $passedProviders passed; $failedProviders failed."
+}
+
+if (-not $buildPassed -or -not $regressionPassed -or $failedProviders -gt 0 -or -not $apiPassed -or $null -ne $overallError) {
+    exit 1
+}
