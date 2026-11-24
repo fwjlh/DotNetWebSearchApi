@@ -1997,3 +1997,11 @@ Every material repository action is recorded here with its reason, result, verif
 - **Regression coverage:** Added a request-and-mapping test that checks the selected field list and verifies author, publisher, journal and URL metadata.
 - **Verification:** Source and official API documentation reviewed. Local .NET 10 tests and a fresh live-provider assessment remain pending; the HTTP 400 cause is not considered confirmed until the live rerun.
 - **External reference:** OpenAIRE Graph v4 sparse fieldsets and research-product documentation (https://graph.openaire.eu/docs/apis/graph-api-v4/research-products/select/).
+
+
+### Assessment evidence publishing — 2026-11-24
+- Added opt-in `-PublishEvidence` support to `scripts/Test-FullSearchEvidence.ps1`.
+- After writing the JSON and full log, the script can stage only those two files, create a timestamped evidence commit and push it to `origin/main`. Publishing occurs even when the assessment itself has failed, preserving diagnostic evidence.
+- Safety checks require the repository root to match the script location, the current branch to be `main`, the origin URL to be `fwjlh/DotNetWebSearchApi`, and an initially empty staging area. Evidence files are explicitly force-added because the default ignore rules exclude them; unrelated working-tree changes are not staged.
+- Uses the operator's existing Git credential manager; no token is read or written by the script. No workflow or GitHub Actions usage.
+- **Verification:** Static source review only. PowerShell execution and an authenticated push must be verified on the operator's Windows machine.
