@@ -242,3 +242,10 @@ Keep this file and `LOG.md` current so the next session can resume without chat 
 
 
 - README now clearly distinguishes historical 156-test CI and 368-test/3-provider local baselines from current HEAD, and directs current verification to the local full-evidence script. Commit: `df85c63713b7522da9c1a6ac5d3f0bf206aa3552`.
+
+
+## Latest local assessment coverage integration — 2026-11-24
+- Full evidence runner now collects XPlat Code Coverage during the offline regression suite into a unique `evidence/coverage` directory, requires a fresh Cobertura report, parses line/branch coverage and embeds metrics in JSON evidence.
+- README updated to describe this output.
+- Commits: `fcdb5a4911b66650ceb0e662c8f65e29cd5ef168`, `6152fb48cf918e290366dd21017cccd363fa592c`, `c6c51ab7aaf09c0076ac7ef35fd98cb42c050dde`.
+- Static PowerShell review only; local Windows execution remains pending. No Actions used.
