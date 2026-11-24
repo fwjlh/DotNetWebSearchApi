@@ -1,5 +1,17 @@
 # Current project handover
 
+## Authoritative current state — 2026-11-24
+- **Branch:** `main`; latest verified handover commit: `bb1f851b694555f0f8d2b65065b604c8e835022f`.
+- **Provider inventory:** 63 registered providers. Latest supplied evidence: Release build 0 warnings/errors, offline suite 397 passed / 0 failed / 5 skipped; line coverage 96.40%, branch coverage 83.85%. These numbers predate the latest arXiv, auth-ordering and live-evidence classification edits.
+- **Live providers:** Last supplied assessment recorded 46 result-bearing, 7 successful-empty and 10 failed/denied outcomes; aggregate API and SearXNG-compatible endpoint passed. Several failures were upstream 403/429/503 responses or anti-bot denials.
+- **Security:** Bearer keys, HTTPS enforcement for remote key requests, trusted-proxy forwarded headers, bounded request bodies, IP/per-key/failure quotas, DNS-pinned public-only outbound transport and redirect validation are implemented. IP limiter partition storage is now capped at 4,096 distinct client keys; additional new IPs share an overflow bucket.
+- **Latest changes requiring local verification:** arXiv timeout increase, auth failure ordering, empty-provider evidence classification, and bounded IP partition selector. No fresh build/test is claimed after these changes.
+- **No GitHub Actions/workflows:** none present or used. Continue direct commits to `main`.
+- **Next:** Run focused `ApiRequestSecurityRateLimitTests`, arXiv tests, then Release build + offline regression + evidence script. Do not rerun upstream batches repeatedly while providers are rate-limiting.
+- Older notes below are historical.
+
+---
+
 ## Authoritative current state — 2026-11-24 15:40 UTC
 - **Current branch:** `main`; current HEAD before this handover refresh: `f8ea093bc9b3df3b923510819870afb82e218ed6`.
 - **Provider inventory:** 63 registered providers in the latest supplied assessment (do not use the older 67-provider snapshot below as current).
