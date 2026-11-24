@@ -358,3 +358,10 @@ Keep this file and `LOG.md` current so the next session can resume without chat 
 - This is a schema-alignment fix based on current OpenAIRE documentation. It is not yet confirmed as the cause of the observed HTTP 400; the next live assessment must verify the outcome.
 - **Required verification:** pull `main`, run the focused JSON API provider tests, then rerun `scripts/Test-FullSearchEvidence.ps1`.
 - No GitHub Actions/workflows were used. Local build and test execution were not available in this session.
+
+
+## 2026-11-24 — automatic evidence publication
+- `scripts/Test-FullSearchEvidence.ps1` now accepts `-PublishEvidence`. After each run it can commit the timestamped JSON and full log to `main`, including when tests fail.
+- Publishing checks the expected repository, `main` branch and an empty staging area, then stages only the two generated evidence files and pushes through the existing Git credential manager.
+- Default execution remains local-only. Use `.scriptsTest-FullSearchEvidence.ps1 -PublishEvidence` to opt in.
+- **Pending:** operator-side PowerShell run and authenticated Git push. Static review only; no Actions/workflows used.
