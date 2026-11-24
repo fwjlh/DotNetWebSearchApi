@@ -189,3 +189,10 @@ Keep this file and `LOG.md` current so the next session can resume without chat 
 - Retained strict absolute HTTP/HTTPS URL assertions and exact provider lookup.
 - Commit: `64327de4ee2d92261d7a3a0424a7dd2659a334bd`.
 - **Verification pending:** rerun Release build and full test suite; live upstream tests remain opt-in.
+
+
+## Latest outbound-address policy correction — 2026-11-24
+- Blocked IPv6 ORCHIDv2 special-purpose prefix `2001:20::/28` in the public-address classifier.
+- Added two negative address-classification cases.
+- Commits: `db625feee2405309f279c22780145c52c56cdb86`, `126baa3fb6c5ba5ba64978ee4ccdea908d94ed02`.
+- Source reviewed only; .NET 10 build/test still requires the operator's local SDK. No Actions or live calls.
