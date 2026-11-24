@@ -101,10 +101,20 @@ public sealed class ApiRequestSecurityRateLimitTests
         Assert.Equal(clientCount - capacity, overflowCount);
     }
 
-    [Fact]
-    public void BoundedPartitionSelector_RejectsInvalidCapacity()
+    [Theory]
+    [InlineData(0)]
+    [InlineData(-1)]
+    public void BoundedPartitionSelector_RejectsNonPositiveCapacity(int capacity)
     {
-        Assert.Throws<ArgumentOutOfRangeException>(() => new BoundedPartitionKeySelector(0));
+        Assert.Throws<ArgumentOutOfRangeException>(() => new BoundedPartitionKeySelector(capacity));
+    }
+
+    [Fact]
+    public void BoundedPartitionSelector_RejectsNullKey()
+    {
+        BoundedPartitionKeySelector selector = new(1);
+
+        Assert.Throws<ArgumentNullException>(() => selector.GetPartitionKey(null!));
     }
 
 }
