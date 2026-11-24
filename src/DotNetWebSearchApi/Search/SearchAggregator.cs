@@ -151,7 +151,8 @@ public sealed class SearchAggregator
             foreach (SearchResult result in providerResult.Results)
             {
                 resultIndex++;
-                if (!TryGetCanonicalUrl(result.Url, out string canonicalUrl))
+                if (string.IsNullOrWhiteSpace(result.Title)
+                    || !TryGetCanonicalUrl(result.Url, out string canonicalUrl))
                 {
                     continue;
                 }
@@ -268,7 +269,9 @@ public sealed class SearchAggregator
     {
         canonicalUrl = string.Empty;
         if (!Uri.TryCreate(value, UriKind.Absolute, out Uri? uri)
-            || (uri.Scheme != Uri.UriSchemeHttp && uri.Scheme != Uri.UriSchemeHttps))
+            || (uri.Scheme != Uri.UriSchemeHttp && uri.Scheme != Uri.UriSchemeHttps)
+            || string.IsNullOrWhiteSpace(uri.Host)
+            || !string.IsNullOrEmpty(uri.UserInfo))
             return false;
         UriBuilder builder = new(uri) { Fragment = string.Empty };
         string path = builder.Path.TrimEnd('/');
