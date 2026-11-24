@@ -7,4 +7,7 @@
   <ItemGroup>
     <PackageReference Include="HtmlAgilityPack" Version="1.13.1" />
   </ItemGroup>
+  <ItemGroup>
+    <InternalsVisibleTo Include="DotNetWebSearchApi.Tests" />
+  </ItemGroup>
 </Project>
