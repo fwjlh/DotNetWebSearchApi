@@ -1,3 +1,4 @@
+using System.Net;
 using System.Threading.RateLimiting;
 using DotNetWebSearchApi;
 using Xunit;
@@ -6,6 +7,17 @@ namespace DotNetWebSearchApi.Tests;
 
 public sealed class ApiRequestSecurityRateLimitTests
 {
+    [Fact]
+    public void ClientIpPartitionKey_NormalizesIpv4MappedIpv6()
+    {
+        IPAddress ipv4 = IPAddress.Parse("192.0.2.15");
+        IPAddress mapped = IPAddress.Parse("::ffff:192.0.2.15");
+
+        Assert.Equal(
+            ApiRequestSecurity.GetClientIpPartitionKey(ipv4),
+            ApiRequestSecurity.GetClientIpPartitionKey(mapped));
+    }
+
     [Fact]
     public void PerKeyLimiter_EnforcesIndependentQuotasForEachKey()
     {
