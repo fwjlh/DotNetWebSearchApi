@@ -9,6 +9,15 @@ namespace DotNetWebSearchApi.Tests;
 public sealed class ArxivSearchProviderTests
 {
     [Fact]
+    public void Timeout_AllowsTwentySecondsForThePublicApi()
+    {
+        using HttpClient client = new();
+        ArxivSearchProvider provider = new(client);
+
+        Assert.Equal(TimeSpan.FromSeconds(20), provider.Timeout);
+    }
+
+    [Fact]
     public async Task SearchAsync_ParsesAtomEntriesAndEncodesQuery()
     {
         Uri? requestUri = null;
