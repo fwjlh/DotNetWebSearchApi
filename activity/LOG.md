@@ -1909,3 +1909,11 @@ Every material repository action is recorded here with its reason, result, verif
 - **Documentation:** README records the browser-side guard as an additional safety layer.
 - **Commits:** `9d8fbbbedfb14e420cc11f489a16b01b170b6e17` (UI), `ffdfefe2c16d9f5b0345c81879beaa99ac94d7b6` (README).
 - **Verification:** Static JavaScript review only; no browser test harness executed.
+
+
+### 213. Restrict loopback HTTP to Development, not production proxy deployments
+- **Reason:** The earlier transport helper allowed any loopback peer over HTTP, including a production reverse proxy forwarding remote clients to localhost. Without trusted forwarded headers, that could bypass the remote-HTTPS requirement.
+- **Correction:** The loopback HTTP exception is now explicitly enabled only when the host environment is Development. Production/Staging require HTTPS even when the direct peer is loopback; a configured proxy must provide trusted `X-Forwarded-Proto: https`.
+- **Tests updated:** Transport policy tests now distinguish Development loopback from Staging/Production loopback and remote HTTP.
+- **Commits:** `851d2ca26154e7a68576887bb4c991d917dee8d0` (policy), `34a01c4763fefb65a82dcd32a1024f6e0bc53712` (Program), `34608f41f57e3e1b68a91ba4eddad82e98e601cc` (tests).
+- **Verification:** Static review only; .NET 10 build/test pending locally.
