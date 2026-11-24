@@ -259,7 +259,7 @@ Programmatic clients send:
 
     Authorization: Bearer replace-with-the-configured-key
 
-The browser search page includes a password field for the key; it is held only in the current page and is not written to browser storage. Use HTTPS for all non-localhost traffic. Failed bearer authentication attempts are limited to 10 per minute per remote IP. Authenticated search requests are limited to 60 per minute per remote IP and 60 per minute per API key; the per-key partition uses a SHA-256 digest rather than retaining the raw key. These are process-local fixed-window limits. The API currently uses the direct peer IP; behind a reverse proxy, all callers may share the proxy's quota until trusted forwarded-header support is configured in the host. Never trust arbitrary client-supplied forwarded headers.
+The browser search page includes a password field for the key; it is held only in the current page and is not written to browser storage. Use HTTPS for all non-localhost traffic. Failed bearer authentication attempts are limited to 10 per minute per remote IP. Authenticated search requests are limited to 60 per minute per remote IP and 60 per minute per API key; the per-key partition uses a SHA-256 digest rather than retaining the raw key. These are process-local fixed-window limits. The API uses the direct peer IP unless `TRUSTED_PROXY_IPS` is configured with a semicolon-separated list of the immediate reverse-proxy IP addresses. Only those peers are trusted for `X-Forwarded-For`/`X-Forwarded-Proto`, and one proxy hop is processed. If unset, callers behind a proxy share the proxy's quota. The proxy must overwrite or safely append forwarded headers; never trust arbitrary client-supplied forwarded headers.
 
 ### Optional Brave Search provider
 
