@@ -1,0 +1,266 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TestRun id="7850ce99-d8ce-4f92-bb0f-cc96ac702d73" name="JohnHamilton@GT2_PRO 2026-11-24 11:49:17" runUser="AzureAD\JohnHamilton" xmlns="http://microsoft.com/schemas/VisualStudio/TeamTest/2010">
+  <Times creation="2026-11-24T11:49:17.9191688+00:00" queuing="2026-11-24T11:49:17.9191690+00:00" start="2026-11-24T11:48:57.3495594+00:00" finish="2026-11-24T11:49:17.9275451+00:00" />
+  <TestSettings name="default" id="cb00d135-a92e-4254-bba5-a0698fb86246">
+    <Deployment runDeploymentRoot="JohnHamilton_GT2_PRO_2026-11-24_11_49_17" />
+  </TestSettings>
+  <Results>
+    <UnitTestResult executionId="9c7b59a0-67a6-4cc2-a191-ab90deecd159" testId="92d9a697-d785-ee1b-469e-e402ede9b3f0" testName="DotNetWebSearchApi.Tests.LiveProviderIntegrationTests.AllRegisteredProviders_RespondToLiveRequests" computerName="GT2_PRO" duration="00:00:19.8171434" startTime="2026-11-24T11:48:58.0030833+00:00" endTime="2026-11-24T11:49:17.8353821+00:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Failed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="9c7b59a0-67a6-4cc2-a191-ab90deecd159">
+      <Output>
+        <StdOut>Provider inventory: 63 registered; batch offset 0; selected 20.&#xD;
+PASS arxiv: 0 results. &#xD;
+PASS askubuntu: 3 results. How to fix `GLIBCXX_3.4.30&amp;#39; not found in Ubuntu 22.04 | Ubuntu 26.04 Random reboots on my laptop | The URL http://security.ubuntu.com/ubuntu noble-security InRelease fails to connect with .NET 10 upgrade&#xD;
+FAIL bilibili: ProviderFailureException: bilibili returned HTTP 412.&#xD;
+PASS bing: 10 results. Download .NET (Linux, macOS, and Windows) | .NET | Browse all .NET versions to download | .NET - dotnet.microsoft.com | .NET documentation - .NET | Microsoft Learn&#xD;
+PASS bing_news: 1 results. Fix “You Must Install .NET To Run This Application” (2026)&#xD;
+PASS cratesio: 3 results. dotnet-parser | etdl-target-dotnet | dotnet-gitversion-build&#xD;
+PASS crossref: 3 results. ActiveX, and .NET (dotnet) | ActiveX, and .NET (dotNet) | Voluntary Civic Engagement in the Dotnet Generation&#xD;
+PASS dailymotion: 3 results. .NET Campus 2012 - DotNet Campania | Microsoft reúne a más de 1.100 desarrolladores en dotNet Spain | Maine Pyar Kiya Movie || DotNet Comedy Scene || Vennela Rama Rao || 03&#xD;
+PASS datacite: 3 results. dotnet | dotnet | dotnet&#xD;
+PASS deezer: 3 results. Dot Net | DOTnet | Do They Know It's Christmas? (1984 Version)&#xD;
+PASS dockerhub: 3 results. slacksec/dotnet | wlniao/dotnet | lendingtree/dotnet&#xD;
+PASS duckduckgo: 10 results. Download .NET (Linux, macOS, and Windows) | .NET | Browse all .NET versions to download | .NET - dotnet.microsoft.com | .NET documentation - .NET | Microsoft Learn&#xD;
+FAIL europepmc: TaskCanceledException: The operation was canceled.&#xD;
+PASS gitea: 3 results. pluggins/Dotnet | xvbnm48/dotnet-todo | Falcon/Falcon.StoredProcedureRunner&#xD;
+PASS github: 3 results. microsoft/dotnet | MiniProfiler/dotnet | CommunityToolkit/dotnet&#xD;
+PASS gitlab: 3 results. Chandler Bing / temp scan ecoscan-27628029-deletion_scheduled-89391576 | Rachel Green / temp scan ecoscan-27628029-deletion_scheduled-89378985 | Chandler Bing / temp scan ecoscan-27628029-deletion_scheduled-89368727&#xD;
+FAIL google: ProviderFailureException: google returned HTTP 403.&#xD;
+FAIL googlebooks: ProviderFailureException: googlebooks returned HTTP 429.&#xD;
+PASS google_news: 3 results. The 2026 Vulnpocalypse Hits PHP: Four Critical RCEs, but How Dangerous Are They? - OX Security | Microsoft Releases .NET 11 RC1 with Go-Live Support, C# 15 and F# 11 as Default Language Versions - infoq.com | CONVEX Summit 2026 | dotNET – Singularity – GSAS - Plain Concepts&#xD;
+PASS hackernews: 3 results. Run a C# file directly using dotnet run app.cs | Show HN: DotNetFiddle – JsFiddle for .Net | Exploring the new .NET “dotnet” CLI</StdOut>
+        <ErrorInfo>
+          <Message>Live provider batch failed:&#xD;
+bilibili: ProviderFailureException: bilibili returned HTTP 412.&#xD;
+europepmc: TaskCanceledException: The operation was canceled.&#xD;
+google: ProviderFailureException: google returned HTTP 403.&#xD;
+googlebooks: ProviderFailureException: googlebooks returned HTTP 429.</Message>
+          <StackTrace>   at DotNetWebSearchApi.Tests.LiveProviderIntegrationTests.AllRegisteredProviders_RespondToLiveRequests() in C:\WEBSITEDEVELOPMENT\DotNetWebSearchApi\tests\DotNetWebSearchApi.Tests\LiveProviderIntegrationTests.cs:line 80&#xD;
+--- End of stack trace from previous location ---</StackTrace>
+        </ErrorInfo>
+      </Output>
+    </UnitTestResult>
+  </Results>
+  <TestDefinitions>
+    <UnitTest name="DotNetWebSearchApi.Tests.LiveProviderIntegrationTests.AllRegisteredProviders_RespondToLiveRequests" storage="c:\websitedevelopment\dotnetwebsearchapi\tests\dotnetwebsearchapi.tests\bin\release\net10.0\dotnetwebsearchapi.tests.dll" id="92d9a697-d785-ee1b-469e-e402ede9b3f0">
+      <Execution id="9c7b59a0-67a6-4cc2-a191-ab90deecd159" />
+      <TestMethod codeBase="C:\WEBSITEDEVELOPMENT\DotNetWebSearchApi\tests\DotNetWebSearchApi.Tests\bin\Release\net10.0\DotNetWebSearchApi.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="DotNetWebSearchApi.Tests.LiveProviderIntegrationTests" name="AllRegisteredProviders_RespondToLiveRequests" />
+    </UnitTest>
+  </TestDefinitions>
+  <TestEntries>
+    <TestEntry testId="92d9a697-d785-ee1b-469e-e402ede9b3f0" executionId="9c7b59a0-67a6-4cc2-a191-ab90deecd159" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+  </TestEntries>
+  <TestLists>
+    <TestList name="Results Not in a List" id="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestList name="All Loaded Results" id="19431567-8539-422a-85d7-44ee4e166bda" />
+  </TestLists>
+  <ResultSummary outcome="Failed">
+    <Counters total="1" executed="1" passed="0" failed="1" error="0" timeout="0" aborted="0" inconclusive="0" passedButRunAborted="0" notRunnable="0" notExecuted="0" disconnected="0" warning="0" completed="0" inProgress="0" pending="0" />
+    <Output>
+      <StdOut>[xUnit.net 00:00:00.00] xUnit.net VSTest Adapter v3.1.5+1b188a7b0a (64-bit .NET 10.0.15)&#xD;
+[xUnit.net 00:00:00.08]   Discovering: DotNetWebSearchApi.Tests&#xD;
+[xUnit.net 00:00:00.15]   Discovered:  DotNetWebSearchApi.Tests&#xD;
+[xUnit.net 00:00:00.17]   Starting:    DotNetWebSearchApi.Tests&#xD;
+info: Microsoft.Hosting.Lifetime[0]&#xD;
+      Application started. Press Ctrl+C to shut down.&#xD;
+info: Microsoft.Hosting.Lifetime[0]&#xD;
+      Hosting environment: Development&#xD;
+info: Microsoft.Hosting.Lifetime[0]&#xD;
+      Content root path: C:\WEBSITEDEVELOPMENT\DotNetWebSearchApi\src\DotNetWebSearchApi&#xD;
+info: System.Net.Http.HttpClient.ArxivSearchProvider.LogicalHandler[100]&#xD;
+      Start processing HTTP request GET https://export.arxiv.org/api/query?*&#xD;
+info: System.Net.Http.HttpClient.ArxivSearchProvider.ClientHandler[100]&#xD;
+      Sending HTTP request GET https://export.arxiv.org/api/query?*&#xD;
+info: System.Net.Http.HttpClient.ArxivSearchProvider.ClientHandler[101]&#xD;
+      Received HTTP response headers after 859.7135ms - 200&#xD;
+info: System.Net.Http.HttpClient.ArxivSearchProvider.LogicalHandler[101]&#xD;
+      End processing HTTP request after 867.2765ms - 200&#xD;
+info: System.Net.Http.HttpClient.askubuntu.LogicalHandler[100]&#xD;
+      Start processing HTTP request GET https://api.stackexchange.com/2.3/search/advanced?*&#xD;
+info: System.Net.Http.HttpClient.askubuntu.ClientHandler[100]&#xD;
+      Sending HTTP request GET https://api.stackexchange.com/2.3/search/advanced?*&#xD;
+info: System.Net.Http.HttpClient.askubuntu.ClientHandler[101]&#xD;
+      Received HTTP response headers after 400.9339ms - 200&#xD;
+info: System.Net.Http.HttpClient.askubuntu.LogicalHandler[101]&#xD;
+      End processing HTTP request after 401.0808ms - 200&#xD;
+info: System.Net.Http.HttpClient.bilibili.LogicalHandler[100]&#xD;
+      Start processing HTTP request GET https://api.bilibili.com/x/web-interface/search/type?*&#xD;
+info: System.Net.Http.HttpClient.bilibili.ClientHandler[100]&#xD;
+      Sending HTTP request GET https://api.bilibili.com/x/web-interface/search/type?*&#xD;
+info: System.Net.Http.HttpClient.bilibili.ClientHandler[101]&#xD;
+      Received HTTP response headers after 508.6306ms - 412&#xD;
+info: System.Net.Http.HttpClient.bilibili.LogicalHandler[101]&#xD;
+      End processing HTTP request after 508.7486ms - 412&#xD;
+info: System.Net.Http.HttpClient.BingSearchProvider.LogicalHandler[100]&#xD;
+      Start processing HTTP request GET https://www.bing.com/search?*&#xD;
+info: System.Net.Http.HttpClient.BingSearchProvider.ClientHandler[100]&#xD;
+      Sending HTTP request GET https://www.bing.com/search?*&#xD;
+info: System.Net.Http.HttpClient.BingSearchProvider.ClientHandler[101]&#xD;
+      Received HTTP response headers after 179.2502ms - 200&#xD;
+info: System.Net.Http.HttpClient.BingSearchProvider.LogicalHandler[101]&#xD;
+      End processing HTTP request after 179.332ms - 200&#xD;
+info: System.Net.Http.HttpClient.bing_news.LogicalHandler[100]&#xD;
+      Start processing HTTP request GET https://www.bing.com/news/search?*&#xD;
+info: System.Net.Http.HttpClient.bing_news.ClientHandler[100]&#xD;
+      Sending HTTP request GET https://www.bing.com/news/search?*&#xD;
+info: System.Net.Http.HttpClient.bing_news.ClientHandler[101]&#xD;
+      Received HTTP response headers after 231.1534ms - 200&#xD;
+info: System.Net.Http.HttpClient.bing_news.LogicalHandler[101]&#xD;
+      End processing HTTP request after 231.2885ms - 200&#xD;
+info: System.Net.Http.HttpClient.cratesio.LogicalHandler[100]&#xD;
+      Start processing HTTP request GET https://crates.io/api/v1/crates?*&#xD;
+info: System.Net.Http.HttpClient.cratesio.ClientHandler[100]&#xD;
+      Sending HTTP request GET https://crates.io/api/v1/crates?*&#xD;
+info: System.Net.Http.HttpClient.cratesio.ClientHandler[101]&#xD;
+      Received HTTP response headers after 470.6768ms - 200&#xD;
+info: System.Net.Http.HttpClient.cratesio.LogicalHandler[101]&#xD;
+      End processing HTTP request after 470.7814ms - 200&#xD;
+info: System.Net.Http.HttpClient.crossref.LogicalHandler[100]&#xD;
+      Start processing HTTP request GET https://api.crossref.org/works?*&#xD;
+info: System.Net.Http.HttpClient.crossref.ClientHandler[100]&#xD;
+      Sending HTTP request GET https://api.crossref.org/works?*&#xD;
+info: System.Net.Http.HttpClient.crossref.ClientHandler[101]&#xD;
+      Received HTTP response headers after 700.5682ms - 200&#xD;
+info: System.Net.Http.HttpClient.crossref.LogicalHandler[101]&#xD;
+      End processing HTTP request after 700.6559ms - 200&#xD;
+info: System.Net.Http.HttpClient.dailymotion.LogicalHandler[100]&#xD;
+      Start processing HTTP request GET https://api.dailymotion.com/videos?*&#xD;
+info: System.Net.Http.HttpClient.dailymotion.ClientHandler[100]&#xD;
+      Sending HTTP request GET https://api.dailymotion.com/videos?*&#xD;
+info: System.Net.Http.HttpClient.dailymotion.ClientHandler[101]&#xD;
+      Received HTTP response headers after 598.698ms - 200&#xD;
+info: System.Net.Http.HttpClient.dailymotion.LogicalHandler[101]&#xD;
+      End processing HTTP request after 598.7877ms - 200&#xD;
+info: System.Net.Http.HttpClient.datacite.LogicalHandler[100]&#xD;
+      Start processing HTTP request GET https://api.datacite.org/dois?*&#xD;
+info: System.Net.Http.HttpClient.datacite.ClientHandler[100]&#xD;
+      Sending HTTP request GET https://api.datacite.org/dois?*&#xD;
+info: System.Net.Http.HttpClient.datacite.ClientHandler[101]&#xD;
+      Received HTTP response headers after 695.0338ms - 200&#xD;
+info: System.Net.Http.HttpClient.datacite.LogicalHandler[101]&#xD;
+      End processing HTTP request after 695.1129ms - 200&#xD;
+info: System.Net.Http.HttpClient.deezer.LogicalHandler[100]&#xD;
+      Start processing HTTP request GET https://api.deezer.com/search?*&#xD;
+info: System.Net.Http.HttpClient.deezer.ClientHandler[100]&#xD;
+      Sending HTTP request GET https://api.deezer.com/search?*&#xD;
+info: System.Net.Http.HttpClient.deezer.ClientHandler[101]&#xD;
+      Received HTTP response headers after 355.8546ms - 200&#xD;
+info: System.Net.Http.HttpClient.deezer.LogicalHandler[101]&#xD;
+      End processing HTTP request after 355.9348ms - 200&#xD;
+info: System.Net.Http.HttpClient.dockerhub.LogicalHandler[100]&#xD;
+      Start processing HTTP request GET https://hub.docker.com/v2/search/repositories/?*&#xD;
+info: System.Net.Http.HttpClient.dockerhub.ClientHandler[100]&#xD;
+      Sending HTTP request GET https://hub.docker.com/v2/search/repositories/?*&#xD;
+info: System.Net.Http.HttpClient.dockerhub.ClientHandler[101]&#xD;
+      Received HTTP response headers after 310.1097ms - 200&#xD;
+info: System.Net.Http.HttpClient.dockerhub.LogicalHandler[101]&#xD;
+      End processing HTTP request after 310.1946ms - 200&#xD;
+info: System.Net.Http.HttpClient.DuckDuckGoSearchProvider.LogicalHandler[100]&#xD;
+      Start processing HTTP request POST https://html.duckduckgo.com/html/&#xD;
+info: System.Net.Http.HttpClient.DuckDuckGoSearchProvider.ClientHandler[100]&#xD;
+      Sending HTTP request POST https://html.duckduckgo.com/html/&#xD;
+info: System.Net.Http.HttpClient.DuckDuckGoSearchProvider.ClientHandler[101]&#xD;
+      Received HTTP response headers after 746.7938ms - 200&#xD;
+info: System.Net.Http.HttpClient.DuckDuckGoSearchProvider.LogicalHandler[101]&#xD;
+      End processing HTTP request after 746.8931ms - 200&#xD;
+info: System.Net.Http.HttpClient.europepmc.LogicalHandler[100]&#xD;
+      Start processing HTTP request GET https://www.ebi.ac.uk/europepmc/webservices/rest/search?*&#xD;
+info: System.Net.Http.HttpClient.europepmc.ClientHandler[100]&#xD;
+      Sending HTTP request GET https://www.ebi.ac.uk/europepmc/webservices/rest/search?*&#xD;
+info: System.Net.Http.HttpClient.gitea.LogicalHandler[100]&#xD;
+      Start processing HTTP request GET https://gitea.com/api/v1/repos/search?*&#xD;
+info: System.Net.Http.HttpClient.gitea.ClientHandler[100]&#xD;
+      Sending HTTP request GET https://gitea.com/api/v1/repos/search?*&#xD;
+info: System.Net.Http.HttpClient.gitea.ClientHandler[101]&#xD;
+      Received HTTP response headers after 1374.086ms - 200&#xD;
+info: System.Net.Http.HttpClient.gitea.LogicalHandler[101]&#xD;
+      End processing HTTP request after 1374.413ms - 200&#xD;
+info: System.Net.Http.HttpClient.github.LogicalHandler[100]&#xD;
+      Start processing HTTP request GET https://api.github.com/search/repositories?*&#xD;
+info: System.Net.Http.HttpClient.github.ClientHandler[100]&#xD;
+      Sending HTTP request GET https://api.github.com/search/repositories?*&#xD;
+info: System.Net.Http.HttpClient.github.ClientHandler[101]&#xD;
+      Received HTTP response headers after 567.2927ms - 200&#xD;
+info: System.Net.Http.HttpClient.github.LogicalHandler[101]&#xD;
+      End processing HTTP request after 567.3737ms - 200&#xD;
+info: System.Net.Http.HttpClient.gitlab.LogicalHandler[100]&#xD;
+      Start processing HTTP request GET https://gitlab.com/api/v4/projects?*&#xD;
+info: System.Net.Http.HttpClient.gitlab.ClientHandler[100]&#xD;
+      Sending HTTP request GET https://gitlab.com/api/v4/projects?*&#xD;
+info: System.Net.Http.HttpClient.gitlab.ClientHandler[101]&#xD;
+      Received HTTP response headers after 1764.8139ms - 200&#xD;
+info: System.Net.Http.HttpClient.gitlab.LogicalHandler[101]&#xD;
+      End processing HTTP request after 1765.2017ms - 200&#xD;
+info: System.Net.Http.HttpClient.GoogleSearchProvider.LogicalHandler[100]&#xD;
+      Start processing HTTP request GET https://www.google.com/search?*&#xD;
+info: System.Net.Http.HttpClient.GoogleSearchProvider.ClientHandler[100]&#xD;
+      Sending HTTP request GET https://www.google.com/search?*&#xD;
+info: System.Net.Http.HttpClient.GoogleSearchProvider.ClientHandler[101]&#xD;
+      Received HTTP response headers after 551.4758ms - 403&#xD;
+info: System.Net.Http.HttpClient.GoogleSearchProvider.LogicalHandler[101]&#xD;
+      End processing HTTP request after 551.5586ms - 403&#xD;
+info: System.Net.Http.HttpClient.googlebooks.LogicalHandler[100]&#xD;
+      Start processing HTTP request GET https://www.googleapis.com/books/v1/volumes?*&#xD;
+info: System.Net.Http.HttpClient.googlebooks.ClientHandler[100]&#xD;
+      Sending HTTP request GET https://www.googleapis.com/books/v1/volumes?*&#xD;
+info: System.Net.Http.HttpClient.googlebooks.ClientHandler[101]&#xD;
+      Received HTTP response headers after 220.5152ms - 429&#xD;
+info: System.Net.Http.HttpClient.googlebooks.LogicalHandler[101]&#xD;
+      End processing HTTP request after 220.5871ms - 429&#xD;
+info: System.Net.Http.HttpClient.google_news.LogicalHandler[100]&#xD;
+      Start processing HTTP request GET https://news.google.com/rss/search?*&#xD;
+info: System.Net.Http.HttpClient.google_news.ClientHandler[100]&#xD;
+      Sending HTTP request GET https://news.google.com/rss/search?*&#xD;
+info: System.Net.Http.HttpClient.google_news.ClientHandler[101]&#xD;
+      Received HTTP response headers after 391.2208ms - 200&#xD;
+info: System.Net.Http.HttpClient.google_news.LogicalHandler[101]&#xD;
+      End processing HTTP request after 391.2869ms - 200&#xD;
+info: System.Net.Http.HttpClient.hackernews.LogicalHandler[100]&#xD;
+      Start processing HTTP request GET https://hn.algolia.com/api/v1/search?*&#xD;
+info: System.Net.Http.HttpClient.hackernews.ClientHandler[100]&#xD;
+      Sending HTTP request GET https://hn.algolia.com/api/v1/search?*&#xD;
+info: System.Net.Http.HttpClient.hackernews.ClientHandler[101]&#xD;
+      Received HTTP response headers after 425.7317ms - 200&#xD;
+info: System.Net.Http.HttpClient.hackernews.LogicalHandler[101]&#xD;
+      End processing HTTP request after 425.8031ms - 200&#xD;
+info: Microsoft.Hosting.Lifetime[0]&#xD;
+      Application is shutting down...&#xD;
+[xUnit.net 00:00:20.03]       Live provider batch failed:&#xD;
+[xUnit.net 00:00:20.03]       bilibili: ProviderFailureException: bilibili returned HTTP 412.&#xD;
+[xUnit.net 00:00:20.03]       europepmc: TaskCanceledException: The operation was canceled.&#xD;
+[xUnit.net 00:00:20.03]       google: ProviderFailureException: google returned HTTP 403.&#xD;
+[xUnit.net 00:00:20.03]       googlebooks: ProviderFailureException: googlebooks returned HTTP 429.&#xD;
+[xUnit.net 00:00:20.03]       Stack Trace:&#xD;
+[xUnit.net 00:00:20.03]         C:\WEBSITEDEVELOPMENT\DotNetWebSearchApi\tests\DotNetWebSearchApi.Tests\LiveProviderIntegrationTests.cs(80,0): at DotNetWebSearchApi.Tests.LiveProviderIntegrationTests.AllRegisteredProviders_RespondToLiveRequests()&#xD;
+[xUnit.net 00:00:20.03]         --- End of stack trace from previous location ---&#xD;
+[xUnit.net 00:00:20.03]       Output:&#xD;
+[xUnit.net 00:00:20.03]         Provider inventory: 63 registered; batch offset 0; selected 20.&#xD;
+[xUnit.net 00:00:20.03]         PASS arxiv: 0 results. &#xD;
+[xUnit.net 00:00:20.03]         PASS askubuntu: 3 results. How to fix `GLIBCXX_3.4.30&amp;#39; not found in Ubuntu 22.04 | Ubuntu 26.04 Random reboots on my laptop | The URL http://security.ubuntu.com/ubuntu noble-security InRelease fails to connect with .NET 10 upgrade&#xD;
+[xUnit.net 00:00:20.03]         FAIL bilibili: ProviderFailureException: bilibili returned HTTP 412.&#xD;
+[xUnit.net 00:00:20.03]         PASS bing: 10 results. Download .NET (Linux, macOS, and Windows) | .NET | Browse all .NET versions to download | .NET - dotnet.microsoft.com | .NET documentation - .NET | Microsoft Learn&#xD;
+[xUnit.net 00:00:20.03]         PASS bing_news: 1 results. Fix “You Must Install .NET To Run This Application” (2026)&#xD;
+[xUnit.net 00:00:20.03]         PASS cratesio: 3 results. dotnet-parser | etdl-target-dotnet | dotnet-gitversion-build&#xD;
+[xUnit.net 00:00:20.03]         PASS crossref: 3 results. ActiveX, and .NET (dotnet) | ActiveX, and .NET (dotNet) | Voluntary Civic Engagement in the Dotnet Generation&#xD;
+[xUnit.net 00:00:20.03]         PASS dailymotion: 3 results. .NET Campus 2012 - DotNet Campania | Microsoft reúne a más de 1.100 desarrolladores en dotNet Spain | Maine Pyar Kiya Movie || DotNet Comedy Scene || Vennela Rama Rao || 03&#xD;
+[xUnit.net 00:00:20.03]         PASS datacite: 3 results. dotnet | dotnet | dotnet&#xD;
+[xUnit.net 00:00:20.03]         PASS deezer: 3 results. Dot Net | DOTnet | Do They Know It's Christmas? (1984 Version)&#xD;
+[xUnit.net 00:00:20.03]         PASS dockerhub: 3 results. slacksec/dotnet | wlniao/dotnet | lendingtree/dotnet&#xD;
+[xUnit.net 00:00:20.03]         PASS duckduckgo: 10 results. Download .NET (Linux, macOS, and Windows) | .NET | Browse all .NET versions to download | .NET - dotnet.microsoft.com | .NET documentation - .NET | Microsoft Learn&#xD;
+[xUnit.net 00:00:20.03]         FAIL europepmc: TaskCanceledException: The operation was canceled.&#xD;
+[xUnit.net 00:00:20.03]         PASS gitea: 3 results. pluggins/Dotnet | xvbnm48/dotnet-todo | Falcon/Falcon.StoredProcedureRunner&#xD;
+[xUnit.net 00:00:20.03]         PASS github: 3 results. microsoft/dotnet | MiniProfiler/dotnet | CommunityToolkit/dotnet&#xD;
+[xUnit.net 00:00:20.03]         PASS gitlab: 3 results. Chandler Bing / temp scan ecoscan-27628029-deletion_scheduled-89391576 | Rachel Green / temp scan ecoscan-27628029-deletion_scheduled-89378985 | Chandler Bing / temp scan ecoscan-27628029-deletion_scheduled-89368727&#xD;
+[xUnit.net 00:00:20.03]         FAIL google: ProviderFailureException: google returned HTTP 403.&#xD;
+[xUnit.net 00:00:20.03]         FAIL googlebooks: ProviderFailureException: googlebooks returned HTTP 429.&#xD;
+[xUnit.net 00:00:20.03]         PASS google_news: 3 results. The 2026 Vulnpocalypse Hits PHP: Four Critical RCEs, but How Dangerous Are They? - OX Security | Microsoft Releases .NET 11 RC1 with Go-Live Support, C# 15 and F# 11 as Default Language Versions - infoq.com | CONVEX Summit 2026 | dotNET – Singularity – GSAS - Plain Concepts&#xD;
+[xUnit.net 00:00:20.03]         PASS hackernews: 3 results. Run a C# file directly using dotnet run app.cs | Show HN: DotNetFiddle – JsFiddle for .Net | Exploring the new .NET “dotnet” CLI&#xD;
+[xUnit.net 00:00:20.04]   Finished:    DotNetWebSearchApi.Tests&#xD;
+</StdOut>
+    </Output>
+    <RunInfos>
+      <RunInfo computerName="GT2_PRO" outcome="Error" timestamp="2026-11-24T11:49:17.8379989+00:00">
+        <Text>[xUnit.net 00:00:20.03]     DotNetWebSearchApi.Tests.LiveProviderIntegrationTests.AllRegisteredProviders_RespondToLiveRequests [FAIL]</Text>
+      </RunInfo>
+    </RunInfos>
+  </ResultSummary>
+</TestRun>
