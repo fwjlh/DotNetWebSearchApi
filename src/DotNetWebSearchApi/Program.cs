@@ -148,7 +148,7 @@ static IResult ProvidersEndpoint(SearchAggregator aggregator)
     return Results.Ok(new { provider_count = providers.Length, providers });
 }
 
-static IResult DiagnosticsEndpoint(
+IResult DiagnosticsEndpoint(
     SearchAggregator aggregator,
     SearchDiagnostics diagnostics,
     ProviderHealthRegistry health)
