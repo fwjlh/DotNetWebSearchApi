@@ -37,7 +37,7 @@ public sealed partial class SearxngApiIntegrationTests
             });
         using WebApplicationFactory<Program> factory = CreateFactory(
             Provider("alpha", Result("A", "https://example.com/a")));
-        using HttpClient client = factory.CreateClient();
+        using HttpClient client = CreateHttpsClient(factory);
         using ByteArrayContent content = new(new byte[(16 * 1024) + 1]);
         content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(
             "application/x-www-form-urlencoded");
@@ -59,7 +59,7 @@ public sealed partial class SearxngApiIntegrationTests
             });
         using WebApplicationFactory<Program> factory = CreateFactory(
             Provider("alpha", Result("A", "https://example.com/a")));
-        using HttpClient client = factory.CreateClient();
+        using HttpClient client = CreateHttpsClient(factory);
 
         using HttpResponseMessage response = await client.GetAsync(requestPath);
 
@@ -76,7 +76,7 @@ public sealed partial class SearxngApiIntegrationTests
             });
         using WebApplicationFactory<Program> factory = CreateFactory(
             Provider("alpha", Result("A", "https://example.com/a")));
-        using HttpClient client = factory.CreateClient();
+        using HttpClient client = CreateHttpsClient(factory);
         using ByteArrayContent content = new(new byte[(16 * 1024) + 1]);
         content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(
             "application/x-www-form-urlencoded");
@@ -96,7 +96,7 @@ public sealed partial class SearxngApiIntegrationTests
             });
         using WebApplicationFactory<Program> factory = CreateFactory(
             Provider("alpha", Result("A", "https://example.com/a")));
-        using HttpClient client = factory.CreateClient();
+        using HttpClient client = CreateHttpsClient(factory);
 
         using HttpResponseMessage response = await client.GetAsync("/search?q=test");
 
@@ -114,7 +114,7 @@ public sealed partial class SearxngApiIntegrationTests
             });
         using WebApplicationFactory<Program> factory = CreateFactory(
             Provider("alpha", Result("A", "https://example.com/a")));
-        using HttpClient client = factory.CreateClient();
+        using HttpClient client = CreateHttpsClient(factory);
 
         using HttpResponseMessage response = await client.GetAsync("/?q=test");
 
@@ -129,7 +129,7 @@ public sealed partial class SearxngApiIntegrationTests
             new Dictionary<string, string?> { ["SEARCH_API_KEYS"] = apiKey });
         using WebApplicationFactory<Program> factory = CreateFactory(
             Provider("alpha", Result("A", "https://example.com/a")));
-        using HttpClient client = factory.CreateClient();
+        using HttpClient client = CreateHttpsClient(factory);
         client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", apiKey);
 
         using HttpResponseMessage response = await client.GetAsync("/api/search?q=test");
@@ -147,7 +147,7 @@ public sealed partial class SearxngApiIntegrationTests
             });
         using WebApplicationFactory<Program> factory = CreateFactory(
             Provider("alpha", Result("A", "https://example.com/a")));
-        using HttpClient client = factory.CreateClient();
+        using HttpClient client = CreateHttpsClient(factory);
         client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(
             "Bearer",
             "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx");
@@ -166,7 +166,7 @@ public sealed partial class SearxngApiIntegrationTests
             new Dictionary<string, string?> { ["SEARCH_API_KEYS"] = apiKey });
         using WebApplicationFactory<Program> factory = CreateFactory(
             Provider("alpha", Result("A", "https://example.com/a")));
-        using HttpClient client = factory.CreateClient();
+        using HttpClient client = CreateHttpsClient(factory);
 
         for (int index = 0; index < 10; index++)
         {
@@ -215,7 +215,7 @@ public sealed partial class SearxngApiIntegrationTests
             });
         using WebApplicationFactory<Program> factory = CreateFactory(
             Provider("alpha", Result("A", "https://example.com/a")));
-        using HttpClient client = factory.CreateClient();
+        using HttpClient client = CreateHttpsClient(factory);
 
         for (int index = 0; index < 60; index++)
         {
@@ -247,7 +247,7 @@ public sealed partial class SearxngApiIntegrationTests
             });
         using WebApplicationFactory<Program> factory = CreateFactory(
             Provider("alpha", Result("A", "https://example.com/a")));
-        using HttpClient client = factory.CreateClient();
+        using HttpClient client = CreateHttpsClient(factory);
 
         for (int index = 0; index < 60; index++)
         {
@@ -272,11 +272,11 @@ public sealed partial class SearxngApiIntegrationTests
         using EnvironmentVariableScope environment = EnvironmentVariableScope.Apply(
             new Dictionary<string, string?>
             {
-                ["SEARCH_API_KEYS"] = null
+                ["SEARCH_API_KEYS"] = string.Empty
             });
         using WebApplicationFactory<Program> factory = CreateFactory(
             Provider("alpha", Result("A", "https://example.com/a")));
-        using HttpClient client = factory.CreateClient();
+        using HttpClient client = CreateHttpsClient(factory);
         HttpStatusCode finalStatus = HttpStatusCode.OK;
         string? retryAfter = null;
 
