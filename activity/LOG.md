@@ -1925,3 +1925,10 @@ Every material repository action is recorded here with its reason, result, verif
 - **Correction:** Native process invocation now temporarily uses Continue behavior, captures stdout/stderr, preserves the actual exit code, and restores the caller's error preference. Failed batches can therefore be recorded and the full catalogue assessment can continue.
 - **Commit:** `a7c91a20092ffabe2d45126a28ed67554afc2e28`.
 - **Verification:** Static review only. The user must rerun the assessment locally; no build, tests, or workflows were run by the assistant.
+
+
+### 214. Make HTTPS integration tests independent of TestServer loopback details
+- **Reason:** Auth tests should prove bearer behavior over HTTPS rather than relying on TestServer's synthetic remote IP being loopback. Proxy tests also need to prove forwarded scheme handling in a non-Development environment.
+- **Correction:** Added a reusable HTTPS TestServer client for auth and rate-limit tests. The trusted-proxy integration now runs in Staging over HTTP-to-TestServer with trusted X-Forwarded-For/Proto; added a Staging test proving an untrusted X-Forwarded-Proto cannot bypass the HTTPS requirement. No-key test configuration now uses an explicit empty string.
+- **Commits:** `96943e789f08d88ddd8397027971bc6dcf2192ce` (HTTPS client helper), `c635a9fc6f7d30e4ffb4a9efb9de8374886bb081` (client/config use), `1aea8c63b8ae2ec4c12c42336aae121dbf9b86ee` (proxy tests).
+- **Verification:** Static review only; .NET 10 test execution pending.
