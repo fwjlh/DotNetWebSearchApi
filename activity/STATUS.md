@@ -333,3 +333,8 @@ Keep this file and `LOG.md` current so the next session can resume without chat 
 
 
 - Integration fixture now forces Development and empty API-key/proxy overrides for its collection, saving/restoring the developer's original ASPNETCORE_ENVIRONMENT and DOTNET_ENVIRONMENT values. Staging tests explicitly override both. Commit: `92190fdb9fbad451df2f7ccb12e9babd5682dd5c`.
+
+
+## Current repository hygiene
+- All C# files are below the 25 KB hard limit; largest hand-maintained file is `SearxngApiIntegrationTests.cs` at approximately 22.3 KB.
+- No `.github/workflows` files are present. No GitHub Actions were used for this work.
