@@ -304,3 +304,6 @@ Keep this file and `LOG.md` current so the next session can resume without chat 
 
 
 - Corrected the loopback transport helper to call the static `IPAddress.IsLoopback(address)` API. Commit: `ac7829318aa756e010ab74a5ddac54e749de15b9`.
+
+
+- Browser search UI now refuses to attach an API key to requests from remote HTTP pages; loopback hostnames/addresses remain allowed. Server-side HTTPS enforcement remains authoritative. Commits: `9d8fbbbedfb14e420cc11f489a16b01b170b6e17`, `ffdfefe2c16d9f5b0345c81879beaa99ac94d7b6`. Static JS review only; browser verification pending.
