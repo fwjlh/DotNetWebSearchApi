@@ -320,6 +320,30 @@ public sealed class SearchAggregatorTests
     }
 
     [Fact]
+    public async Task SearchAsync_MergesCaseInsensitiveDuplicateProviderPositions()
+    {
+        SearchResult result = Result("Positioned", "https://example.com/positioned") with
+        {
+            Engines = new[] { "alpha", "ALPHA" },
+            Positions = new Dictionary<string, int>
+            {
+                ["alpha"] = 3,
+                ["ALPHA"] = 1,
+                ["beta"] = 0
+            }
+        };
+        SearchAggregator aggregator = CreateAggregator(Provider("alpha", result));
+
+        SearchResult merged = Assert.Single(await aggregator.SearchAsync(
+            new SearchQuery("test", 10),
+            CancellationToken.None));
+
+        Assert.Equal(1, merged.Positions["alpha"]);
+        Assert.Single(merged.Positions);
+        Assert.Single(merged.Engines);
+    }
+
+    [Fact]
     public async Task SearchAsync_RejectsCredentialBearingUrlsAndBlankTitles()
     {
         SearchAggregator aggregator = CreateAggregator(
