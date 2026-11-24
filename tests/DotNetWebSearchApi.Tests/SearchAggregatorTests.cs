@@ -320,6 +320,22 @@ public sealed class SearchAggregatorTests
     }
 
     [Fact]
+    public async Task SearchAsync_RejectsCredentialBearingUrlsAndBlankTitles()
+    {
+        SearchAggregator aggregator = CreateAggregator(
+            Provider("one",
+                Result("Credential URL", "https://user:password@example.com/secret"),
+                Result("  ", "https://example.com/blank-title"),
+                Result("Safe", "https://example.com/safe")));
+
+        IReadOnlyList<SearchResult> results = await aggregator.SearchAsync(
+            new SearchQuery("test", 10),
+            CancellationToken.None);
+
+        Assert.Equal("Safe", Assert.Single(results).Title);
+    }
+
+    [Fact]
     public async Task SearchAsync_RejectsNonHttpUrls()
     {
         SearchAggregator aggregator = CreateAggregator(
