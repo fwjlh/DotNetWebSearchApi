@@ -310,3 +310,11 @@ Keep this file and `LOG.md` current so the next session can resume without chat 
 
 
 - Loopback HTTP is now allowed only in Development. Staging/Production require HTTPS even when the direct peer is localhost, closing the reverse-proxy-to-loopback bypass; trusted TLS proxies must forward X-Forwarded-Proto=https from configured IPs. Commits: `851d2ca26154e7a68576887bb4c991d917dee8d0`, `34a01c4763fefb65a82dcd32a1024f6e0bc53712`, `34608f41f57e3e1b68a91ba4eddad82e98e601cc`.
+
+
+## Latest live assessment diagnosis — 2026-11-24
+- Release build passed with 0 warnings/errors; offline regression suite passed (373 passed, 5 skipped).
+- Production test host started and reported 63 registered providers. First live batch selected 20: 16 passed, 4 failed (Bilibili HTTP 412, Europe PMC cancellation/timeout, Google HTTP 403, Google Books HTTP 429).
+- Fixed the full evidence runner to capture non-zero `dotnet test` output without PowerShell terminating the stage early. This should preserve provider inventory and failure details and allow subsequent batches plus aggregate API testing to run.
+- Commit: `a7c91a20092ffabe2d45126a28ed67554afc2e28`.
+- Pending user rerun of `scripts/Test-FullSearchEvidence.ps1`; no local execution or workflows used.
