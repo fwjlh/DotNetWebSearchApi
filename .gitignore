@@ -12,3 +12,6 @@ coverage/
 .env
 .env.*
 !.env.example
+
+/evidence/search-assessment-*.json
+/evidence/search-assessment-*.log
