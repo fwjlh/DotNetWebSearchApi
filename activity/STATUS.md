@@ -202,3 +202,10 @@ Keep this file and `LOG.md` current so the next session can resume without chat 
 - Full-search evidence runner now fails if no providers are registered, verifies provider inventory stability and exact batch selection counts, and terminates after the last provider without an empty extra batch. Commit: `5720c81b0bb5dcbe4cbea2eed963812c28b57c3b`.
 - End-to-end live API test now supplies a configured bearer key from effective host configuration without logging or persisting it. Commit: `1d494e02b37cd50d42969307b826929ac3826b49`.
 - Static review only; fresh build/test and live execution remain pending on the operator's machine. No Actions were used.
+
+
+## Latest authentication-path hardening — 2026-11-24
+- Search middleware now normalizes trailing slashes before applying bearer authentication and streamed POST body limits. This closes the route/middleware path mismatch on `/search/` and `/api/search/`.
+- Added two trailing-slash authentication cases and an oversized trailing-slash POST case.
+- Commits: `57f7fdd1d3d836a8b2c2bda28a48e7f679068372`, `994dcf6754e3a079e0bde6fdf7d0150158780cb2`.
+- Static review only; build and test execution remain pending on the local .NET 10 environment.
