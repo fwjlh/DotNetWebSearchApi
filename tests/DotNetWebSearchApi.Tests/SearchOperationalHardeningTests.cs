@@ -176,6 +176,9 @@ public sealed partial class SearxngApiIntegrationTests
 
         using HttpResponseMessage blockedResponse = await client.GetAsync("/api/search?q=test");
         Assert.Equal(HttpStatusCode.TooManyRequests, blockedResponse.StatusCode);
+        Assert.True(blockedResponse.Headers.TryGetValues("Retry-After", out IEnumerable<string>? retryAfterValues));
+        Assert.True(int.TryParse(retryAfterValues!.Single(), out int retryAfterSeconds));
+        Assert.InRange(retryAfterSeconds, 1, 60);
 
         client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", apiKey);
         using HttpResponseMessage authorizedResponse = await client.GetAsync("/api/search?q=test");
