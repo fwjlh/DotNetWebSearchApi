@@ -168,11 +168,14 @@ public sealed partial class SearxngApiIntegrationTests
             Provider("alpha", Result("A", "https://example.com/a")));
         using HttpClient client = factory.CreateClient();
 
-        for (int index = 0; index < 61; index++)
+        for (int index = 0; index < 10; index++)
         {
             using HttpResponseMessage response = await client.GetAsync("/api/search?q=test");
             Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
         }
+
+        using HttpResponseMessage blockedResponse = await client.GetAsync("/api/search?q=test");
+        Assert.Equal(HttpStatusCode.TooManyRequests, blockedResponse.StatusCode);
 
         client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", apiKey);
         using HttpResponseMessage authorizedResponse = await client.GetAsync("/api/search?q=test");
