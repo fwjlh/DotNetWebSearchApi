@@ -2005,3 +2005,5 @@ Every material repository action is recorded here with its reason, result, verif
 - Safety checks require the repository root to match the script location, the current branch to be `main`, the origin URL to be `fwjlh/DotNetWebSearchApi`, and an initially empty staging area. Evidence files are explicitly force-added because the default ignore rules exclude them; unrelated working-tree changes are not staged.
 - Uses the operator's existing Git credential manager; no token is read or written by the script. No workflow or GitHub Actions usage.
 - **Verification:** Static source review only. PowerShell execution and an authenticated push must be verified on the operator's Windows machine.
+
+- Follow-up safety refinement: publisher fetches `origin/main` and requires local `HEAD` to match it before creating the evidence commit. This prevents accidentally pushing unrelated local commits; it also checks staged changes using a zero-exit Git query for PowerShell compatibility.
