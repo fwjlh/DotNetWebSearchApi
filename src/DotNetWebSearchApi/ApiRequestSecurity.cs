@@ -123,7 +123,24 @@ internal static class ApiRequestSecurity
     }
 
     internal static bool IsSecureTransport(bool isHttps, IPAddress? remoteAddress, bool allowLoopbackHttp)
-        => isHttps || (allowLoopbackHttp && remoteAddress is not null && IPAddress.IsLoopback(remoteAddress));
+    {
+        if (isHttps)
+        {
+            return true;
+        }
+
+        if (!allowLoopbackHttp || remoteAddress is null)
+        {
+            return false;
+        }
+
+        if (remoteAddress.IsIPv4MappedToIPv6)
+        {
+            remoteAddress = remoteAddress.MapToIPv4();
+        }
+
+        return IPAddress.IsLoopback(remoteAddress);
+    }
 
     internal static string GetClientIpPartitionKey(IPAddress? address)
     {
