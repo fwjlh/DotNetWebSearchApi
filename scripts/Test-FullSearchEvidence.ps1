@@ -14,8 +14,6 @@ param(
     [ValidateSet("Debug", "Release")]
     [string]$Configuration = "Release",
 
-    [string]$Query = "dotnet",
-
     [string]$EvidenceDirectory = (Join-Path $PSScriptRoot "..\evidence")
 )
 
@@ -175,7 +173,7 @@ finally {
         operatingSystem = [System.Runtime.InteropServices.RuntimeInformation]::OSDescription
         dotnetSdk = (& dotnet --version 2>$null | Select-Object -First 1)
         configuration = $Configuration
-        query = $Query
+        query = "dotnet"
         batchSize = $BatchSize
         registeredProviderCount = $registeredProviderCount
         summary = [ordered]@{
