@@ -320,13 +320,15 @@ Run from the repository root:
     dotnet build --no-restore
     dotnet test
 
-To run opt-in tests against real upstream search providers, set the opt-in variable for the current PowerShell session and run the live test class:
+To run real upstream checks for the providers registered in your local configuration, use the fail-fast PowerShell runner:
 
-    $env:DOTNETWEBSEARCHAPI_LIVE_TESTS = '1'
-    dotnet test .\\DotNetWebSearchApi.sln -c Release --filter FullyQualifiedName~LiveProviderIntegrationTests --logger \"console;verbosity=normal\"
-    Remove-Item Env:\\DOTNETWEBSEARCHAPI_LIVE_TESTS
+    .\\scripts\\Test-LiveProvidersInBatches.ps1
 
-The live suite currently checks Wikipedia, Crossref and GitHub with one bounded request per provider. These tests require internet access and may fail when an upstream provider is unavailable, rate-limits the client or changes its response. They are excluded from ordinary test runs unless explicitly enabled. They are observational integration checks, not proof of permanent provider availability.
+The runner builds Release once, then checks providers sequentially in batches of 20. It completes the current batch so all failures in that batch are reported, then stops before starting the next batch if any provider fails. Provider order is alphabetical. The live check uses a short query, the provider's configured timeout, and validates every returned title and HTTP(S) URL. A provider may legitimately return zero results and still pass if its live response is valid.
+
+The runner checks providers actually registered by the local configuration. Providers requiring API keys (for example Brave, Exa, Kagi, Yandex or Yep) are included only when their required credentials are configured; missing credentials do not get replaced with dummy keys. The current catalogue contains 67 provider adapters. Use `-MaximumProviderCount` if that catalogue size changes, or `-BatchSize` for a smaller batch (maximum 20).
+
+These tests require internet access and may fail when an upstream provider is unavailable, rate-limits the client or changes its response. They are excluded from ordinary test runs unless explicitly enabled. They are observational integration checks, not proof of permanent provider availability.
 
 To measure line and branch coverage locally:
 
