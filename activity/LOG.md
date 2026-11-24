@@ -2007,3 +2007,16 @@ Every material repository action is recorded here with its reason, result, verif
 - **Verification:** Static source review only. PowerShell execution and an authenticated push must be verified on the operator's Windows machine.
 
 - Follow-up safety refinement: publisher fetches `origin/main` and requires local `HEAD` to match it before creating the evidence commit. This prevents accidentally pushing unrelated local commits; it also checks staged changes using a zero-exit Git query for PowerShell compatibility.
+
+
+### Full 63-provider assessment review — 2026-11-24 12:22 UTC
+- **Evidence reviewed:** `search-assessment-20261124-122113.json` and matching full log supplied by the operator.
+- **Build:** Release succeeded with 0 warnings and 0 errors.
+- **Offline regression:** 395 passed, 2 failed, 5 skipped. Both failures were OpenAIRE metadata fixtures asserting legacy `journal.title` and `webLinks` fields. The current v4 adapter intentionally reads `container.name` and `instances.urls`.
+- **Correction:** Updated both stale fixtures to the v4 response shape while preserving assertions for author, publisher, journal, publication date/type and HTML URL. Commits: `214d9ccccbf6baa912123d93be1fb580ef811af2`, `fe53ce6d37e5cd5f1ad41331c3d505915e55dad8`.
+- **Live providers:** 55 passed, 8 failed. Batch counts: 16/20, 18/20, 19/20, 2/3. OpenAIRE passed with 3 results, resolving the previous live HTTP 400 observation for this run.
+- **Remaining live failures:** Europe PMC cancellation/timeout; Gitea 429; Google 403; Google Books 429; Marginalia 429; Qwant DataDome/access denial; Semantic Scholar 429; Yep 403. These represent a mixture of upstream throttling, access policy and one timeout; they should not all be treated as adapter defects.
+- **Aggregate API:** HTTP 200, 10 results, 10 unique URLs; 39 successful providers, 5 failed providers; SearXNG compatibility endpoint HTTP 200 with 10 results.
+- **Coverage:** 96.40% line (4,287/4,447) and 83.85% branch (1,600/1,908).
+- **Verification:** User-provided assessment is evidence of the run. The updated test fixtures have not yet been executed; request a focused test run and then a full rerun. No local .NET execution or GitHub Actions/workflows were used by the assistant.
+- **Evidence publishing:** The attachments do not prove that `-PublishEvidence` completed an authenticated GitHub push; confirm from the PowerShell console or repository history before treating them as published.
