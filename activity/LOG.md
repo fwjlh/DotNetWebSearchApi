@@ -1788,3 +1788,11 @@ Every material repository action is recorded here with its reason, result, verif
 - **Action:** Replaced wording that implied current changes were awaiting CI with an accurate historical record: 156-test CI baseline, later user-reported 368-test Release baseline plus three live-provider checks, and an explicit warning that neither covers current HEAD.
 - **Reason:** GitHub Actions are intentionally disabled; the local full-evidence script is the authoritative next verification step.
 - **Commit:** `df85c63713b7522da9c1a6ac5d3f0bf206aa3552`.
+
+
+### 197. Capture fresh line and branch coverage in the full local assessment
+- **Reason:** The full assessment produced build, regression and live-provider evidence but left coverage as a separate manual step; a stale report could also be mistaken for current coverage.
+- **Correction:** The offline regression stage now runs with `XPlat Code Coverage` into a timestamp-specific `evidence/coverage` directory. The runner requires a newly generated Cobertura report, parses line/branch percentages and counts, and embeds them in the JSON evidence. A previous report cannot satisfy the current run.
+- **Documentation:** README now describes the coverage evidence output.
+- **Commits:** `fcdb5a4911b66650ceb0e662c8f65e29cd5ef168` (coverage collection/summary), `6152fb48cf918e290366dd21017cccd363fa592c` (isolated output), `c6c51ab7aaf09c0076ac7ef35fd98cb42c050dde` (README).
+- **Verification:** PowerShell source review only; no PowerShell/.NET 10 runtime available here. No Actions used.
