@@ -388,3 +388,10 @@ Keep this file and `LOG.md` current so the next session can resume without chat 
 
 
 - Moved the remote-HTTPS check after bearer validation so unauthenticated HTTP requests cannot bypass the 10/minute IP-based authentication-failure throttle. Valid keys over remote HTTP remain rejected before search. Added Staging/HTTP regression test for 401 x10 then 429 + Retry-After. Commits: `261df5745a9a9b4e1602e75651c893ea70b412e2`, `1459049b8d6b8c5d8c03631c6d2fe7b228ce0925`.
+
+
+## Live provider evidence classification — 2026-11-24
+- Live test/evidence output now distinguishes non-empty result-bearing passes, successful empty responses, and upstream/provider failures. The latest uploaded 13:14 assessment had seven empty responses that were previously counted as passes (PeerTube, RadioBrowser, Steam, WikiNews, WikiSource, WikiVoyage, Zenodo).
+- Added `providerChecksEmpty` and `providerChecksResponded` to JSON; empty responses do not fail transport availability but are not counted as result-bearing passes. README updated.
+- Commits: `557c12c49312bbc2bf3adf5d3eda8e1c03190782`, `e5666db1cdf16e7e7f0912327d90a04871bbd6a7`, `677f954ba062e0783c80a659c7f0e8d3ab0a5645`.
+- **Verification pending:** rerun Release build, offline suite and full evidence script. No Actions used.
