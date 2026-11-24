@@ -14,7 +14,8 @@ namespace DotNetWebSearchApi;
 
 internal sealed record ApiRequestSecurityOptions(
     IReadOnlyList<string> ApiKeys,
-    PartitionedRateLimiter<HttpContext> AuthenticationFailureLimiter);
+    PartitionedRateLimiter<HttpContext> AuthenticationFailureLimiter,
+    PartitionedRateLimiter<string> PerKeySearchLimiter);
 
 internal static class ApiRequestSecurity
 {
@@ -70,8 +71,29 @@ internal static class ApiRequestSecurity
                         Window = TimeSpan.FromMinutes(1)
                     }));
 
+        PartitionedRateLimiter<string> perKeySearchLimiter = CreatePerKeySearchLimiter();
         services.AddSingleton(authenticationFailureLimiter);
-        return new ApiRequestSecurityOptions(apiKeys, authenticationFailureLimiter);
+        services.AddSingleton(perKeySearchLimiter);
+        return new ApiRequestSecurityOptions(apiKeys, authenticationFailureLimiter, perKeySearchLimiter);
+    }
+
+    internal static PartitionedRateLimiter<string> CreatePerKeySearchLimiter(int permitLimit = 60)
+    {
+        if (permitLimit < 1)
+        {
+            throw new ArgumentOutOfRangeException(nameof(permitLimit));
+        }
+
+        return PartitionedRateLimiter.Create<string, string>(
+            apiKey => RateLimitPartition.GetFixedWindowLimiter(
+                Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(apiKey))),
+                _ => new FixedWindowRateLimiterOptions
+                {
+                    AutoReplenishment = true,
+                    PermitLimit = permitLimit,
+                    QueueLimit = 0,
+                    Window = TimeSpan.FromMinutes(1)
+                }));
     }
 
     public static void UseAuthentication(
@@ -129,6 +151,16 @@ internal static class ApiRequestSecurity
                     context.Response.StatusCode = StatusCodes.Status401Unauthorized;
                     context.Response.Headers["WWW-Authenticate"] = "Bearer";
                     await context.Response.WriteAsJsonAsync(new { error = "A valid API key is required." });
+                    return;
+                }
+
+                using RateLimitLease keyLease = await options.PerKeySearchLimiter.AcquireAsync(
+                    suppliedKey!,
+                    1,
+                    context.RequestAborted);
+                if (!keyLease.IsAcquired)
+                {
+                    context.Response.StatusCode = StatusCodes.Status429TooManyRequests;
                     return;
                 }
             }
