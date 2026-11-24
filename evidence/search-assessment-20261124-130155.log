@@ -1,0 +1,1434 @@
+﻿=== Release build ===
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+  DotNetWebSearchApi -> C:\WEBSITEDEVELOPMENT\DotNetWebSearchApi\src\DotNetWebSearchApi\bin\Release\net10.0\DotNetWebSearchApi.dll
+  DotNetWebSearchApi.Tests -> C:\WEBSITEDEVELOPMENT\DotNetWebSearchApi\tests\DotNetWebSearchApi.Tests\bin\Release\net10.0\DotNetWebSearchApi.Tests.dll
+
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:02.81
+=== Offline regression suite ===
+Test run for C:\WEBSITEDEVELOPMENT\DotNetWebSearchApi\tests\DotNetWebSearchApi.Tests\bin\Release\net10.0\DotNetWebSearchApi.Tests.dll (.NETCoreApp,Version=v10.0)
+A total of 1 test files matched the specified pattern.
+[xUnit.net 00:00:00.32]     DotNetWebSearchApi.Tests.LiveProviderIntegrationTests.AllRegisteredProviders_RespondToLiveRequests [SKIP]
+[xUnit.net 00:00:00.35]     DotNetWebSearchApi.Tests.LiveProviderIntegrationTests.GitHub_ReturnsResultsFromTheLiveRepositorySearchApi [SKIP]
+[xUnit.net 00:00:00.35]     DotNetWebSearchApi.Tests.LiveProviderIntegrationTests.Wikipedia_ReturnsResultsFromTheLiveSearchApi [SKIP]
+[xUnit.net 00:00:00.36]     DotNetWebSearchApi.Tests.LiveProviderIntegrationTests.FullSearchApi_ReturnsAggregatedLiveResultsAndCompatibilityJson [SKIP]
+[xUnit.net 00:00:00.36]     DotNetWebSearchApi.Tests.LiveProviderIntegrationTests.Crossref_ReturnsResultsFromTheLiveWorksApi [SKIP]
+  Skipped DotNetWebSearchApi.Tests.LiveProviderIntegrationTests.AllRegisteredProviders_RespondToLiveRequests [1 ms]
+  Skipped DotNetWebSearchApi.Tests.LiveProviderIntegrationTests.GitHub_ReturnsResultsFromTheLiveRepositorySearchApi [1 ms]
+  Skipped DotNetWebSearchApi.Tests.LiveProviderIntegrationTests.Wikipedia_ReturnsResultsFromTheLiveSearchApi [1 ms]
+  Skipped DotNetWebSearchApi.Tests.LiveProviderIntegrationTests.FullSearchApi_ReturnsAggregatedLiveResultsAndCompatibilityJson [1 ms]
+  Skipped DotNetWebSearchApi.Tests.LiveProviderIntegrationTests.Crossref_ReturnsResultsFromTheLiveWorksApi [1 ms]
+
+Passed!  - Failed:     0, Passed:   397, Skipped:     5, Total:   402, Duration: 1 s - DotNetWebSearchApi.Tests.dll (net10.0)
+
+Attachments:
+  C:\WEBSITEDEVELOPMENT\DotNetWebSearchApi\evidence\coverage\681b2ea5-5efb-42f1-a2c9-bf3b2aa1b7cc\coverage.cobertura.xml
+Coverage: lines 96.4%; branches 83.85%.
+=== Live provider batch 1 (offset 0) ===
+Test run for C:\WEBSITEDEVELOPMENT\DotNetWebSearchApi\tests\DotNetWebSearchApi.Tests\bin\Release\net10.0\DotNetWebSearchApi.Tests.dll (.NETCoreApp,Version=v10.0)
+A total of 1 test files matched the specified pattern.
+C:\WEBSITEDEVELOPMENT\DotNetWebSearchApi\tests\DotNetWebSearchApi.Tests\bin\Release\net10.0\DotNetWebSearchApi.Tests.dll
+[xUnit.net 00:00:00.00] xUnit.net VSTest Adapter v3.1.5+1b188a7b0a (64-bit .NET 10.0.15)
+[xUnit.net 00:00:00.08]   Discovering: DotNetWebSearchApi.Tests
+[xUnit.net 00:00:00.16]   Discovered:  DotNetWebSearchApi.Tests
+[xUnit.net 00:00:00.18]   Starting:    DotNetWebSearchApi.Tests
+info: Microsoft.Hosting.Lifetime[0]
+      Application started. Press Ctrl+C to shut down.
+info: Microsoft.Hosting.Lifetime[0]
+      Hosting environment: Development
+info: Microsoft.Hosting.Lifetime[0]
+      Content root path: C:\WEBSITEDEVELOPMENT\DotNetWebSearchApi\src\DotNetWebSearchApi
+info: System.Net.Http.HttpClient.ArxivSearchProvider.LogicalHandler[100]
+      Start processing HTTP request GET https://export.arxiv.org/api/query?*
+info: System.Net.Http.HttpClient.ArxivSearchProvider.ClientHandler[100]
+      Sending HTTP request GET https://export.arxiv.org/api/query?*
+info: System.Net.Http.HttpClient.askubuntu.LogicalHandler[100]
+      Start processing HTTP request GET https://api.stackexchange.com/2.3/search/advanced?*
+info: System.Net.Http.HttpClient.askubuntu.ClientHandler[100]
+      Sending HTTP request GET https://api.stackexchange.com/2.3/search/advanced?*
+info: System.Net.Http.HttpClient.askubuntu.ClientHandler[101]
+      Received HTTP response headers after 487.3286ms - 200
+info: System.Net.Http.HttpClient.askubuntu.LogicalHandler[101]
+      End processing HTTP request after 491.5892ms - 200
+info: System.Net.Http.HttpClient.bilibili.LogicalHandler[100]
+      Start processing HTTP request GET https://api.bilibili.com/x/web-interface/search/type?*
+info: System.Net.Http.HttpClient.bilibili.ClientHandler[100]
+      Sending HTTP request GET https://api.bilibili.com/x/web-interface/search/type?*
+info: System.Net.Http.HttpClient.bilibili.ClientHandler[101]
+      Received HTTP response headers after 882.0431ms - 200
+info: System.Net.Http.HttpClient.bilibili.LogicalHandler[101]
+      End processing HTTP request after 882.1599ms - 200
+info: System.Net.Http.HttpClient.BingSearchProvider.LogicalHandler[100]
+      Start processing HTTP request GET https://www.bing.com/search?*
+info: System.Net.Http.HttpClient.BingSearchProvider.ClientHandler[100]
+      Sending HTTP request GET https://www.bing.com/search?*
+info: System.Net.Http.HttpClient.BingSearchProvider.ClientHandler[101]
+      Received HTTP response headers after 307.4141ms - 200
+info: System.Net.Http.HttpClient.BingSearchProvider.LogicalHandler[101]
+      End processing HTTP request after 307.4917ms - 200
+info: System.Net.Http.HttpClient.bing_news.LogicalHandler[100]
+      Start processing HTTP request GET https://www.bing.com/news/search?*
+info: System.Net.Http.HttpClient.bing_news.ClientHandler[100]
+      Sending HTTP request GET https://www.bing.com/news/search?*
+info: System.Net.Http.HttpClient.bing_news.ClientHandler[101]
+      Received HTTP response headers after 279.7945ms - 200
+info: System.Net.Http.HttpClient.bing_news.LogicalHandler[101]
+      End processing HTTP request after 280.1028ms - 200
+info: System.Net.Http.HttpClient.cratesio.LogicalHandler[100]
+      Start processing HTTP request GET https://crates.io/api/v1/crates?*
+info: System.Net.Http.HttpClient.cratesio.ClientHandler[100]
+      Sending HTTP request GET https://crates.io/api/v1/crates?*
+info: System.Net.Http.HttpClient.cratesio.ClientHandler[101]
+      Received HTTP response headers after 478.4723ms - 200
+info: System.Net.Http.HttpClient.cratesio.LogicalHandler[101]
+      End processing HTTP request after 478.7384ms - 200
+info: System.Net.Http.HttpClient.crossref.LogicalHandler[100]
+      Start processing HTTP request GET https://api.crossref.org/works?*
+info: System.Net.Http.HttpClient.crossref.ClientHandler[100]
+      Sending HTTP request GET https://api.crossref.org/works?*
+info: System.Net.Http.HttpClient.crossref.ClientHandler[101]
+      Received HTTP response headers after 1095.8125ms - 200
+info: System.Net.Http.HttpClient.crossref.LogicalHandler[101]
+      End processing HTTP request after 1096.0926ms - 200
+info: System.Net.Http.HttpClient.dailymotion.LogicalHandler[100]
+      Start processing HTTP request GET https://api.dailymotion.com/videos?*
+info: System.Net.Http.HttpClient.dailymotion.ClientHandler[100]
+      Sending HTTP request GET https://api.dailymotion.com/videos?*
+info: System.Net.Http.HttpClient.dailymotion.ClientHandler[101]
+      Received HTTP response headers after 655.7023ms - 200
+info: System.Net.Http.HttpClient.dailymotion.LogicalHandler[101]
+      End processing HTTP request after 656.126ms - 200
+info: System.Net.Http.HttpClient.datacite.LogicalHandler[100]
+      Start processing HTTP request GET https://api.datacite.org/dois?*
+info: System.Net.Http.HttpClient.datacite.ClientHandler[100]
+      Sending HTTP request GET https://api.datacite.org/dois?*
+info: System.Net.Http.HttpClient.datacite.ClientHandler[101]
+      Received HTTP response headers after 411.5409ms - 200
+info: System.Net.Http.HttpClient.datacite.LogicalHandler[101]
+      End processing HTTP request after 411.7334ms - 200
+info: System.Net.Http.HttpClient.deezer.LogicalHandler[100]
+      Start processing HTTP request GET https://api.deezer.com/search?*
+info: System.Net.Http.HttpClient.deezer.ClientHandler[100]
+      Sending HTTP request GET https://api.deezer.com/search?*
+info: System.Net.Http.HttpClient.deezer.ClientHandler[101]
+      Received HTTP response headers after 506.2048ms - 200
+info: System.Net.Http.HttpClient.deezer.LogicalHandler[101]
+      End processing HTTP request after 506.3226ms - 200
+info: System.Net.Http.HttpClient.dockerhub.LogicalHandler[100]
+      Start processing HTTP request GET https://hub.docker.com/v2/search/repositories/?*
+info: System.Net.Http.HttpClient.dockerhub.ClientHandler[100]
+      Sending HTTP request GET https://hub.docker.com/v2/search/repositories/?*
+info: System.Net.Http.HttpClient.dockerhub.ClientHandler[101]
+      Received HTTP response headers after 311.5482ms - 200
+info: System.Net.Http.HttpClient.dockerhub.LogicalHandler[101]
+      End processing HTTP request after 311.616ms - 200
+info: System.Net.Http.HttpClient.DuckDuckGoSearchProvider.LogicalHandler[100]
+      Start processing HTTP request POST https://html.duckduckgo.com/html/
+info: System.Net.Http.HttpClient.DuckDuckGoSearchProvider.ClientHandler[100]
+      Sending HTTP request POST https://html.duckduckgo.com/html/
+info: System.Net.Http.HttpClient.DuckDuckGoSearchProvider.ClientHandler[101]
+      Received HTTP response headers after 866.5715ms - 200
+info: System.Net.Http.HttpClient.DuckDuckGoSearchProvider.LogicalHandler[101]
+      End processing HTTP request after 866.6605ms - 200
+info: System.Net.Http.HttpClient.europepmc.LogicalHandler[100]
+      Start processing HTTP request GET https://www.ebi.ac.uk/europepmc/webservices/rest/search?*
+info: System.Net.Http.HttpClient.europepmc.ClientHandler[100]
+      Sending HTTP request GET https://www.ebi.ac.uk/europepmc/webservices/rest/search?*
+info: System.Net.Http.HttpClient.gitea.LogicalHandler[100]
+      Start processing HTTP request GET https://gitea.com/api/v1/repos/search?*
+info: System.Net.Http.HttpClient.gitea.ClientHandler[100]
+      Sending HTTP request GET https://gitea.com/api/v1/repos/search?*
+info: System.Net.Http.HttpClient.gitea.ClientHandler[101]
+      Received HTTP response headers after 875.6102ms - 429
+info: System.Net.Http.HttpClient.gitea.LogicalHandler[101]
+      End processing HTTP request after 875.6899ms - 429
+info: System.Net.Http.HttpClient.github.LogicalHandler[100]
+      Start processing HTTP request GET https://api.github.com/search/repositories?*
+info: System.Net.Http.HttpClient.github.ClientHandler[100]
+      Sending HTTP request GET https://api.github.com/search/repositories?*
+info: System.Net.Http.HttpClient.github.ClientHandler[101]
+      Received HTTP response headers after 897.7039ms - 200
+info: System.Net.Http.HttpClient.github.LogicalHandler[101]
+      End processing HTTP request after 897.9795ms - 200
+info: System.Net.Http.HttpClient.gitlab.LogicalHandler[100]
+      Start processing HTTP request GET https://gitlab.com/api/v4/projects?*
+info: System.Net.Http.HttpClient.gitlab.ClientHandler[100]
+      Sending HTTP request GET https://gitlab.com/api/v4/projects?*
+info: System.Net.Http.HttpClient.gitlab.ClientHandler[101]
+      Received HTTP response headers after 945.4089ms - 200
+info: System.Net.Http.HttpClient.gitlab.LogicalHandler[101]
+      End processing HTTP request after 945.7159ms - 200
+info: System.Net.Http.HttpClient.GoogleSearchProvider.LogicalHandler[100]
+      Start processing HTTP request GET https://www.google.com/search?*
+info: System.Net.Http.HttpClient.GoogleSearchProvider.ClientHandler[100]
+      Sending HTTP request GET https://www.google.com/search?*
+info: System.Net.Http.HttpClient.GoogleSearchProvider.ClientHandler[101]
+      Received HTTP response headers after 437.3735ms - 200
+info: System.Net.Http.HttpClient.GoogleSearchProvider.LogicalHandler[101]
+      End processing HTTP request after 437.4645ms - 200
+info: System.Net.Http.HttpClient.googlebooks.LogicalHandler[100]
+      Start processing HTTP request GET https://www.googleapis.com/books/v1/volumes?*
+info: System.Net.Http.HttpClient.googlebooks.ClientHandler[100]
+      Sending HTTP request GET https://www.googleapis.com/books/v1/volumes?*
+info: System.Net.Http.HttpClient.googlebooks.ClientHandler[101]
+      Received HTTP response headers after 516.2611ms - 429
+info: System.Net.Http.HttpClient.googlebooks.LogicalHandler[101]
+      End processing HTTP request after 516.6971ms - 429
+info: System.Net.Http.HttpClient.google_news.LogicalHandler[100]
+      Start processing HTTP request GET https://news.google.com/rss/search?*
+info: System.Net.Http.HttpClient.google_news.ClientHandler[100]
+      Sending HTTP request GET https://news.google.com/rss/search?*
+info: System.Net.Http.HttpClient.google_news.ClientHandler[101]
+      Received HTTP response headers after 697.9424ms - 200
+info: System.Net.Http.HttpClient.google_news.LogicalHandler[101]
+      End processing HTTP request after 698.0158ms - 200
+info: System.Net.Http.HttpClient.hackernews.LogicalHandler[100]
+      Start processing HTTP request GET https://hn.algolia.com/api/v1/search?*
+info: System.Net.Http.HttpClient.hackernews.ClientHandler[100]
+      Sending HTTP request GET https://hn.algolia.com/api/v1/search?*
+info: System.Net.Http.HttpClient.hackernews.ClientHandler[101]
+      Received HTTP response headers after 840.386ms - 200
+info: System.Net.Http.HttpClient.hackernews.LogicalHandler[101]
+      End processing HTTP request after 840.6859ms - 200
+info: Microsoft.Hosting.Lifetime[0]
+      Application is shutting down...
+[xUnit.net 00:00:30.90]     DotNetWebSearchApi.Tests.LiveProviderIntegrationTests.AllRegisteredProviders_RespondToLiveRequests [FAIL]
+[xUnit.net 00:00:30.90]       Live provider batch failed:
+[xUnit.net 00:00:30.90]       arxiv: TaskCanceledException: The operation was canceled.
+[xUnit.net 00:00:30.90]       europepmc: TaskCanceledException: The operation was canceled.
+[xUnit.net 00:00:30.90]       gitea: ProviderFailureException: gitea returned HTTP 429.
+[xUnit.net 00:00:30.90]       googlebooks: ProviderFailureException: googlebooks returned HTTP 429.
+[xUnit.net 00:00:30.90]       Stack Trace:
+[xUnit.net 00:00:30.90]         C:\WEBSITEDEVELOPMENT\DotNetWebSearchApi\tests\DotNetWebSearchApi.Tests\LiveProviderIntegrationTests.cs(80,0): at DotNetWebSearchApi.Tests.LiveProviderIntegrationTests.AllRegisteredProviders_RespondToLiveRequests()
+[xUnit.net 00:00:30.90]         --- End of stack trace from previous location ---
+[xUnit.net 00:00:30.90]       Output:
+[xUnit.net 00:00:30.90]         Provider inventory: 63 registered; batch offset 0; selected 20.
+[xUnit.net 00:00:30.90]         FAIL arxiv: TaskCanceledException: The operation was canceled.
+[xUnit.net 00:00:30.90]         PASS askubuntu: 3 results. How to fix `GLIBCXX_3.4.30&#39; not found in Ubuntu 22.04 | Ubuntu 26.04 Random reboots on my laptop | The URL http://security.ubuntu.com/ubuntu noble-security InRelease fails to connect with .NET 10 upgrade
+[xUnit.net 00:00:30.90]         PASS bilibili: 20 results. 01-Σ╜┐τö¿Θàìτ╜«σ«ëΦúà<em class="keyword">dotNET</em> | σªéΣ╜òΘí║σê⌐σ£¿ Ubuntu Linux σ«ëΦúà .<em class="keyword">NET</em> 6.0 SDK σ╣╢ΦºúΘÖñσ«ëΦúàσà╢Σ╗û .<em class="keyword">NET</em> SDK τëêµ£¼ | Θ½ÿΘóæ(ΘÇÜΣ┐í)τö╡σ¡Éτ║┐Φ╖»[σñºσ¡ªΘé¬Σ┐«┬╖ΦºúΘóÿΦ»╛]_Θ¼╝τÄï
+[xUnit.net 00:00:30.90]         PASS bing: 10 results. Download .NET (Linux, macOS, and Windows) | .NET | Browse all .NET versions to download | .NET - dotnet.microsoft.com | .NET documentation - .NET | Microsoft Learn
+[xUnit.net 00:00:30.90]         PASS bing_news: 1 results. Fix ΓÇ£You Must Install .NET To Run This ApplicationΓÇ¥ (2026)
+[xUnit.net 00:00:30.90]         PASS cratesio: 3 results. dotnet-parser | etdl-target-dotnet | dotnet-gitversion-build
+[xUnit.net 00:00:30.90]         PASS crossref: 3 results. ActiveX, and .NET (dotnet) | ActiveX, and .NET (dotNet) | Voluntary Civic Engagement in the Dotnet Generation
+[xUnit.net 00:00:30.90]         PASS dailymotion: 3 results. .NET Campus 2012 - DotNet Campania | Microsoft re├║ne a m├ís de 1.100 desarrolladores en dotNet Spain | Maine Pyar Kiya Movie || DotNet Comedy Scene || Vennela Rama Rao || 03
+[xUnit.net 00:00:30.90]         PASS datacite: 3 results. dotnet | dotnet | dotnet
+[xUnit.net 00:00:30.90]         PASS deezer: 3 results. Dot Net | DOTnet | Do They Know It's Christmas? (1984 Version)
+[xUnit.net 00:00:30.90]         PASS dockerhub: 3 results. slacksec/dotnet | wlniao/dotnet | lendingtree/dotnet
+[xUnit.net 00:00:30.90]         PASS duckduckgo: 10 results. Download .NET (Linux, macOS, and Windows) | .NET | Browse all .NET versions to download | .NET - dotnet.microsoft.com | .NET documentation - .NET | Microsoft Learn
+[xUnit.net 00:00:30.90]         FAIL europepmc: TaskCanceledException: The operation was canceled.
+[xUnit.net 00:00:30.90]         FAIL gitea: ProviderFailureException: gitea returned HTTP 429.
+[xUnit.net 00:00:30.90]         PASS github: 3 results. microsoft/dotnet | MiniProfiler/dotnet | CommunityToolkit/dotnet
+[xUnit.net 00:00:30.90]         PASS gitlab: 3 results. Chandler Bing / temp scan ecoscan-27628029-deletion_scheduled-89391576 | Rachel Green / temp scan ecoscan-27628029-deletion_scheduled-89378985 | Chandler Bing / temp scan ecoscan-27628029-deletion_scheduled-89368727
+[xUnit.net 00:00:30.90]         PASS google: 0 results. 
+[xUnit.net 00:00:30.90]         FAIL googlebooks: ProviderFailureException: googlebooks returned HTTP 429.
+[xUnit.net 00:00:30.90]         PASS google_news: 3 results. The 2026 Vulnpocalypse Hits PHP: Four Critical RCEs, but How Dangerous Are They? - OX Security | Microsoft Releases .NET 11 RC1 with Go-Live Support, C# 15 and F# 11 as Default Language Versions - infoq.com | Deploy ASP.NET Core Web API Using Docker on Azure | .NET 10 + ACR + Azure Container Apps - Tutorial - YouTube
+[xUnit.net 00:00:30.90]         PASS hackernews: 3 results. Run a C# file directly using dotnet run app.cs | Show HN: DotNetFiddle ΓÇô JsFiddle for .Net | Exploring the new .NET ΓÇ£dotnetΓÇ¥ CLI
+[xUnit.net 00:00:30.91]   Finished:    DotNetWebSearchApi.Tests
+  Failed DotNetWebSearchApi.Tests.LiveProviderIntegrationTests.AllRegisteredProviders_RespondToLiveRequests [30 s]
+  Error Message:
+   Live provider batch failed:
+arxiv: TaskCanceledException: The operation was canceled.
+europepmc: TaskCanceledException: The operation was canceled.
+gitea: ProviderFailureException: gitea returned HTTP 429.
+googlebooks: ProviderFailureException: googlebooks returned HTTP 429.
+  Stack Trace:
+     at DotNetWebSearchApi.Tests.LiveProviderIntegrationTests.AllRegisteredProviders_RespondToLiveRequests() in C:\WEBSITEDEVELOPMENT\DotNetWebSearchApi\tests\DotNetWebSearchApi.Tests\LiveProviderIntegrationTests.cs:line 80
+--- End of stack trace from previous location ---
+  Standard Output Messages:
+ Provider inventory: 63 registered; batch offset 0; selected 20.
+ FAIL arxiv: TaskCanceledException: The operation was canceled.
+ PASS askubuntu: 3 results. How to fix `GLIBCXX_3.4.30&#39; not found in Ubuntu 22.04 | Ubuntu 26.04 Random reboots on my laptop | The URL http://security.ubuntu.com/ubuntu noble-security InRelease fails to connect with .NET 10 upgrade
+ PASS bilibili: 20 results. 01-Σ╜┐τö¿Θàìτ╜«σ«ëΦúà<em class="keyword">dotNET</em> | σªéΣ╜òΘí║σê⌐σ£¿ Ubuntu Linux σ«ëΦúà .<em class="keyword">NET</em> 6.0 SDK σ╣╢ΦºúΘÖñσ«ëΦúàσà╢Σ╗û .<em class="keyword">NET</em> SDK τëêµ£¼ | Θ½ÿΘóæ(ΘÇÜΣ┐í)τö╡σ¡Éτ║┐Φ╖»[σñºσ¡ªΘé¬Σ┐«┬╖ΦºúΘóÿΦ»╛]_Θ¼╝τÄï
+ PASS bing: 10 results. Download .NET (Linux, macOS, and Windows) | .NET | Browse all .NET versions to download | .NET - dotnet.microsoft.com | .NET documentation - .NET | Microsoft Learn
+ PASS bing_news: 1 results. Fix ΓÇ£You Must Install .NET To Run This ApplicationΓÇ¥ (2026)
+ PASS cratesio: 3 results. dotnet-parser | etdl-target-dotnet | dotnet-gitversion-build
+ PASS crossref: 3 results. ActiveX, and .NET (dotnet) | ActiveX, and .NET (dotNet) | Voluntary Civic Engagement in the Dotnet Generation
+ PASS dailymotion: 3 results. .NET Campus 2012 - DotNet Campania | Microsoft re├║ne a m├ís de 1.100 desarrolladores en dotNet Spain | Maine Pyar Kiya Movie || DotNet Comedy Scene || Vennela Rama Rao || 03
+ PASS datacite: 3 results. dotnet | dotnet | dotnet
+ PASS deezer: 3 results. Dot Net | DOTnet | Do They Know It's Christmas? (1984 Version)
+ PASS dockerhub: 3 results. slacksec/dotnet | wlniao/dotnet | lendingtree/dotnet
+ PASS duckduckgo: 10 results. Download .NET (Linux, macOS, and Windows) | .NET | Browse all .NET versions to download | .NET - dotnet.microsoft.com | .NET documentation - .NET | Microsoft Learn
+ FAIL europepmc: TaskCanceledException: The operation was canceled.
+ FAIL gitea: ProviderFailureException: gitea returned HTTP 429.
+ PASS github: 3 results. microsoft/dotnet | MiniProfiler/dotnet | CommunityToolkit/dotnet
+ PASS gitlab: 3 results. Chandler Bing / temp scan ecoscan-27628029-deletion_scheduled-89391576 | Rachel Green / temp scan ecoscan-27628029-deletion_scheduled-89378985 | Chandler Bing / temp scan ecoscan-27628029-deletion_scheduled-89368727
+ PASS google: 0 results. 
+ FAIL googlebooks: ProviderFailureException: googlebooks returned HTTP 429.
+ PASS google_news: 3 results. The 2026 Vulnpocalypse Hits PHP: Four Critical RCEs, but How Dangerous Are They? - OX Security | Microsoft Releases .NET 11 RC1 with Go-Live Support, C# 15 and F# 11 as Default Language Versions - infoq.com | Deploy ASP.NET Core Web API Using Docker on Azure | .NET 10 + ACR + Azure Container Apps - Tutorial - YouTube
+ PASS hackernews: 3 results. Run a C# file directly using dotnet run app.cs | Show HN: DotNetFiddle ΓÇô JsFiddle for .Net | Exploring the new .NET ΓÇ£dotnetΓÇ¥ CLI
+
+
+
+Test Run Failed.
+Total tests: 1
+     Failed: 1
+ Total time: 31.4077 Seconds
+=== Live provider batch 2 (offset 20) ===
+Test run for C:\WEBSITEDEVELOPMENT\DotNetWebSearchApi\tests\DotNetWebSearchApi.Tests\bin\Release\net10.0\DotNetWebSearchApi.Tests.dll (.NETCoreApp,Version=v10.0)
+A total of 1 test files matched the specified pattern.
+C:\WEBSITEDEVELOPMENT\DotNetWebSearchApi\tests\DotNetWebSearchApi.Tests\bin\Release\net10.0\DotNetWebSearchApi.Tests.dll
+[xUnit.net 00:00:00.00] xUnit.net VSTest Adapter v3.1.5+1b188a7b0a (64-bit .NET 10.0.15)
+[xUnit.net 00:00:00.08]   Discovering: DotNetWebSearchApi.Tests
+[xUnit.net 00:00:00.15]   Discovered:  DotNetWebSearchApi.Tests
+[xUnit.net 00:00:00.17]   Starting:    DotNetWebSearchApi.Tests
+info: Microsoft.Hosting.Lifetime[0]
+      Application started. Press Ctrl+C to shut down.
+info: Microsoft.Hosting.Lifetime[0]
+      Hosting environment: Development
+info: Microsoft.Hosting.Lifetime[0]
+      Content root path: C:\WEBSITEDEVELOPMENT\DotNetWebSearchApi\src\DotNetWebSearchApi
+info: System.Net.Http.HttpClient.huggingface.LogicalHandler[100]
+      Start processing HTTP request GET https://huggingface.co/api/models?*
+info: System.Net.Http.HttpClient.huggingface.ClientHandler[100]
+      Sending HTTP request GET https://huggingface.co/api/models?*
+info: System.Net.Http.HttpClient.huggingface.ClientHandler[101]
+      Received HTTP response headers after 254.8008ms - 200
+info: System.Net.Http.HttpClient.huggingface.LogicalHandler[101]
+      End processing HTTP request after 262.3573ms - 200
+info: System.Net.Http.HttpClient.internetarchive.LogicalHandler[100]
+      Start processing HTTP request GET https://archive.org/advancedsearch.php?*
+info: System.Net.Http.HttpClient.internetarchive.ClientHandler[100]
+      Sending HTTP request GET https://archive.org/advancedsearch.php?*
+info: System.Net.Http.HttpClient.internetarchive.ClientHandler[101]
+      Received HTTP response headers after 798.9768ms - 200
+info: System.Net.Http.HttpClient.internetarchive.LogicalHandler[101]
+      End processing HTTP request after 799.0767ms - 200
+info: System.Net.Http.HttpClient.marginalia.LogicalHandler[100]
+      Start processing HTTP request GET https://api2.marginalia-search.com/search?*
+info: System.Net.Http.HttpClient.marginalia.ClientHandler[100]
+      Sending HTTP request GET https://api2.marginalia-search.com/search?*
+info: System.Net.Http.HttpClient.marginalia.ClientHandler[101]
+      Received HTTP response headers after 321.6162ms - 429
+info: System.Net.Http.HttpClient.marginalia.LogicalHandler[101]
+      End processing HTTP request after 321.8894ms - 429
+info: System.Net.Http.HttpClient.mavencentral.LogicalHandler[100]
+      Start processing HTTP request GET https://search.maven.org/solrsearch/select?*
+info: System.Net.Http.HttpClient.mavencentral.ClientHandler[100]
+      Sending HTTP request GET https://search.maven.org/solrsearch/select?*
+info: System.Net.Http.HttpClient.mavencentral.ClientHandler[101]
+      Received HTTP response headers after 291.2692ms - 200
+info: System.Net.Http.HttpClient.mavencentral.LogicalHandler[101]
+      End processing HTTP request after 291.4936ms - 200
+info: System.Net.Http.HttpClient.MojeekSearchProvider.LogicalHandler[100]
+      Start processing HTTP request GET https://www.mojeek.com/captcha/challenge
+info: System.Net.Http.HttpClient.MojeekSearchProvider.ClientHandler[100]
+      Sending HTTP request GET https://www.mojeek.com/captcha/challenge
+info: System.Net.Http.HttpClient.MojeekSearchProvider.ClientHandler[101]
+      Received HTTP response headers after 446.0288ms - 200
+info: System.Net.Http.HttpClient.MojeekSearchProvider.LogicalHandler[101]
+      End processing HTTP request after 446.1181ms - 200
+info: System.Net.Http.HttpClient.MojeekSearchProvider.LogicalHandler[100]
+      Start processing HTTP request POST https://www.mojeek.com/captcha/verify
+info: System.Net.Http.HttpClient.MojeekSearchProvider.ClientHandler[100]
+      Sending HTTP request POST https://www.mojeek.com/captcha/verify
+info: System.Net.Http.HttpClient.MojeekSearchProvider.ClientHandler[101]
+      Received HTTP response headers after 92.3761ms - 200
+info: System.Net.Http.HttpClient.MojeekSearchProvider.LogicalHandler[101]
+      End processing HTTP request after 92.4841ms - 200
+info: System.Net.Http.HttpClient.MojeekSearchProvider.LogicalHandler[100]
+      Start processing HTTP request GET https://www.mojeek.com/search?*
+info: System.Net.Http.HttpClient.MojeekSearchProvider.ClientHandler[100]
+      Sending HTTP request GET https://www.mojeek.com/search?*
+info: System.Net.Http.HttpClient.MojeekSearchProvider.ClientHandler[101]
+      Received HTTP response headers after 137.2956ms - 200
+info: System.Net.Http.HttpClient.MojeekSearchProvider.LogicalHandler[101]
+      End processing HTTP request after 137.4102ms - 200
+info: System.Net.Http.HttpClient.musicbrainz.LogicalHandler[100]
+      Start processing HTTP request GET https://musicbrainz.org/ws/2/artist/?*
+info: System.Net.Http.HttpClient.musicbrainz.ClientHandler[100]
+      Sending HTTP request GET https://musicbrainz.org/ws/2/artist/?*
+info: System.Net.Http.HttpClient.musicbrainz.ClientHandler[101]
+      Received HTTP response headers after 211.7439ms - 503
+info: System.Net.Http.HttpClient.musicbrainz.LogicalHandler[101]
+      End processing HTTP request after 211.8265ms - 503
+info: System.Net.Http.HttpClient.mwmbl.LogicalHandler[100]
+      Start processing HTTP request GET https://api.mwmbl.org/api/v2/search/?*
+info: System.Net.Http.HttpClient.mwmbl.ClientHandler[100]
+      Sending HTTP request GET https://api.mwmbl.org/api/v2/search/?*
+info: System.Net.Http.HttpClient.mwmbl.ClientHandler[101]
+      Received HTTP response headers after 278.4685ms - 200
+info: System.Net.Http.HttpClient.mwmbl.LogicalHandler[101]
+      End processing HTTP request after 278.7267ms - 200
+info: System.Net.Http.HttpClient.NaverSearchProvider.LogicalHandler[100]
+      Start processing HTTP request GET https://search.naver.com/search.naver?*
+info: System.Net.Http.HttpClient.NaverSearchProvider.ClientHandler[100]
+      Sending HTTP request GET https://search.naver.com/search.naver?*
+info: System.Net.Http.HttpClient.NaverSearchProvider.ClientHandler[101]
+      Received HTTP response headers after 1302.7216ms - 200
+info: System.Net.Http.HttpClient.NaverSearchProvider.LogicalHandler[101]
+      End processing HTTP request after 1302.81ms - 200
+info: System.Net.Http.HttpClient.npm.LogicalHandler[100]
+      Start processing HTTP request GET https://registry.npmjs.org/-/v1/search?*
+info: System.Net.Http.HttpClient.npm.ClientHandler[100]
+      Sending HTTP request GET https://registry.npmjs.org/-/v1/search?*
+info: System.Net.Http.HttpClient.npm.ClientHandler[101]
+      Received HTTP response headers after 760.6472ms - 200
+info: System.Net.Http.HttpClient.npm.LogicalHandler[101]
+      End processing HTTP request after 760.7776ms - 200
+info: System.Net.Http.HttpClient.nuget.LogicalHandler[100]
+      Start processing HTTP request GET https://azuresearch-usnc.nuget.org/query?*
+info: System.Net.Http.HttpClient.nuget.ClientHandler[100]
+      Sending HTTP request GET https://azuresearch-usnc.nuget.org/query?*
+info: System.Net.Http.HttpClient.nuget.ClientHandler[101]
+      Received HTTP response headers after 895.5429ms - 200
+info: System.Net.Http.HttpClient.nuget.LogicalHandler[101]
+      End processing HTTP request after 895.6139ms - 200
+info: System.Net.Http.HttpClient.openaire.LogicalHandler[100]
+      Start processing HTTP request GET https://api.openaire.eu/graph/v4/research-products?*
+info: System.Net.Http.HttpClient.openaire.ClientHandler[100]
+      Sending HTTP request GET https://api.openaire.eu/graph/v4/research-products?*
+info: System.Net.Http.HttpClient.openaire.ClientHandler[101]
+      Received HTTP response headers after 903.0074ms - 200
+info: System.Net.Http.HttpClient.openaire.LogicalHandler[101]
+      End processing HTTP request after 903.3472ms - 200
+info: System.Net.Http.HttpClient.openalex.LogicalHandler[100]
+      Start processing HTTP request GET https://api.openalex.org/works?*
+info: System.Net.Http.HttpClient.openalex.ClientHandler[100]
+      Sending HTTP request GET https://api.openalex.org/works?*
+info: System.Net.Http.HttpClient.openalex.ClientHandler[101]
+      Received HTTP response headers after 690.7819ms - 200
+info: System.Net.Http.HttpClient.openalex.LogicalHandler[101]
+      End processing HTTP request after 690.9981ms - 200
+info: System.Net.Http.HttpClient.openlibrary.LogicalHandler[100]
+      Start processing HTTP request GET https://openlibrary.org/search.json?*
+info: System.Net.Http.HttpClient.openlibrary.ClientHandler[100]
+      Sending HTTP request GET https://openlibrary.org/search.json?*
+info: System.Net.Http.HttpClient.openlibrary.ClientHandler[101]
+      Received HTTP response headers after 1175.0054ms - 200
+info: System.Net.Http.HttpClient.openlibrary.LogicalHandler[101]
+      End processing HTTP request after 1175.2848ms - 200
+info: System.Net.Http.HttpClient.openverse.LogicalHandler[100]
+      Start processing HTTP request GET https://api.openverse.org/v1/images/?*
+info: System.Net.Http.HttpClient.openverse.ClientHandler[100]
+      Sending HTTP request GET https://api.openverse.org/v1/images/?*
+info: System.Net.Http.HttpClient.openverse.ClientHandler[101]
+      Received HTTP response headers after 450.7206ms - 200
+info: System.Net.Http.HttpClient.openverse.LogicalHandler[101]
+      End processing HTTP request after 450.8888ms - 200
+info: System.Net.Http.HttpClient.packagist.LogicalHandler[100]
+      Start processing HTTP request GET https://packagist.org/search.json?*
+info: System.Net.Http.HttpClient.packagist.ClientHandler[100]
+      Sending HTTP request GET https://packagist.org/search.json?*
+info: System.Net.Http.HttpClient.packagist.ClientHandler[101]
+      Received HTTP response headers after 504.7557ms - 200
+info: System.Net.Http.HttpClient.packagist.LogicalHandler[101]
+      End processing HTTP request after 505.0206ms - 200
+info: System.Net.Http.HttpClient.peertube.LogicalHandler[100]
+      Start processing HTTP request GET https://peertube.cpy.re/api/v1/search/videos?*
+info: System.Net.Http.HttpClient.peertube.ClientHandler[100]
+      Sending HTTP request GET https://peertube.cpy.re/api/v1/search/videos?*
+info: System.Net.Http.HttpClient.peertube.ClientHandler[101]
+      Received HTTP response headers after 421.951ms - 200
+info: System.Net.Http.HttpClient.peertube.LogicalHandler[101]
+      End processing HTTP request after 422.3403ms - 200
+info: System.Net.Http.HttpClient.plos.LogicalHandler[100]
+      Start processing HTTP request GET https://api.plos.org/search?*
+info: System.Net.Http.HttpClient.plos.ClientHandler[100]
+      Sending HTTP request GET https://api.plos.org/search?*
+info: System.Net.Http.HttpClient.plos.ClientHandler[101]
+      Received HTTP response headers after 929.5451ms - 200
+info: System.Net.Http.HttpClient.plos.LogicalHandler[101]
+      End processing HTTP request after 929.8982ms - 200
+info: System.Net.Http.HttpClient.pubdev.LogicalHandler[100]
+      Start processing HTTP request GET https://pub.dev/api/search?*
+info: System.Net.Http.HttpClient.pubdev.ClientHandler[100]
+      Sending HTTP request GET https://pub.dev/api/search?*
+info: System.Net.Http.HttpClient.pubdev.ClientHandler[101]
+      Received HTTP response headers after 392.8266ms - 200
+info: System.Net.Http.HttpClient.pubdev.LogicalHandler[101]
+      End processing HTTP request after 392.9034ms - 200
+info: System.Net.Http.HttpClient.QwantSearchProvider.LogicalHandler[100]
+      Start processing HTTP request GET https://api.qwant.com/v3/search/web?*
+info: System.Net.Http.HttpClient.QwantSearchProvider.ClientHandler[100]
+      Sending HTTP request GET https://api.qwant.com/v3/search/web?*
+info: System.Net.Http.HttpClient.QwantSearchProvider.ClientHandler[101]
+      Received HTTP response headers after 716.3661ms - 403
+info: System.Net.Http.HttpClient.QwantSearchProvider.LogicalHandler[101]
+      End processing HTTP request after 716.4523ms - 403
+info: System.Net.Http.HttpClient.radiobrowser.LogicalHandler[100]
+      Start processing HTTP request GET https://de1.api.radio-browser.info/json/stations/search?*
+info: System.Net.Http.HttpClient.radiobrowser.ClientHandler[100]
+      Sending HTTP request GET https://de1.api.radio-browser.info/json/stations/search?*
+info: System.Net.Http.HttpClient.radiobrowser.ClientHandler[101]
+      Received HTTP response headers after 604.3746ms - 200
+info: System.Net.Http.HttpClient.radiobrowser.LogicalHandler[101]
+      End processing HTTP request after 604.451ms - 200
+info: Microsoft.Hosting.Lifetime[0]
+      Application is shutting down...
+[xUnit.net 00:00:15.77]     DotNetWebSearchApi.Tests.LiveProviderIntegrationTests.AllRegisteredProviders_RespondToLiveRequests [FAIL]
+[xUnit.net 00:00:15.77]       Live provider batch failed:
+[xUnit.net 00:00:15.77]       marginalia: ProviderFailureException: marginalia returned HTTP 429.
+[xUnit.net 00:00:15.77]       musicbrainz: ProviderFailureException: musicbrainz returned HTTP 503.
+[xUnit.net 00:00:15.77]       qwant: ProviderFailureException: Qwant denied the request; a DataDome session or browser verification may be required.
+[xUnit.net 00:00:15.77]       Stack Trace:
+[xUnit.net 00:00:15.77]         C:\WEBSITEDEVELOPMENT\DotNetWebSearchApi\tests\DotNetWebSearchApi.Tests\LiveProviderIntegrationTests.cs(80,0): at DotNetWebSearchApi.Tests.LiveProviderIntegrationTests.AllRegisteredProviders_RespondToLiveRequests()
+[xUnit.net 00:00:15.77]         --- End of stack trace from previous location ---
+[xUnit.net 00:00:15.77]       Output:
+[xUnit.net 00:00:15.77]         Provider inventory: 63 registered; batch offset 20; selected 20.
+[xUnit.net 00:00:15.77]         PASS huggingface: 3 results. rodrigoramosrs/qwen3-4b-dotnet-specialist | mradermacher/dotnet-coder-14b-GGUF | Nethermind/Mpt-Instruct-DotNet-S
+[xUnit.net 00:00:15.77]         PASS internetarchive: 3 results. github.com-narahiero-MKW-Leaderboard-Site_-_2024-08-29_21-34-52 | yahoo-groups-2017-08-19T10-43-56Z-e7875f | yahoo-groups-2017-12-31T12-03-10Z-d69528
+[xUnit.net 00:00:15.77]         FAIL marginalia: ProviderFailureException: marginalia returned HTTP 429.
+[xUnit.net 00:00:15.77]         PASS mavencentral: 3 results. org.codehaus.sonar-plugins.dotnet:dotnet | org.sonarsource.dotnet:sonaranalyzer-dotnet | org.sonarsource.dotnet:sonar-dotnet
+[xUnit.net 00:00:15.77]         PASS mojeek: 3 results. GitHub - dotnet/dotnet: Home of .NET's Virtual Monolithic | GitHub - dotnet/runtime: .NET is a cross-platform runtime for | GitHub - dotnet-outdated/dotnet-outdated: A .NET Core global
+[xUnit.net 00:00:15.77]         FAIL musicbrainz: ProviderFailureException: musicbrainz returned HTTP 503.
+[xUnit.net 00:00:15.77]         PASS mwmbl: 122 results. GitHub - wh0a-khalid/dotnetcore: C# .NET Core template repository | .NET Foundation News and Blog | .NET Foundation (@dotnetfdn) / X
+[xUnit.net 00:00:15.77]         PASS naver: 9 results. .NET - ∞╡£∞ïá ∞ò▒ δ░Å Ω░òδáÑφò£ φü┤δ¥╝∞Ü░δô£ ∞ä£δ╣ä∞èñ δ╣îδô£ | @Dotnet - Facebook | dotnet - YouTube
+[xUnit.net 00:00:15.77]         PASS npm: 3 results. dotnet | gulp-dotnet-cli | dotnet-2.0.0-win
+[xUnit.net 00:00:15.77]         PASS nuget: 20 results. Microsoft.DotNet.PlatformAbstractions | dotnet-ef | Microsoft.DotNet.InternalAbstractions
+[xUnit.net 00:00:15.77]         PASS openaire: 3 results. dotnet-docker software on GitHub | graphql-dotnet software on GitHub | dotnet software on GitHub
+[xUnit.net 00:00:15.77]         PASS openalex: 3 results. dotNet som multimediaplattform | J2EE versus DotNet | dotNet as a multimediaplatform
+[xUnit.net 00:00:15.77]         PASS openlibrary: 3 results. .NET and XML | Here's How to Make Money Online | Visual Basic 2005
+[xUnit.net 00:00:15.77]         PASS openverse: 3 results. DotNet | UML dotnet streams | Dotnet-bot
+[xUnit.net 00:00:15.77]         PASS packagist: 3 results. webapix/dot-net-json-date-formatter | ory/client | aspose/pdf-sdk-php
+[xUnit.net 00:00:15.77]         PASS peertube: 0 results. 
+[xUnit.net 00:00:15.77]         PASS plos: 3 results. Boosting efficiency in a clinical literature surveillance system with LightGBM | Sardine: A modular framework for developing data acquisition and near real-time analysis applications | Status of the WHO recommended timing and frequency of antenatal care visits in Northern Bangladesh
+[xUnit.net 00:00:15.77]         PASS pubdev: 10 results. cancellation_token_dotnet | dotnetstrftime | syncfusion_flutter_core
+[xUnit.net 00:00:15.77]         FAIL qwant: ProviderFailureException: Qwant denied the request; a DataDome session or browser verification may be required.
+[xUnit.net 00:00:15.77]         PASS radiobrowser: 0 results. 
+[xUnit.net 00:00:15.78]   Finished:    DotNetWebSearchApi.Tests
+  Failed DotNetWebSearchApi.Tests.LiveProviderIntegrationTests.AllRegisteredProviders_RespondToLiveRequests [15 s]
+  Error Message:
+   Live provider batch failed:
+marginalia: ProviderFailureException: marginalia returned HTTP 429.
+musicbrainz: ProviderFailureException: musicbrainz returned HTTP 503.
+qwant: ProviderFailureException: Qwant denied the request; a DataDome session or browser verification may be required.
+  Stack Trace:
+     at DotNetWebSearchApi.Tests.LiveProviderIntegrationTests.AllRegisteredProviders_RespondToLiveRequests() in C:\WEBSITEDEVELOPMENT\DotNetWebSearchApi\tests\DotNetWebSearchApi.Tests\LiveProviderIntegrationTests.cs:line 80
+--- End of stack trace from previous location ---
+  Standard Output Messages:
+ Provider inventory: 63 registered; batch offset 20; selected 20.
+ PASS huggingface: 3 results. rodrigoramosrs/qwen3-4b-dotnet-specialist | mradermacher/dotnet-coder-14b-GGUF | Nethermind/Mpt-Instruct-DotNet-S
+ PASS internetarchive: 3 results. github.com-narahiero-MKW-Leaderboard-Site_-_2024-08-29_21-34-52 | yahoo-groups-2017-08-19T10-43-56Z-e7875f | yahoo-groups-2017-12-31T12-03-10Z-d69528
+ FAIL marginalia: ProviderFailureException: marginalia returned HTTP 429.
+ PASS mavencentral: 3 results. org.codehaus.sonar-plugins.dotnet:dotnet | org.sonarsource.dotnet:sonaranalyzer-dotnet | org.sonarsource.dotnet:sonar-dotnet
+ PASS mojeek: 3 results. GitHub - dotnet/dotnet: Home of .NET's Virtual Monolithic | GitHub - dotnet/runtime: .NET is a cross-platform runtime for | GitHub - dotnet-outdated/dotnet-outdated: A .NET Core global
+ FAIL musicbrainz: ProviderFailureException: musicbrainz returned HTTP 503.
+ PASS mwmbl: 122 results. GitHub - wh0a-khalid/dotnetcore: C# .NET Core template repository | .NET Foundation News and Blog | .NET Foundation (@dotnetfdn) / X
+ PASS naver: 9 results. .NET - ∞╡£∞ïá ∞ò▒ δ░Å Ω░òδáÑφò£ φü┤δ¥╝∞Ü░δô£ ∞ä£δ╣ä∞èñ δ╣îδô£ | @Dotnet - Facebook | dotnet - YouTube
+ PASS npm: 3 results. dotnet | gulp-dotnet-cli | dotnet-2.0.0-win
+ PASS nuget: 20 results. Microsoft.DotNet.PlatformAbstractions | dotnet-ef | Microsoft.DotNet.InternalAbstractions
+ PASS openaire: 3 results. dotnet-docker software on GitHub | graphql-dotnet software on GitHub | dotnet software on GitHub
+ PASS openalex: 3 results. dotNet som multimediaplattform | J2EE versus DotNet | dotNet as a multimediaplatform
+ PASS openlibrary: 3 results. .NET and XML | Here's How to Make Money Online | Visual Basic 2005
+ PASS openverse: 3 results. DotNet | UML dotnet streams | Dotnet-bot
+ PASS packagist: 3 results. webapix/dot-net-json-date-formatter | ory/client | aspose/pdf-sdk-php
+ PASS peertube: 0 results. 
+ PASS plos: 3 results. Boosting efficiency in a clinical literature surveillance system with LightGBM | Sardine: A modular framework for developing data acquisition and near real-time analysis applications | Status of the WHO recommended timing and frequency of antenatal care visits in Northern Bangladesh
+ PASS pubdev: 10 results. cancellation_token_dotnet | dotnetstrftime | syncfusion_flutter_core
+ FAIL qwant: ProviderFailureException: Qwant denied the request; a DataDome session or browser verification may be required.
+ PASS radiobrowser: 0 results. 
+
+
+
+Test Run Failed.
+Total tests: 1
+     Failed: 1
+ Total time: 16.2532 Seconds
+=== Live provider batch 3 (offset 40) ===
+Test run for C:\WEBSITEDEVELOPMENT\DotNetWebSearchApi\tests\DotNetWebSearchApi.Tests\bin\Release\net10.0\DotNetWebSearchApi.Tests.dll (.NETCoreApp,Version=v10.0)
+A total of 1 test files matched the specified pattern.
+C:\WEBSITEDEVELOPMENT\DotNetWebSearchApi\tests\DotNetWebSearchApi.Tests\bin\Release\net10.0\DotNetWebSearchApi.Tests.dll
+[xUnit.net 00:00:00.00] xUnit.net VSTest Adapter v3.1.5+1b188a7b0a (64-bit .NET 10.0.15)
+[xUnit.net 00:00:00.08]   Discovering: DotNetWebSearchApi.Tests
+[xUnit.net 00:00:00.15]   Discovered:  DotNetWebSearchApi.Tests
+[xUnit.net 00:00:00.17]   Starting:    DotNetWebSearchApi.Tests
+info: Microsoft.Hosting.Lifetime[0]
+      Application started. Press Ctrl+C to shut down.
+info: Microsoft.Hosting.Lifetime[0]
+      Hosting environment: Development
+info: Microsoft.Hosting.Lifetime[0]
+      Content root path: C:\WEBSITEDEVELOPMENT\DotNetWebSearchApi\src\DotNetWebSearchApi
+info: System.Net.Http.HttpClient.rubygems.LogicalHandler[100]
+      Start processing HTTP request GET https://rubygems.org/api/v1/search.json?*
+info: System.Net.Http.HttpClient.rubygems.ClientHandler[100]
+      Sending HTTP request GET https://rubygems.org/api/v1/search.json?*
+info: System.Net.Http.HttpClient.rubygems.ClientHandler[101]
+      Received HTTP response headers after 841.2712ms - 200
+info: System.Net.Http.HttpClient.rubygems.LogicalHandler[101]
+      End processing HTTP request after 848.3742ms - 200
+info: System.Net.Http.HttpClient.semanticscholar.LogicalHandler[100]
+      Start processing HTTP request GET https://api.semanticscholar.org/graph/v1/paper/search?*
+info: System.Net.Http.HttpClient.semanticscholar.ClientHandler[100]
+      Sending HTTP request GET https://api.semanticscholar.org/graph/v1/paper/search?*
+info: System.Net.Http.HttpClient.semanticscholar.ClientHandler[101]
+      Received HTTP response headers after 395.5942ms - 429
+info: System.Net.Http.HttpClient.semanticscholar.LogicalHandler[101]
+      End processing HTTP request after 395.7181ms - 429
+info: System.Net.Http.HttpClient.serverfault.LogicalHandler[100]
+      Start processing HTTP request GET https://api.stackexchange.com/2.3/search/advanced?*
+info: System.Net.Http.HttpClient.serverfault.ClientHandler[100]
+      Sending HTTP request GET https://api.stackexchange.com/2.3/search/advanced?*
+info: System.Net.Http.HttpClient.serverfault.ClientHandler[101]
+      Received HTTP response headers after 392.7575ms - 200
+info: System.Net.Http.HttpClient.serverfault.LogicalHandler[101]
+      End processing HTTP request after 392.8339ms - 200
+info: System.Net.Http.HttpClient.SeznamSearchProvider.LogicalHandler[100]
+      Start processing HTTP request GET https://search.seznam.cz/
+info: System.Net.Http.HttpClient.SeznamSearchProvider.ClientHandler[100]
+      Sending HTTP request GET https://search.seznam.cz/
+info: System.Net.Http.HttpClient.SeznamSearchProvider.ClientHandler[101]
+      Received HTTP response headers after 971.4578ms - 200
+info: System.Net.Http.HttpClient.SeznamSearchProvider.LogicalHandler[101]
+      End processing HTTP request after 971.5541ms - 200
+info: System.Net.Http.HttpClient.SeznamSearchProvider.LogicalHandler[100]
+      Start processing HTTP request GET https://search.seznam.cz/?*
+info: System.Net.Http.HttpClient.SeznamSearchProvider.ClientHandler[100]
+      Sending HTTP request GET https://search.seznam.cz/?*
+info: System.Net.Http.HttpClient.SeznamSearchProvider.ClientHandler[101]
+      Received HTTP response headers after 71.8814ms - 200
+info: System.Net.Http.HttpClient.SeznamSearchProvider.LogicalHandler[101]
+      End processing HTTP request after 72.1837ms - 200
+info: System.Net.Http.HttpClient.stackoverflow.LogicalHandler[100]
+      Start processing HTTP request GET https://api.stackexchange.com/2.3/search/advanced?*
+info: System.Net.Http.HttpClient.stackoverflow.ClientHandler[100]
+      Sending HTTP request GET https://api.stackexchange.com/2.3/search/advanced?*
+info: System.Net.Http.HttpClient.stackoverflow.ClientHandler[101]
+      Received HTTP response headers after 407.293ms - 200
+info: System.Net.Http.HttpClient.stackoverflow.LogicalHandler[101]
+      End processing HTTP request after 407.3794ms - 200
+info: System.Net.Http.HttpClient.steam.LogicalHandler[100]
+      Start processing HTTP request GET https://store.steampowered.com/api/storesearch/?*
+info: System.Net.Http.HttpClient.steam.ClientHandler[100]
+      Sending HTTP request GET https://store.steampowered.com/api/storesearch/?*
+info: System.Net.Http.HttpClient.steam.ClientHandler[101]
+      Received HTTP response headers after 462.7212ms - 200
+info: System.Net.Http.HttpClient.steam.LogicalHandler[101]
+      End processing HTTP request after 462.7906ms - 200
+info: System.Net.Http.HttpClient.superuser.LogicalHandler[100]
+      Start processing HTTP request GET https://api.stackexchange.com/2.3/search/advanced?*
+info: System.Net.Http.HttpClient.superuser.ClientHandler[100]
+      Sending HTTP request GET https://api.stackexchange.com/2.3/search/advanced?*
+info: System.Net.Http.HttpClient.superuser.ClientHandler[101]
+      Received HTTP response headers after 371.867ms - 200
+info: System.Net.Http.HttpClient.superuser.LogicalHandler[101]
+      End processing HTTP request after 371.9322ms - 200
+info: System.Net.Http.HttpClient.tvmaze.LogicalHandler[100]
+      Start processing HTTP request GET https://api.tvmaze.com/search/shows?*
+info: System.Net.Http.HttpClient.tvmaze.ClientHandler[100]
+      Sending HTTP request GET https://api.tvmaze.com/search/shows?*
+info: System.Net.Http.HttpClient.tvmaze.ClientHandler[101]
+      Received HTTP response headers after 286.0958ms - 200
+info: System.Net.Http.HttpClient.tvmaze.LogicalHandler[101]
+      End processing HTTP request after 286.188ms - 200
+info: System.Net.Http.HttpClient.wiby.LogicalHandler[100]
+      Start processing HTTP request GET https://wiby.me/json/?*
+info: System.Net.Http.HttpClient.wiby.ClientHandler[100]
+      Sending HTTP request GET https://wiby.me/json/?*
+info: System.Net.Http.HttpClient.wiby.ClientHandler[101]
+      Received HTTP response headers after 828.7761ms - 200
+info: System.Net.Http.HttpClient.wiby.LogicalHandler[101]
+      End processing HTTP request after 828.8699ms - 200
+info: System.Net.Http.HttpClient.wikibooks.LogicalHandler[100]
+      Start processing HTTP request GET https://en.wikibooks.org/w/api.php?*
+info: System.Net.Http.HttpClient.wikibooks.ClientHandler[100]
+      Sending HTTP request GET https://en.wikibooks.org/w/api.php?*
+info: System.Net.Http.HttpClient.wikibooks.ClientHandler[101]
+      Received HTTP response headers after 275.315ms - 200
+info: System.Net.Http.HttpClient.wikibooks.LogicalHandler[101]
+      End processing HTTP request after 275.4087ms - 200
+info: System.Net.Http.HttpClient.wikidata.LogicalHandler[100]
+      Start processing HTTP request GET https://www.wikidata.org/w/api.php?*
+info: System.Net.Http.HttpClient.wikidata.ClientHandler[100]
+      Sending HTTP request GET https://www.wikidata.org/w/api.php?*
+info: System.Net.Http.HttpClient.wikidata.ClientHandler[101]
+      Received HTTP response headers after 334.6133ms - 200
+info: System.Net.Http.HttpClient.wikidata.LogicalHandler[101]
+      End processing HTTP request after 334.7767ms - 200
+info: System.Net.Http.HttpClient.wikimedia_commons.LogicalHandler[100]
+      Start processing HTTP request GET https://commons.wikimedia.org/w/api.php?*
+info: System.Net.Http.HttpClient.wikimedia_commons.ClientHandler[100]
+      Sending HTTP request GET https://commons.wikimedia.org/w/api.php?*
+info: System.Net.Http.HttpClient.wikimedia_commons.ClientHandler[101]
+      Received HTTP response headers after 782.7653ms - 200
+info: System.Net.Http.HttpClient.wikimedia_commons.LogicalHandler[101]
+      End processing HTTP request after 783.0326ms - 200
+info: System.Net.Http.HttpClient.wikinews.LogicalHandler[100]
+      Start processing HTTP request GET https://en.wikinews.org/w/api.php?*
+info: System.Net.Http.HttpClient.wikinews.ClientHandler[100]
+      Sending HTTP request GET https://en.wikinews.org/w/api.php?*
+info: System.Net.Http.HttpClient.wikinews.ClientHandler[101]
+      Received HTTP response headers after 340.8771ms - 200
+info: System.Net.Http.HttpClient.wikinews.LogicalHandler[101]
+      End processing HTTP request after 341.2447ms - 200
+info: System.Net.Http.HttpClient.WikipediaSearchProvider.LogicalHandler[100]
+      Start processing HTTP request GET https://en.wikipedia.org/w/api.php?*
+info: System.Net.Http.HttpClient.WikipediaSearchProvider.ClientHandler[100]
+      Sending HTTP request GET https://en.wikipedia.org/w/api.php?*
+info: System.Net.Http.HttpClient.WikipediaSearchProvider.ClientHandler[101]
+      Received HTTP response headers after 551.4085ms - 200
+info: System.Net.Http.HttpClient.WikipediaSearchProvider.LogicalHandler[101]
+      End processing HTTP request after 551.7013ms - 200
+info: System.Net.Http.HttpClient.wikipedia_de.LogicalHandler[100]
+      Start processing HTTP request GET https://de.wikipedia.org/w/api.php?*
+info: System.Net.Http.HttpClient.wikipedia_de.ClientHandler[100]
+      Sending HTTP request GET https://de.wikipedia.org/w/api.php?*
+info: System.Net.Http.HttpClient.wikipedia_de.ClientHandler[101]
+      Received HTTP response headers after 328.0926ms - 200
+info: System.Net.Http.HttpClient.wikipedia_de.LogicalHandler[101]
+      End processing HTTP request after 328.3604ms - 200
+info: System.Net.Http.HttpClient.wikipedia_es.LogicalHandler[100]
+      Start processing HTTP request GET https://es.wikipedia.org/w/api.php?*
+info: System.Net.Http.HttpClient.wikipedia_es.ClientHandler[100]
+      Sending HTTP request GET https://es.wikipedia.org/w/api.php?*
+info: System.Net.Http.HttpClient.wikipedia_es.ClientHandler[101]
+      Received HTTP response headers after 325.4854ms - 200
+info: System.Net.Http.HttpClient.wikipedia_es.LogicalHandler[101]
+      End processing HTTP request after 325.6528ms - 200
+info: System.Net.Http.HttpClient.wikisource.LogicalHandler[100]
+      Start processing HTTP request GET https://en.wikisource.org/w/api.php?*
+info: System.Net.Http.HttpClient.wikisource.ClientHandler[100]
+      Sending HTTP request GET https://en.wikisource.org/w/api.php?*
+info: System.Net.Http.HttpClient.wikisource.ClientHandler[101]
+      Received HTTP response headers after 330.4876ms - 200
+info: System.Net.Http.HttpClient.wikisource.LogicalHandler[101]
+      End processing HTTP request after 330.7528ms - 200
+info: System.Net.Http.HttpClient.wikiversity.LogicalHandler[100]
+      Start processing HTTP request GET https://en.wikiversity.org/w/api.php?*
+info: System.Net.Http.HttpClient.wikiversity.ClientHandler[100]
+      Sending HTTP request GET https://en.wikiversity.org/w/api.php?*
+info: System.Net.Http.HttpClient.wikiversity.ClientHandler[101]
+      Received HTTP response headers after 302.038ms - 200
+info: System.Net.Http.HttpClient.wikiversity.LogicalHandler[101]
+      End processing HTTP request after 302.139ms - 200
+info: System.Net.Http.HttpClient.wikivoyage.LogicalHandler[100]
+      Start processing HTTP request GET https://en.wikivoyage.org/w/api.php?*
+info: System.Net.Http.HttpClient.wikivoyage.ClientHandler[100]
+      Sending HTTP request GET https://en.wikivoyage.org/w/api.php?*
+info: System.Net.Http.HttpClient.wikivoyage.ClientHandler[101]
+      Received HTTP response headers after 294.2589ms - 200
+info: System.Net.Http.HttpClient.wikivoyage.LogicalHandler[101]
+      End processing HTTP request after 294.3547ms - 200
+info: System.Net.Http.HttpClient.wiktionary.LogicalHandler[100]
+      Start processing HTTP request GET https://en.wiktionary.org/w/api.php?*
+info: System.Net.Http.HttpClient.wiktionary.ClientHandler[100]
+      Sending HTTP request GET https://en.wiktionary.org/w/api.php?*
+info: System.Net.Http.HttpClient.wiktionary.ClientHandler[101]
+      Received HTTP response headers after 304.519ms - 200
+info: System.Net.Http.HttpClient.wiktionary.LogicalHandler[101]
+      End processing HTTP request after 304.7674ms - 200
+info: Microsoft.Hosting.Lifetime[0]
+      Application is shutting down...
+[xUnit.net 00:00:10.60]     DotNetWebSearchApi.Tests.LiveProviderIntegrationTests.AllRegisteredProviders_RespondToLiveRequests [FAIL]
+[xUnit.net 00:00:10.60]       Live provider batch failed:
+[xUnit.net 00:00:10.60]       semanticscholar: ProviderFailureException: semanticscholar returned HTTP 429.
+[xUnit.net 00:00:10.60]       Stack Trace:
+[xUnit.net 00:00:10.60]         C:\WEBSITEDEVELOPMENT\DotNetWebSearchApi\tests\DotNetWebSearchApi.Tests\LiveProviderIntegrationTests.cs(80,0): at DotNetWebSearchApi.Tests.LiveProviderIntegrationTests.AllRegisteredProviders_RespondToLiveRequests()
+[xUnit.net 00:00:10.60]         --- End of stack trace from previous location ---
+[xUnit.net 00:00:10.60]       Output:
+[xUnit.net 00:00:10.60]         Provider inventory: 63 registered; batch offset 40; selected 20.
+[xUnit.net 00:00:10.60]         PASS rubygems: 12 results. dependabot-dotnet_sdk | dotnet_project | rake-dotnet
+[xUnit.net 00:00:10.60]         FAIL semanticscholar: ProviderFailureException: semanticscholar returned HTTP 429.
+[xUnit.net 00:00:10.60]         PASS serverfault: 3 results. Windows Server 2019 Essentials .NET Framework 4.8 installation fails | Visual Studio debugger unable to attach to process | K8 - Pod listens on port 8080 but Node resets connection on external port
+[xUnit.net 00:00:10.60]         PASS seznam: 10 results. dotnet-monitor diagnostick├╜ n├ístroj ΓÇô .NET - .NET | MicrosoftΓÇª | Dotnet - po─ì├¡ta─ìov├⌐ kurzy | Milujeme .NET - Milujeme .NET
+[xUnit.net 00:00:10.60]         PASS stackoverflow: 3 results. NuGet &quot;Unable to find package&quot; for local source | Intermittent NullReferenceException in iText 9.8.0 table layout on .NET 11 | Upgraded Blazor web app to .NET 11 - app launch fails
+[xUnit.net 00:00:10.60]         PASS steam: 0 results. 
+[xUnit.net 00:00:10.60]         PASS superuser: 3 results. Windows cannot find &#39;C:\Windows\System32\OptionalFeatures.exe&#39;. error while clicking Turn Windows feature on or off in control panel | Why canΓÇÖt I start Chromium, Google Chrome, and Visual Studio Code, because they failed to connect to Wayland display in Arch Linux? | How to install .Net v4x framework in Windows 10 when v4 installation is blocked?
+[xUnit.net 00:00:10.60]         PASS tvmaze: 10 results. Don't | The Donut | The Green Hornet
+[xUnit.net 00:00:10.60]         PASS wiby: 12 results. Physical units in programming languages | Snazzy Maps - Adam Krogh | Adam Krogh
+[xUnit.net 00:00:10.60]         PASS wikibooks: 3 results. Programming Fundamentals/Introduction Examples CSharp | Introduction to .NET Framework 3.0/Windows Presentation Foundation | Applied Programming/Loops
+[xUnit.net 00:00:10.60]         PASS wikidata: 3 results. Q2370 | Q135485516 | Q5289
+[xUnit.net 00:00:10.60]         PASS wikimedia_commons: 3 results. File:Dotnet-bot.svg | File:Microsoft .NET logo.svg | File:UML dotnet streams.svg
+[xUnit.net 00:00:10.60]         PASS wikinews: 0 results. 
+[xUnit.net 00:00:10.60]         PASS wikipedia: 3 results. .NET | .NET Framework | .net
+[xUnit.net 00:00:10.60]         PASS wikipedia_de: 3 results. .NET (Plattform) | .NET | Visual Basic .NET
+[xUnit.net 00:00:10.60]         PASS wikipedia_es: 3 results. Commit | NuGet | .NET Core
+[xUnit.net 00:00:10.60]         PASS wikisource: 0 results. 
+[xUnit.net 00:00:10.60]         PASS wikiversity: 3 results. Introduction to .NET | Applied Programming/Testing/C Sharp | Unit Testing/xUnit.net/Install xUnit
+[xUnit.net 00:00:10.60]         PASS wikivoyage: 0 results. 
+[xUnit.net 00:00:10.60]         PASS wiktionary: 3 results. betaish | webservice | tnks
+[xUnit.net 00:00:10.61]   Finished:    DotNetWebSearchApi.Tests
+  Failed DotNetWebSearchApi.Tests.LiveProviderIntegrationTests.AllRegisteredProviders_RespondToLiveRequests [10 s]
+  Error Message:
+   Live provider batch failed:
+semanticscholar: ProviderFailureException: semanticscholar returned HTTP 429.
+  Stack Trace:
+     at DotNetWebSearchApi.Tests.LiveProviderIntegrationTests.AllRegisteredProviders_RespondToLiveRequests() in C:\WEBSITEDEVELOPMENT\DotNetWebSearchApi\tests\DotNetWebSearchApi.Tests\LiveProviderIntegrationTests.cs:line 80
+--- End of stack trace from previous location ---
+  Standard Output Messages:
+ Provider inventory: 63 registered; batch offset 40; selected 20.
+ PASS rubygems: 12 results. dependabot-dotnet_sdk | dotnet_project | rake-dotnet
+ FAIL semanticscholar: ProviderFailureException: semanticscholar returned HTTP 429.
+ PASS serverfault: 3 results. Windows Server 2019 Essentials .NET Framework 4.8 installation fails | Visual Studio debugger unable to attach to process | K8 - Pod listens on port 8080 but Node resets connection on external port
+ PASS seznam: 10 results. dotnet-monitor diagnostick├╜ n├ístroj ΓÇô .NET - .NET | MicrosoftΓÇª | Dotnet - po─ì├¡ta─ìov├⌐ kurzy | Milujeme .NET - Milujeme .NET
+ PASS stackoverflow: 3 results. NuGet &quot;Unable to find package&quot; for local source | Intermittent NullReferenceException in iText 9.8.0 table layout on .NET 11 | Upgraded Blazor web app to .NET 11 - app launch fails
+ PASS steam: 0 results. 
+ PASS superuser: 3 results. Windows cannot find &#39;C:\Windows\System32\OptionalFeatures.exe&#39;. error while clicking Turn Windows feature on or off in control panel | Why canΓÇÖt I start Chromium, Google Chrome, and Visual Studio Code, because they failed to connect to Wayland display in Arch Linux? | How to install .Net v4x framework in Windows 10 when v4 installation is blocked?
+ PASS tvmaze: 10 results. Don't | The Donut | The Green Hornet
+ PASS wiby: 12 results. Physical units in programming languages | Snazzy Maps - Adam Krogh | Adam Krogh
+ PASS wikibooks: 3 results. Programming Fundamentals/Introduction Examples CSharp | Introduction to .NET Framework 3.0/Windows Presentation Foundation | Applied Programming/Loops
+ PASS wikidata: 3 results. Q2370 | Q135485516 | Q5289
+ PASS wikimedia_commons: 3 results. File:Dotnet-bot.svg | File:Microsoft .NET logo.svg | File:UML dotnet streams.svg
+ PASS wikinews: 0 results. 
+ PASS wikipedia: 3 results. .NET | .NET Framework | .net
+ PASS wikipedia_de: 3 results. .NET (Plattform) | .NET | Visual Basic .NET
+ PASS wikipedia_es: 3 results. Commit | NuGet | .NET Core
+ PASS wikisource: 0 results. 
+ PASS wikiversity: 3 results. Introduction to .NET | Applied Programming/Testing/C Sharp | Unit Testing/xUnit.net/Install xUnit
+ PASS wikivoyage: 0 results. 
+ PASS wiktionary: 3 results. betaish | webservice | tnks
+
+
+
+Test Run Failed.
+Total tests: 1
+     Failed: 1
+ Total time: 11.0902 Seconds
+=== Live provider batch 4 (offset 60) ===
+Test run for C:\WEBSITEDEVELOPMENT\DotNetWebSearchApi\tests\DotNetWebSearchApi.Tests\bin\Release\net10.0\DotNetWebSearchApi.Tests.dll (.NETCoreApp,Version=v10.0)
+A total of 1 test files matched the specified pattern.
+C:\WEBSITEDEVELOPMENT\DotNetWebSearchApi\tests\DotNetWebSearchApi.Tests\bin\Release\net10.0\DotNetWebSearchApi.Tests.dll
+[xUnit.net 00:00:00.00] xUnit.net VSTest Adapter v3.1.5+1b188a7b0a (64-bit .NET 10.0.15)
+[xUnit.net 00:00:00.08]   Discovering: DotNetWebSearchApi.Tests
+[xUnit.net 00:00:00.16]   Discovered:  DotNetWebSearchApi.Tests
+[xUnit.net 00:00:00.18]   Starting:    DotNetWebSearchApi.Tests
+info: Microsoft.Hosting.Lifetime[0]
+      Application started. Press Ctrl+C to shut down.
+info: Microsoft.Hosting.Lifetime[0]
+      Hosting environment: Development
+info: Microsoft.Hosting.Lifetime[0]
+      Content root path: C:\WEBSITEDEVELOPMENT\DotNetWebSearchApi\src\DotNetWebSearchApi
+info: System.Net.Http.HttpClient.YahooSearchProvider.LogicalHandler[100]
+      Start processing HTTP request GET https://search.yahoo.com/search?*
+info: System.Net.Http.HttpClient.YahooSearchProvider.ClientHandler[100]
+      Sending HTTP request GET https://search.yahoo.com/search?*
+info: System.Net.Http.HttpClient.YahooSearchProvider.ClientHandler[101]
+      Received HTTP response headers after 305.8689ms - 500
+info: System.Net.Http.HttpClient.YahooSearchProvider.LogicalHandler[101]
+      End processing HTTP request after 314.8121ms - 500
+info: System.Net.Http.HttpClient.yep.LogicalHandler[100]
+      Start processing HTTP request GET https://api.yep.com/search?*
+info: System.Net.Http.HttpClient.yep.ClientHandler[100]
+      Sending HTTP request GET https://api.yep.com/search?*
+info: System.Net.Http.HttpClient.yep.ClientHandler[101]
+      Received HTTP response headers after 177.5774ms - 403
+info: System.Net.Http.HttpClient.yep.LogicalHandler[101]
+      End processing HTTP request after 177.6707ms - 403
+info: System.Net.Http.HttpClient.zenodo.LogicalHandler[100]
+      Start processing HTTP request GET https://zenodo.org/api/records?*
+info: System.Net.Http.HttpClient.zenodo.ClientHandler[100]
+      Sending HTTP request GET https://zenodo.org/api/records?*
+info: System.Net.Http.HttpClient.zenodo.ClientHandler[101]
+      Received HTTP response headers after 529.7068ms - 200
+info: System.Net.Http.HttpClient.zenodo.LogicalHandler[101]
+      End processing HTTP request after 529.7777ms - 200
+info: Microsoft.Hosting.Lifetime[0]
+      Application is shutting down...
+[xUnit.net 00:00:01.44]     DotNetWebSearchApi.Tests.LiveProviderIntegrationTests.AllRegisteredProviders_RespondToLiveRequests [FAIL]
+[xUnit.net 00:00:01.44]       Live provider batch failed:
+[xUnit.net 00:00:01.44]       yahoo: ProviderFailureException: yahoo returned HTTP 500.
+[xUnit.net 00:00:01.44]       yep: ProviderFailureException: yep returned HTTP 403.
+[xUnit.net 00:00:01.44]       Stack Trace:
+[xUnit.net 00:00:01.44]         C:\WEBSITEDEVELOPMENT\DotNetWebSearchApi\tests\DotNetWebSearchApi.Tests\LiveProviderIntegrationTests.cs(80,0): at DotNetWebSearchApi.Tests.LiveProviderIntegrationTests.AllRegisteredProviders_RespondToLiveRequests()
+[xUnit.net 00:00:01.44]         --- End of stack trace from previous location ---
+[xUnit.net 00:00:01.44]       Output:
+[xUnit.net 00:00:01.44]         Provider inventory: 63 registered; batch offset 60; selected 3.
+[xUnit.net 00:00:01.44]         FAIL yahoo: ProviderFailureException: yahoo returned HTTP 500.
+[xUnit.net 00:00:01.44]         FAIL yep: ProviderFailureException: yep returned HTTP 403.
+[xUnit.net 00:00:01.44]         PASS zenodo: 0 results. 
+[xUnit.net 00:00:01.45]   Finished:    DotNetWebSearchApi.Tests
+  Failed DotNetWebSearchApi.Tests.LiveProviderIntegrationTests.AllRegisteredProviders_RespondToLiveRequests [1 s]
+  Error Message:
+   Live provider batch failed:
+yahoo: ProviderFailureException: yahoo returned HTTP 500.
+yep: ProviderFailureException: yep returned HTTP 403.
+  Stack Trace:
+     at DotNetWebSearchApi.Tests.LiveProviderIntegrationTests.AllRegisteredProviders_RespondToLiveRequests() in C:\WEBSITEDEVELOPMENT\DotNetWebSearchApi\tests\DotNetWebSearchApi.Tests\LiveProviderIntegrationTests.cs:line 80
+--- End of stack trace from previous location ---
+  Standard Output Messages:
+ Provider inventory: 63 registered; batch offset 60; selected 3.
+ FAIL yahoo: ProviderFailureException: yahoo returned HTTP 500.
+ FAIL yep: ProviderFailureException: yep returned HTTP 403.
+ PASS zenodo: 0 results. 
+
+
+
+Test Run Failed.
+Total tests: 1
+     Failed: 1
+ Total time: 1.9519 Seconds
+=== End-to-end aggregate API and compatibility search ===
+Test run for C:\WEBSITEDEVELOPMENT\DotNetWebSearchApi\tests\DotNetWebSearchApi.Tests\bin\Release\net10.0\DotNetWebSearchApi.Tests.dll (.NETCoreApp,Version=v10.0)
+A total of 1 test files matched the specified pattern.
+C:\WEBSITEDEVELOPMENT\DotNetWebSearchApi\tests\DotNetWebSearchApi.Tests\bin\Release\net10.0\DotNetWebSearchApi.Tests.dll
+[xUnit.net 00:00:00.00] xUnit.net VSTest Adapter v3.1.5+1b188a7b0a (64-bit .NET 10.0.15)
+[xUnit.net 00:00:00.07]   Discovering: DotNetWebSearchApi.Tests
+[xUnit.net 00:00:00.14]   Discovered:  DotNetWebSearchApi.Tests
+[xUnit.net 00:00:00.16]   Starting:    DotNetWebSearchApi.Tests
+info: Microsoft.Hosting.Lifetime[0]
+      Application started. Press Ctrl+C to shut down.
+info: Microsoft.Hosting.Lifetime[0]
+      Hosting environment: Development
+info: Microsoft.Hosting.Lifetime[0]
+      Content root path: C:\WEBSITEDEVELOPMENT\DotNetWebSearchApi\src\DotNetWebSearchApi
+info: Microsoft.AspNetCore.Hosting.Diagnostics[1]
+      Request starting HTTP/1.1 GET http://localhost/health - - -
+info: Microsoft.AspNetCore.Routing.EndpointMiddleware[0]
+      Executing endpoint 'HTTP: GET /health => HealthEndpoint'
+info: Microsoft.AspNetCore.Http.Result.OkObjectResult[1]
+      Setting HTTP status code 200.
+info: Microsoft.AspNetCore.Http.Result.OkObjectResult[3]
+      Writing value of type '<>f__AnonymousType1`1' as Json.
+info: Microsoft.AspNetCore.Routing.EndpointMiddleware[1]
+      Executed endpoint 'HTTP: GET /health => HealthEndpoint'
+info: Microsoft.AspNetCore.Hosting.Diagnostics[2]
+      Request finished HTTP/1.1 GET http://localhost/health - 200 - application/json;+charset=utf-8 63.7686ms
+info: Microsoft.AspNetCore.Hosting.Diagnostics[1]
+      Request starting HTTP/1.1 GET http://localhost/api/providers - - -
+info: Microsoft.AspNetCore.Routing.EndpointMiddleware[0]
+      Executing endpoint 'HTTP: GET /api/providers => ProvidersEndpoint'
+info: Microsoft.AspNetCore.Http.Result.OkObjectResult[1]
+      Setting HTTP status code 200.
+info: Microsoft.AspNetCore.Http.Result.OkObjectResult[3]
+      Writing value of type '<>f__AnonymousType2`2' as Json.
+info: Microsoft.AspNetCore.Routing.EndpointMiddleware[1]
+      Executed endpoint 'HTTP: GET /api/providers => ProvidersEndpoint'
+info: Microsoft.AspNetCore.Hosting.Diagnostics[2]
+      Request finished HTTP/1.1 GET http://localhost/api/providers - 200 - application/json;+charset=utf-8 24.2459ms
+info: Microsoft.AspNetCore.Hosting.Diagnostics[1]
+      Request starting HTTP/1.1 GET http://localhost/api/diagnostics - - -
+info: Microsoft.AspNetCore.Routing.EndpointMiddleware[0]
+      Executing endpoint 'HTTP: GET /api/diagnostics => DiagnosticsEndpoint'
+info: Microsoft.AspNetCore.Http.Result.OkObjectResult[1]
+      Setting HTTP status code 200.
+info: Microsoft.AspNetCore.Http.Result.OkObjectResult[3]
+      Writing value of type '<>f__AnonymousType3`5' as Json.
+info: Microsoft.AspNetCore.Routing.EndpointMiddleware[1]
+      Executed endpoint 'HTTP: GET /api/diagnostics => DiagnosticsEndpoint'
+info: Microsoft.AspNetCore.Hosting.Diagnostics[2]
+      Request finished HTTP/1.1 GET http://localhost/api/diagnostics - 200 - application/json;+charset=utf-8 27.1379ms
+info: Microsoft.AspNetCore.Hosting.Diagnostics[1]
+      Request starting HTTP/1.1 GET http://localhost/api/search?q=dotnet&limit=10 - - -
+info: Microsoft.AspNetCore.Routing.EndpointMiddleware[0]
+      Executing endpoint 'HTTP: GET /api/search => SearchEndpoint'
+info: System.Net.Http.HttpClient.hackernews.LogicalHandler[100]
+      Start processing HTTP request GET https://hn.algolia.com/api/v1/search?*
+info: System.Net.Http.HttpClient.hackernews.ClientHandler[100]
+      Sending HTTP request GET https://hn.algolia.com/api/v1/search?*
+info: System.Net.Http.HttpClient.stackoverflow.LogicalHandler[100]
+      Start processing HTTP request GET https://api.stackexchange.com/2.3/search/advanced?*
+info: System.Net.Http.HttpClient.stackoverflow.ClientHandler[100]
+      Sending HTTP request GET https://api.stackexchange.com/2.3/search/advanced?*
+info: System.Net.Http.HttpClient.npm.LogicalHandler[100]
+      Start processing HTTP request GET https://registry.npmjs.org/-/v1/search?*
+info: System.Net.Http.HttpClient.npm.ClientHandler[100]
+      Sending HTTP request GET https://registry.npmjs.org/-/v1/search?*
+info: System.Net.Http.HttpClient.cratesio.LogicalHandler[100]
+      Start processing HTTP request GET https://crates.io/api/v1/crates?*
+info: System.Net.Http.HttpClient.cratesio.ClientHandler[100]
+      Sending HTTP request GET https://crates.io/api/v1/crates?*
+info: System.Net.Http.HttpClient.nuget.LogicalHandler[100]
+      Start processing HTTP request GET https://azuresearch-usnc.nuget.org/query?*
+info: System.Net.Http.HttpClient.nuget.ClientHandler[100]
+      Sending HTTP request GET https://azuresearch-usnc.nuget.org/query?*
+info: System.Net.Http.HttpClient.openlibrary.LogicalHandler[100]
+      Start processing HTTP request GET https://openlibrary.org/search.json?*
+info: System.Net.Http.HttpClient.openlibrary.ClientHandler[100]
+      Sending HTTP request GET https://openlibrary.org/search.json?*
+info: System.Net.Http.HttpClient.github.LogicalHandler[100]
+      Start processing HTTP request GET https://api.github.com/search/repositories?*
+info: System.Net.Http.HttpClient.github.ClientHandler[100]
+      Sending HTTP request GET https://api.github.com/search/repositories?*
+info: System.Net.Http.HttpClient.dockerhub.LogicalHandler[100]
+      Start processing HTTP request GET https://hub.docker.com/v2/search/repositories/?*
+info: System.Net.Http.HttpClient.dockerhub.ClientHandler[100]
+      Sending HTTP request GET https://hub.docker.com/v2/search/repositories/?*
+info: System.Net.Http.HttpClient.googlebooks.LogicalHandler[100]
+      Start processing HTTP request GET https://www.googleapis.com/books/v1/volumes?*
+info: System.Net.Http.HttpClient.googlebooks.ClientHandler[100]
+      Sending HTTP request GET https://www.googleapis.com/books/v1/volumes?*
+info: System.Net.Http.HttpClient.internetarchive.LogicalHandler[100]
+      Start processing HTTP request GET https://archive.org/advancedsearch.php?*
+info: System.Net.Http.HttpClient.internetarchive.ClientHandler[100]
+      Sending HTTP request GET https://archive.org/advancedsearch.php?*
+info: System.Net.Http.HttpClient.rubygems.LogicalHandler[100]
+      Start processing HTTP request GET https://rubygems.org/api/v1/search.json?*
+info: System.Net.Http.HttpClient.rubygems.ClientHandler[100]
+      Sending HTTP request GET https://rubygems.org/api/v1/search.json?*
+info: System.Net.Http.HttpClient.huggingface.LogicalHandler[100]
+      Start processing HTTP request GET https://huggingface.co/api/models?*
+info: System.Net.Http.HttpClient.huggingface.ClientHandler[100]
+      Sending HTTP request GET https://huggingface.co/api/models?*
+info: System.Net.Http.HttpClient.superuser.LogicalHandler[100]
+      Start processing HTTP request GET https://api.stackexchange.com/2.3/search/advanced?*
+info: System.Net.Http.HttpClient.superuser.ClientHandler[100]
+      Sending HTTP request GET https://api.stackexchange.com/2.3/search/advanced?*
+info: System.Net.Http.HttpClient.serverfault.LogicalHandler[100]
+      Start processing HTTP request GET https://api.stackexchange.com/2.3/search/advanced?*
+info: System.Net.Http.HttpClient.serverfault.ClientHandler[100]
+      Sending HTTP request GET https://api.stackexchange.com/2.3/search/advanced?*
+info: System.Net.Http.HttpClient.askubuntu.LogicalHandler[100]
+      Start processing HTTP request GET https://api.stackexchange.com/2.3/search/advanced?*
+info: System.Net.Http.HttpClient.askubuntu.ClientHandler[100]
+      Sending HTTP request GET https://api.stackexchange.com/2.3/search/advanced?*
+info: System.Net.Http.HttpClient.gitlab.LogicalHandler[100]
+      Start processing HTTP request GET https://gitlab.com/api/v4/projects?*
+info: System.Net.Http.HttpClient.gitlab.ClientHandler[100]
+      Sending HTTP request GET https://gitlab.com/api/v4/projects?*
+info: System.Net.Http.HttpClient.gitea.LogicalHandler[100]
+      Start processing HTTP request GET https://gitea.com/api/v1/repos/search?*
+info: System.Net.Http.HttpClient.gitea.ClientHandler[100]
+      Sending HTTP request GET https://gitea.com/api/v1/repos/search?*
+info: System.Net.Http.HttpClient.mavencentral.LogicalHandler[100]
+      Start processing HTTP request GET https://search.maven.org/solrsearch/select?*
+info: System.Net.Http.HttpClient.mavencentral.ClientHandler[100]
+      Sending HTTP request GET https://search.maven.org/solrsearch/select?*
+info: System.Net.Http.HttpClient.packagist.LogicalHandler[100]
+      Start processing HTTP request GET https://packagist.org/search.json?*
+info: System.Net.Http.HttpClient.packagist.ClientHandler[100]
+      Sending HTTP request GET https://packagist.org/search.json?*
+info: System.Net.Http.HttpClient.pubdev.LogicalHandler[100]
+      Start processing HTTP request GET https://pub.dev/api/search?*
+info: System.Net.Http.HttpClient.pubdev.ClientHandler[100]
+      Sending HTTP request GET https://pub.dev/api/search?*
+info: System.Net.Http.HttpClient.steam.LogicalHandler[100]
+      Start processing HTTP request GET https://store.steampowered.com/api/storesearch/?*
+info: System.Net.Http.HttpClient.steam.ClientHandler[100]
+      Sending HTTP request GET https://store.steampowered.com/api/storesearch/?*
+info: System.Net.Http.HttpClient.wikidata.LogicalHandler[100]
+      Start processing HTTP request GET https://www.wikidata.org/w/api.php?*
+info: System.Net.Http.HttpClient.wikidata.ClientHandler[100]
+      Sending HTTP request GET https://www.wikidata.org/w/api.php?*
+info: System.Net.Http.HttpClient.wikipedia_de.LogicalHandler[100]
+      Start processing HTTP request GET https://de.wikipedia.org/w/api.php?*
+info: System.Net.Http.HttpClient.wikipedia_de.ClientHandler[100]
+      Sending HTTP request GET https://de.wikipedia.org/w/api.php?*
+info: System.Net.Http.HttpClient.wiby.LogicalHandler[100]
+      Start processing HTTP request GET https://wiby.me/json/?*
+info: System.Net.Http.HttpClient.wiby.ClientHandler[100]
+      Sending HTTP request GET https://wiby.me/json/?*
+info: System.Net.Http.HttpClient.tvmaze.LogicalHandler[100]
+      Start processing HTTP request GET https://api.tvmaze.com/search/shows?*
+info: System.Net.Http.HttpClient.tvmaze.ClientHandler[100]
+      Sending HTTP request GET https://api.tvmaze.com/search/shows?*
+info: System.Net.Http.HttpClient.wikimedia_commons.LogicalHandler[100]
+      Start processing HTTP request GET https://commons.wikimedia.org/w/api.php?*
+info: System.Net.Http.HttpClient.wikimedia_commons.ClientHandler[100]
+      Sending HTTP request GET https://commons.wikimedia.org/w/api.php?*
+info: System.Net.Http.HttpClient.wikipedia_es.LogicalHandler[100]
+      Start processing HTTP request GET https://es.wikipedia.org/w/api.php?*
+info: System.Net.Http.HttpClient.wikipedia_es.ClientHandler[100]
+      Sending HTTP request GET https://es.wikipedia.org/w/api.php?*
+info: System.Net.Http.HttpClient.mwmbl.LogicalHandler[100]
+      Start processing HTTP request GET https://api.mwmbl.org/api/v2/search/?*
+info: System.Net.Http.HttpClient.mwmbl.ClientHandler[100]
+      Sending HTTP request GET https://api.mwmbl.org/api/v2/search/?*
+info: System.Net.Http.HttpClient.marginalia.LogicalHandler[100]
+      Start processing HTTP request GET https://api2.marginalia-search.com/search?*
+info: System.Net.Http.HttpClient.marginalia.ClientHandler[100]
+      Sending HTTP request GET https://api2.marginalia-search.com/search?*
+info: System.Net.Http.HttpClient.yep.LogicalHandler[100]
+      Start processing HTTP request GET https://api.yep.com/search?*
+info: System.Net.Http.HttpClient.yep.ClientHandler[100]
+      Sending HTTP request GET https://api.yep.com/search?*
+info: System.Net.Http.HttpClient.wiktionary.LogicalHandler[100]
+      Start processing HTTP request GET https://en.wiktionary.org/w/api.php?*
+info: System.Net.Http.HttpClient.wiktionary.ClientHandler[100]
+      Sending HTTP request GET https://en.wiktionary.org/w/api.php?*
+info: System.Net.Http.HttpClient.wikisource.LogicalHandler[100]
+      Start processing HTTP request GET https://en.wikisource.org/w/api.php?*
+info: System.Net.Http.HttpClient.wikisource.ClientHandler[100]
+      Sending HTTP request GET https://en.wikisource.org/w/api.php?*
+info: System.Net.Http.HttpClient.wikibooks.LogicalHandler[100]
+      Start processing HTTP request GET https://en.wikibooks.org/w/api.php?*
+info: System.Net.Http.HttpClient.wikibooks.ClientHandler[100]
+      Sending HTTP request GET https://en.wikibooks.org/w/api.php?*
+info: System.Net.Http.HttpClient.wikiversity.LogicalHandler[100]
+      Start processing HTTP request GET https://en.wikiversity.org/w/api.php?*
+info: System.Net.Http.HttpClient.wikiversity.ClientHandler[100]
+      Sending HTTP request GET https://en.wikiversity.org/w/api.php?*
+info: System.Net.Http.HttpClient.wikivoyage.LogicalHandler[100]
+      Start processing HTTP request GET https://en.wikivoyage.org/w/api.php?*
+info: System.Net.Http.HttpClient.wikivoyage.ClientHandler[100]
+      Sending HTTP request GET https://en.wikivoyage.org/w/api.php?*
+info: System.Net.Http.HttpClient.MojeekSearchProvider.LogicalHandler[100]
+      Start processing HTTP request GET https://www.mojeek.com/captcha/challenge
+info: System.Net.Http.HttpClient.MojeekSearchProvider.ClientHandler[100]
+      Sending HTTP request GET https://www.mojeek.com/captcha/challenge
+info: System.Net.Http.HttpClient.BingSearchProvider.LogicalHandler[100]
+      Start processing HTTP request GET https://www.bing.com/search?*
+info: System.Net.Http.HttpClient.BingSearchProvider.ClientHandler[100]
+      Sending HTTP request GET https://www.bing.com/search?*
+info: System.Net.Http.HttpClient.DuckDuckGoSearchProvider.LogicalHandler[100]
+      Start processing HTTP request POST https://html.duckduckgo.com/html/
+info: System.Net.Http.HttpClient.DuckDuckGoSearchProvider.ClientHandler[100]
+      Sending HTTP request POST https://html.duckduckgo.com/html/
+info: System.Net.Http.HttpClient.GoogleSearchProvider.LogicalHandler[100]
+      Start processing HTTP request GET https://www.google.com/search?*
+info: System.Net.Http.HttpClient.GoogleSearchProvider.ClientHandler[100]
+      Sending HTTP request GET https://www.google.com/search?*
+info: System.Net.Http.HttpClient.QwantSearchProvider.LogicalHandler[100]
+      Start processing HTTP request GET https://api.qwant.com/v3/search/web?*
+info: System.Net.Http.HttpClient.QwantSearchProvider.ClientHandler[100]
+      Sending HTTP request GET https://api.qwant.com/v3/search/web?*
+info: System.Net.Http.HttpClient.NaverSearchProvider.LogicalHandler[100]
+      Start processing HTTP request GET https://search.naver.com/search.naver?*
+info: System.Net.Http.HttpClient.NaverSearchProvider.ClientHandler[100]
+      Sending HTTP request GET https://search.naver.com/search.naver?*
+info: System.Net.Http.HttpClient.YahooSearchProvider.LogicalHandler[100]
+      Start processing HTTP request GET https://search.yahoo.com/search?*
+info: System.Net.Http.HttpClient.YahooSearchProvider.ClientHandler[100]
+      Sending HTTP request GET https://search.yahoo.com/search?*
+info: System.Net.Http.HttpClient.SeznamSearchProvider.LogicalHandler[100]
+      Start processing HTTP request GET https://search.seznam.cz/
+info: System.Net.Http.HttpClient.SeznamSearchProvider.ClientHandler[100]
+      Sending HTTP request GET https://search.seznam.cz/
+info: System.Net.Http.HttpClient.WikipediaSearchProvider.LogicalHandler[100]
+      Start processing HTTP request GET https://en.wikipedia.org/w/api.php?*
+info: System.Net.Http.HttpClient.WikipediaSearchProvider.ClientHandler[100]
+      Sending HTTP request GET https://en.wikipedia.org/w/api.php?*
+info: System.Net.Http.HttpClient.yep.ClientHandler[101]
+      Received HTTP response headers after 162.5246ms - 403
+info: System.Net.Http.HttpClient.yep.LogicalHandler[101]
+      End processing HTTP request after 166.544ms - 403
+info: System.Net.Http.HttpClient.tvmaze.ClientHandler[101]
+      Received HTTP response headers after 172.0437ms - 200
+info: System.Net.Http.HttpClient.tvmaze.LogicalHandler[101]
+      End processing HTTP request after 172.0738ms - 200
+warn: DotNetWebSearchApi.Search.SearchAggregator[0]
+      Search provider yep failed with AccessDenied.
+      DotNetWebSearchApi.Search.ProviderFailureException: yep returned HTTP 403.
+       ---> System.Net.Http.HttpRequestException: yep returned HTTP 403.
+         --- End of inner exception stack trace ---
+         at DotNetWebSearchApi.Search.SearchHttpResponse.EnsureSuccessStatusCode(String providerName) in C:\WEBSITEDEVELOPMENT\DotNetWebSearchApi\src\DotNetWebSearchApi\Search\SearchHttpTransport.cs:line 57
+         at DotNetWebSearchApi.Search.JsonApiSearchProvider.SearchAsync(SearchQuery query, CancellationToken cancellationToken) in C:\WEBSITEDEVELOPMENT\DotNetWebSearchApi\src\DotNetWebSearchApi\Search\JsonApiSearchProvider.cs:line 49
+         at DotNetWebSearchApi.Search.SearchAggregator.ExecuteProviderAsync(ISearchProvider provider, SearchQuery query, CancellationToken cancellationToken) in C:\WEBSITEDEVELOPMENT\DotNetWebSearchApi\src\DotNetWebSearchApi\Search\SearchAggregator.cs:line 112
+info: System.Net.Http.HttpClient.BingSearchProvider.ClientHandler[101]
+      Received HTTP response headers after 202.3458ms - 200
+info: System.Net.Http.HttpClient.BingSearchProvider.LogicalHandler[101]
+      End processing HTTP request after 202.4064ms - 200
+info: System.Net.Http.HttpClient.huggingface.ClientHandler[101]
+      Received HTTP response headers after 226.1152ms - 200
+info: System.Net.Http.HttpClient.huggingface.LogicalHandler[101]
+      End processing HTTP request after 226.1614ms - 200
+info: System.Net.Http.HttpClient.packagist.ClientHandler[101]
+      Received HTTP response headers after 244.6728ms - 200
+info: System.Net.Http.HttpClient.packagist.LogicalHandler[101]
+      End processing HTTP request after 244.7116ms - 200
+info: System.Net.Http.HttpClient.pubdev.ClientHandler[101]
+      Received HTTP response headers after 251.4204ms - 200
+info: System.Net.Http.HttpClient.pubdev.LogicalHandler[101]
+      End processing HTTP request after 251.4502ms - 200
+info: System.Net.Http.HttpClient.YahooSearchProvider.ClientHandler[101]
+      Received HTTP response headers after 234.0864ms - 500
+info: System.Net.Http.HttpClient.YahooSearchProvider.LogicalHandler[101]
+      End processing HTTP request after 234.135ms - 500
+warn: DotNetWebSearchApi.Search.SearchAggregator[0]
+      Search provider yahoo failed with TransientHttp.
+      DotNetWebSearchApi.Search.ProviderFailureException: yahoo returned HTTP 500.
+       ---> System.Net.Http.HttpRequestException: yahoo returned HTTP 500.
+         --- End of inner exception stack trace ---
+         at DotNetWebSearchApi.Search.SearchHttpResponse.EnsureSuccessStatusCode(String providerName) in C:\WEBSITEDEVELOPMENT\DotNetWebSearchApi\src\DotNetWebSearchApi\Search\SearchHttpTransport.cs:line 57
+         at DotNetWebSearchApi.Search.YahooSearchProvider.SearchAsync(SearchQuery query, CancellationToken cancellationToken) in C:\WEBSITEDEVELOPMENT\DotNetWebSearchApi\src\DotNetWebSearchApi\Search\YahooSearchProvider.cs:line 79
+         at DotNetWebSearchApi.Search.SearchAggregator.ExecuteProviderAsync(ISearchProvider provider, SearchQuery query, CancellationToken cancellationToken) in C:\WEBSITEDEVELOPMENT\DotNetWebSearchApi\src\DotNetWebSearchApi\Search\SearchAggregator.cs:line 112
+info: System.Net.Http.HttpClient.googlebooks.ClientHandler[101]
+      Received HTTP response headers after 263.4284ms - 429
+info: System.Net.Http.HttpClient.googlebooks.LogicalHandler[101]
+      End processing HTTP request after 263.4506ms - 429
+warn: DotNetWebSearchApi.Search.SearchAggregator[0]
+      Search provider googlebooks failed with RateLimited.
+      DotNetWebSearchApi.Search.ProviderFailureException: googlebooks returned HTTP 429.
+       ---> System.Net.Http.HttpRequestException: googlebooks returned HTTP 429.
+         --- End of inner exception stack trace ---
+         at DotNetWebSearchApi.Search.SearchHttpResponse.EnsureSuccessStatusCode(String providerName) in C:\WEBSITEDEVELOPMENT\DotNetWebSearchApi\src\DotNetWebSearchApi\Search\SearchHttpTransport.cs:line 57
+         at DotNetWebSearchApi.Search.JsonApiSearchProvider.SearchAsync(SearchQuery query, CancellationToken cancellationToken) in C:\WEBSITEDEVELOPMENT\DotNetWebSearchApi\src\DotNetWebSearchApi\Search\JsonApiSearchProvider.cs:line 49
+         at DotNetWebSearchApi.Search.SearchAggregator.ExecuteProviderAsync(ISearchProvider provider, SearchQuery query, CancellationToken cancellationToken) in C:\WEBSITEDEVELOPMENT\DotNetWebSearchApi\src\DotNetWebSearchApi\Search\SearchAggregator.cs:line 112
+info: System.Net.Http.HttpClient.wikipedia_es.ClientHandler[101]
+      Received HTTP response headers after 283.7994ms - 200
+info: System.Net.Http.HttpClient.wikipedia_es.LogicalHandler[101]
+      End processing HTTP request after 283.8408ms - 200
+info: System.Net.Http.HttpClient.wikisource.ClientHandler[101]
+      Received HTTP response headers after 286.8614ms - 200
+info: System.Net.Http.HttpClient.wikisource.LogicalHandler[101]
+      End processing HTTP request after 286.8843ms - 200
+info: System.Net.Http.HttpClient.marginalia.ClientHandler[101]
+      Received HTTP response headers after 290.5835ms - 429
+info: System.Net.Http.HttpClient.marginalia.LogicalHandler[101]
+      End processing HTTP request after 290.6128ms - 429
+warn: DotNetWebSearchApi.Search.SearchAggregator[0]
+      Search provider marginalia failed with RateLimited.
+      DotNetWebSearchApi.Search.ProviderFailureException: marginalia returned HTTP 429.
+       ---> System.Net.Http.HttpRequestException: marginalia returned HTTP 429.
+         --- End of inner exception stack trace ---
+         at DotNetWebSearchApi.Search.SearchHttpResponse.EnsureSuccessStatusCode(String providerName) in C:\WEBSITEDEVELOPMENT\DotNetWebSearchApi\src\DotNetWebSearchApi\Search\SearchHttpTransport.cs:line 57
+         at DotNetWebSearchApi.Search.JsonApiSearchProvider.SearchAsync(SearchQuery query, CancellationToken cancellationToken) in C:\WEBSITEDEVELOPMENT\DotNetWebSearchApi\src\DotNetWebSearchApi\Search\JsonApiSearchProvider.cs:line 49
+         at DotNetWebSearchApi.Search.SearchAggregator.ExecuteProviderAsync(ISearchProvider provider, SearchQuery query, CancellationToken cancellationToken) in C:\WEBSITEDEVELOPMENT\DotNetWebSearchApi\src\DotNetWebSearchApi\Search\SearchAggregator.cs:line 112
+info: System.Net.Http.HttpClient.wikivoyage.ClientHandler[101]
+      Received HTTP response headers after 309.6382ms - 200
+info: System.Net.Http.HttpClient.wikivoyage.LogicalHandler[101]
+      End processing HTTP request after 309.6691ms - 200
+info: System.Net.Http.HttpClient.wikipedia_de.ClientHandler[101]
+      Received HTTP response headers after 314.0642ms - 200
+info: System.Net.Http.HttpClient.wikipedia_de.LogicalHandler[101]
+      End processing HTTP request after 314.0894ms - 200
+info: System.Net.Http.HttpClient.dockerhub.ClientHandler[101]
+      Received HTTP response headers after 314.6224ms - 200
+info: System.Net.Http.HttpClient.dockerhub.LogicalHandler[101]
+      End processing HTTP request after 314.6462ms - 200
+info: System.Net.Http.HttpClient.npm.ClientHandler[101]
+      Received HTTP response headers after 316.6278ms - 200
+info: System.Net.Http.HttpClient.npm.LogicalHandler[101]
+      End processing HTTP request after 316.6484ms - 200
+info: System.Net.Http.HttpClient.MojeekSearchProvider.ClientHandler[101]
+      Received HTTP response headers after 323.0484ms - 200
+info: System.Net.Http.HttpClient.MojeekSearchProvider.LogicalHandler[101]
+      End processing HTTP request after 323.0926ms - 200
+info: System.Net.Http.HttpClient.wikiversity.ClientHandler[101]
+      Received HTTP response headers after 330.2404ms - 200
+info: System.Net.Http.HttpClient.wikiversity.LogicalHandler[101]
+      End processing HTTP request after 330.2567ms - 200
+info: System.Net.Http.HttpClient.wikibooks.ClientHandler[101]
+      Received HTTP response headers after 342.8248ms - 200
+info: System.Net.Http.HttpClient.wikibooks.LogicalHandler[101]
+      End processing HTTP request after 342.8425ms - 200
+info: System.Net.Http.HttpClient.mwmbl.ClientHandler[101]
+      Received HTTP response headers after 352.6146ms - 200
+info: System.Net.Http.HttpClient.mwmbl.LogicalHandler[101]
+      End processing HTTP request after 352.6483ms - 200
+info: System.Net.Http.HttpClient.WikipediaSearchProvider.ClientHandler[101]
+      Received HTTP response headers after 333.6909ms - 200
+info: System.Net.Http.HttpClient.WikipediaSearchProvider.LogicalHandler[101]
+      End processing HTTP request after 333.7461ms - 200
+info: System.Net.Http.HttpClient.wikidata.ClientHandler[101]
+      Received HTTP response headers after 362.1619ms - 200
+info: System.Net.Http.HttpClient.wikidata.LogicalHandler[101]
+      End processing HTTP request after 362.1802ms - 200
+info: System.Net.Http.HttpClient.mavencentral.ClientHandler[101]
+      Received HTTP response headers after 370.0364ms - 200
+info: System.Net.Http.HttpClient.mavencentral.LogicalHandler[101]
+      End processing HTTP request after 370.0585ms - 200
+info: System.Net.Http.HttpClient.wiktionary.ClientHandler[101]
+      Received HTTP response headers after 376.2743ms - 200
+info: System.Net.Http.HttpClient.wiktionary.LogicalHandler[101]
+      End processing HTTP request after 376.293ms - 200
+info: System.Net.Http.HttpClient.QwantSearchProvider.ClientHandler[101]
+      Received HTTP response headers after 390.0231ms - 403
+info: System.Net.Http.HttpClient.QwantSearchProvider.LogicalHandler[101]
+      End processing HTTP request after 390.0794ms - 403
+warn: DotNetWebSearchApi.Search.SearchAggregator[0]
+      Search provider qwant failed with AccessDenied.
+      DotNetWebSearchApi.Search.ProviderFailureException: Qwant denied the request; a DataDome session or browser verification may be required.
+         at DotNetWebSearchApi.Search.QwantSearchProvider.SearchAsync(SearchQuery query, CancellationToken cancellationToken) in C:\WEBSITEDEVELOPMENT\DotNetWebSearchApi\src\DotNetWebSearchApi\Search\QwantSearchProvider.cs:line 42
+         at DotNetWebSearchApi.Search.SearchAggregator.ExecuteProviderAsync(ISearchProvider provider, SearchQuery query, CancellationToken cancellationToken) in C:\WEBSITEDEVELOPMENT\DotNetWebSearchApi\src\DotNetWebSearchApi\Search\SearchAggregator.cs:line 112
+info: System.Net.Http.HttpClient.steam.ClientHandler[101]
+      Received HTTP response headers after 424.2688ms - 200
+info: System.Net.Http.HttpClient.steam.LogicalHandler[101]
+      End processing HTTP request after 424.2967ms - 200
+info: System.Net.Http.HttpClient.askubuntu.ClientHandler[101]
+      Received HTTP response headers after 476.5096ms - 200
+info: System.Net.Http.HttpClient.askubuntu.LogicalHandler[101]
+      End processing HTTP request after 476.5496ms - 200
+info: System.Net.Http.HttpClient.cratesio.ClientHandler[101]
+      Received HTTP response headers after 481.5144ms - 200
+info: System.Net.Http.HttpClient.cratesio.LogicalHandler[101]
+      End processing HTTP request after 481.5383ms - 200
+info: System.Net.Http.HttpClient.stackoverflow.ClientHandler[101]
+      Received HTTP response headers after 522.2647ms - 200
+info: System.Net.Http.HttpClient.stackoverflow.LogicalHandler[101]
+      End processing HTTP request after 522.3575ms - 200
+info: System.Net.Http.HttpClient.MojeekSearchProvider.LogicalHandler[100]
+      Start processing HTTP request POST https://www.mojeek.com/captcha/verify
+info: System.Net.Http.HttpClient.MojeekSearchProvider.ClientHandler[100]
+      Sending HTTP request POST https://www.mojeek.com/captcha/verify
+info: System.Net.Http.HttpClient.wiby.ClientHandler[101]
+      Received HTTP response headers after 560.2886ms - 200
+info: System.Net.Http.HttpClient.wiby.LogicalHandler[101]
+      End processing HTTP request after 560.3203ms - 200
+info: System.Net.Http.HttpClient.MojeekSearchProvider.ClientHandler[101]
+      Received HTTP response headers after 68.1291ms - 200
+info: System.Net.Http.HttpClient.MojeekSearchProvider.LogicalHandler[101]
+      End processing HTTP request after 68.2016ms - 200
+info: System.Net.Http.HttpClient.hackernews.ClientHandler[101]
+      Received HTTP response headers after 617.9868ms - 200
+info: System.Net.Http.HttpClient.hackernews.LogicalHandler[101]
+      End processing HTTP request after 620.8407ms - 200
+info: System.Net.Http.HttpClient.MojeekSearchProvider.LogicalHandler[100]
+      Start processing HTTP request GET https://www.mojeek.com/search?*
+info: System.Net.Http.HttpClient.MojeekSearchProvider.ClientHandler[100]
+      Sending HTTP request GET https://www.mojeek.com/search?*
+info: System.Net.Http.HttpClient.nuget.ClientHandler[101]
+      Received HTTP response headers after 622.2937ms - 200
+info: System.Net.Http.HttpClient.nuget.LogicalHandler[101]
+      End processing HTTP request after 622.3169ms - 200
+info: System.Net.Http.HttpClient.GoogleSearchProvider.ClientHandler[101]
+      Received HTTP response headers after 623.1975ms - 403
+info: System.Net.Http.HttpClient.GoogleSearchProvider.LogicalHandler[101]
+      End processing HTTP request after 623.2476ms - 403
+warn: DotNetWebSearchApi.Search.SearchAggregator[0]
+      Search provider google failed with AccessDenied.
+      DotNetWebSearchApi.Search.ProviderFailureException: google returned HTTP 403.
+       ---> System.Net.Http.HttpRequestException: google returned HTTP 403.
+         --- End of inner exception stack trace ---
+         at DotNetWebSearchApi.Search.SearchHttpResponse.EnsureSuccessStatusCode(String providerName) in C:\WEBSITEDEVELOPMENT\DotNetWebSearchApi\src\DotNetWebSearchApi\Search\SearchHttpTransport.cs:line 57
+         at DotNetWebSearchApi.Search.GoogleSearchProvider.SearchAsync(SearchQuery query, CancellationToken cancellationToken) in C:\WEBSITEDEVELOPMENT\DotNetWebSearchApi\src\DotNetWebSearchApi\Search\GoogleSearchProvider.cs:line 59
+         at DotNetWebSearchApi.Search.SearchAggregator.ExecuteProviderAsync(ISearchProvider provider, SearchQuery query, CancellationToken cancellationToken) in C:\WEBSITEDEVELOPMENT\DotNetWebSearchApi\src\DotNetWebSearchApi\Search\SearchAggregator.cs:line 112
+info: System.Net.Http.HttpClient.serverfault.ClientHandler[101]
+      Received HTTP response headers after 669.4019ms - 200
+info: System.Net.Http.HttpClient.serverfault.LogicalHandler[101]
+      End processing HTTP request after 669.4303ms - 200
+info: System.Net.Http.HttpClient.superuser.ClientHandler[101]
+      Received HTTP response headers after 699.1913ms - 200
+info: System.Net.Http.HttpClient.superuser.LogicalHandler[101]
+      End processing HTTP request after 699.2177ms - 200
+info: System.Net.Http.HttpClient.gitea.ClientHandler[101]
+      Received HTTP response headers after 720.9063ms - 429
+info: System.Net.Http.HttpClient.gitea.LogicalHandler[101]
+      End processing HTTP request after 720.9295ms - 429
+warn: DotNetWebSearchApi.Search.SearchAggregator[0]
+      Search provider gitea failed with RateLimited.
+      DotNetWebSearchApi.Search.ProviderFailureException: gitea returned HTTP 429.
+       ---> System.Net.Http.HttpRequestException: gitea returned HTTP 429.
+         --- End of inner exception stack trace ---
+         at DotNetWebSearchApi.Search.SearchHttpResponse.EnsureSuccessStatusCode(String providerName) in C:\WEBSITEDEVELOPMENT\DotNetWebSearchApi\src\DotNetWebSearchApi\Search\SearchHttpTransport.cs:line 57
+         at DotNetWebSearchApi.Search.JsonApiSearchProvider.SearchAsync(SearchQuery query, CancellationToken cancellationToken) in C:\WEBSITEDEVELOPMENT\DotNetWebSearchApi\src\DotNetWebSearchApi\Search\JsonApiSearchProvider.cs:line 49
+         at DotNetWebSearchApi.Search.SearchAggregator.ExecuteProviderAsync(ISearchProvider provider, SearchQuery query, CancellationToken cancellationToken) in C:\WEBSITEDEVELOPMENT\DotNetWebSearchApi\src\DotNetWebSearchApi\Search\SearchAggregator.cs:line 112
+info: System.Net.Http.HttpClient.MojeekSearchProvider.ClientHandler[101]
+      Received HTTP response headers after 140.3085ms - 200
+info: System.Net.Http.HttpClient.MojeekSearchProvider.LogicalHandler[101]
+      End processing HTTP request after 140.3781ms - 200
+info: System.Net.Http.HttpClient.DuckDuckGoSearchProvider.ClientHandler[101]
+      Received HTTP response headers after 796.91ms - 200
+info: System.Net.Http.HttpClient.DuckDuckGoSearchProvider.LogicalHandler[101]
+      End processing HTTP request after 796.963ms - 200
+info: System.Net.Http.HttpClient.rubygems.ClientHandler[101]
+      Received HTTP response headers after 819.1684ms - 200
+info: System.Net.Http.HttpClient.rubygems.LogicalHandler[101]
+      End processing HTTP request after 819.2438ms - 200
+info: System.Net.Http.HttpClient.openlibrary.ClientHandler[101]
+      Received HTTP response headers after 829.7653ms - 200
+info: System.Net.Http.HttpClient.openlibrary.LogicalHandler[101]
+      End processing HTTP request after 829.7884ms - 200
+info: System.Net.Http.HttpClient.gitlab.ClientHandler[101]
+      Received HTTP response headers after 832.9279ms - 200
+info: System.Net.Http.HttpClient.gitlab.LogicalHandler[101]
+      End processing HTTP request after 832.9449ms - 200
+info: System.Net.Http.HttpClient.github.ClientHandler[101]
+      Received HTTP response headers after 877.6217ms - 200
+info: System.Net.Http.HttpClient.github.LogicalHandler[101]
+      End processing HTTP request after 877.6592ms - 200
+info: System.Net.Http.HttpClient.wikimedia_commons.ClientHandler[101]
+      Received HTTP response headers after 920.8608ms - 200
+info: System.Net.Http.HttpClient.wikimedia_commons.LogicalHandler[101]
+      End processing HTTP request after 920.8971ms - 200
+info: System.Net.Http.HttpClient.internetarchive.ClientHandler[101]
+      Received HTTP response headers after 973.1612ms - 200
+info: System.Net.Http.HttpClient.internetarchive.LogicalHandler[101]
+      End processing HTTP request after 973.202ms - 200
+info: System.Net.Http.HttpClient.SeznamSearchProvider.ClientHandler[101]
+      Received HTTP response headers after 974.5609ms - 200
+info: System.Net.Http.HttpClient.SeznamSearchProvider.LogicalHandler[101]
+      End processing HTTP request after 974.6426ms - 200
+info: System.Net.Http.HttpClient.NaverSearchProvider.ClientHandler[101]
+      Received HTTP response headers after 1760.994ms - 200
+info: System.Net.Http.HttpClient.NaverSearchProvider.LogicalHandler[101]
+      End processing HTTP request after 1761.0685ms - 200
+info: System.Net.Http.HttpClient.SeznamSearchProvider.LogicalHandler[100]
+      Start processing HTTP request GET https://search.seznam.cz/?*
+info: System.Net.Http.HttpClient.SeznamSearchProvider.ClientHandler[100]
+      Sending HTTP request GET https://search.seznam.cz/?*
+info: System.Net.Http.HttpClient.SeznamSearchProvider.ClientHandler[101]
+      Received HTTP response headers after 65.3692ms - 200
+info: System.Net.Http.HttpClient.SeznamSearchProvider.LogicalHandler[101]
+      End processing HTTP request after 65.4586ms - 200
+info: Microsoft.AspNetCore.Http.Result.OkObjectResult[1]
+      Setting HTTP status code 200.
+info: Microsoft.AspNetCore.Http.Result.OkObjectResult[3]
+      Writing value of type 'SearchResponse' as Json.
+info: Microsoft.AspNetCore.Routing.EndpointMiddleware[1]
+      Executed endpoint 'HTTP: GET /api/search => SearchEndpoint'
+info: Microsoft.AspNetCore.Hosting.Diagnostics[2]
+      Request finished HTTP/1.1 GET http://localhost/api/search?q=dotnet&limit=10 - 200 - application/json;+charset=utf-8 3798.3228ms
+info: Microsoft.AspNetCore.Hosting.Diagnostics[1]
+      Request starting HTTP/1.1 GET http://localhost/search?q=dotnet&format=json&engines=hackernews - - -
+info: Microsoft.AspNetCore.Routing.EndpointMiddleware[0]
+      Executing endpoint 'HTTP: GET /search => SearxngSearchEndpoint'
+info: System.Net.Http.HttpClient.hackernews.LogicalHandler[100]
+      Start processing HTTP request GET https://hn.algolia.com/api/v1/search?*
+info: System.Net.Http.HttpClient.hackernews.ClientHandler[100]
+      Sending HTTP request GET https://hn.algolia.com/api/v1/search?*
+info: System.Net.Http.HttpClient.hackernews.ClientHandler[101]
+      Received HTTP response headers after 294.9955ms - 200
+info: System.Net.Http.HttpClient.hackernews.LogicalHandler[101]
+      End processing HTTP request after 295.0735ms - 200
+info: Microsoft.AspNetCore.Http.Result.OkObjectResult[1]
+      Setting HTTP status code 200.
+info: Microsoft.AspNetCore.Http.Result.OkObjectResult[3]
+      Writing value of type 'SearxngSearchResponse' as Json.
+info: Microsoft.AspNetCore.Routing.EndpointMiddleware[1]
+      Executed endpoint 'HTTP: GET /search => SearxngSearchEndpoint'
+info: Microsoft.AspNetCore.Hosting.Diagnostics[2]
+      Request finished HTTP/1.1 GET http://localhost/search?q=dotnet&format=json&engines=hackernews - 200 - application/json;+charset=utf-8 314.4784ms
+info: Microsoft.Hosting.Lifetime[0]
+      Application is shutting down...
+[xUnit.net 00:00:04.59]   Finished:    DotNetWebSearchApi.Tests
+  Passed DotNetWebSearchApi.Tests.LiveProviderIntegrationTests.FullSearchApi_ReturnsAggregatedLiveResultsAndCompatibilityJson [4 s]
+  Standard Output Messages:
+ API health: HTTP 200.
+ API inventory: 63 providers; names: arxiv, askubuntu, bilibili, bing, bing_news, cratesio, crossref, dailymotion, datacite, deezer, dockerhub, duckduckgo, europepmc, gitea, github, gitlab, google, googlebooks, google_news, hackernews, huggingface, internetarchive, marginalia, mavencentral, mojeek, musicbrainz, mwmbl, naver, npm, nuget, openaire, openalex, openlibrary, openverse, packagist, peertube, plos, pubdev, qwant, radiobrowser, rubygems, semanticscholar, serverfault, seznam, stackoverflow, steam, superuser, tvmaze, wiby, wikibooks, wikidata, wikimedia_commons, wikinews, wikipedia, wikipedia_de, wikipedia_es, wikisource, wikiversity, wikivoyage, wiktionary, yahoo, yep, zenodo
+ API diagnostics: HTTP 200.
+ API PROVIDER hackernews: Succeeded; failure=
+ API PROVIDER stackoverflow: Succeeded; failure=
+ API PROVIDER npm: Succeeded; failure=
+ API PROVIDER cratesio: Succeeded; failure=
+ API PROVIDER nuget: Succeeded; failure=
+ API PROVIDER openlibrary: Succeeded; failure=
+ API PROVIDER github: Succeeded; failure=
+ API PROVIDER dockerhub: Succeeded; failure=
+ API PROVIDER googlebooks: Failed; failure=RateLimited
+ API PROVIDER internetarchive: Succeeded; failure=
+ API PROVIDER rubygems: Succeeded; failure=
+ API PROVIDER huggingface: Succeeded; failure=
+ API PROVIDER superuser: Succeeded; failure=
+ API PROVIDER serverfault: Succeeded; failure=
+ API PROVIDER askubuntu: Succeeded; failure=
+ API PROVIDER gitlab: Succeeded; failure=
+ API PROVIDER gitea: Failed; failure=RateLimited
+ API PROVIDER mavencentral: Succeeded; failure=
+ API PROVIDER packagist: Succeeded; failure=
+ API PROVIDER pubdev: Succeeded; failure=
+ API PROVIDER steam: Succeeded; failure=
+ API PROVIDER wikidata: Succeeded; failure=
+ API PROVIDER wikipedia_de: Succeeded; failure=
+ API PROVIDER wiby: Succeeded; failure=
+ API PROVIDER tvmaze: Succeeded; failure=
+ API PROVIDER wikimedia_commons: Succeeded; failure=
+ API PROVIDER wikipedia_es: Succeeded; failure=
+ API PROVIDER mwmbl: Succeeded; failure=
+ API PROVIDER marginalia: Failed; failure=RateLimited
+ API PROVIDER yep: Failed; failure=AccessDenied
+ API PROVIDER wiktionary: Succeeded; failure=
+ API PROVIDER wikisource: Succeeded; failure=
+ API PROVIDER wikibooks: Succeeded; failure=
+ API PROVIDER wikiversity: Succeeded; failure=
+ API PROVIDER wikivoyage: Succeeded; failure=
+ API PROVIDER mojeek: Succeeded; failure=
+ API PROVIDER bing: Succeeded; failure=
+ API PROVIDER duckduckgo: Succeeded; failure=
+ API PROVIDER google: Failed; failure=AccessDenied
+ API PROVIDER qwant: Failed; failure=AccessDenied
+ API PROVIDER naver: Succeeded; failure=
+ API PROVIDER yahoo: Failed; failure=TransientHttp
+ API PROVIDER seznam: Succeeded; failure=
+ API PROVIDER wikipedia: Succeeded; failure=
+ API aggregate: HTTP 200; results=10; uniqueUrls=10; succeededProviders=37; failedProviders=7; skippedProviders=0.
+ API RESULT: GitHub - dotnet/dotnet: Home of .NET's Virtual Monolithic | https://github.com/dotnet/dotnet | engines=github,mojeek
+ API RESULT: .NET | https://en.wikipedia.org/?curid=45400268 | engines=wikipedia
+ API RESULT: .NET (Plattform) | https://de.wikipedia.org/wiki/.NET%20%28Plattform%29 | engines=wikipedia_de
+ API RESULT: .NET - ∞╡£∞ïá ∞ò▒ δ░Å Ω░òδáÑφò£ φü┤δ¥╝∞Ü░δô£ ∞ä£δ╣ä∞èñ δ╣îδô£ | https://dotnet.microsoft.com/ko-kr/ | engines=naver
+ API RESULT: .NET and XML | https://openlibrary.org/works/OL5801273W | engines=openlibrary
+ API RESULT: betaish | https://en.wiktionary.org/wiki/betaish | engines=wiktionary
+ API RESULT: cancellation_token_dotnet | https://pub.dev/packages/cancellation_token_dotnet | engines=pubdev
+ API RESULT: Chandler Bing / temp scan ecoscan-27628029-deletion_scheduled-89391576 | https://gitlab.com/chandler.bing/ecoscan-27628029-deletion_scheduled-89391576 | engines=gitlab
+ API RESULT: Commit | https://es.wikipedia.org/wiki/Commit | engines=wikipedia_es
+ API RESULT: dependabot-dotnet_sdk | https://rubygems.org/gems/dependabot-dotnet_sdk | engines=rubygems
+ SearXNG compatibility endpoint: HTTP 200; provider=hackernews; results=10; unresponsive=0; coolingDown=0.
+
+
+
+Test Run Successful.
+Total tests: 1
+     Passed: 1
+ Total time: 5.0589 Seconds
