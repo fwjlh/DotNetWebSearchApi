@@ -1855,3 +1855,11 @@ Every material repository action is recorded here with its reason, result, verif
 - **Correction:** Switched to `KnownIPNetworks` when clearing default trusted networks, avoiding an obsolete API warning on .NET 10.
 - **Commit:** `7b74b1a5ed55a70486d7c1518b346649ef3a810e`.
 - **Verification:** Static review only; .NET 10 build/test pending locally. No Actions used.
+
+
+### 206. Normalize IPv4-mapped addresses in IP quota partitions
+- **Reason:** The same IPv4 client can be represented as a native IPv4 address or an IPv4-mapped IPv6 address. Treating the strings separately would let that client receive two independent IP quotas.
+- **Correction:** Both failed-auth and authenticated IP limiters now use a shared partition-key helper that maps IPv4-mapped IPv6 addresses back to IPv4 before formatting.
+- **Test added:** Native and mapped representations of the same IPv4 address must produce the same quota key.
+- **Commits:** `77f82746e271f68405313fcf4b510edfb5e8c174` (helper/use), `40f2fb91b50aa77d30f5aacee3832bc8cfc9e13e` (test).
+- **Verification:** Static review only; .NET 10 build/test pending locally.
