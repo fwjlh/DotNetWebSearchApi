@@ -105,9 +105,9 @@ public sealed partial class PaperResultMetadataTests
                   "publicationDate": "2026-11-19",
                   "authors": [{ "fullName": "Katherine Johnson" }],
                   "publisher": "OpenAIRE Press",
-                  "journal": { "title": "OpenAIRE Journal" },
+                  "container": { "name": "OpenAIRE Journal" },
                   "type": "publication",
-                  "webLinks": [{ "url": "https://example.org/openaire" }]
+                  "instances": [{ "urls": ["https://example.org/openaire"] }]
                 }
               ]
             }
