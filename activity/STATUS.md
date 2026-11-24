@@ -196,3 +196,9 @@ Keep this file and `LOG.md` current so the next session can resume without chat 
 - Added two negative address-classification cases.
 - Commits: `db625feee2405309f279c22780145c52c56cdb86`, `126baa3fb6c5ba5ba64978ee4ccdea908d94ed02`.
 - Source reviewed only; .NET 10 build/test still requires the operator's local SDK. No Actions or live calls.
+
+
+## Latest live-assessment reliability corrections — 2026-11-24
+- Full-search evidence runner now fails if no providers are registered, verifies provider inventory stability and exact batch selection counts, and terminates after the last provider without an empty extra batch. Commit: `5720c81b0bb5dcbe4cbea2eed963812c28b57c3b`.
+- End-to-end live API test now supplies a configured bearer key from effective host configuration without logging or persisting it. Commit: `1d494e02b37cd50d42969307b826929ac3826b49`.
+- Static review only; fresh build/test and live execution remain pending on the operator's machine. No Actions were used.
