@@ -1,3 +1,5 @@
+using System.Net;
+using System.Text.Json;
 using DotNetWebSearchApi.Search;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.DependencyInjection;
@@ -76,6 +78,121 @@ public sealed class LiveProviderIntegrationTests(ITestOutputHelper output)
         Assert.True(
             failures.Count == 0,
             "Live provider batch failed:" + Environment.NewLine + string.Join(Environment.NewLine, failures));
+    }
+
+
+    [LiveProviderFact]
+    public async Task FullSearchApi_ReturnsAggregatedLiveResultsAndCompatibilityJson()
+    {
+        using WebApplicationFactory<Program> factory = new();
+        using HttpClient client = factory.CreateClient();
+        client.Timeout = TimeSpan.FromMinutes(2);
+
+        using HttpResponseMessage health = await client.GetAsync("/health");
+        Assert.Equal(HttpStatusCode.OK, health.StatusCode);
+        output.WriteLine("API health: HTTP {0}.", (int)health.StatusCode);
+
+        using HttpResponseMessage inventoryResponse = await client.GetAsync("/api/providers");
+        Assert.Equal(HttpStatusCode.OK, inventoryResponse.StatusCode);
+        using JsonDocument inventory = await JsonDocument.ParseAsync(
+            await inventoryResponse.Content.ReadAsStreamAsync());
+        string[] providerNames = inventory.RootElement.GetProperty("providers")
+            .EnumerateArray()
+            .Select(item => item.GetString() ?? string.Empty)
+            .ToArray();
+        output.WriteLine(
+            "API inventory: {0} providers; names: {1}",
+            providerNames.Length,
+            string.Join(", ", providerNames));
+
+        using HttpResponseMessage diagnostics = await client.GetAsync("/api/diagnostics");
+        Assert.Equal(HttpStatusCode.OK, diagnostics.StatusCode);
+        output.WriteLine("API diagnostics: HTTP {0}.", (int)diagnostics.StatusCode);
+
+        using HttpResponseMessage searchResponse = await client.GetAsync("/api/search?q=dotnet&limit=10");
+        string searchBody = await searchResponse.Content.ReadAsStringAsync();
+        Assert.Equal(HttpStatusCode.OK, searchResponse.StatusCode);
+        using JsonDocument search = JsonDocument.Parse(searchBody);
+        JsonElement root = search.RootElement;
+        JsonElement results = root.GetProperty("results");
+        JsonElement outcomes = root.GetProperty("providerOutcomes");
+        int resultCount = results.GetArrayLength();
+        int succeeded = 0;
+        int failed = 0;
+        int skipped = 0;
+        List<string> successfulProviders = new();
+        foreach (JsonElement outcome in outcomes.EnumerateArray())
+        {
+            string name = outcome.GetProperty("providerName").GetString() ?? "unknown";
+            string status = outcome.GetProperty("status").GetString() ?? "unknown";
+            string failureKind = outcome.TryGetProperty("failureKind", out JsonElement failure)
+                ? failure.ToString()
+                : "none";
+            output.WriteLine("API PROVIDER {0}: {1}; failure={2}", name, status, failureKind);
+            if (status == "Succeeded")
+            {
+                succeeded++;
+                successfulProviders.Add(name);
+            }
+            else if (status == "Failed")
+            {
+                failed++;
+            }
+            else if (status == "Skipped")
+            {
+                skipped++;
+            }
+        }
+
+        HashSet<string> resultUrls = new(StringComparer.OrdinalIgnoreCase);
+        foreach (JsonElement result in results.EnumerateArray())
+        {
+            string title = result.GetProperty("title").GetString() ?? string.Empty;
+            string url = result.GetProperty("url").GetString() ?? string.Empty;
+            Assert.False(string.IsNullOrWhiteSpace(title));
+            Assert.True(Uri.TryCreate(url, UriKind.Absolute, out Uri? uri));
+            Assert.True(uri!.Scheme == Uri.UriSchemeHttp || uri.Scheme == Uri.UriSchemeHttps);
+            resultUrls.Add(url);
+        }
+
+        output.WriteLine(
+            "API aggregate: HTTP {0}; results={1}; uniqueUrls={2}; succeededProviders={3}; failedProviders={4}; skippedProviders={5}.",
+            (int)searchResponse.StatusCode,
+            resultCount,
+            resultUrls.Count,
+            succeeded,
+            failed,
+            skipped);
+        foreach (JsonElement result in results.EnumerateArray().Take(10))
+        {
+            output.WriteLine(
+                "API RESULT: {0} | {1} | engines={2}",
+                result.GetProperty("title").GetString(),
+                result.GetProperty("url").GetString(),
+                string.Join(",", result.GetProperty("engines").EnumerateArray().Select(item => item.GetString())));
+        }
+
+        Assert.NotEmpty(providerNames);
+        Assert.True(succeeded > 0, "The aggregate API search had no successful providers.");
+        Assert.True(resultCount > 0, "The aggregate API search returned no results for 'dotnet'.");
+        Assert.Equal(resultCount, resultUrls.Count);
+
+        string selectedProvider = successfulProviders[0];
+        using HttpResponseMessage compatibilityResponse = await client.GetAsync(
+            "/search?q=dotnet&format=json&engines=" + Uri.EscapeDataString(selectedProvider));
+        Assert.Equal(HttpStatusCode.OK, compatibilityResponse.StatusCode);
+        using JsonDocument compatibility = await JsonDocument.ParseAsync(
+            await compatibilityResponse.Content.ReadAsStreamAsync());
+        JsonElement compatibilityRoot = compatibility.RootElement;
+        int compatibilityResults = compatibilityRoot.GetProperty("results").GetArrayLength();
+        output.WriteLine(
+            "SearXNG compatibility endpoint: HTTP {0}; provider={1}; results={2}; unresponsive={3}; coolingDown={4}.",
+            (int)compatibilityResponse.StatusCode,
+            selectedProvider,
+            compatibilityResults,
+            compatibilityRoot.GetProperty("unresponsive_engines").GetArrayLength(),
+            compatibilityRoot.GetProperty("cooling_down_engines").GetArrayLength());
+        Assert.Equal("dotnet", compatibilityRoot.GetProperty("query").GetString());
     }
 
     private async Task CheckProviderAsync(ISearchProvider provider, ICollection<string> failures)
