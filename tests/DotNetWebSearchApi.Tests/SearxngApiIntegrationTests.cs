@@ -444,16 +444,22 @@ public sealed class ProductionProviderConfigurationFixture : IDisposable
 {
     private readonly string? _originalApiKeys = Environment.GetEnvironmentVariable("SEARCH_API_KEYS");
     private readonly string? _originalTrustedProxyIps = Environment.GetEnvironmentVariable("TRUSTED_PROXY_IPS");
+    private readonly string? _originalAspNetCoreEnvironment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
+    private readonly string? _originalDotNetEnvironment = Environment.GetEnvironmentVariable("DOTNET_ENVIRONMENT");
 
     public ProductionProviderConfigurationFixture()
     {
         Environment.SetEnvironmentVariable("SEARCH_API_KEYS", string.Empty);
         Environment.SetEnvironmentVariable("TRUSTED_PROXY_IPS", string.Empty);
+        Environment.SetEnvironmentVariable("ASPNETCORE_ENVIRONMENT", "Development");
+        Environment.SetEnvironmentVariable("DOTNET_ENVIRONMENT", "Development");
     }
 
     public void Dispose()
     {
         Environment.SetEnvironmentVariable("SEARCH_API_KEYS", _originalApiKeys);
         Environment.SetEnvironmentVariable("TRUSTED_PROXY_IPS", _originalTrustedProxyIps);
+        Environment.SetEnvironmentVariable("ASPNETCORE_ENVIRONMENT", _originalAspNetCoreEnvironment);
+        Environment.SetEnvironmentVariable("DOTNET_ENVIRONMENT", _originalDotNetEnvironment);
     }
 }
