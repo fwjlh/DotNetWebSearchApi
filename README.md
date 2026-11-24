@@ -345,7 +345,7 @@ To publish the timestamped JSON assessment and full execution log to this reposi
 
     .\scripts\Test-FullSearchEvidence.ps1 -PublishEvidence
 
-Publishing uses your existing Git credential manager; no personal access token is stored by the script. It verifies that the current branch is `main`, that `origin` is `fwjlh/DotNetWebSearchApi`, and that the Git staging area is empty. It force-adds only the two generated evidence files (they are ignored by default), commits them, and pushes that commit. Failed assessments are published too. If the push is rejected, the evidence commit remains local and can be pushed after synchronising with `origin/main`. The JSON records the machine name and OS, and the log may contain local diagnostic paths; review those files before publishing if that metadata is sensitive.
+Publishing uses your existing Git credential manager; no personal access token is stored by the script. It verifies that the current branch is `main`, that `origin` is `fwjlh/DotNetWebSearchApi`, that local `main` is synchronized with `origin/main`, and that the Git staging area is empty. It force-adds only the two generated evidence files (they are ignored by default), commits them, and pushes that commit. Failed assessments are published too. If the push is rejected, the evidence commit remains local and can be pushed after synchronising with `origin/main`. The JSON records the machine name and OS, and the log may contain local diagnostic paths; review those files before publishing if that metadata is sensitive.
 
 GitHub Actions workflows are intentionally disabled to conserve minutes. Run restore, build and tests locally using the commands above.
 
