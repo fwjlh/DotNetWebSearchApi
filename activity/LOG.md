@@ -1690,3 +1690,12 @@ Every material repository action is recorded here with its reason, result, verif
 ### 183. Improve live batch diagnostics
 - **Correction:** The batch runner now uses detailed console verbosity so per-provider output from `ITestOutputHelper` is visible during the run. The progress label describes alphabetical provider slots rather than catalogue positions, because only locally registered providers are included.
 - **Verification:** Documentation/source reviewed. The runner still requires execution on the user's Windows/.NET 10 machine; no local build or live request is claimed.
+
+
+### 184. Add full search-engine evidence assessment
+- **Request:** Run the whole search system rather than stopping at the first failed provider batch, and preserve enough evidence to identify recurring failure patterns.
+- **Implementation:** Added `scripts/Test-FullSearchEvidence.ps1`. It builds once, runs the offline regression suite, exercises every locally registered provider in sequential batches of up to 20 while continuing after failed batches, and then runs a real end-to-end aggregate API search plus a SearXNG-compatible search request.
+- **Evidence:** The script writes a timestamped JSON summary and full console log under `evidence/`. The JSON records machine/runtime metadata, build and regression outcomes, provider pass/fail details, aggregate API outcome and overall status. It does not write environment variables or API keys.
+- **API validation:** Added an opt-in live integration test that checks health, provider inventory, diagnostics, merged search results, result URL validity and deduplication, provider outcome classifications, and the SearXNG-compatible JSON endpoint.
+- **Execution:** Source and script committed for local execution. No .NET build or live request is claimed here. GitHub Actions remain untouched.
+- **Next:** Run the evidence script once and inspect the JSON plus log together; group failures by status/failure kind/provider family before changing adapters.
