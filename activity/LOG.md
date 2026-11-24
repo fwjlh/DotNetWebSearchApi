@@ -1706,3 +1706,11 @@ Every material repository action is recorded here with its reason, result, verif
 - **Isolation:** The offline regression stage explicitly disables opt-in live tests, then the live flag is enabled only for the provider and aggregate API stages. Original process environment values are restored in a `finally` block.
 - **Evidence detail:** The JSON summary now includes the aggregate API test output, provider batch-stage status and provider-level outcomes. Generated evidence files are ignored by Git.
 - **Verification:** Source reviewed only. The assessment must be run locally with the .NET 10 SDK; no build or live test is claimed.
+
+
+### 185. Close an IPv6 special-purpose address gap
+- **Reason:** The public-address classifier rejected the main IPv6 special ranges but allowed the IETF ORCHIDv2 allocation `2001:20::/28`, which is not globally routable and should not be a provider destination.
+- **Correction:** Added an explicit prefix check for `2001:20::/28` in `PublicNetworkSocketsHandler.IsPublicAddress`.
+- **Tests added:** Added `2001:20::1` and `2001:20:f::1` negative classification cases alongside the existing IPv6 special-range matrix.
+- **Commits:** `db625feee2405309f279c22780145c52c56cdb86` (policy), `126baa3fb6c5ba5ba64978ee4ccdea908d94ed02` (tests).
+- **Verification:** Source-level review only. The .NET 10 SDK is unavailable in this environment; do not treat these tests as executed. No GitHub Actions or live network calls were used.
