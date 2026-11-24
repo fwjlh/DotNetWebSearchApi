@@ -1973,3 +1973,11 @@ Every material repository action is recorded here with its reason, result, verif
 - **Correction:** Added the required `allowLoopbackHttp` parameter to `UseAuthentication`, matching Program.cs and the Development-only loopback rule.
 - **Commit:** `376d94f73c5d30b0e75ba240f97dfd9f32ac3d7e`.
 - **Verification:** Static review only; this would have been a compile error, so build remains essential.
+
+
+### 221. Normalize mapped loopback addresses for Development HTTP
+- **Reason:** A dual-mode socket can report local IPv4 loopback as `::ffff:127.0.0.1`; without normalization the Development-only HTTP exception could reject a local caller.
+- **Correction:** The secure-transport helper maps IPv4-mapped IPv6 to IPv4 before applying `IPAddress.IsLoopback`.
+- **Test added:** Mapped IPv4 loopback is accepted only when the Development exception is enabled.
+- **Commits:** `cd92d80abb8ca90420b93617c18ec729dfb2c511`, `41571c5a39a08dd0c24273408d2c9be28eef18aa`.
+- **Verification:** Static review only; .NET 10 build/test pending.
