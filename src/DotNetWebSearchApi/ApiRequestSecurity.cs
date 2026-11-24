@@ -18,7 +18,8 @@ namespace DotNetWebSearchApi;
 internal sealed record ApiRequestSecurityOptions(
     IReadOnlyList<string> ApiKeys,
     PartitionedRateLimiter<HttpContext> AuthenticationFailureLimiter,
-    PartitionedRateLimiter<string> PerKeySearchLimiter);
+    PartitionedRateLimiter<string> PerKeySearchLimiter,
+    bool TrustForwardedHeaders);
 
 internal static class ApiRequestSecurity
 {
@@ -110,7 +111,11 @@ internal static class ApiRequestSecurity
         PartitionedRateLimiter<string> perKeySearchLimiter = CreatePerKeySearchLimiter();
         services.AddSingleton(authenticationFailureLimiter);
         services.AddSingleton(perKeySearchLimiter);
-        return new ApiRequestSecurityOptions(apiKeys, authenticationFailureLimiter, perKeySearchLimiter);
+        return new ApiRequestSecurityOptions(
+            apiKeys,
+            authenticationFailureLimiter,
+            perKeySearchLimiter,
+            trustedProxies.Length > 0);
     }
 
     private static void AddRetryAfterHeader(HttpResponse response, RateLimitLease lease)
