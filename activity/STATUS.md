@@ -231,3 +231,11 @@ Keep this file and `LOG.md` current so the next session can resume without chat 
 - Added a fixture test proving credential-bearing and title-less results are dropped while a valid result survives.
 - Commits: `e4effd7dfa42a1739a5bc4d3acb41f1037cb626c`, `490d7222e1d3c7b88a326c0d72f5c32f0d16a1e4`.
 - Static review only; local .NET 10 build/test remains pending.
+
+
+## Latest authentication abuse protection — 2026-11-24
+- Added a separate 10 failed bearer attempts/minute/IP limiter, applied only to invalid/missing credentials. Authenticated search quota remains 60 requests/minute/IP; failed attempts do not consume it. Limiter lifetime is owned by the host DI container.
+- Updated regression test: 10 invalid attempts return 401, the 11th returns 429, and a valid request still succeeds.
+- Commits: `c2593812e3bc4f3fdf5b2eecaf0e74e73292fbc5`, `97d4df048bd483c63d5cf02214e680df11ae069d`, `7a489af8dbba4f392f8acd7c7aaddfa0036b9ab5`.
+- README now documents both limits and removes the stale Actions badge. Commit: `33724bbc9172a128488ec5c7141a072612db1549`.
+- Static review only; local .NET 10 build/test pending. No workflows used.
