@@ -59,7 +59,7 @@ function Publish-Evidence {
         throw "The origin remote is not fwjlh/DotNetWebSearchApi; refusing to publish evidence."
     }
 
-    Invoke-GitCommand -RepositoryRoot $actualRoot -Arguments @("fetch", "origin", "main") | Out-Null
+    Invoke-GitCommand -RepositoryRoot $actualRoot -Arguments @("fetch", "origin", "+refs/heads/main:refs/remotes/origin/main") | Out-Null
     $localHead = Invoke-GitCommand -RepositoryRoot $actualRoot -Arguments @("rev-parse", "HEAD")
     $remoteHead = Invoke-GitCommand -RepositoryRoot $actualRoot -Arguments @("rev-parse", "origin/main")
     if ($localHead -ne $remoteHead) {
