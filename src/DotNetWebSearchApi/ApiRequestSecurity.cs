@@ -63,7 +63,7 @@ internal static class ApiRequestSecurity
             options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
             options.AddPolicy("search", context =>
                 RateLimitPartition.GetFixedWindowLimiter(
-                    context.Connection.RemoteIpAddress?.ToString() ?? "unknown",
+                    GetClientIpPartitionKey(context.Connection.RemoteIpAddress),
                     _ => new FixedWindowRateLimiterOptions
                     {
                         AutoReplenishment = true,
@@ -84,7 +84,7 @@ internal static class ApiRequestSecurity
         PartitionedRateLimiter<HttpContext> authenticationFailureLimiter =
             PartitionedRateLimiter.Create<HttpContext, string>(
                 context => RateLimitPartition.GetFixedWindowLimiter(
-                    context.Connection.RemoteIpAddress?.ToString() ?? "unknown",
+                    GetClientIpPartitionKey(context.Connection.RemoteIpAddress),
                     _ => new FixedWindowRateLimiterOptions
                     {
                         AutoReplenishment = true,
@@ -97,6 +97,16 @@ internal static class ApiRequestSecurity
         services.AddSingleton(authenticationFailureLimiter);
         services.AddSingleton(perKeySearchLimiter);
         return new ApiRequestSecurityOptions(apiKeys, authenticationFailureLimiter, perKeySearchLimiter);
+    }
+
+    internal static string GetClientIpPartitionKey(IPAddress? address)
+    {
+        if (address?.IsIPv4MappedToIPv6 == true)
+        {
+            address = address.MapToIPv4();
+        }
+
+        return address?.ToString() ?? "unknown";
     }
 
     internal static PartitionedRateLimiter<string> CreatePerKeySearchLimiter(int permitLimit = 60)
