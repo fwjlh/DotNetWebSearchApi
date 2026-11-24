@@ -1741,3 +1741,10 @@ Every material repository action is recorded here with its reason, result, verif
 - **Test added:** Root `/?q=test` must require the configured bearer key. Existing trailing-slash tests remain in place.
 - **Commits:** `32dc8f2252e0c40c501e7c15a96b91b6018a4aa6` (middleware), `7f3b1a722914d404381e9e788a6eda8c8e3fda8c` (test).
 - **Verification:** Static review only; no .NET 10 build/test execution available. No Actions used.
+
+
+### 190. Expand private-IP representation regression coverage
+- **Reason:** Provider destinations may express IPv4 loopback using shorthand or integer host notation, and IPv4-mapped IPv6 must not evade the same policy.
+- **Tests added:** Unsafe URI cases now include `127.1` and `2130706433`; address classification now includes IPv4-mapped loopback, IPv4 documentation space and limited broadcast.
+- **Commit:** `18c1d1793e87fadc4b807b77dd94613785910994`.
+- **Verification:** Test-source review only. .NET 10 build/test remains pending; no live network calls or Actions.
